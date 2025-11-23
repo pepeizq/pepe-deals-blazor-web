@@ -172,13 +172,15 @@ namespace Tareas
 										}
 									}
 
+									pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
+
 									foreach (var pendiente in pendientes.ToList())
 									{
-										if (pendiente.Fecha.AddMinutes(15) > DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
+										if (pendiente.Fecha.AddMinutes(15) < DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
 										{
 											bool enviado = Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
-											BaseDatos.Errores.Insertar.Mensaje("Correo " + pendiente.Tipo.ToString() + " se borra ID: " + pendiente.Id.ToString(), enviado.ToString());
+											BaseDatos.Errores.Insertar.Mensaje("Correo " + pendiente.Tipo.ToString() + " " + pendiente.Json?.Length.ToString() + " se borra ID: " + pendiente.Id.ToString(), enviado.ToString());
 
 											if (enviado == true)
 											{
@@ -210,6 +212,8 @@ namespace Tareas
 											}
 										}
 									}
+
+									pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
 									foreach (var pendiente in pendientes.ToList())
 									{

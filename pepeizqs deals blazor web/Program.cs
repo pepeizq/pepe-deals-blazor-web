@@ -3,6 +3,7 @@ using BlazorNotification;
 using Herramientas;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -47,15 +48,6 @@ builder.Services.AddWebOptimizer(
 
 		acciones.MinifyCssFiles("css/bundle.css");
 		acciones.MinifyJsFiles("superjs.js", "inicio.js", "video.js");
-	},
-	opciones =>
-	{
-		opciones.EnableCaching = true;
-		opciones.EnableMemoryCache = true;
-		opciones.EnableDiskCache = true;
-		opciones.EnableTagHelperBundling = true;
-		opciones.AllowEmptyBundle = false;
-		opciones.HttpsCompression = HttpsCompressionMode.Compress;
 	});
 
 #endregion
