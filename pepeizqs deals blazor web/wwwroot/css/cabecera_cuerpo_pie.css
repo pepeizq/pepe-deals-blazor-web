@@ -1,14 +1,4 @@
-﻿.cabecera {
-    min-height: var(--alturaCabecera);
-    background-color: var(--fondoOscuro);
-    z-index: 9999;
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    padding: 14px;
-}
-
-.cabecera-poner {
+﻿.cabecera-poner {
     display: flex;
     flex-wrap: inherit;
     align-items: center;
@@ -39,12 +29,6 @@
     .cuerpo-espacio {
         padding: 0px;
     }
-}
-
-.pie {
-    background-color: color-mix(in srgb, var(--fondoOscuro) 55%, var(--fondoCuerpo));
-    font-size: var(--tamañoTexto);
-    color: var(--colorTexto);
 }
 
 .texto-logo {

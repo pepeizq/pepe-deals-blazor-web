@@ -15,15 +15,11 @@
 
         <div style="display: flex; align-items: center; gap: 20px; margin-top: 20px;">
             <div>
+                <a class="boton-pequeño" href="@dealsVisitas" style="text-decoration: none; text-align: center; padding: 8px 16px;" target="_blank">Visitas</a>
+            </div>
+
+            <div>
                 <a class="boton-pequeño" href="@dealsGoogleSearch" style="text-decoration: none; text-align: center; padding: 8px 16px;" target="_blank">Google Search</a>
-            </div>
-
-            <div>
-                <a class="boton-pequeño" href="@dealsCloudflareBots" style="text-decoration: none; text-align: center; padding: 8px 16px;" target="_blank">Cloudflare (Bots)</a>
-            </div>
-
-            <div>
-                <a class="boton-pequeño" href="@dealsCloudflareVisitas" style="text-decoration: none; text-align: center; padding: 8px 16px;" target="_blank">Cloudflare (Visitas)</a>
             </div>
 
             <div>
@@ -130,8 +126,7 @@
     #nullable disable
 
     private string dealsGoogleSearch = string.Empty;
-    private string dealsCloudflareVisitas = string.Empty;
-    private string dealsCloudflareBots = string.Empty;
+    private string dealsVisitas = string.Empty;
     private string dealsBing = string.Empty;
 
     private string appsGoogleSearch = string.Empty;
@@ -147,8 +142,7 @@
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
         dealsGoogleSearch = builder.Configuration.GetValue<string>("WebmasterDeals:GoogleSearch");
-        dealsCloudflareVisitas = builder.Configuration.GetValue<string>("WebmasterDeals:CloudflareVisitas");
-        dealsCloudflareBots = builder.Configuration.GetValue<string>("WebmasterDeals:CloudflareBots");
+        dealsVisitas = builder.Configuration.GetValue<string>("WebmasterDeals:Visitas");
         dealsBing = builder.Configuration.GetValue<string>("WebmasterDeals:Bing");
 
         appsGoogleSearch = builder.Configuration.GetValue<string>("WebmasterApps:GoogleSearch");

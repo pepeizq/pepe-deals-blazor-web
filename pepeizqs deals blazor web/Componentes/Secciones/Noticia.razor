@@ -211,9 +211,15 @@
 							</div>
 
 							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, false)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
 									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
 										BBCode
+									</div>
+								</button>
+
+								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, true)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										ElOtroLado
 									</div>
 								</button>
 

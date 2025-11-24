@@ -36,13 +36,7 @@
 </head>
 
 <body class="cuerpo" id="cuerpazo" style="margin: 0px;">
-    <header style="background-color: var(--fondoOscuro); z-index: 9999; position: sticky; top: 0; padding: 15px; display: flex; width: 100%; border-bottom: 1px solid var(--fondoBotonPequeño);">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm" style="padding: 0px; width: 100%;">
-            <div class="cabecera-poner">
-                <Cabecera idioma="@idioma" usuarioId="@usuarioId" userAgent="@userAgent" usuarioAdmin="@usuarioAdmin" dominio="@dominio"/>
-            </div>
-        </nav>
-    </header>
+    <Cabecera idioma="@idioma" usuarioId="@usuarioId" userAgent="@userAgent" usuarioAdmin="@usuarioAdmin" dominio="@dominio" />
 
     <main role="main">
         <Routes @rendermode="renderizacion" />
@@ -77,10 +71,10 @@
         }
     </script>
 
-    @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && usuarioAdmin == false && dominio?.Contains("pepe.deals") == true)
+   @*  @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && usuarioAdmin == false && dominio?.Contains("pepe.deals") == true)
     {
         <script async src='https://visitas.pepeizq.workers.dev/script.js' data-cf-beacon='{"send":{"to": "https://visitas.pepeizq.workers.dev/"},"token": "ec9ca034644a4d22b257719eb208876e"}'></script>
-    }
+    } *@
 </body>
 
 </html>
