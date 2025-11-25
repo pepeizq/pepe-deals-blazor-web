@@ -165,7 +165,7 @@
                 @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                 {
                     <div style="@fondoBuscador padding-right: 10px; display: flex; align-items: center; gap: 10px; transition: background-color 1000ms linear;">
-                        <input @ref="inputRef" type="text" @bind-value="@textoBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; border: 0px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "SearchPlaceholder", "Header")" />
+                        <input @ref="inputBuscador" type="text" @bind-value="@textoBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; border: 0px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "SearchPlaceholder", "Header")" />
 
                         @if (resultadosMostrar == null || resultadosMostrar?.Count == 0)
                         {
@@ -593,8 +593,8 @@
 
         if (primerRender == true)
         {
-            objRef = DotNetObjectReference.Create(this);
-            await JavaScript.InvokeVoidAsync("buscador.teclearBusqueda", inputRef, objRef, 200);
+            cabeceraReferencia = DotNetObjectReference.Create(this);
+            await JavaScript.InvokeVoidAsync("buscador.teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
         }
 
         await InvokeAsync(StateHasChanged);
@@ -618,22 +618,22 @@
 
     #region Buscador
 
-    private ElementReference inputRef;
-    private DotNetObjectReference<Cabecera> objRef;
+    private ElementReference inputBuscador;
+    private DotNetObjectReference<Cabecera> cabeceraReferencia;
     [PersistentState] public List<Juegos.Juego> resultadosMostrar { get; set; }
     public string textoBuscador { get; set; } = string.Empty;
-    private string fondoBuscador = "background-color: var(--fondoEntrada);";
+    private string fondoBuscador = "background-color: var(--fondoEntrada); border-bottom: 1px solid transparent;";
 
     private void ClickBuscador()
     {
-        fondoBuscador = "background-color: var(--fondoBotonPequeñoHover); border-bottom: 1px solid var(--fondoBoton); margin-bottom: -1px;";
+        fondoBuscador = "background-color: var(--fondoBotonPequeñoHover); border-bottom: 1px solid var(--fondoBoton);";
     }
 
     private void PerderBuscador()
     {
         if (string.IsNullOrEmpty(textoBuscador) == true)
         {
-            fondoBuscador = "background-color: var(--fondoEntrada);";
+            fondoBuscador = "background-color: var(--fondoEntrada); border-bottom: 1px solid transparent;";
         }
     }
 
@@ -676,7 +676,7 @@
     {
         textoBuscador = string.Empty;
         resultadosMostrar?.Clear();
-        fondoBuscador = "background-color: var(--fondoEntrada);";
+        fondoBuscador = "background-color: var(--fondoEntrada); border-bottom: 1px solid transparent;";
     }
 
     #endregion

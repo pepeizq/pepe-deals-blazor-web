@@ -202,28 +202,35 @@ namespace BaseDatos.Juegos
                                     int cantidadReseñas = int.Parse(tempCantidadReseñas);
 
                                     string tempValoracionReseñas = reseñas?.Porcentaje;
-                                    tempValoracionReseñas = tempValoracionReseñas?.Replace("%", "").Trim();
 
-                                    int valoracionReseñas = int.Parse(tempValoracionReseñas);
+                                    if (string.IsNullOrEmpty(tempValoracionReseñas) == false)
+                                    {
+										tempValoracionReseñas = tempValoracionReseñas?.Replace("%", "").Trim();
 
-                                    if (nuevaOferta.Tienda.ToLower() == "steam" && cantidadReseñas > 10000 && valoracionReseñas > 60)
-                                    {
-                                        validoRedesSociales = true;
-                                    }
-                                    else if (nuevaOferta.Tienda.ToLower() != "steam" && cantidadReseñas > 5000 && valoracionReseñas > 50)
-                                    {
-                                        validoRedesSociales = true;
-                                    }
-                                    
-                                    if (nuevaOferta.Tienda.ToLower() == "2game")
-                                    {
-                                        validoRedesSociales = false;
+										if (string.IsNullOrEmpty(tempValoracionReseñas) == false)
+                                        {
+											int valoracionReseñas = int.Parse(tempValoracionReseñas);
+
+											if (nuevaOferta.Tienda.ToLower() == "steam" && cantidadReseñas > 10000 && valoracionReseñas > 60)
+											{
+												validoRedesSociales = true;
+											}
+											else if (nuevaOferta.Tienda.ToLower() != "steam" && cantidadReseñas > 5000 && valoracionReseñas > 50)
+											{
+												validoRedesSociales = true;
+											}
+
+											if (nuevaOferta.Tienda.ToLower() == "2game")
+											{
+												validoRedesSociales = false;
+											}
+
+											if (validoRedesSociales == true)
+											{
+												BaseDatos.RedesSociales.Insertar.Ejecutar(id, nuevaOferta);
+											}
+										}
 									}
-
-									if (validoRedesSociales == true)
-                                    {
-                                        BaseDatos.RedesSociales.Insertar.Ejecutar(id, nuevaOferta);
-                                    }
                                 }
                             }
 

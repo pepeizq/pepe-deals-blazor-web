@@ -180,8 +180,6 @@ namespace Tareas
 										{
 											bool enviado = Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
-											BaseDatos.Errores.Insertar.Mensaje("Correo " + pendiente.Tipo.ToString() + " " + pendiente.Json?.Length.ToString() + " se borra ID: " + pendiente.Id.ToString(), enviado.ToString());
-
 											if (enviado == true)
 											{
 												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id, conexion);

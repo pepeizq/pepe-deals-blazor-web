@@ -172,15 +172,15 @@ namespace Herramientas.Correos
 
 				foreach (var json in jsons)
 				{
-					string htmlJson = @"<div style=""margin-bottom: 30px; display: flex; flex-direction: column; gap: 40px; color: #f5f5f5; background-color: #293751; padding: 20px;"">
-											<a href=""{{enlace}}"" style=""color: #f5f5f5; user-select: none; width: 100%; text-align: left; font-size: 16px; text-decoration: none; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"" target=""_blank"">
+					string htmlJson = @"<div style=""margin-bottom: 30px; color: #f5f5f5; background-color: #0d1621; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
+											<a href=""{{enlace}}"" style=""color: #f5f5f5; user-select: none; width: 100%; text-align: left; font-size: 16px; text-decoration: none;"" target=""_blank"">
 												<div>
 													<div style=""display: flex; align-content: center; align-items: center; justify-content: center; font-size: 18px;"">
 														<img src=""{{imagen}}"" style=""max-width: 100%; max-height: 300px;"" />
 													</div>
-													<div style=""display: flex; align-content: center; align-items: center; justify-content: center; font-size: 18px; padding: 15px;"">
+													<div style=""display: flex; align-content: center; align-items: center; justify-content: center; gap: 10px; font-size: 18px; padding: 15px;"">
 														<img src=""{{imagenTienda}}"" style=""width: 120px; margin-right: 10px;"" />
-														<div style=""padding: 10px; background-color: darkgreen;  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 3px 0px, rgba(0, 0, 0, 0.1) 0px 0px 2px 0px;"">
+														<div style=""padding: 10px; background-color: darkgreen; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 3px 0px, rgba(0, 0, 0, 0.1) 0px 0px 2px 0px;"">
 															{{descuento}}
 														</div>
 														<div style=""padding: 5px 10px;"">

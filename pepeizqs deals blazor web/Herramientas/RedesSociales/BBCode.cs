@@ -434,15 +434,22 @@ namespace Herramientas.RedesSociales
 						}
                     }
 
-                    juegosValoracion.Add(juegoValoracion);
+                    if (juego.Juego?.Caracteristicas != null)
+                    {
+                        juegoValoracion.FechaSalida = juego.Juego.Caracteristicas.FechaLanzamientoSteam;
+					}
+
+                    juegoValoracion.Tier = juego.Tier.Posicion;
+
+					juegosValoracion.Add(juegoValoracion);
 				}
 
                 if (juegosValoracion.Count > 0)
                 {
-					// Primer cálculo para reducir el valor de los juegos que ya han estado en otros bundles usando las reseñas de Steam como base
+					// Primer cálculo para estimar el valor de los juegos (mirar abajo)
 					foreach (var juego in juegosValoracion)
 					{
-						juego.Valoracion = juego.NumeroReseñas / (double)(juego.NumeroBundles + 1);
+						juego.Valoracion = CalcularValoracionJuego(juego);
 					}
 
 					// Segundo cálculo para encajar la suma total de valoraciones y que no supere el precio mínimo histórico en cada juego
@@ -479,11 +486,11 @@ namespace Herramientas.RedesSociales
 
 							sigueSobrando = true;
 
-							double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => j.NumeroReseñas / (double)(j.NumeroBundles + 1));
+							double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => CalcularValoracionJuego(j));
 
 							foreach (JuegoValoracion juego in juegosDondeAplicarRestante)
 							{
-								double extra = (juego.NumeroReseñas / (double)(juego.NumeroBundles + 1)) / cantidadARepartir * sobrante;
+								double extra = CalcularValoracionJuego(juego) / cantidadARepartir * sobrante;
 								juego.Valoracion = Math.Min(juego.Valoracion + extra, juego.PrecioMinimoHistorico);
 							}
 						}
@@ -504,8 +511,60 @@ namespace Herramientas.RedesSociales
 					texto = texto + "[/code][/spoiler]";
 				}
 			}
+			else
+			{
+				texto = texto + "BBCode para el hilo de compras conjuntas:[spoiler][code]";
+				texto = texto + "[url=" + bundle.Enlace + "]" + bundle.NombreBundle + "[/url]" + Environment.NewLine + Environment.NewLine;
 
-            return texto;
+				foreach (var tier in bundle.Tiers)
+				{
+					if (tier.CantidadJuegos == 1)
+					{
+						texto = texto + "[b]" + tier.CantidadJuegos.ToString() + " juego • " + Herramientas.Precios.Euro(decimal.Parse(tier.Precio)) + "[/b]" + Environment.NewLine;
+					}
+					else if (tier.CantidadJuegos > 1)
+					{
+						texto = texto + "[b]" + tier.CantidadJuegos.ToString() + " juegos • " + Herramientas.Precios.Euro(decimal.Parse(tier.Precio)) + "[/b] / " + Herramientas.Precios.Euro(decimal.Parse(tier.Precio) / tier.CantidadJuegos) + " (cada unidad)" + Environment.NewLine;
+					}
+				}
+
+				texto = texto + Environment.NewLine + "[list]";
+
+				foreach (var juego in bundle.Juegos.OrderBy(j => j.Nombre))
+				{
+					texto = texto + "[*]" + juego.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ") - Libre" + Environment.NewLine;
+				}
+
+				texto = texto + "[/list]";
+				texto = texto + "[/code][/spoiler]";
+			}
+
+			return texto;
+		}
+
+        public static double CalcularValoracionJuego(JuegoValoracion juego)
+        {
+			// Valor extra que asigno en función de si el juego ha salido hace pocos meses
+
+			double valorFecha = 1;
+
+            if (juego.FechaSalida != null)
+            {
+                double meses = (DateTime.Now - juego.FechaSalida.Value).TotalDays / 30;
+
+                double meses2 = Math.Min(meses, 60); // Máximo de 5 años (por si acaso)
+
+                valorFecha = 2 - (meses2 / 60);
+            }
+
+			// Valor extra que asigno en función del tier del bundle en el que está el juego
+
+			double valorTier = 1;
+            valorTier = valorTier + (juego.Tier * 0.5);
+
+			// Junto todo tomando como base las reseñas y quitando peso en función de los bundles en los que ha estado
+
+			return (juego.NumeroReseñas / (double)(juego.NumeroBundles + 1)) * (valorFecha + valorTier);
 		}
 	}
 
@@ -517,5 +576,7 @@ namespace Herramientas.RedesSociales
         public int NumeroBundles { get; set; }
         public int NumeroReseñas { get; set; }
         public double Valoracion { get; set; }
+        public DateTime? FechaSalida { get; set; }
+        public int Tier { get; set; }
 	}
 }

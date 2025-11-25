@@ -1602,12 +1602,11 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 					}
 				}
 
-				string busqueda = "SELECT @Valor FROM AspNetUsers WHERE id=@Id";
+				string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id";
 
 				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 				{
 					comando.Parameters.AddWithValue("@Id", usuarioId);
-					comando.Parameters.AddWithValue("@Valor", valor);
 
 					using (SqlDataReader lector = comando.ExecuteReader())
 					{
