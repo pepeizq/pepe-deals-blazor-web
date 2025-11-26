@@ -1,4 +1,6 @@
-﻿@mensaje
+﻿@attribute [StreamRendering(true)]
+
+@mensaje
 
 @code {
 
@@ -15,7 +17,7 @@
 
     public string mensaje = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool primerRender)
+    protected override async Task OnInitializedAsync()
     {
         if (fechaDetectado != null)
         {

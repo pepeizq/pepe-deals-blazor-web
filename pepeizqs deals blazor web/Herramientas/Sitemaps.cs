@@ -197,6 +197,13 @@ namespace Herramientas
 
 			sb.Append(textoNoticias);
 
+			string textoActualizaciones = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/last-updates/</loc>" + Environment.NewLine +
+					"<changefreq>weekly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoActualizaciones);
+
 			string textoAñadidos = "<url>" + Environment.NewLine +
 					"<loc>https://" + dominio + "/last-added/</loc>" + Environment.NewLine +
 					"<changefreq>hourly</changefreq>" + Environment.NewLine +

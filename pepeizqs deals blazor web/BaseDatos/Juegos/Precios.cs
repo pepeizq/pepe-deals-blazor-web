@@ -209,7 +209,17 @@ namespace BaseDatos.Juegos
 
 										if (string.IsNullOrEmpty(tempValoracionReseñas) == false)
                                         {
-											int valoracionReseñas = int.Parse(tempValoracionReseñas);
+											int valoracionReseñas = 0;
+
+                                            try
+                                            {
+                                                valoracionReseñas = int.Parse(tempValoracionReseñas);
+											}
+                                            catch
+                                            {
+                                                BaseDatos.Errores.Insertar.Mensaje("Error al convertir la valoración de reseñas a número entero", new Exception($"Juego ID: {id}, Valoración Reseñas: {tempValoracionReseñas}"));
+												valoracionReseñas = 0;
+											}
 
 											if (nuevaOferta.Tienda.ToLower() == "steam" && cantidadReseñas > 10000 && valoracionReseñas > 60)
 											{

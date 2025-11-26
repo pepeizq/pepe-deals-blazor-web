@@ -59,8 +59,6 @@ namespace Tareas
 								{
 									if (juego.PrecioMinimosHistoricos?.Count > 0)
 									{
-										List<JuegoPrecio> historicosFinales = new List<JuegoPrecio>();
-
 										foreach (var historico in juego.PrecioMinimosHistoricos)
 										{
 											if (Herramientas.OfertaActiva.Verificar(historico) == true)

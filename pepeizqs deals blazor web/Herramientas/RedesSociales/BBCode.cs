@@ -562,8 +562,7 @@ namespace Herramientas.RedesSociales
 			double valorTier = 1;
             valorTier = valorTier + (juego.Tier * 0.5);
 
-			// Junto todo tomando como base las reseñas y quitando peso en función de los bundles en los que ha estado
-
+            // Junto todo tomando como base las reseñas y quitando peso en función de los bundles en los que ha estado
 			return (juego.NumeroReseñas / (double)(juego.NumeroBundles + 1)) * (valorFecha + valorTier);
 		}
 	}

@@ -215,6 +215,18 @@
 			}
 		</script>
 	}
+	else if (tipo == Tipo.UltimasActualizaciones)
+	{
+		<script type="application/ld+json">
+			{
+				"@@context": "https://schema.org",
+				"@@type": "BreadcrumbList",
+				"itemListElement": [
+				@((MarkupString)contenidoJsonUltimasActualizaciones)
+				]
+			}
+		</script>
+	}
 
 	@if (tipo != Tipo.Noticia)
 	{
@@ -418,6 +430,13 @@
 
 	#endregion
 
+	#region Parametros Ultimas Actualizaciones
+
+	[Parameter]
+	public string contenidoJsonUltimasActualizaciones { get; set; }
+
+	#endregion
+
 	[PersistentState] public string titulo { get; set; }
 	[PersistentState] public string descripcion { get; set; }
 	[PersistentState] public string imagen { get; set; }
@@ -448,7 +467,8 @@
 		RSS,
 		Suscripciones,
 		UltimasNoticias,
-		UltimosAñadidos
+		UltimosAñadidos,
+		UltimasActualizaciones
 	}
 
 	protected override void OnInitialized()
@@ -647,6 +667,14 @@
 			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "LastAdded");
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String1", "LastAdded");
 			enlace ??= "https://" + dominio + "/last-added/";
+			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
+			keywords2 ??= keywords;
+		}
+		else if (tipo == Tipo.UltimasActualizaciones)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "LastUpdates");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String1", "LastUpdates");
+			enlace ??= "https://" + dominio + "/last-news/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywords;
 		}

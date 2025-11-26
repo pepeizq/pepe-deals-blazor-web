@@ -1,0 +1,139 @@
+﻿@page "/last-updates"
+
+@using pepeizqs_deals_blazor_web.Componentes.Interfaz
+
+@inject IHttpContextAccessor Contexto
+
+@{
+	string keywords = "updates";
+	string jsonContenido = string.Empty;
+
+	if (noticiasMostrar?.Count > 0)
+	{
+		int i = 0;
+		foreach (var noticiaMostrar in noticiasMostrar)
+		{
+			if (i < 3)
+			{
+				string[] keywordsEnBruto = Herramientas.Buscador.LimpiarNombre(noticiaMostrar.TituloEn, false).Split(' ');
+				List<string> keywordsLista = new List<string>();
+				keywordsLista.AddRange(keywordsEnBruto);
+
+				foreach (var keyword in keywordsLista)
+				{
+					if (keywords.Contains(keyword) == false && keyword.Length > 3)
+					{
+						keywords = keywords + ", " + keyword;
+					}
+				}
+			}
+
+			string jsonAñadir = @"{
+				""@type"": ""ListItem"",
+				""position"": @posicion,
+				""name"": ""@titulo"",
+				""item"": ""@enlace""
+				}";
+
+			jsonAñadir = jsonAñadir.Replace("@posicion", i.ToString());
+			jsonAñadir = jsonAñadir.Replace("@titulo", noticiaMostrar.TituloEn);
+			jsonAñadir = jsonAñadir.Replace("@enlace", "https://" + dominio + "/news/" + noticiaMostrar.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(noticiaMostrar.TituloEn + "/"));
+
+			if (i < noticiasMostrar.Count - 1)
+			{
+				jsonAñadir = jsonAñadir + ",";
+			}
+
+			jsonContenido = jsonContenido + jsonAñadir;
+
+			i += 1;
+		}
+	}
+
+	<Titulo tipo="@Titulo.Tipo.UltimasActualizaciones" idioma="@idioma" dominio="@dominio" keywords="@keywords" contenidoJsonUltimasActualizaciones="@jsonContenido"/>
+}
+
+<style>
+	.caja-noticia-contenido {
+		background-color: var(--fondoSubsubcabecera);
+		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+	}
+
+	.caja-archivo-titulo {
+		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+		padding: 20px 30px;
+		border: 1px solid var(--fondoSubsubcabecera);
+	}
+</style>
+
+@if (noticiasMostrar?.Count > 0)
+{
+	<div class="subcabecera">
+		<div class="cuerpo-ancho sub-subcabecera" style="height: 70px;">
+			<h1 style="font-size: 18px; margin: 0px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "LastUpdates")
+			</h1>
+		</div>
+	</div>
+
+
+	<div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 40px; margin-top: 40px; margin-bottom: 40px;">
+		<div class="caja-noticia-contenido" style="padding: 20px 30px; display: flex; align-items: center; gap: 30px;">
+			<div style="min-width: 30px; min-height: 30px;">
+				<svg style="fill: var(--colorTexto);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+					<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+				</svg>
+			</div>
+
+			<div>
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "LastUpdates")
+			</div>
+		</div>
+
+		@foreach (var noticia in noticiasMostrar)
+		{
+			<a href="/news/@noticia.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticia.TituloEn, noticia.TituloEs))/" class="boton-pequeño" style="text-decoration: none;">
+				<div style="padding: 20px 30px; display: flex; align-items: center; gap: 30px;">
+					<div style="font-size: 18px;">
+						@Herramientas.Idiomas.ElegirTexto(idioma, noticia.TituloEn, noticia.TituloEs)
+					</div>
+
+					<div style="margin-left: auto; text-align: right;">
+						<div>
+                            @noticia.FechaEmpieza.ToString("dd/MM/yyyy")
+						</div>
+
+						<div style="font-size: 14px; margin-top: 5px;">
+							<MensajeTiempo fechaDetectado="@noticia.FechaEmpieza" idioma="@idioma" />
+						</div>
+					</div>
+				</div>
+			</a>
+		}
+	</div>
+}
+
+@code {
+
+	#nullable disable
+
+	private string idioma = "en";
+	private string usuarioId = null;
+	private string userAgent = null;
+	private string dominio = null;
+
+	[PersistentState] public List<Noticias.Noticia> noticiasMostrar { get; set; }
+
+	protected override void OnInitialized()
+	{
+		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+		idioma = datos.Idioma;
+		usuarioId = datos.UsuarioId;
+		userAgent = datos.UserAgent;
+        dominio = datos.Dominio;
+
+		//--------------------------------------------------------------------
+
+		noticiasMostrar ??= BaseDatos.Noticias.Buscar.Ultimas(50, Noticias.NoticiaTipo.Web);
+	}
+}

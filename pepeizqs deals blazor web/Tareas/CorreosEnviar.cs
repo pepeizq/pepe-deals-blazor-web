@@ -123,15 +123,15 @@ namespace Tareas
 											{
 												if (correosDeseadosBundleFinal.Any(c => c.CorreoHacia == pendiente.CorreoHacia) == false)
 												{
-													CorreoDeseadoBundleFinal correoMinimoFinal = new CorreoDeseadoBundleFinal()
+													CorreoDeseadoBundleFinal correoDeseadoFinal = new CorreoDeseadoBundleFinal()
 													{
 														CorreoHacia = pendiente.CorreoHacia,
 														Jsons = new List<CorreoDeseadoBundleJson>(),
 														HoraOriginal = pendiente.Fecha
 													};
 
-													correoMinimoFinal.Jsons.AddRange(JsonSerializer.Deserialize<List<CorreoDeseadoBundleJson>>(pendiente.Json));
-													correosDeseadosBundleFinal.Add(correoMinimoFinal);
+													correoDeseadoFinal.Jsons.AddRange(JsonSerializer.Deserialize<List<CorreoDeseadoBundleJson>>(pendiente.Json));
+													correosDeseadosBundleFinal.Add(correoDeseadoFinal);
 												}
 												else
 												{
@@ -203,7 +203,7 @@ namespace Tareas
 
 											foreach (var pendiente2 in pendientes.ToList())
 											{
-												if (pendiente2.CorreoHacia == correoDeseadoBundle.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
+												if (pendiente2.CorreoHacia == correoDeseadoBundle.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle))
 												{
 													BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id, conexion);
 												}
