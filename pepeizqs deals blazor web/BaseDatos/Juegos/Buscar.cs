@@ -1104,7 +1104,7 @@ namespace BaseDatos.Juegos
 			return null;
 		}
 
-		public static List<Juego> Nombre(string nombre, SqlConnection conexion, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false)
+		public static List<Juego> Nombre(string nombre, SqlConnection conexion, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)
 		{
 			List<Juego> juegos = null;
 
@@ -1200,6 +1200,11 @@ namespace BaseDatos.Juegos
 				if (string.IsNullOrEmpty(busqueda) == false)
 				{
 					busqueda = busqueda + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
+				}
+
+				if (prioridad == true)
+				{
+					busqueda = busqueda + " OPTION (MAXDOP 8);";
 				}
 
 				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
@@ -1712,7 +1717,7 @@ namespace BaseDatos.Juegos
 
 			int cantidad = 0;
 
-			string busqueda = "SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL AND tipo='1') OR (maestro='no' AND tipo='1') OR (maestro IS NULL AND tipo='3') OR (maestro='no' AND tipo='3')";
+			string busqueda = "SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL AND tipo='1') OR (maestro='no' AND tipo='1') OR (maestro IS NULL AND tipo='3') OR (maestro='no' AND tipo='3') OPTION (MAXDOP 8);";
 
 			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 			{

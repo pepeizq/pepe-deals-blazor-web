@@ -260,7 +260,7 @@
                             </div>
 
                             <div class="admin-busqueda-juego-derecha">
-                                <button @onclick="@(e => ClickearBorrarPendientes(e, juego.Id.ToString()))" class="boton-pequeño-peligro" style="background-color: var(--fondoPeligro);">Borrar</button>
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, juego.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro);">Borrar</button>
                             </div>
                         </div>
                     }
@@ -299,7 +299,7 @@
                             </div>
 
                             <div class="admin-busqueda-juego-derecha">
-                                <button @onclick="@(e => ClickearBorrarPendientes(e, dlc.Id.ToString()))" class="boton-pequeño-peligro" style="background-color: var(--fondoPeligro);">Borrar</button>
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, dlc.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro);">Borrar</button>
                             </div>
                         </div>
                     }
@@ -338,7 +338,7 @@
                             </div>
 
                             <div class="admin-busqueda-juego-derecha">
-                                <button @onclick="@(e => ClickearBorrarPendientes(e, bandaSonora.Id.ToString()))" class="boton-pequeño-peligro" style="background-color: var(--fondoPeligro);">Borrar</button>
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, bandaSonora.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro);">Borrar</button>
                             </div>
                         </div>
                     }
@@ -377,7 +377,7 @@
                             </div>
 
                             <div class="admin-busqueda-juego-derecha">
-                                <button @onclick="@(e => ClickearBorrarPendientes(e, software.Id.ToString()))" class="boton-pequeño-peligro" style="background-color: var(--fondoPeligro);">Borrar</button>
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, software.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro);">Borrar</button>
                             </div>
                         </div>
                     }
@@ -971,7 +971,7 @@
         {
             if (textoBuscador.Trim().Length > 2)
             {
-                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true);
+                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true, true);
 
                 if (resultados.Count > 0)
                 {

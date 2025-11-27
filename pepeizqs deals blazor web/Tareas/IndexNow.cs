@@ -135,8 +135,8 @@ namespace Tareas
                                         {
                                             string peticionBing = @"{
                       ""host"": ""pepe.deals"",
-                      ""key"": ""732aae09f61d44d697d4bcd931ff2051"",
-                      ""keyLocation"": ""https://pepe.deals/732aae09f61d44d697d4bcd931ff2051.txt"",
+                      ""key"": ""fe53dc4ecd644e32bc89b3c73ac45940"",
+                      ""keyLocation"": ""https://pepe.deals/fe53dc4ecd644e32bc89b3c73ac45940.txt"",
                       ""urlList"": [";
                                             peticionBing = peticionBing + peticionJuegos + ", ";
 											peticionBing = peticionBing + peticionBundles + ", ";

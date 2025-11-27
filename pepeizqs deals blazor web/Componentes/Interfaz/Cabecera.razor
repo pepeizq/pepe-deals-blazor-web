@@ -669,7 +669,7 @@
 
         bool usuarioLogeado = string.IsNullOrEmpty(usuarioId) == false;
 
-        return BaseDatos.Juegos.Buscar.Nombre(texto, conexion, 10, false, -1, usuarioLogeado).ToList();
+        return BaseDatos.Juegos.Buscar.Nombre(texto, conexion, 10, false, -1, usuarioLogeado, true).ToList();
     }
 
     private void LimpiarBusqueda(MouseEventArgs e)

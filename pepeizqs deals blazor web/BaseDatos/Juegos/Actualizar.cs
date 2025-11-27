@@ -215,6 +215,8 @@ namespace BaseDatos.Juegos
 
 			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
 			{
+				comando.CommandTimeout = 120;
+
 				comando.Parameters.AddWithValue("@id", id);
 				comando.Parameters.AddWithValue("@precioActualesTiendas", JsonSerializer.Serialize(ofertasActuales));
                 comando.Parameters.AddWithValue("@precioMinimosHistoricos", JsonSerializer.Serialize(ofertasHistoricas));

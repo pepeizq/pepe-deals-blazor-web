@@ -161,7 +161,7 @@ else
         {
             if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
             {
-                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true);
+                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true, true);
 
                 if (resultados.Count > 0)
                 {

@@ -72,19 +72,33 @@ namespace BaseDatos.Pendientes
 
 			using (conexion)
 			{
-                foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+				string busqueda = null;
+
+				foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
                 {
                     if (tienda.Id != "steam")
                     {
-                        string busqueda = "SELECT COUNT(*) FROM tienda" + tienda.Id + " WHERE (idJuegos='0' AND descartado='no')";
-
-                        using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                        {
-							cantidad = cantidad + (int)comando.ExecuteScalar();
+						if (string.IsNullOrEmpty(busqueda) == true)
+						{
+							busqueda = "SELECT COUNT(*) FROM tienda" + tienda.Id + " WHERE (idJuegos='0' AND descartado='no')";
+						}
+						else
+						{
+							busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM tienda" + tienda.Id + " WHERE (idJuegos='0' AND descartado='no')";
 						}
                     }
                 }
-            }
+
+				if (string.IsNullOrEmpty(busqueda) == false)
+				{
+					busqueda = busqueda + " OPTION (MAXDOP 8);";
+				}
+
+				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				{
+					cantidad = cantidad + (int)comando.ExecuteScalar();
+				}
+			}
 
             return cantidad;
         }
@@ -107,17 +121,31 @@ namespace BaseDatos.Pendientes
 
 			using (conexion)
 			{
+				string busqueda = null;
+
 				foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
 				{
 					if (suscripcion.AdminPendientes == true)
 					{
-						string busqueda = "SELECT COUNT(*) FROM temporal" + suscripcion.Id.ToString();
-
-						using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+						if (string.IsNullOrEmpty(busqueda) == true)
 						{
-							cantidad = cantidad + (int)comando.ExecuteScalar();
+							busqueda = "SELECT COUNT(*) FROM temporal" + suscripcion.Id.ToString();
+						}
+						else
+						{
+							busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM temporal" + suscripcion.Id.ToString();
 						}
 					}
+				}
+
+				if (string.IsNullOrEmpty(busqueda) == false)
+				{
+					busqueda = busqueda + " OPTION (MAXDOP 8);";
+				}
+
+				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				{
+					cantidad = cantidad + (int)comando.ExecuteScalar();
 				}
 			}
 
@@ -142,16 +170,30 @@ namespace BaseDatos.Pendientes
 
 			using (conexion)
 			{
-                foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
-				{
-                    string busqueda = "SELECT COUNT(*) FROM streaming" + streaming.Id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
+				string busqueda = null;
 
-					using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+				{
+					if (string.IsNullOrEmpty(busqueda) == true)
 					{
-						cantidad = cantidad + (int)comando.ExecuteScalar();
+						busqueda = "SELECT COUNT(*) FROM streaming" + streaming.Id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
 					}
-				} 
-            }
+					else
+					{
+						busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM streaming" + streaming.Id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
+					}
+				}
+
+				if (string.IsNullOrEmpty(busqueda) == false)
+				{
+					busqueda = busqueda + " OPTION (MAXDOP 8);";
+				}
+
+				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				{
+					cantidad = cantidad + (int)comando.ExecuteScalar();
+				}
+			}
 
 			return cantidad;
 		}
@@ -172,21 +214,50 @@ namespace BaseDatos.Pendientes
 
 			int cantidad = 0;
 
-            foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
-            {
-                string busqueda = "SELECT COUNT(*) FROM temporal" + plataforma.Id + "juegos";
+			using (conexion)
+			{
+				string busqueda = null;
+
+				foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
+				{
+					if (string.IsNullOrEmpty(busqueda) == true)
+					{
+						busqueda = "SELECT COUNT(*) FROM temporal" + plataforma.Id + "juegos";
+					}
+					else
+					{
+						busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM temporal" + plataforma.Id + "juegos";
+					}
+				}
+
+				if (string.IsNullOrEmpty(busqueda) == false)
+				{
+					busqueda = busqueda + " OPTION (MAXDOP 8);";
+				}
 
 				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 				{
 					cantidad = cantidad + (int)comando.ExecuteScalar();
 				}
-			}
+			}		
 
 			return cantidad;
 		}
 
-		public static List<Pendiente> Tienda(string tiendaId, SqlConnection conexion)
+		public static List<Pendiente> Tienda(string tiendaId, SqlConnection conexion = null)
         {
+			if (conexion == null)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+			else
+			{
+				if (conexion.State != System.Data.ConnectionState.Open)
+				{
+					conexion = Herramientas.BaseDatos.Conectar();
+				}
+			}
+
 			List<Pendiente> listaPendientes = new List<Pendiente>();
 
 			string busqueda = "SELECT * FROM tienda" + tiendaId + " WHERE (idJuegos='0' AND descartado='no')";
@@ -197,7 +268,7 @@ namespace BaseDatos.Pendientes
 
 				using (lector)
 				{
-					while (lector.Read())
+					while (lector.Read() == true)
 					{
 						Pendiente pendiente = new Pendiente
 						{

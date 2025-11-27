@@ -22,6 +22,11 @@ namespace BaseDatos.Juegos
                 }
             }
 
+			if (string.IsNullOrEmpty(juego.Nombre) == true)
+			{
+				return;
+			}
+
             string añadirBundles1 = null;
 			string añadirBundles2 = null;
 

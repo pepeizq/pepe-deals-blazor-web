@@ -1827,7 +1827,7 @@
 
                                                         <div class="juego-descuento-precio">
                                                             <div class="juego-hacetiempo" style="font-size: 14px; margin: 20px;">
-                                                                <MensajeTiempo fechaDetectado="@precio.FechaDetectado" idioma="@idioma" />
+                                                                @Herramientas.Calculadora.DiferenciaTiempo(precio.FechaDetectado, idioma, 0)
                                                             </div>
 
                                                             <div class="juego-descuento" style="width: 75px; text-align: center;">
@@ -1974,7 +1974,7 @@
 
                                                                 <div class="juego-descuento-precio">
                                                                     <div class="juego-hacetiempo" style="font-size: 14px; margin: 20px;">
-                                                                        <MensajeTiempo fechaDetectado="@precioBajo.FechaDetectado" idioma="@idioma" />
+                                                                        @Herramientas.Calculadora.DiferenciaTiempo(precioBajo.FechaDetectado, idioma, 0)
                                                                     </div>
 
                                                                     <div class="juego-descuento" style="width: 75px; text-align: center;">
@@ -2053,7 +2053,7 @@
                                                     <div style="margin-right: 20px;">
                                                         <div>@bundle3.NombreBundle • @bundle3.NombreTienda</div>
                                                         <div style="font-size: 13px;">
-                                                            <MensajeTiempo fechaDetectado="@bundle3.FechaTermina" idioma="@idioma" modo="1"/>
+                                                            @Herramientas.Calculadora.DiferenciaTiempo(bundle3.FechaTermina, idioma, 1)
                                                         </div>
                                                     </div>
 
@@ -2097,7 +2097,7 @@
                                                 <div style="margin-right: 20px;">
                                                     <div style="cursor: pointer;">@bundle3.NombreBundle • @bundle3.NombreTienda</div>
                                                     <div style="font-size: 13px; cursor: pointer;">
-                                                        <MensajeTiempo fechaDetectado="@bundle3.FechaTermina" idioma="@idioma"/>
+                                                        @Herramientas.Calculadora.DiferenciaTiempo(bundle3.FechaTermina, idioma, 0)
                                                     </div>
                                                 </div>
 
@@ -2190,7 +2190,7 @@
                                             <div style="min-width: 150px;">
                                                 <label>@GratisCargar.DevolverGratis(gratis2.Tipo).Nombre</label><br />
                                                 <label style="font-size: 13px;">
-                                                    <MensajeTiempo fechaDetectado="@gratis2.FechaTermina" idioma="@idioma"/>
+                                                    @Herramientas.Calculadora.DiferenciaTiempo(gratis2.FechaTermina, idioma, 0)
                                                 </label>
                                             </div>
 
@@ -2261,7 +2261,7 @@
 
                                                 @if (suscripcionUsar.ParaSiempre == true)
                                                 {
-                                                    <div style="font-size: 14px; margin-top: 5px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String70", "Game") (<MensajeTiempo fechaDetectado="@suscripcion2.FechaTermina" idioma="@idioma" modo="1"/>).</div>
+                                                    <div style="font-size: 14px; margin-top: 5px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String70", "Game") (@Herramientas.Calculadora.DiferenciaTiempo(suscripcion2.FechaTermina, idioma, 1)).</div>
                                                 }
                                                 else
                                                 {
@@ -2304,7 +2304,7 @@
                                                 <div style="min-width: 150px;">
                                                     <label>@SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).Nombre</label><br />
                                                     <label style="font-size: 13px;">
-                                                        <MensajeTiempo fechaDetectado="@suscripcion2.FechaTermina" idioma="@idioma"/>
+                                                        @Herramientas.Calculadora.DiferenciaTiempo(suscripcion2.FechaTermina, idioma, 0)
                                                     </label>
                                                 </div>
 
@@ -2428,7 +2428,7 @@
                                         }
                                         else
                                         {
-                                            <label>@juego.Caracteristicas.FechaLanzamientoSteam.Day/@juego.Caracteristicas.FechaLanzamientoSteam.Month/@juego.Caracteristicas.FechaLanzamientoSteam.Year (<MensajeTiempo fechaDetectado="@juego.Caracteristicas.FechaLanzamientoSteam" idioma="@idioma"/>)</label>
+                                            <label>@juego.Caracteristicas.FechaLanzamientoSteam.Day/@juego.Caracteristicas.FechaLanzamientoSteam.Month/@juego.Caracteristicas.FechaLanzamientoSteam.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.Caracteristicas.FechaLanzamientoSteam, idioma, 0))</label>
                                         }
                                     </div>
                                 }
@@ -2444,7 +2444,7 @@
                                         }
                                         else
                                         {
-                                            <label>@juego.GalaxyGOG?.FechaLanzamiento.Day/@juego.GalaxyGOG?.FechaLanzamiento.Month/@juego.GalaxyGOG?.FechaLanzamiento.Year (<MensajeTiempo fechaDetectado="@juego.GalaxyGOG?.FechaLanzamiento" idioma="@idioma"/>)</label>
+                                            <label>@juego.GalaxyGOG?.FechaLanzamiento.Day/@juego.GalaxyGOG?.FechaLanzamiento.Month/@juego.GalaxyGOG?.FechaLanzamiento.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.GalaxyGOG?.FechaLanzamiento, idioma, 0))</label>
                                         }  
                                     </div>
                                 }
@@ -2465,7 +2465,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <img src="@Juegos.JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" alt="Steam"  />
 
-                                        <label>@juego.UltimaActualizacionSteam.Value.Day/@juego.UltimaActualizacionSteam.Value.Month/@juego.UltimaActualizacionSteam.Value.Year (<MensajeTiempo fechaDetectado="@juego.UltimaActualizacionSteam.Value" idioma="@idioma"/>)</label>
+                                        <label>@juego.UltimaActualizacionSteam.Value.Day/@juego.UltimaActualizacionSteam.Value.Month/@juego.UltimaActualizacionSteam.Value.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.UltimaActualizacionSteam.Value, idioma, 0))</label>
                                     </div>
                                 }
 
@@ -2474,7 +2474,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <img src="@Juegos.JuegoDRM2.SacarImagen(JuegoDRM.GOG)" style="max-width: 20px; max-height: 20px;" alt="GOG"  />
 
-                                        <label>@juego.UltimaActualizacionGOG.Value.Day/@juego.UltimaActualizacionGOG.Value.Month/@juego.UltimaActualizacionGOG.Value.Year (<MensajeTiempo fechaDetectado="@juego.UltimaActualizacionGOG.Value" idioma="@idioma"/>)</label>
+                                        <label>@juego.UltimaActualizacionGOG.Value.Day/@juego.UltimaActualizacionGOG.Value.Month/@juego.UltimaActualizacionGOG.Value.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.UltimaActualizacionGOG.Value, idioma, 0))</label>
                                     </div>
                                 }
                             </div>

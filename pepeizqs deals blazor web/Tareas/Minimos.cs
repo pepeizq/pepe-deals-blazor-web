@@ -6,13 +6,12 @@ using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
-    public class MinimoListado
-    {
-        public Juego Juego { get; set; }
-        public JuegoPrecio Historico { get; set; }
-    }
+	public class JuegoMinimoTarea : Juego
+	{
+		public JuegoDRM DRMElegido { get; set; }
+	}
 
-    public class Minimos : BackgroundService
+	public class Minimos : BackgroundService
     {
         private readonly ILogger<Minimos> _logger;
         private readonly IServiceScopeFactory _factoria;
@@ -49,63 +48,21 @@ namespace Tareas
                     {
                         try
                         {
-							List<Juego> juegos = BaseDatos.Portada.Buscar.BuscarMinimos(conexion);
+							List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos(conexion);
 
 							if (juegos?.Count > 0)
 							{
-								List<MinimoListado> juegosConMinimos = new List<MinimoListado>();
+								BaseDatos.Portada.Limpiar.Total();
 
 								foreach (var juego in juegos)
 								{
+									juego.IdMaestra = juego.Id;
+									juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido && Herramientas.OfertaActiva.Verificar(x) == true).ToList();
+
 									if (juego.PrecioMinimosHistoricos?.Count > 0)
 									{
-										foreach (var historico in juego.PrecioMinimosHistoricos)
-										{
-											if (Herramientas.OfertaActiva.Verificar(historico) == true)
-											{
-												bool añadir = true;
-
-												if (historico.DRM == JuegoDRM.NoEspecificado)
-												{
-													añadir = false;
-												}
-
-												if (añadir == true)
-												{
-													MinimoListado minimoListado = new MinimoListado();
-													minimoListado.Juego = juego;
-													minimoListado.Juego.IdMaestra = juego.Id;
-													minimoListado.Historico = historico;
-
-													juegosConMinimos.Add(minimoListado);
-												}
-											}
-											else
-											{
-												BaseDatos.Portada.Limpiar.JuegoNoActivo(juego.Id, historico.DRM, historico.Tienda);
-											}
-										}
-									}
-								}
-
-								if (juegosConMinimos?.Count > 0)
-								{
-									BaseDatos.Portada.Limpiar.Total();
-
-									foreach (var minimo in juegosConMinimos)
-									{
-										try
-										{
-											Juego juegoMinimoFinal = minimo.Juego;
-											juegoMinimoFinal.PrecioMinimosHistoricos = [minimo.Historico];
-
-											BaseDatos.Juegos.Insertar.Ejecutar(juegoMinimoFinal, conexion, "seccionMinimos", true);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje("Seccion Minimos " + minimo.Juego.Nombre, ex);
-										}
-									}
+										BaseDatos.Juegos.Insertar.Ejecutar(juego, conexion, "seccionMinimos", false);
+									}									
 								}
 							}
 						}

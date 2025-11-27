@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using Juegos;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Portada
@@ -21,38 +20,23 @@ namespace BaseDatos.Portada
                 }
             }
 
-            string limpiar = @"DELETE FROM seccionMinimos WHERE ultimaModificacion > DATEADD(hour, -24, GETDATE()) 
-                                OR (mayorEdad = 'true' AND mayorEdad IS NOT NULL) 
-                                OR (freeToPlay = 'true' AND freeToPlay IS NOT NULL)";
+            string limpiar = @"DELETE sm
+FROM seccionMinimos sm
+CROSS APPLY OPENJSON(sm.PrecioMinimosHistoricos)
+WITH (
+    FechaActualizacion DATETIME2 '$.FechaActualizacion',
+    Tienda NVARCHAR(50) '$.Tienda'
+) AS pmh
+WHERE
+    NOT (
+        (pmh.Tienda IN ('steam', 'steambundles') AND pmh.FechaActualizacion >= DATEADD(hour, -24, GETDATE())) OR
+        (pmh.Tienda IN ('humblestore', 'humblechoice') AND pmh.FechaActualizacion >= DATEADD(hour, -25, GETDATE())) OR
+        (pmh.Tienda = 'epicgamesstore' AND pmh.FechaActualizacion >= DATEADD(hour, -48, GETDATE())) OR
+        (pmh.FechaActualizacion >= DATEADD(hour, -12, GETDATE()))
+    );";
 
 			using (SqlCommand comando = new SqlCommand(limpiar, conexion))
 			{
-				comando.ExecuteNonQuery();
-			}
-		}
-
-		public static void JuegoNoActivo(int id, JuegoDRM drm, string tienda, SqlConnection conexion = null)
-        {
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string limpiar = @"DELETE FROM seccionMinimos WHERE idMaestra=@id AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')=@drm AND JSON_VALUE(precioMinimosHistoricos, '$[0].Tienda')=@tienda";
-
-			using (SqlCommand comando = new SqlCommand(limpiar, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@drm", drm);
-				comando.Parameters.AddWithValue("@tienda", tienda);
-
 				comando.ExecuteNonQuery();
 			}
 		}

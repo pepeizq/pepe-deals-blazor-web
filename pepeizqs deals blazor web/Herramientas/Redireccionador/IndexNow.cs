@@ -5,10 +5,10 @@ namespace Herramientas.Redireccionador
 
 	public class IndexNow : Controller
 	{
-        [HttpGet("732aae09f61d44d697d4bcd931ff2051 .txt")]
+        [HttpGet("fe53dc4ecd644e32bc89b3c73ac45940.txt")]
         public IActionResult Bing()
         {
-            return Ok("732aae09f61d44d697d4bcd931ff2051 ");
+            return Ok("fe53dc4ecd644e32bc89b3c73ac45940");
         }
 	}
 }

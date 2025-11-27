@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <None Remove="APIs\Steam\Juego.cs~RF2b23164.TMP" />
+    <None Remove="Herramientas\Redireccionador\IndexNow.cs~RF14dd761.TMP" />
   </ItemGroup>
 
   <ItemGroup>

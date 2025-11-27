@@ -268,12 +268,17 @@ namespace Herramientas
 
 							if (juego.Analisis != null)
 							{
-								nuevoDeseado.ReseñasPorcentaje = juego.Analisis.Porcentaje.Replace("%", null);
-								nuevoDeseado.ReseñasCantidad = juego.Analisis.Cantidad.Replace(",", null);
+								nuevoDeseado.ReseñasPorcentaje = juego.Analisis?.Porcentaje?.Replace("%", null);
+								nuevoDeseado.ReseñasCantidad = juego.Analisis?.Cantidad?.Replace(",", null);
 							}
-							else
+
+							if (string.IsNullOrEmpty(nuevoDeseado.ReseñasPorcentaje) == true)
 							{
 								nuevoDeseado.ReseñasPorcentaje = "0";
+							}
+
+							if (string.IsNullOrEmpty(nuevoDeseado.ReseñasCantidad) == true)
+							{
 								nuevoDeseado.ReseñasCantidad = "0";
 							}
 

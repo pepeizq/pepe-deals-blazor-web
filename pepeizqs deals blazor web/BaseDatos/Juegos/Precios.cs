@@ -199,7 +199,17 @@ namespace BaseDatos.Juegos
                                     string tempCantidadReseñas = reseñas?.Cantidad;
                                     tempCantidadReseñas = tempCantidadReseñas?.Replace(",", "").Replace(".", "").Replace(" ", "").Trim();
 
-                                    int cantidadReseñas = int.Parse(tempCantidadReseñas);
+                                    int cantidadReseñas = 0;
+
+                                    try
+                                    {
+                                        cantidadReseñas = int.Parse(tempCantidadReseñas);
+									}
+                                    catch
+                                    {
+										BaseDatos.Errores.Insertar.Mensaje("Error al convertir la cantidad de reseñas a número entero", new Exception($"Juego ID: {id}, Cantidad Reseñas: {tempCantidadReseñas}"));
+										cantidadReseñas = 0;
+                                    }
 
                                     string tempValoracionReseñas = reseñas?.Porcentaje;
 

@@ -3,14 +3,15 @@
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
+using Tareas;
 
 namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static List<Juego> BuscarMinimos(SqlConnection conexion = null)
+		public static List<JuegoMinimoTarea> BuscarMinimos(SqlConnection conexion = null)
 		{
-			List<Juego> resultados = new List<Juego>();
+			List<JuegoMinimoTarea> resultados = new List<JuegoMinimoTarea>();
 
 			if (conexion == null)
 			{
@@ -26,15 +27,45 @@ namespace BaseDatos.Portada
 
 			using (conexion)
 			{
-				string busqueda = @"SELECT * FROM juegos
-									WHERE ultimaModificacion >= DATEADD(day, -3, GETDATE()) AND JSON_PATH_EXISTS(analisis, '$.Cantidad') > 0 AND 
-									CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 99 AND 
-									(nombre IS NOT NULL AND LEN(nombre) > 0) AND (imagenes IS NOT NULL) AND
-									((mayorEdad IS NOT NULL AND mayorEdad = 'false') OR (mayorEdad IS NULL)) AND 
-									(freeToPlay = 'false' OR freeToPlay IS NULL)
-									 ORDER BY CASE
-									 WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
-									 END DESC";
+				string busqueda = @"SELECT j.*,
+       pmh.DRM as DRMElegido
+FROM juegos j
+CROSS APPLY OPENJSON(j.PrecioMinimosHistoricos)
+WITH (
+    FechaActualizacion DATETIME2 '$.FechaActualizacion',
+    DRM INT '$.DRM',
+    Tienda NVARCHAR(50) '$.Tienda'
+) AS pmh
+WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
+  AND j.analisis IS NOT NULL
+  AND j.analisis <> 'null'
+  AND ISJSON(j.analisis) = 1
+  AND JSON_VALUE(j.analisis, '$.Cantidad') IS NOT NULL
+  AND TRY_CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'), ',', '')) > 99
+  AND j.nombre IS NOT NULL
+  AND j.imagenes IS NOT NULL
+  AND (j.mayorEdad = 'false' OR j.mayorEdad IS NULL)
+  AND (j.freeToPlay = 'false' OR j.freeToPlay IS NULL)
+  AND j.PrecioMinimosHistoricos IS NOT NULL
+  AND j.PrecioMinimosHistoricos <> 'null'
+  AND ISJSON(j.PrecioMinimosHistoricos) = 1
+  AND pmh.DRM <> 7
+  AND (
+        (pmh.FechaActualizacion <= DATEADD(hour, 24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
+        (pmh.FechaActualizacion <= DATEADD(hour, 25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
+        (pmh.FechaActualizacion <= DATEADD(hour, 48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
+        (pmh.FechaActualizacion <= DATEADD(hour, 12, GETDATE()))    
+      )
+  AND NOT EXISTS (
+        SELECT 1
+        FROM seccionMinimos sm
+        CROSS APPLY OPENJSON(sm.PrecioMinimosHistoricos)
+        WITH (
+            DRM INT '$.DRM'
+        ) AS sm_pmh
+        WHERE sm.idMaestra = j.id
+          AND sm_pmh.DRM = pmh.DRM
+    );";
 
 				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 				{
@@ -42,8 +73,10 @@ namespace BaseDatos.Portada
 					{
 						while (lector.Read())
 						{
-							Juego juego = new Juego();
-							juego = BaseDatos.Juegos.Buscar.Cargar(juego, lector);
+							JuegoMinimoTarea juego = new JuegoMinimoTarea();
+							juego = (JuegoMinimoTarea)BaseDatos.Juegos.Buscar.Cargar(juego, lector);
+
+							juego.DRMElegido = (JuegoDRM)lector.GetInt32(lector.GetOrdinal("DRMElegido"));
 
 							resultados.Add(juego);
 						}

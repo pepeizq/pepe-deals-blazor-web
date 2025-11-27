@@ -205,14 +205,14 @@
 
             using (conexion)
             {
-                nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores(conexion);
+                nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores();
 
                 if (nuevosErroresCantidad > 0)
                 {
                     subpagina = subpaginaErrores;
                 }
 
-                nuevosDuplicadosCantidad = BaseDatos.Admin.Buscar.Dato("duplicados", conexion);
+                nuevosDuplicadosCantidad = BaseDatos.Admin.Buscar.Dato("duplicados");
 
                 if (nuevosDuplicadosCantidad > 0)
                 {
@@ -226,7 +226,7 @@
                     subpagina = subpaginaPendientes;
                 }
 
-                nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad(conexion);
+                nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad();
 
                 if (nuevosDLCsCantidad > 0)
                 {

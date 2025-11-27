@@ -597,7 +597,6 @@
 	</div>	
 }
 
-
 @if (mostrarFiltrado == true)
 {
 	<div class="opciones-panel">
@@ -992,7 +991,7 @@
 		{
 			cronometroContador += 1;
 
-			if (cronometroContador == cronometroLimite || juegosDestacadosMostrar.Count == 0)
+			if (cronometroContador == cronometroLimite || juegosDestacadosMostrar?.Count == 0)
 			{
 				bool tomarSiguiente = false;
 

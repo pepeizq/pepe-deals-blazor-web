@@ -23,7 +23,7 @@ namespace BaseDatos.Admin
 				}
 			}
 
-			string seleccionarDato = "SELECT contenido FROM adminDatos WHERE id=@id";
+			string seleccionarDato = "SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)";
 
 			using (SqlCommand comando = new SqlCommand(seleccionarDato, conexion))
 			{
@@ -333,7 +333,7 @@ namespace BaseDatos.Admin
 				}
 			}
 
-			string seleccionarTarea = "SELECT COUNT(*) FROM errores";
+			string seleccionarTarea = "SELECT COUNT(*) FROM errores  OPTION (MAXDOP 8)";
 
 			using (SqlCommand comando = new SqlCommand(seleccionarTarea, conexion))
 			{
