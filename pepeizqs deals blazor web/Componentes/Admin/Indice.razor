@@ -201,38 +201,33 @@
 
         if (usuarioAdmin == true)
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
+            nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores();
 
-            using (conexion)
+            if (nuevosErroresCantidad > 0)
             {
-                nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores();
+                subpagina = subpaginaErrores;
+            }
 
-                if (nuevosErroresCantidad > 0)
-                {
-                    subpagina = subpaginaErrores;
-                }
+            nuevosDuplicadosCantidad = BaseDatos.Admin.Buscar.Dato("duplicados");
 
-                nuevosDuplicadosCantidad = BaseDatos.Admin.Buscar.Dato("duplicados");
+            if (nuevosDuplicadosCantidad > 0)
+            {
+                subpagina = subpaginaDuplicados;
+            }
 
-                if (nuevosDuplicadosCantidad > 0)
-                {
-                    subpagina = subpaginaDuplicados;
-                }
+            nuevosPendientesCantidad = BaseDatos.Pendientes.Buscar.TiendasCantidad() + BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + BaseDatos.Pendientes.Buscar.StreamingCantidad() + BaseDatos.Pendientes.Buscar.PlataformaCantidad();
 
-                nuevosPendientesCantidad = BaseDatos.Pendientes.Buscar.TiendasCantidad() + BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + BaseDatos.Pendientes.Buscar.StreamingCantidad() + BaseDatos.Pendientes.Buscar.PlataformaCantidad();
+            if (nuevosPendientesCantidad > 0)
+            {
+                subpagina = subpaginaPendientes;
+            }
 
-                if (nuevosPendientesCantidad > 0)
-                {
-                    subpagina = subpaginaPendientes;
-                }
+            nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad();
 
-                nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad();
-
-                if (nuevosDLCsCantidad > 0)
-                {
-                    subpagina = subpaginaDLCs;
-                }
-            }       
+            if (nuevosDLCsCantidad > 0)
+            {
+                subpagina = subpaginaDLCs;
+            }
         }
         else
         {

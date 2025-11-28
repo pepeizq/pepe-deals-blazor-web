@@ -53,7 +53,7 @@ namespace Tareas
 							{
 								BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now, conexion);
 
-								BaseDatos.Analisis.Limpiar.Ejecutar(conexion);
+								BaseDatos.Reseñas.Limpiar.Ejecutar(conexion);
 								BaseDatos.Juegos.Limpiar.Minimos(conexion);
 								BaseDatos.Portapapeles.Borrar.Limpieza(conexion);
 

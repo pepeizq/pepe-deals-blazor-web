@@ -46,7 +46,7 @@ namespace Suscripciones2
 		{
 			foreach (var suscripcion in GenerarListado())
 			{
-				if (suscripcion.Id.ToString() == suscripcionTexto)
+				if (suscripcion.Id.ToString()?.ToLower() == suscripcionTexto?.ToLower())
 				{
 					return suscripcion;
 				}

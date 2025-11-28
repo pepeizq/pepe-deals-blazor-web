@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using APIs.Steam;
+using Dapper;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Data.SqlClient;
 using System.ComponentModel.DataAnnotations;
@@ -11,94 +12,44 @@ namespace BaseDatos.Curators
 {
 	public static class Buscar
 	{
-		public static Curator Cargar(SqlDataReader lector)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			Curator curator = new Curator
-			{
-				Id = lector.GetInt32(0),
-				IdSteam = lector.GetInt32(1),
-				Nombre = lector.GetString(2),
-				Imagen = lector.GetString(3),
-				Descripcion = lector.GetString(4),
-				Slug = lector.GetString(5),
-				SteamIds = JsonSerializer.Deserialize<List<int>>(lector.GetString(6)),
-				Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(lector.GetString(7))
-			};
-
-			if (lector.IsDBNull(8) == false)
-			{
-				curator.ImagenFondo = lector.GetString(8);
-			}
-
-			if (lector.IsDBNull(9) == false)
-			{
-				curator.Fecha = lector.GetDateTime(9);
-			}
-
-			return curator;
-		}
-
-		public static List<Curator> Todos(SqlConnection conexion = null)
-		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 
-			List<Curator> curators = new List<Curator>();
-
-			string busqueda = "SELECT * FROM curators";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read() == true)
-					{
-						curators.Add(Cargar(lector));
-					}
-				}
-			}
-
-			return curators;
+			return conexion;
 		}
 
 		public static Curator Uno(int idSteam, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			var fila = conexion.QueryFirstOrDefault<dynamic>("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }); 
+			
+			if (fila == null)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				return null;
 			}
-			else
+	
+			Curator curator = new Curator
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+				Id = fila.id,
+				IdSteam = fila.idSteam,
+				Nombre = fila.nombre,
+				Imagen = fila.imagen,
+				Descripcion = fila.descripcion,
+				Slug = fila.slug, 
+				SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds), 
+				Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web) 
+			}; 
+			
+			curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
 
-			Curator curator = null;
-
-			string busqueda = "SELECT * FROM curators WHERE idSteam=@idSteam";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+			if (fila.fecha != null)
 			{
-				comando.Parameters.AddWithValue("@idSteam", idSteam);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						curator = Cargar(lector);
-					}
-				}
+				curator.Fecha = (DateTime)fila.fecha;
 			}
 
 			return curator;
@@ -106,33 +57,32 @@ namespace BaseDatos.Curators
 
 		public static Curator Uno(string slug, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			var fila = conexion.QueryFirstOrDefault<dynamic>("SELECT * FROM curators WHERE slug=@slug", new { slug });
+
+			if (fila == null)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				return null;
 			}
 
-			Curator curator = null;
-
-			string busqueda = "SELECT * FROM curators WHERE slug=@slug";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+			Curator curator = new Curator
 			{
-				comando.Parameters.AddWithValue("@slug", slug);
+				Id = fila.id,
+				IdSteam = fila.idSteam,
+				Nombre = fila.nombre,
+				Imagen = fila.imagen,
+				Descripcion = fila.descripcion,
+				Slug = fila.slug,
+				SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
+				Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
+			};
 
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						curator = Cargar(lector);
-					}
-				}
+			curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
+
+			if (fila.fecha != null)
+			{
+				curator.Fecha = (DateTime)fila.fecha;
 			}
 
 			return curator;

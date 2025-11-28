@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
@@ -9,155 +10,14 @@ namespace BaseDatos.Juegos
 {
 	public static class Actualizar
 	{
-		public static void Ejecutar(Juego juego, SqlConnection conexion, bool actualizarAPI = false)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-
-            string añadirSlugGog = null;
-
-			if (string.IsNullOrEmpty(juego.SlugGOG) == false)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
-				añadirSlugGog = ", slugGOG=@slugGOG";
+				conexion = Herramientas.BaseDatos.Conectar();
 			}
 
-            string añadirSlugEpic = null;
-
-            if (string.IsNullOrEmpty(juego.SlugEpic) == false)
-            {
-                añadirSlugEpic = ", slugEpic=@slugEpic";
-            }
-
-            if (actualizarAPI == true)
-			{
-				if (string.IsNullOrEmpty(juego.Maestro) == true)
-				{
-					juego.Maestro = "no";
-				}
-
-				if (string.IsNullOrEmpty(juego.FreeToPlay) == true)
-				{
-					juego.FreeToPlay = "false";
-				}
-			}
-
-			string añadirUltimaModificacion = null;
-
-            if (juego.UltimaModificacion != null)
-            {
-                añadirUltimaModificacion = ", ultimaModificacion=@ultimaModificacion";
-            }
-
-			string añadirEtiquetas = null;
-
-			if (juego.Etiquetas != null)
-			{
-				if (juego.Etiquetas.Count > 0)
-				{
-					añadirEtiquetas = ", etiquetas=@etiquetas";
-				}
-			}
-
-			string añadirDeck = null;
-
-			if (juego.Deck != JuegoDeck.Desconocido)
-			{
-				añadirDeck = ", deck=@deck";
-			}
-
-			string sqlActualizar = "UPDATE juegos " +
-					"SET idSteam=@idSteam, idGog=@idGog, " +
-						"precioMinimosHistoricos=@precioMinimosHistoricos, precioActualesTiendas=@precioActualesTiendas, historicos=@historicos, " +
-                        "nombreCodigo=@nombreCodigo" + añadirUltimaModificacion + añadirEtiquetas + añadirDeck + añadirSlugGog + añadirSlugEpic;
-
-			if (actualizarAPI == true)
-			{
-				sqlActualizar = sqlActualizar + ", nombre=@nombre, tipo=@tipo, fechaSteamAPIComprobacion=@fechaSteamAPIComprobacion, imagenes=@imagenes, caracteristicas=@caracteristicas, media=@media, analisis=@analisis, maestro=@maestro, freeToPlay=@freeToPlay, categorias=@categorias";
-			}
-
-			if (juego.IdSteam > 0)
-			{
-				sqlActualizar = sqlActualizar + " WHERE idSteam=@idSteam";
-			}
-			else
-			{
-				if (juego.IdGog > 0)
-				{
-					sqlActualizar = sqlActualizar + " WHERE idGog=@idGog";
-				}
-				else
-				{
-					sqlActualizar = sqlActualizar + " WHERE id=@id";
-				}
-			}
-
-			if (sqlActualizar.Contains("WHERE id") == true)
-			{
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@idSteam", juego.IdSteam);
-					comando.Parameters.AddWithValue("@idGog", juego.IdGog);
-					comando.Parameters.AddWithValue("@precioMinimosHistoricos", JsonSerializer.Serialize(juego.PrecioMinimosHistoricos));
-					comando.Parameters.AddWithValue("@precioActualesTiendas", JsonSerializer.Serialize(juego.PrecioActualesTiendas));
-					comando.Parameters.AddWithValue("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre));
-					comando.Parameters.AddWithValue("@historicos", JsonSerializer.Serialize(juego.Historicos));
-
-					if (juego.UltimaModificacion != null)
-                    {
-                        comando.Parameters.AddWithValue("@ultimaModificacion", juego.UltimaModificacion);
-                    }
-
-					if (juego.Etiquetas != null)
-					{
-						if (juego.Etiquetas.Count > 0)
-						{
-							comando.Parameters.AddWithValue("@etiquetas", JsonSerializer.Serialize(juego.Etiquetas));
-						}
-					}
-
-					if (juego.Deck != JuegoDeck.Desconocido)
-					{
-						comando.Parameters.AddWithValue("@deck", juego.Deck);
-					}
-
-					if (actualizarAPI == true)
-					{
-						comando.Parameters.AddWithValue("@nombre", juego.Nombre);
-						comando.Parameters.AddWithValue("@tipo", juego.Tipo);
-						comando.Parameters.AddWithValue("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
-						comando.Parameters.AddWithValue("@fechaSteamAPIComprobacion", juego.FechaSteamAPIComprobacion.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"));
-						comando.Parameters.AddWithValue("@analisis", JsonSerializer.Serialize(juego.Analisis));
-						comando.Parameters.AddWithValue("@caracteristicas", JsonSerializer.Serialize(juego.Caracteristicas));
-						comando.Parameters.AddWithValue("@media", JsonSerializer.Serialize(juego.Media));
-						comando.Parameters.AddWithValue("@maestro", juego.Maestro);
-						comando.Parameters.AddWithValue("@freeToPlay", juego.FreeToPlay);
-						comando.Parameters.AddWithValue("@categorias", JsonSerializer.Serialize(juego.Categorias));
-				
-					}
-
-					if (string.IsNullOrEmpty(juego.SlugGOG) == false)
-					{
-						comando.Parameters.AddWithValue("@slugGOG", juego.SlugGOG);
-					}
-
-                    if (string.IsNullOrEmpty(juego.SlugEpic) == false)
-                    {
-                        comando.Parameters.AddWithValue("@slugEpic", juego.SlugEpic);
-                    }
-
-                    try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch (Exception ex)
-					{
-						Errores.Insertar.Mensaje("Actualizar Datos " + juego.Nombre + " " + juego.Id.ToString(), ex);
-					}
-				}
-			}
+			return conexion;
 		}
 
 		public static void Comprobacion(bool cambioPrecio, int id, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, SqlConnection conexion = null, string slugGOG = null, string idGOG = null, string slugEpic = null, DateTime? ultimaModificacion = null, JuegoAnalisis analisis = null)
@@ -1339,38 +1199,19 @@ namespace BaseDatos.Juegos
 
 		public static void CantidadJugadoresSteam(Juego juego, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				conexion.Execute("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					id = juego.Id,
+					cantidadJugadoresSteam = JsonSerializer.Serialize(juego.CantidadJugadores)
+				});
 			}
-
-			using (conexion)
+			catch (Exception ex)
 			{
-				string sqlActualizar = "UPDATE juegos " +
-					"SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@cantidadJugadoresSteam", JsonSerializer.Serialize(juego.CantidadJugadores));
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Cantidad Jugadores " + juego.Id.ToString(), ex);
 			}
 		}
 

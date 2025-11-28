@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
@@ -8,6 +9,16 @@ namespace BaseDatos.Tiendas
 {
 	public static class Comprobar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static async void Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido, SqlConnection conexion = null)
 		{
 			if (conexion == null)
@@ -80,8 +91,8 @@ namespace BaseDatos.Tiendas
 
 									if (actualizarAPI == true)
 									{
-                                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
-                                    }
+										BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+									}
 									else
 									{
 										int id = 0;
@@ -153,32 +164,32 @@ namespace BaseDatos.Tiendas
 							{
 								if (rapido == false)
 								{
-                                    try
-                                    {
-                                        juego = await APIs.Steam.Juego.CargarDatosJuego(idSteam2);
-                                    }
-                                    catch
-                                    {
+									try
+									{
+										juego = await APIs.Steam.Juego.CargarDatosJuego(idSteam2);
+									}
+									catch
+									{
 
-                                    }
+									}
 
-                                    if (juego != null)
-                                    {
-                                        if (juego.PrecioActualesTiendas == null)
-                                        {
-                                            juego.PrecioActualesTiendas = new List<JuegoPrecio>();
-                                            juego.PrecioMinimosHistoricos = new List<JuegoPrecio>();
-                                        }
+									if (juego != null)
+									{
+										if (juego.PrecioActualesTiendas == null)
+										{
+											juego.PrecioActualesTiendas = new List<JuegoPrecio>();
+											juego.PrecioMinimosHistoricos = new List<JuegoPrecio>();
+										}
 
-                                        if (juego.PrecioActualesTiendas.Count == 0)
-                                        {
-                                            juego.PrecioActualesTiendas.Add(oferta);
-                                            juego.PrecioMinimosHistoricos.Add(oferta);
-                                        }
+										if (juego.PrecioActualesTiendas.Count == 0)
+										{
+											juego.PrecioActualesTiendas.Add(oferta);
+											juego.PrecioMinimosHistoricos.Add(oferta);
+										}
 
-                                        Juegos.Insertar.Ejecutar(juego, conexion);
-                                    }
-                                }
+										Juegos.Insertar.Ejecutar(juego, conexion);
+									}
+								}
 							}
 						}
 					}
@@ -186,179 +197,112 @@ namespace BaseDatos.Tiendas
 			}
 		}
 
-		public static void Resto(JuegoPrecio oferta, SqlConnection conexion = null, string idGog = null, string slugGOG = null, string slugEpic = null)
+		public static async void Resto(JuegoPrecio oferta, SqlConnection conexion = null, string idGog = null, string slugGOG = null, string slugEpic = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
 			bool encontrado = false;
 
-			string buscarJuegos = @"DECLARE @ids NVARCHAR(MAX); 
+			string esquema = $"tienda{oferta.Tienda}";
+			string sqlBuscar = $@"
+DECLARE @ids NVARCHAR(MAX);
 
-				SET @ids = (SELECT idJuegos FROM tienda@oferta.Tienda WHERE enlace='@oferta.Enlace' AND descartado='no'); 
+SELECT @ids = idJuegos 
+FROM {esquema}
+WHERE enlace = @Enlace
+  AND descartado = 'no';
 
-				IF @ids IS NOT NULL BEGIN
-				IF @ids != '0' BEGIN
-				DECLARE @pos INT; 
-				DECLARE @nextpos INT; 
-				DECLARE @valuelen INT; 
-				DECLARE @tabla TABLE (numero int NOT NULL); 
+IF @ids IS NOT NULL AND @ids <> '0'
+BEGIN
+    DECLARE @tabla TABLE (numero INT NOT NULL);
 
-				SELECT @pos = 0, @nextpos = 1; 
+    INSERT INTO @tabla (numero)
+    SELECT TRY_CAST(value AS INT)
+    FROM STRING_SPLIT(@ids, ',')
+    WHERE value <> '';
 
-				WHILE @nextpos > 0
-				BEGIN
-					SELECT @nextpos = charindex(',', @ids, @pos + 1)
-					SELECT @valuelen = CASE WHEN @nextpos > 0
-											THEN @nextpos
-											ELSE len(@ids) + 1
-										END - @pos - 1
-					INSERT @tabla (numero)
-						VALUES (convert(int, substring(@ids, @pos + 1, @valuelen)))
-					SELECT @pos = @nextpos;
-				END
+    SELECT id, precioMinimosHistoricos, precioActualesTiendas, 
+           idSteam, historicos, analisis
+    FROM juegos
+    WHERE id IN (SELECT numero FROM @tabla);
+END;
+";
 
-				SELECT id, precioMinimosHistoricos, precioActualesTiendas, idSteam, historicos, analisis FROM juegos WHERE id IN (SELECT numero FROM @tabla);
-				END;
-				END;";
-
-			oferta.Tienda = oferta.Tienda.Replace("'", null);
-			oferta.Enlace = oferta.Enlace.Replace("'", null);
-
-			buscarJuegos = buscarJuegos.Replace("@oferta.Tienda", oferta.Tienda);
-			buscarJuegos = buscarJuegos.Replace("@oferta.Enlace", oferta.Enlace);
-				
-			using (SqlCommand comandoBuscar = new SqlCommand(buscarJuegos, conexion))
+			var resultados = (await conexion.QueryAsync(sqlBuscar, new
 			{
-				using (SqlDataReader lector = comandoBuscar.ExecuteReader())
+				Enlace = oferta.Enlace
+			})).ToList();
+
+			foreach (var fila in resultados)
+			{
+				encontrado = true;
+
+				int id = fila.id ?? 0;
+				int idSteam = fila.idSteam ?? 0;
+
+				var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+
+				var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
+
+				var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
+
+				JuegoAnalisis reseñas = null;
+				if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
 				{
-					while (lector.Read() == true)
-					{
-						encontrado = true;
+					reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
+				}
 
-						int id = 0;
-						if (lector.IsDBNull(0) == false)
-						{
-							id = lector.GetInt32(0);
-						}
+				if (ofertasHistoricas.Count == 0)
+				{
+					ofertasHistoricas.Add(oferta);
+				}
 
-						List<JuegoPrecio> ofertasHistoricas = new List<JuegoPrecio>();
-						if (lector.IsDBNull(1) == false)
-						{
-							if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-							{
-								ofertasHistoricas = JsonSerializer.Deserialize<List<JuegoPrecio>>(lector.GetString(1));
-							}
-						}
-						
-						if (ofertasHistoricas == null)
-						{
-							ofertasHistoricas = new List<JuegoPrecio>();							
-						}
+				if (ofertasActuales.Count == 0)
+				{
+					ofertasActuales.Add(oferta);
+				}
 
-						if (ofertasHistoricas.Count == 0)
-						{
-							ofertasHistoricas.Add(oferta);
-						}
-
-						List<JuegoPrecio> ofertasActuales = new List<JuegoPrecio>();
-						if (lector.IsDBNull(2) == false)
-						{
-							if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-							{
-								ofertasActuales = JsonSerializer.Deserialize<List<JuegoPrecio>>(lector.GetString(2));
-							}
-						}
-
-                        if (ofertasActuales == null)
-                        {
-                            ofertasActuales = new List<JuegoPrecio>();
-                        }
-
-                        if (ofertasActuales.Count == 0)
-						{
-							ofertasActuales.Add(oferta);
-						}
-
-						int idSteam = 0;
-						if (lector.IsDBNull(3) == false)
-						{
-							idSteam = lector.GetInt32(3);
-						}
-
-						List<JuegoHistorico> historicos = new List<JuegoHistorico>();
-						if (lector.IsDBNull(4) == false)
-						{
-							if (string.IsNullOrEmpty(lector.GetString(4)) == false)
-							{
-								historicos = JsonSerializer.Deserialize<List<JuegoHistorico>>(lector.GetString(4));
-							}
-						}
-
-						JuegoAnalisis reseñas = null;
-						if (lector.IsDBNull(5) == false)
-						{
-							if (string.IsNullOrEmpty(lector.GetString(5)) == false)
-							{
-								if (lector.GetString(5) != "null")
-								{
-									reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(lector.GetString(5));
-								}
-							}
-						}
-
-						if (id > 0)
-						{
-							Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, conexion, slugGOG, idGog, slugEpic,  reseñas);
-						}
-					}
+				if (id > 0)
+				{
+					Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, conexion, slugGOG, idGog, slugEpic, reseñas);
 				}
 			}
 
+			// -----------------------------------------------------------------
+
 			if (encontrado == false)
 			{
-				string buscarId = @"IF NOT EXISTS (SELECT * from tienda@oferta.tienda WHERE enlace = '@oferta.enlace') BEGIN
+				conexion = CogerConexion(conexion);
 
-					DECLARE @nuevaId NVARCHAR(MAX); 
+				string sqlInsertar = $@"
+IF NOT EXISTS (SELECT 1 FROM {esquema} WHERE enlace = @Enlace)
+BEGIN
+    DECLARE @nuevaId NVARCHAR(MAX); 
 
-					SET @nuevaId = (SELECT id FROM juegos WHERE nombreCodigo='oferta.nombreCodigo'); 
+    SELECT @nuevaId = id 
+    FROM juegos 
+    WHERE nombreCodigo = @NombreCodigo;
 
-					IF @nuevaId IS NULL
-					BEGIN 
-					SET @nuevaId = 0;
-					END; 
+    IF @nuevaId IS NULL SET @nuevaId = 0;
 
-					INSERT INTO tienda@oferta.tienda 
-					(enlace, nombre, imagen, idJuegos, descartado) VALUES 
-					('@oferta.enlace', '@oferta.nombre', '@oferta.imagen', @nuevaId, 'no'); 
+    INSERT INTO {esquema} (enlace, nombre, imagen, idJuegos, descartado)
+    VALUES (@Enlace, @Nombre, @Imagen, @nuevaId, 'no');
+END;
+";
 
-					END;";
-
-				buscarId = buscarId.Replace("@oferta.nombreCodigo", Herramientas.Buscador.LimpiarNombre(oferta.Nombre));
-				buscarId = buscarId.Replace("@oferta.enlace", oferta.Enlace);
-				buscarId = buscarId.Replace("@oferta.tienda", oferta.Tienda);
-				buscarId = buscarId.Replace("@oferta.nombre", oferta.Nombre.Replace("'", "''"));
-				buscarId = buscarId.Replace("@oferta.imagen", oferta.Imagen);
-
-				using (SqlCommand comandoInsertar = new SqlCommand(buscarId, conexion))
+				try
 				{
-					try
+					await conexion.ExecuteAsync(sqlInsertar, new
 					{
-						comandoInsertar.ExecuteReader();
-					}
-					catch (Exception ex)
-					{
-						Errores.Insertar.Mensaje("Insertar Tienda: " + oferta?.Enlace, ex);
-					}
+						Enlace = oferta.Enlace,
+						Nombre = oferta.Nombre,
+						Imagen = oferta.Imagen,
+						NombreCodigo = Herramientas.Buscador.LimpiarNombre(oferta.Nombre)
+					});
+				}
+				catch (Exception ex)
+				{
+					Errores.Insertar.Mensaje("Insertar Tienda: " + oferta?.Enlace, ex);
 				}
 			}
 		}

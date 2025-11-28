@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
@@ -12,6 +13,16 @@ namespace BaseDatos.Juegos
 {
 	public static class Buscar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static Juego Cargar(Juego juego, SqlDataReader lector)
 		{
 			try
@@ -771,30 +782,9 @@ namespace BaseDatos.Juegos
 
 			if (string.IsNullOrEmpty(sqlBuscar) == false)
 			{
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
+				conexion = CogerConexion(conexion);
 
-				using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							Juego juego = new Juego();
-							juego = Cargar(juego, lector);
-							juegos.Add(juego);
-						}
-					}
-				}
+				return conexion.Query<Juego>(sqlBuscar).ToList();
 			}
 
 			return juegos;
@@ -1685,6 +1675,8 @@ namespace BaseDatos.Juegos
 
 				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 				{
+					comando.CommandTimeout = 120;
+
 					using (SqlDataReader lector = comando.ExecuteReader())
 					{
 						while (lector.Read())
@@ -1721,6 +1713,8 @@ namespace BaseDatos.Juegos
 
 			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
 			{
+				comando.CommandTimeout = 120;
+
 				cantidad = (int)comando.ExecuteScalar();
 			}
 

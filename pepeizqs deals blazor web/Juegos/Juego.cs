@@ -2,12 +2,15 @@
 
 using APIs.Steam;
 using Bundles2;
+using Dapper;
 using Gratis2;
 using Herramientas;
 using Microsoft.AspNetCore.Components;
 using Suscripciones2;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
+using System.Text.Json;
 
 namespace Juegos
 {
@@ -356,4 +359,55 @@ namespace Juegos
 		public int JugadoTiempo { get; set; }
 		public int JugadoUltimaVez { get; set; }
 	}
+
+	#region Dapper
+
+	public class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
+	{
+		public override T Parse(object valor)
+		{
+			if (valor == null || valor == DBNull.Value)
+			{
+				return default;
+			}
+
+			string texto = valor.ToString();
+			if (string.IsNullOrWhiteSpace(texto) || texto == "null")
+			{
+				return default;
+			}
+
+			return JsonSerializer.Deserialize<T>(texto);
+		}
+
+		public override void SetValue(IDbDataParameter parametro, T valor)
+		{
+			parametro.Value = valor == null ? (object)DBNull.Value : JsonSerializer.Serialize(valor);
+		}
+	}
+
+	public static class JuegoDapper
+	{
+		public static void Registrar()
+		{
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoImagenes>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoPrecio>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoAnalisis>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoCaracteristicas>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoMedia>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoBundle>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoGratis>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoSuscripcion>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<string>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoDeckToken>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoHistorico>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoGalaxyGOG>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoCantidadJugadoresSteam>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoIdioma>>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoEpicGames>());
+			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoXbox>());
+		}
+	}
+
+	#endregion
 }

@@ -50,19 +50,19 @@ namespace Tareas.Tiendas
 							siguienteComprobacion = TimeSpan.FromMinutes(30);
 						}
 
-						bool sePuedeUsar = BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id, conexion);
+						bool sePuedeUsar = BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
 
-						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60), conexion) == null)
+						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Count == 0)
 						{
 							try
 							{
-								await Tiendas2.TiendasCargar.TareasGestionador(conexion, id);
+								await Tiendas2.TiendasCargar.TareasGestionador(null, id);
 
 								Environment.Exit(1);
 							}
 							catch (Exception ex)
 							{
-								BaseDatos.Errores.Insertar.Mensaje(id, ex, conexion);
+								BaseDatos.Errores.Insertar.Mensaje(id, ex);
 							}
 						}
 					}

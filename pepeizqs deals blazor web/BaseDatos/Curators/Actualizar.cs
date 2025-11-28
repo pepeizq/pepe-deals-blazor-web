@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
@@ -7,19 +8,19 @@ namespace BaseDatos.Curators
 {
 	public static class Actualizar
 	{
-		public static void Ejecutar(Curator curator, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+
+			return conexion;
+		}
+
+		public static void Ejecutar(Curator curator, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
 
 			string añadirImagenFondo = null;
 
@@ -27,68 +28,30 @@ namespace BaseDatos.Curators
 			{
 				añadirImagenFondo = ", imagenFondo=@imagenFondo";
 			}
-
-			string sqlActualizar = "UPDATE curators " +
-						"SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha " + añadirImagenFondo + " WHERE idSteam=@idSteam";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			
+			conexion.Execute($@"UPDATE curators SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha {añadirImagenFondo} WHERE idSteam=@idSteam", new
 			{
-				comando.Parameters.AddWithValue("@idSteam", curator.IdSteam);
-				comando.Parameters.AddWithValue("@nombre", curator.Nombre);
-				comando.Parameters.AddWithValue("@imagen", curator.Imagen);
-				comando.Parameters.AddWithValue("@descripcion", curator.Descripcion);
-				comando.Parameters.AddWithValue("@slug", curator.Slug);
-				comando.Parameters.AddWithValue("@steamIds", JsonSerializer.Serialize(curator.SteamIds));
-				comando.Parameters.AddWithValue("@web", JsonSerializer.Serialize(curator.Web));
-				comando.Parameters.AddWithValue("@fecha", DateTime.Now);
-
-				if (string.IsNullOrEmpty(curator.ImagenFondo) == false)
-				{
-					comando.Parameters.AddWithValue("@imagenFondo", curator.ImagenFondo);
-				}
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
-			}
+				idSteam = curator.IdSteam,
+				nombre = curator.Nombre,
+				imagen = curator.Imagen,
+				descripcion = curator.Descripcion,
+				slug = curator.Slug,
+				steamIds = JsonSerializer.Serialize(curator.SteamIds),
+				web = JsonSerializer.Serialize(curator.Web),
+				fecha = DateTime.Now,
+				imagenFondo = curator.ImagenFondo
+			});
 		}
 
 		public static void ImagenFondo(string imagenFondo, int id, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			string sqlActualizar = "UPDATE curators " +
-						"SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@idSteam", id);
-				comando.Parameters.AddWithValue("@imagenFondo", imagenFondo);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
-			}
+			conexion.Execute("UPDATE curators SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam", new 
+			{ 
+				imagenFondo, 
+				idSteam = id 
+			});
 		}
 	}
 }

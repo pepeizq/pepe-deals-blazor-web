@@ -1,566 +1,300 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Pendientes
 {
 	public static class Buscar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static string IDs(string nombre, SqlConnection conexion = null)
 		{
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			conexion = CogerConexion(conexion);
 
-            string busqueda = "SELECT id FROM juegos WHERE nombre=@nombre OR nombreCodigo=@nombreLimpio";
+			string sql1 = @"SELECT id FROM juegos WHERE nombre = @nombre OR nombreCodigo = @nombreLimpio";
 
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-            {
-                comando.Parameters.AddWithValue("@nombre", nombre);
-                comando.Parameters.AddWithValue("@nombreLimpio", Herramientas.Buscador.LimpiarNombre(nombre, false));
+			var id = conexion.QueryFirstOrDefault<int?>(sql1, new
+			{
+				nombre,
+				nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, false)
+			});
 
-                using (SqlDataReader lector = comando.ExecuteReader())
-                {
-                    while (lector.Read())
-                    {
-                        return lector.GetInt32(0).ToString();
-                    }
-                }
-            }
+			if (id != null)
+			{
+				return id.Value.ToString();
+			}
 
-            string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre=@nombre";
+			string sql2 = @"SELECT ids FROM juegosIDs WHERE nombre = @nombre";
 
-            using (SqlCommand comando = new SqlCommand(busqueda2, conexion))
-            {
-                comando.Parameters.AddWithValue("@nombre", nombre);
+			var ids = conexion.QueryFirstOrDefault<string>(sql2, new { nombre });
 
-                using (SqlDataReader lector = comando.ExecuteReader())
-                {
-                    while (lector.Read())
-                    {
-                        return lector.GetString(0);
-                    }
-                }
-            }
+			if (ids != null)
+			{
+				return ids;
+			}
 
-            return "0";
+			return "0";
 		}
 
         public static int TiendasCantidad(SqlConnection conexion = null)
         {
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			List<string> sentencias = new List<string>();
+
+			foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				if (tienda.Id != "steam")
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
+					string tabla = $"tienda{tienda.Id}";
+					sentencias.Add($"SELECT COUNT(*) FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'");
 				}
 			}
 
-			int cantidad = 0;
-
-			using (conexion)
+			if (sentencias.Count == 0)
 			{
-				string busqueda = null;
-
-				foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
-                {
-                    if (tienda.Id != "steam")
-                    {
-						if (string.IsNullOrEmpty(busqueda) == true)
-						{
-							busqueda = "SELECT COUNT(*) FROM tienda" + tienda.Id + " WHERE (idJuegos='0' AND descartado='no')";
-						}
-						else
-						{
-							busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM tienda" + tienda.Id + " WHERE (idJuegos='0' AND descartado='no')";
-						}
-                    }
-                }
-
-				if (string.IsNullOrEmpty(busqueda) == false)
-				{
-					busqueda = busqueda + " OPTION (MAXDOP 8);";
-				}
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					cantidad = cantidad + (int)comando.ExecuteScalar();
-				}
+				return 0;
 			}
+				
 
-            return cantidad;
-        }
+			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
+
+			var resultados = conexion.Query<int>(sql).ToList();
+
+			return resultados.Sum();
+		}
 
 		public static int SuscripcionCantidad(SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			List<string> sentencias = new List<string>();
+
+			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				if (suscripcion.AdminPendientes)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			int cantidad = 0;
-
-			using (conexion)
-			{
-				string busqueda = null;
-
-				foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
-				{
-					if (suscripcion.AdminPendientes == true)
-					{
-						if (string.IsNullOrEmpty(busqueda) == true)
-						{
-							busqueda = "SELECT COUNT(*) FROM temporal" + suscripcion.Id.ToString();
-						}
-						else
-						{
-							busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM temporal" + suscripcion.Id.ToString();
-						}
-					}
-				}
-
-				if (string.IsNullOrEmpty(busqueda) == false)
-				{
-					busqueda = busqueda + " OPTION (MAXDOP 8);";
-				}
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					cantidad = cantidad + (int)comando.ExecuteScalar();
+					string tabla = $"temporal{suscripcion.Id}";
+					sentencias.Add($"SELECT COUNT(*) FROM {tabla}");
 				}
 			}
 
-			return cantidad;
+			if (sentencias.Count == 0)
+			{
+				return 0;
+			}
+
+			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
+
+			return conexion.Query<int>(sql).Sum();
 		}
 
 		public static int StreamingCantidad(SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			List<string> sentencias = new List<string>();
+
+			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+				string tabla = $"streaming{streaming.Id}";
+				string where = "WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
 
-			int cantidad = 0;
-
-			using (conexion)
-			{
-				string busqueda = null;
-
-				foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
-				{
-					if (string.IsNullOrEmpty(busqueda) == true)
-					{
-						busqueda = "SELECT COUNT(*) FROM streaming" + streaming.Id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
-					}
-					else
-					{
-						busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM streaming" + streaming.Id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
-					}
-				}
-
-				if (string.IsNullOrEmpty(busqueda) == false)
-				{
-					busqueda = busqueda + " OPTION (MAXDOP 8);";
-				}
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					cantidad = cantidad + (int)comando.ExecuteScalar();
-				}
+				sentencias.Add($"SELECT COUNT(*) FROM {tabla} {where}");
 			}
 
-			return cantidad;
+			if (sentencias.Count == 0)
+			{
+				return 0;
+			}
+
+			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
+
+			return conexion.Query<int>(sql).Sum();
 		}
 
         public static int PlataformaCantidad(SqlConnection conexion = null)
         {
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			List<string> sentencias = new List<string>();
+
+			foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				string tabla = $"temporal{plataforma.Id}juegos";
+				sentencias.Add($"SELECT COUNT(*) FROM {tabla}");
 			}
 
-			int cantidad = 0;
-
-			using (conexion)
+			if (sentencias.Count == 0)
 			{
-				string busqueda = null;
+				return 0;
+			}
 
-				foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
-				{
-					if (string.IsNullOrEmpty(busqueda) == true)
-					{
-						busqueda = "SELECT COUNT(*) FROM temporal" + plataforma.Id + "juegos";
-					}
-					else
-					{
-						busqueda = busqueda + Environment.NewLine + "UNION ALL" + Environment.NewLine + "SELECT COUNT(*) FROM temporal" + plataforma.Id + "juegos";
-					}
-				}
+			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
-				if (string.IsNullOrEmpty(busqueda) == false)
-				{
-					busqueda = busqueda + " OPTION (MAXDOP 8);";
-				}
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					cantidad = cantidad + (int)comando.ExecuteScalar();
-				}
-			}		
-
-			return cantidad;
+			return conexion.Query<int>(sql).Sum();
 		}
 
 		public static List<Pendiente> Tienda(string tiendaId, SqlConnection conexion = null)
         {
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			List<Pendiente> listaPendientes = new List<Pendiente>();
+			string tabla = $"tienda{tiendaId}";
+			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'";
 
-			string busqueda = "SELECT * FROM tienda" + tiendaId + " WHERE (idJuegos='0' AND descartado='no')";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				SqlDataReader lector = comando.ExecuteReader();
-
-				using (lector)
-				{
-					while (lector.Read() == true)
-					{
-						Pendiente pendiente = new Pendiente
-						{
-							Enlace = lector.GetString(0),
-							Nombre = lector.GetString(1),
-							Imagen = lector.GetString(2)
-						};
-
-						listaPendientes.Add(pendiente);
-					}
-				}
-			}
-
-			return listaPendientes;
+			return conexion.Query<Pendiente>(sql).ToList();
 		}
 
         public static List<Pendiente> Suscripcion(Suscripciones2.SuscripcionTipo id, SqlConnection conexion = null)
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			conexion = CogerConexion(conexion);
 
-            List<Pendiente> listaPendientes = new List<Pendiente>();
+			string tabla = $"temporal{id}";
+			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla}";
 
-            using (conexion)
-            {
-                string busqueda = "SELECT * FROM temporal" + id;
-
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    SqlDataReader lector = comando.ExecuteReader();
-
-                    using (lector)
-                    {
-                        while (lector.Read() == true)
-                        {
-                            Pendiente pendiente = new Pendiente
-                            {
-                                Enlace = lector.GetString(0),
-                                Nombre = lector.GetString(1),
-                                Imagen = lector.GetString(2)
-                            };
-
-                            listaPendientes.Add(pendiente);
-                        }
-                    }
-                }
-            }
-
-            return listaPendientes;
-        }
+			return conexion.Query<Pendiente>(sql).ToList();
+		}
 
         public static List<Pendiente> Streaming(Streaming2.StreamingTipo id, SqlConnection conexion = null)
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			conexion = CogerConexion(conexion);
 
-            List<Pendiente> listaPendientes = new List<Pendiente>();
+			string tabla = $"streaming{id}";
+			string sql = $@"SELECT nombreCodigo as Enlace, nombre FROM {tabla} WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
 
-            using (conexion)
-            {
-                string busqueda = "SELECT * FROM streaming" + id + " WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
+			if (id == Streaming2.StreamingTipo.Boosteroid)
+			{
+				sql = $@"SELECT id as Enlace, nombre FROM {tabla} WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
+			}
 
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    SqlDataReader lector = comando.ExecuteReader();
+			var filas = conexion.Query(sql);
 
-                    using (lector)
-                    {
-                        while (lector.Read() == true)
-                        {
-                            Pendiente pendiente = new Pendiente();
+			List<Pendiente> lista = new List<Pendiente>();
 
-							if (lector.IsDBNull(0) == false)
-							{
-								try
-								{
-									pendiente.Enlace = lector.GetString(0);
-								}
-								catch { }
+			foreach (var fila in filas)
+			{
+				lista.Add(new Pendiente
+				{
+					Enlace = fila.Enlace?.ToString(),
+					Nombre = fila.Nombre
+				});
+			}
 
-								try
-								{
-									pendiente.Enlace = lector.GetInt32(0).ToString();
-								}
-								catch { }
-							}
-
-							if (lector.IsDBNull(1) == false)
-							{
-								pendiente.Nombre = lector.GetString(1);
-							}
-
-                            listaPendientes.Add(pendiente);
-                        }
-                    }
-                }
-            }
-
-            return listaPendientes;
-        }
+			return lista;
+		}
 
         public static List<Pendiente> Plataforma(Plataformas2.PlataformaTipo id, SqlConnection conexion = null)
         {
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			string tabla = $"temporal{id}juegos";
+			string sql = $@"SELECT id as Enlace, Nombre FROM {tabla}";
+
+			return conexion.Query<Pendiente>(sql).ToList();
+		}
+
+        public static Pendiente PrimerJuegoTienda(string tiendaId, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sql = $"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'";
+
+			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+		}
+
+        public static Pendiente PrimerJuegoSuscripcion(string suscripcionId, SqlConnection conexion = null)
+        {
+			conexion = CogerConexion(conexion);
+
+			string sql = $"SELECT TOP 1 * FROM temporal{suscripcionId}";
+
+			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+		}
+
+        public static Pendiente PrimerJuegoStreaming(string streamingId, SqlConnection conexion = null)
+        {
+			conexion = CogerConexion(conexion);
+
+			string sql = $"SELECT TOP 1 * FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
+
+			var fila = conexion.QueryFirstOrDefault<dynamic>(sql);
+
+			if (fila == null)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				return null;
+			}
+
+			var pendiente = new Pendiente();
+
+			try 
+			{ 
+				pendiente.Enlace = fila.Enlace; 
+			}
+			catch
+			{
+				try 
+				{ 
+					pendiente.Enlace = fila.Enlace.ToString(); 
+				}
+				catch 
+				{ 
+					pendiente.Enlace = null; 
+				}
+			}
+
+			try 
+			{ 
+				pendiente.Nombre = fila.Nombre; 
+			}
+			catch 
+			{ 
+				pendiente.Nombre = null; 
+			}
+
+			pendiente.Imagen = null;
+
+			return pendiente;
+		}
+
+		public static Pendiente PrimerJuegoPlataforma(string plataformaId, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sql = $"SELECT TOP 1 * FROM temporal{plataformaId}juegos";
+
+			var fila = conexion.QueryFirstOrDefault<dynamic>(sql);
+
+			if (fila == null) 
+			{ 
+				return null; 
+			}
+
+			var pendiente = new Pendiente();
+
+			if (fila.Nombre != null)
+			{
+				pendiente.Enlace = fila.Enlace;
+				pendiente.Nombre = fila.Nombre;
 			}
 			else
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				pendiente.Enlace = fila.Enlace;
+				pendiente.Nombre = fila.Enlace;
 			}
 
-			List<Pendiente> listaPendientes = new List<Pendiente>();
+			pendiente.Imagen = "vacio";
 
-			string busqueda = "SELECT * FROM temporal" + id + "juegos";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read() == true)
-					{
-						Pendiente pendiente = new Pendiente
-						{
-							Enlace = lector.GetString(0),
-							Nombre = lector.GetString(0)
-						};
-
-						listaPendientes.Add(pendiente);
-					}
-				}
-			}
-
-			return listaPendientes;
-		}
-
-        public static Pendiente PrimerJuegoTienda(string tiendaId, SqlConnection conexion)
-		{
-			string busqueda = "SELECT * FROM tienda" + tiendaId + " WHERE (idJuegos='0' AND descartado='no')";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				SqlDataReader lector = comando.ExecuteReader();
-
-				using (lector)
-				{
-					while (lector.Read())
-					{
-						Pendiente pendiente = new Pendiente
-						{
-							Enlace = lector.GetString(0),
-							Nombre = lector.GetString(1),
-							Imagen = lector.GetString(2)
-						};
-
-						return pendiente;
-					}
-				}
-			}
-
-			return null;
-		}
-
-        public static Pendiente PrimerJuegoSuscripcion(string suscripcionId, SqlConnection conexion)
-        {
-            string busqueda = "SELECT * FROM temporal" + suscripcionId ;
-
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-            {
-                SqlDataReader lector = comando.ExecuteReader();
-
-                using (lector)
-                {
-                    while (lector.Read())
-                    {
-                        Pendiente pendiente = new Pendiente
-                        {
-                            Enlace = lector.GetString(0),
-                            Nombre = lector.GetString(1),
-                            Imagen = lector.GetString(2)
-                        };
-
-                        return pendiente;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public static Pendiente PrimerJuegoStreaming(string streamingId, SqlConnection conexion)
-        {
-            string busqueda = "SELECT * FROM streaming" + streamingId + " WHERE idJuego IS NULL AND descartado IS NULL";
-
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-            {
-                SqlDataReader lector = comando.ExecuteReader();
-
-                using (lector)
-                {
-                    while (lector.Read())
-                    {
-						Pendiente pendiente = new Pendiente();
-
-						if (lector.IsDBNull(0) == false)
-						{
-							try
-							{
-								pendiente.Enlace = lector.GetString(0);
-							}
-							catch { }
-
-							try
-							{
-								pendiente.Enlace = lector.GetInt32(0).ToString();
-							}
-							catch { }
-						}
-
-						if (lector.IsDBNull(1) == false)
-						{
-							pendiente.Nombre = lector.GetString(1);
-						}
-
-						pendiente.Imagen = null;
-
-                        return pendiente;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-		public static Pendiente PrimerJuegoPlataforma(string plataformaId, SqlConnection conexion)
-		{
-			string busqueda = "SELECT * FROM temporal" + plataformaId + "juegos";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read())
-					{
-						if (lector.IsDBNull(1) == false)
-						{
-							Pendiente pendiente = new Pendiente
-							{
-								Enlace = lector.GetString(0),
-								Nombre = lector.GetString(1),
-								Imagen = "vacio"
-							};
-
-							return pendiente;
-						}
-						else
-						{
-							Pendiente pendiente = new Pendiente
-							{
-								Enlace = lector.GetString(0),
-								Nombre = lector.GetString(0),
-								Imagen = "vacio"
-							};
-
-							return pendiente;
-						}
-					}
-				}
-			}
-
-			return null;
+			return pendiente;
 		}
 	}
 

@@ -1,9 +1,8 @@
 ﻿using ApexCharts;
 using BlazorNotification;
 using Herramientas;
+using Juegos;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -14,6 +13,8 @@ using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+
+JuegoDapper.Registrar();
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿using Juegos;
+﻿#nullable disable
 
 namespace Herramientas
 {
@@ -81,12 +81,17 @@ namespace Herramientas
 			return cantidadFinal;
 		}
 
-		public static string DiferenciaTiempo(this DateTime? fecha2, string? idioma = null, int modo = 0)
+		public static string DiferenciaTiempo(this DateTime? fecha2, string idioma = null, int modo = 0)
 		{
             //modos
             //0 -> hace X tiempo
             //1 -> termina en X tiempo
             //2 -> terminan en X tiempo
+
+			if (fecha2 == null)
+			{
+				return null;
+			}
 
 			if (string.IsNullOrEmpty(idioma) == true)
 			{

@@ -1,137 +1,75 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Admin
 {
 	public static class Actualizar
 	{
-		public static void Tiendas(string tienda, DateTime fecha, int cantidad, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
+
+			return conexion;
+		}
+
+		public static void Tiendas(string tienda, DateTime fecha, int cantidad, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				conexion.Execute("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad });
 			}
-
-			string sqlActualizar = "UPDATE adminTiendas " +
-						"SET fecha=@fecha, mensaje=@mensaje WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			catch (Exception ex)
 			{
-				comando.Parameters.AddWithValue("@id", tienda);
-				comando.Parameters.AddWithValue("@fecha", fecha);
-				comando.Parameters.AddWithValue("@mensaje", cantidad);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas", ex);
 			}
 		}
 
 		public static void TiendasValorAdicional(string tienda, string valor, int cantidad, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute($"UPDATE adminTiendas SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad });
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE adminTiendas " +
-				   "SET " + valor + "=@" + valor + " WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@" + valor, cantidad);
-				comando.Parameters.AddWithValue("@id", tienda);
-
-				comando.ExecuteNonQuery();
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas Valor Adicional", ex);
 			}
 		}
 
 		public static void TareaUso(string id, DateTime fecha, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute("UPDATE adminTareas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha });
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE adminTareas " +
-						"SET fecha=@fecha WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@fecha", fecha);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tareas", ex);
 			}
 		}
 
 		public static void Dato(string id, int contenido, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute("UPDATE adminDatos SET contenido=@contenido WHERE id=@id", new { id = id, contenido = contenido });
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE adminDatos " +
-					"SET contenido=@contenido WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-					comando.Parameters.AddWithValue("@contenido", contenido);
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch
-					{
-
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Datos", ex);
 			}
 		}
 	}

@@ -1,4 +1,6 @@
-﻿namespace Streaming2
+﻿#nullable disable
+
+namespace Streaming2
 {
     public enum StreamingTipo
     {
@@ -21,5 +23,17 @@
             return streaming;
         }
 
-    }
+		public static Streaming DevolverStreaming(string streamingTexto)
+		{
+			foreach (var streaming in GenerarListado())
+			{
+				if (streaming.Id.ToString()?.ToLower() == streamingTexto?.ToLower())
+				{
+					return streaming;
+				}
+			}
+
+			return null;
+		}
+	}
 }

@@ -446,10 +446,13 @@ namespace Herramientas.RedesSociales
 
                 if (juegosValoracion.Count > 0)
                 {
+                    int cantidadReseñasMinima = juegosValoracion.Min(j => j.NumeroReseñas);
+                    int cantidadReseñasMaxima = juegosValoracion.Max(j => j.NumeroReseñas);
+
 					// Primer cálculo para estimar el valor de los juegos (mirar abajo)
 					foreach (var juego in juegosValoracion)
 					{
-						juego.Valoracion = CalcularValoracionJuego(juego);
+						juego.Valoracion = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima);
 					}
 
 					// Segundo cálculo para encajar la suma total de valoraciones y que no supere el precio mínimo histórico en cada juego
@@ -464,10 +467,10 @@ namespace Herramientas.RedesSociales
 						}
 					}
 
-					// Tercer cálculo donde voy a aplicar un bucle hasta que se ajusten las valoraciones al precio del bundle (limitado a 1000 pasadas), si la cago es aquí
+					// Tercer cálculo donde voy a aplicar un bucle hasta que se ajusten las valoraciones al precio del bundle (limitado a 10000 pasadas), si la cago es aquí
 					bool sigueSobrando = true;
                     int i = 0;
-					while (sigueSobrando == true && i < 1000)
+					while (sigueSobrando == true && i < 10000)
 					{
 						sigueSobrando = false;
                         i += 1;
@@ -475,7 +478,7 @@ namespace Herramientas.RedesSociales
 						double sumaFinal = juegosValoracion.Sum(j => j.Valoracion);
 						double sobrante = precioBundle - sumaFinal;
 
-						if (sobrante > 0.0001)
+						if (sobrante > 0.00001)
 						{
 							List<JuegoValoracion> juegosDondeAplicarRestante = juegosValoracion.Where(j => j.Valoracion < j.PrecioMinimoHistorico).ToList();
 
@@ -486,11 +489,11 @@ namespace Herramientas.RedesSociales
 
 							sigueSobrando = true;
 
-							double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => CalcularValoracionJuego(j));
+							double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => CalcularValoracionJuego(j, cantidadReseñasMinima, cantidadReseñasMaxima));
 
 							foreach (JuegoValoracion juego in juegosDondeAplicarRestante)
 							{
-								double extra = CalcularValoracionJuego(juego) / cantidadARepartir * sobrante;
+								double extra = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima) / cantidadARepartir * sobrante;
 								juego.Valoracion = Math.Min(juego.Valoracion + extra, juego.PrecioMinimoHistorico);
 							}
 						}
@@ -542,9 +545,9 @@ namespace Herramientas.RedesSociales
 			return texto;
 		}
 
-        public static double CalcularValoracionJuego(JuegoValoracion juego)
+        public static double CalcularValoracionJuego(JuegoValoracion juego, int minimoReseñas, int maximoReseñas)
         {
-			// Valor extra que asigno en función de si el juego ha salido hace pocos meses
+			// Valor que asigno en función de si el juego ha salido hace pocos meses
 
 			double valorFecha = 1;
 
@@ -552,18 +555,25 @@ namespace Herramientas.RedesSociales
             {
                 double meses = (DateTime.Now - juego.FechaSalida.Value).TotalDays / 30;
 
-                double meses2 = Math.Min(meses, 60); // Máximo de 5 años (por si acaso)
+                double meses2 = Math.Min(meses, 120); // Máximo de 10 años (por si acaso)
 
-                valorFecha = 2 - (meses2 / 60);
+                valorFecha = 2 - (meses2 / 120);
             }
 
-			// Valor extra que asigno en función del tier del bundle en el que está el juego
+			// Valor que asigno en función del tier del bundle en el que está el juego
 
 			double valorTier = 1;
             valorTier = valorTier + (juego.Tier * 0.5);
 
-            // Junto todo tomando como base las reseñas y quitando peso en función de los bundles en los que ha estado
-			return (juego.NumeroReseñas / (double)(juego.NumeroBundles + 1)) * (valorFecha + valorTier);
+            // Valor que asigno a las reseñas que oscila entre el juego con menor cantidad de reseñas y el mayor
+
+            double valorReseñas = 1;
+            valorReseñas = (juego.NumeroReseñas - minimoReseñas) / (maximoReseñas - minimoReseñas);
+            valorReseñas = valorReseñas * 2;
+
+			// Junto todo quitando peso en función de los bundles en los que ha estado
+
+			return (valorReseñas + valorFecha + valorTier) / (double)(juego.NumeroBundles + 1);
 		}
 	}
 
