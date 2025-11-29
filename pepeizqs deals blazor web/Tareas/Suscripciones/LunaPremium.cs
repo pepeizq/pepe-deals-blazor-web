@@ -44,9 +44,9 @@ namespace Tareas.Suscripciones
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.FromHours(4);
 
-						bool sePuedeUsar = BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id, conexion);
+						bool sePuedeUsar = BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
 
-						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60), conexion) == null)
+						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Count == 0)
 						{
 							try
 							{

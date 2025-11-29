@@ -225,7 +225,13 @@ namespace BaseDatos.Pendientes
         {
 			conexion = CogerConexion(conexion);
 
-			string sql = $"SELECT TOP 1 * FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
+			string sql = $"SELECT TOP 1 nombreCodigo as Enlace, nombre FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
+
+			if (streamingId == Streaming2.StreamingTipo.Boosteroid.ToString())
+			{
+				sql = $@"SELECT TOP 1 id as Enlace, nombre FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
+
+			}
 
 			var fila = conexion.QueryFirstOrDefault<dynamic>(sql);
 
@@ -234,32 +240,11 @@ namespace BaseDatos.Pendientes
 				return null;
 			}
 
-			var pendiente = new Pendiente();
-
-			try 
-			{ 
-				pendiente.Enlace = fila.Enlace; 
-			}
-			catch
+			Pendiente pendiente = new Pendiente
 			{
-				try 
-				{ 
-					pendiente.Enlace = fila.Enlace.ToString(); 
-				}
-				catch 
-				{ 
-					pendiente.Enlace = null; 
-				}
-			}
-
-			try 
-			{ 
-				pendiente.Nombre = fila.Nombre; 
-			}
-			catch 
-			{ 
-				pendiente.Nombre = null; 
-			}
+				Enlace = fila.Enlace?.ToString(),
+				Nombre = fila.Nombre
+			};
 
 			pendiente.Imagen = null;
 

@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
@@ -9,6 +10,16 @@ namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static List<JuegoMinimoTarea> BuscarMinimos(SqlConnection conexion = null)
 		{
 			List<JuegoMinimoTarea> resultados = new List<JuegoMinimoTarea>();
@@ -89,23 +100,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 
 		public static List<Juego> Destacados(SqlConnection conexion = null)
 		{
-			List<Juego> resultados = new List<Juego>();
-
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string busqueda = @"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM seccionMinimos
+			string busqueda = @"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM seccionMinimos
 WHERE tipo = 0 AND 
 year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 6 AND
 CONVERT(float, JSON_VALUE(precioMinimosHistoricos, '$[0].Precio')) > 1.99 AND 
@@ -118,100 +113,37 @@ gratis IS NULL AND
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
 ORDER BY NEWID()";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							Juego juego = new Juego();
+			conexion = CogerConexion(conexion);
 
-							if (lector.IsDBNull(0) == false)
-							{
-								juego.Id = lector.GetInt32(0);
-								juego.IdMaestra = lector.GetInt32(0);
-							}
-
-							if (lector.IsDBNull(1) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-								{
-									juego.Nombre = lector.GetString(1);
-								}
-							}
-
-							if (lector.IsDBNull(2) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-								{
-									if (juego.Imagenes == null)
-									{
-										juego.Imagenes = new JuegoImagenes();
-									}
-
-									juego.Imagenes.Logo = lector.GetString(2);
-								}
-							}
-
-							if (lector.IsDBNull(3) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(3)) == false)
-								{
-									if (juego.Imagenes == null)
-									{
-										juego.Imagenes = new JuegoImagenes();
-									}
-
-									juego.Imagenes.Library_1920x620 = lector.GetString(3);
-								}
-							}
-
-							if (lector.IsDBNull(4) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(4)) == false)
-								{
-									if (juego.Imagenes == null)
-									{
-										juego.Imagenes = new JuegoImagenes();
-									}
-
-									juego.Imagenes.Header_460x215 = lector.GetString(4);
-								}
-							}
-
-							if (lector.IsDBNull(5) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(5)) == false)
-								{
-									juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(lector.GetString(5));
-								}
-							}
-
-							if (lector.IsDBNull(6) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(6)) == false)
-								{
-									JuegoMedia media = new JuegoMedia();
-									
-									JuegoMediaVideo video = new JuegoMediaVideo();
-									video.Micro = lector.GetString(6);
-
-									media.Videos = [video];
-
-									juego.Media = media;
-								}
-							}
-
-							if (lector.IsDBNull(7) == false)
-							{
-								juego.IdSteam = lector.GetInt32(7);
-							}
-
-							resultados.Add(juego);
-						}
-					}
-				}
-			}
+			List<Juego> resultados = conexion.Query(busqueda).Select(fila => {
+				Juego juego = new Juego { 
+					Id = fila.idMaestra, 
+					IdMaestra = fila.idMaestra, 
+					Nombre = fila.nombre, 
+					IdSteam = fila.idSteam }; 
+				
+				if (!string.IsNullOrEmpty(fila.logo) || !string.IsNullOrEmpty(fila.fondo) || !string.IsNullOrEmpty(fila.header)) 
+				{ 
+					juego.Imagenes = new JuegoImagenes { 
+						Logo = fila.logo, 
+						Library_1920x620 = fila.fondo, 
+						Header_460x215 = fila.header 
+					}; 
+				} 
+				
+				if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false) 
+				{ 
+					juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos); 
+				} 
+				
+				if (string.IsNullOrEmpty(fila.video) == false) 
+				{ 
+					juego.Media = new JuegoMedia { 
+						Videos = new List<JuegoMediaVideo> { new JuegoMediaVideo { Micro = fila.video } } 
+					}; 
+				} 
+				return juego; 
+			}).ToList();
 
 			return resultados;
 		}

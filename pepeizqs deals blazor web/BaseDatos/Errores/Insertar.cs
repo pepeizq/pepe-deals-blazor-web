@@ -1,12 +1,74 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Errores
 {
     public static class Insertar
 	{
-        public static void Mensaje(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, SqlCommand comandoUsado = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
+		public static void Mensaje2(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, string comandoUsado = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sqlInsertar = @"
+        INSERT INTO errores (seccion, mensaje, stacktrace, fecha {0})
+        VALUES (@seccion, @mensaje, @stacktrace, @fecha {1});
+    ";
+
+			string columnasExtra = "";
+			string valoresExtra = "";
+
+			if (string.IsNullOrEmpty(comandoUsado) == false)
+			{
+				columnasExtra = ", sentenciaSQL";
+				valoresExtra = ", @sentenciaSQL";
+			}
+
+			sqlInsertar = string.Format(sqlInsertar, columnasExtra, valoresExtra);
+
+			try
+			{
+				conexion.Execute(sqlInsertar,
+					new
+					{
+						seccion,
+						mensaje = ex.Message,
+						stacktrace = ex.StackTrace,
+						fecha = DateTime.Now,
+						sentenciaSQL = comandoUsado
+					}
+				);
+			}
+			catch
+			{
+				
+			}
+
+			if (reiniciar == true)
+			{
+				WebApplicationBuilder builder = WebApplication.CreateBuilder();
+				string piscinaApp = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
+
+				if (piscinaApp != piscinaUsada)
+				{
+					Environment.Exit(1);
+				}
+			}
+		}
+
+		public static void Mensaje(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, SqlCommand comandoUsado = null)
 		{
             if (conexion == null)
             {
@@ -130,7 +192,7 @@ namespace BaseDatos.Errores
                 }
                 catch (Exception ex)
                 {
-                    Mensaje("Errores", ex);
+                    //Mensaje("Errores", ex);
                 }
 			}
 		}
