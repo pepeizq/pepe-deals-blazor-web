@@ -40,8 +40,6 @@ namespace APIs.GreenManGaming
 			enlace = enlace.Replace("=", "%3D");
 
 			return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?u=" + enlace;
-
-			//return enlace + "?tap_a=1964-996bbb&tap_s=608263-a851ee";
 		}
 
 		public static Tiendas2.Tienda GenerarGold()

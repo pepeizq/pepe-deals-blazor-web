@@ -65,7 +65,6 @@ namespace BaseDatos.Pendientes
 			{
 				return 0;
 			}
-				
 
 			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
@@ -233,22 +232,7 @@ namespace BaseDatos.Pendientes
 
 			}
 
-			var fila = conexion.QueryFirstOrDefault<dynamic>(sql);
-
-			if (fila == null)
-			{
-				return null;
-			}
-
-			Pendiente pendiente = new Pendiente
-			{
-				Enlace = fila.Enlace?.ToString(),
-				Nombre = fila.Nombre
-			};
-
-			pendiente.Imagen = null;
-
-			return pendiente;
+			return conexion.QueryFirstOrDefault<Pendiente>(sql);
 		}
 
 		public static Pendiente PrimerJuegoPlataforma(string plataformaId, SqlConnection conexion = null)
@@ -257,29 +241,7 @@ namespace BaseDatos.Pendientes
 
 			string sql = $"SELECT TOP 1 * FROM temporal{plataformaId}juegos";
 
-			var fila = conexion.QueryFirstOrDefault<dynamic>(sql);
-
-			if (fila == null) 
-			{ 
-				return null; 
-			}
-
-			var pendiente = new Pendiente();
-
-			if (fila.Nombre != null)
-			{
-				pendiente.Enlace = fila.Enlace;
-				pendiente.Nombre = fila.Nombre;
-			}
-			else
-			{
-				pendiente.Enlace = fila.Enlace;
-				pendiente.Nombre = fila.Enlace;
-			}
-
-			pendiente.Imagen = "vacio";
-
-			return pendiente;
+			return conexion.QueryFirstOrDefault<Pendiente>(sql);
 		}
 	}
 

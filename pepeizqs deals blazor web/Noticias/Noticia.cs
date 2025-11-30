@@ -14,7 +14,7 @@ namespace Noticias
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
-		public NoticiaTipo Tipo { get; set; }
+		public NoticiaTipo NoticiaTipo { get; set; }
 		public BundleTipo BundleTipo { get; set; }
 		public GratisTipo GratisTipo { get; set; }
 		public SuscripcionTipo SuscripcionTipo { get; set; }

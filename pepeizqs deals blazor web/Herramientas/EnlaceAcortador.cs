@@ -131,6 +131,10 @@ namespace Herramientas
 					{
 						enlace = APIs.Playsum.Tienda.Referido(enlace);
 					}
+					else if (tienda == APIs.Ubisoft.Tienda.Generar().Id)
+					{
+						enlace = APIs.Ubisoft.Tienda.Referido(enlace);
+					}
 				}
 			}
 			
@@ -208,6 +212,10 @@ namespace Herramientas
 				{
 					enlace = APIs.IndieGala.Gratis.Referido(enlace);
 				}
+				else if (tipo == APIs.Ubisoft.Gratis.Generar().Tipo)
+				{
+					enlace = APIs.Ubisoft.Gratis.Referido(enlace);
+				}
 			}
 
 			//----------------------------------------
@@ -240,6 +248,10 @@ namespace Herramientas
 				else if (tipo == SuscripcionTipo.LunaStandard || tipo == SuscripcionTipo.LunaPremium || tipo == SuscripcionTipo.LunaClaims)
 				{
 					enlace = APIs.AmazonLuna.Suscripcion.Referido(enlace);
+				}
+				else if (tipo == SuscripcionTipo.UbisoftPlusClassics || tipo == SuscripcionTipo.UbisoftPlusPremium)
+				{
+					enlace = APIs.Ubisoft.Suscripcion.Referido(enlace);
 				}
 			}
 

@@ -31,13 +31,21 @@
 
         public static string Referido(string enlace)
         {
+            string sku = enlace;
+            sku = sku.Remove(0, sku.IndexOf("/bundles/") + 9);
+
+            if (sku.Contains("/") == true)
+            {
+                sku = sku.Remove(sku.IndexOf("/"), sku.Length - sku.IndexOf("/"));
+            }
+
             enlace = enlace.Replace(":", "%3A");
             enlace = enlace.Replace("/", "%2F");
             enlace = enlace.Replace("/", "%2F");
             enlace = enlace.Replace("?", "%3F");
             enlace = enlace.Replace("=", "%3D");
 
-            return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?u=" + enlace;
+            return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?prodsku=" + sku + "&u=" + enlace;
         }
     }
 }

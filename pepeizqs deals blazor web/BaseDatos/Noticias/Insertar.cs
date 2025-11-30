@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Noticias;
 using System.Net;
@@ -8,180 +9,126 @@ namespace BaseDatos.Noticias
 {
 	public static class Insertar
 	{
-		public static int Ejecutar(Noticia noticia)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
-				string añadirImagen1 = string.Empty;
-				string añadirImagen2 = string.Empty;
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
 
-				if (string.IsNullOrEmpty(noticia.Imagen) == false)
-				{
-					añadirImagen1 = ", imagen";
-					añadirImagen2 = ", @imagen";
-				}
-				else
-				{
-					añadirImagen1 = null;
-					añadirImagen2 = null;
-				}
+			return conexion;
+		}
 
-				string añadirEnlace1 = string.Empty;
-				string añadirEnlace2 = string.Empty;
+		public static int Ejecutar(Noticia noticia, SqlConnection conexion = null)
+		{
+			var campos = new List<string>();
+			var valores = new List<string>();
+			var p = new DynamicParameters();
 
-				if (string.IsNullOrEmpty(noticia.Enlace) == false)
-				{
-					añadirEnlace1 = ", enlace";
-					añadirEnlace2 = ", @enlace";
-				}
-				else
-				{
-					añadirEnlace1 = null;
-					añadirEnlace2 = null;
-				}
+			campos.Add("noticiaTipo");
+			valores.Add("@noticiaTipo");
+			p.Add("@noticiaTipo", noticia.NoticiaTipo);
 
-				string añadirJuegos1 = string.Empty;
-				string añadirJuegos2 = string.Empty;
+			campos.Add("fechaEmpieza");
+			valores.Add("@fechaEmpieza");
+			p.Add("@fechaEmpieza", noticia.FechaEmpieza);
 
-				if (string.IsNullOrEmpty(noticia.Juegos) == false)
-				{
-					añadirJuegos1 = ", juegos";
-					añadirJuegos2 = ", @juegos";
-				}
-				else
-				{
-					añadirJuegos1 = null;
-					añadirJuegos2 = null;
-				}
+			campos.Add("fechaTermina");
+			valores.Add("@fechaTermina");
+			p.Add("@fechaTermina", noticia.FechaTermina);
 
-				string añadirBundle1 = string.Empty;
-				string añadirBundle2 = string.Empty;
+			campos.Add("tituloEn");
+			valores.Add("@tituloEn");
+			p.Add("@tituloEn", WebUtility.HtmlDecode(noticia.TituloEn));
 
-				if (noticia.Tipo == NoticiaTipo.Bundles)
-				{
-					añadirBundle1 = ", bundleTipo";
-					añadirBundle2 = ", @bundleTipo";
-				}
+			campos.Add("tituloEs");
+			valores.Add("@tituloEs");
+			p.Add("@tituloEs", WebUtility.HtmlDecode(noticia.TituloEs));
 
-				string añadirGratis1 = string.Empty;
-				string añadirGratis2 = string.Empty;
+			campos.Add("contenidoEn");
+			valores.Add("@contenidoEn");
+			p.Add("@contenidoEn", noticia.ContenidoEn);
 
-				if (noticia.Tipo == NoticiaTipo.Gratis)
-				{
-					añadirGratis1 = ", gratisTipo";
-					añadirGratis2 = ", @gratisTipo";
-				}
+			campos.Add("contenidoEs");
+			valores.Add("@contenidoEs");
+			p.Add("@contenidoEs", noticia.ContenidoEs);
 
-				string añadirSuscripcion1 = string.Empty;
-				string añadirSuscripcion2 = string.Empty;
+			if (!string.IsNullOrEmpty(noticia.Imagen))
+			{
+				campos.Add("imagen");
+				valores.Add("@imagen");
+				p.Add("@imagen", noticia.Imagen);
+			}
 
-				if (noticia.Tipo == NoticiaTipo.Suscripciones)
-				{
-					añadirSuscripcion1 = ", suscripcionTipo";
-					añadirSuscripcion2 = ", @suscripcionTipo";
-				}
+			if (!string.IsNullOrEmpty(noticia.Enlace))
+			{
+				campos.Add("enlace");
+				valores.Add("@enlace");
+				p.Add("@enlace", noticia.Enlace);
+			}
 
-				string añadirBundleId1 = string.Empty;
-				string añadirBundleId2 = string.Empty;
+			if (!string.IsNullOrEmpty(noticia.Juegos))
+			{
+				campos.Add("juegos");
+				valores.Add("@juegos");
+				p.Add("@juegos", noticia.Juegos);
+			}
 
-				if (noticia.BundleId > 0)
-				{
-					añadirBundleId1 = ", bundleId";
-					añadirBundleId2 = ", @bundleId";
-				}
+			if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
+			{
+				campos.Add("bundleTipo");
+				valores.Add("@bundleTipo");
+				p.Add("@bundleTipo", noticia.BundleTipo);
+			}
 
-				string añadirGratisIds1 = string.Empty;
-				string añadirGratisIds2 = string.Empty;
+			if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
+			{
+				campos.Add("gratisTipo");
+				valores.Add("@gratisTipo");
+				p.Add("@gratisTipo", noticia.GratisTipo);
+			}
 
-				if (string.IsNullOrEmpty(noticia.GratisIds) == false)
-				{
-					añadirGratisIds1 = ", gratisIds";
-					añadirGratisIds2 = ", @gratisIds";
-				}
+			if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
+			{
+				campos.Add("suscripcionTipo");
+				valores.Add("@suscripcionTipo");
+				p.Add("@suscripcionTipo", noticia.SuscripcionTipo);
+			}
 
-				string añadirSuscripcionesIds1 = string.Empty;
-                string añadirSuscripcionesIds2 = string.Empty;
+			if (noticia.BundleId > 0)
+			{
+				campos.Add("bundleId");
+				valores.Add("@bundleId");
+				p.Add("@bundleId", noticia.BundleId);
+			}
 
-				if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
-				{
-					añadirSuscripcionesIds1 = ", suscripcionesIds";
-                    añadirSuscripcionesIds2 = ", @suscripcionesIds";
-                }
+			if (!string.IsNullOrEmpty(noticia.GratisIds))
+			{
+				campos.Add("gratisIds");
+				valores.Add("@gratisIds");
+				p.Add("@gratisIds", noticia.GratisIds);
+			}
 
-                string sqlInsertar = "INSERT INTO noticias " +
-					"(noticiaTipo" + añadirImagen1 + añadirEnlace1 + añadirJuegos1 + añadirBundle1 + añadirGratis1 + añadirSuscripcion1 + añadirBundleId1 + añadirGratisIds1 + añadirSuscripcionesIds1 + ", fechaEmpieza, fechaTermina, tituloEn, tituloEs, contenidoEn, contenidoEs) VALUES " +
-					"(@noticiaTipo" + añadirImagen2 + añadirEnlace2 + añadirJuegos2 + añadirBundle2 + añadirGratis2 + añadirSuscripcion2 + añadirBundleId2 + añadirGratisIds2 + añadirSuscripcionesIds2 + ", @fechaEmpieza, @fechaTermina, @tituloEn, @tituloEs, @contenidoEn, @contenidoEs) ";
+			if (!string.IsNullOrEmpty(noticia.SuscripcionesIds))
+			{
+				campos.Add("suscripcionesIds");
+				valores.Add("@suscripcionesIds");
+				p.Add("@suscripcionesIds", noticia.SuscripcionesIds);
+			}
 
-				using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-				{
-					comando.Parameters.AddWithValue("@noticiaTipo", noticia.Tipo);
+			string sql = $@"INSERT INTO noticias ({string.Join(",", campos)})
+                VALUES ({string.Join(",", valores)});
+                SELECT SCOPE_IDENTITY();";
 
-					if (string.IsNullOrEmpty(noticia.Imagen) == false)
-					{
-						comando.Parameters.AddWithValue("@imagen", noticia.Imagen);
-					}
+			try
+			{
+				conexion = CogerConexion(conexion);
 
-					if (string.IsNullOrEmpty(noticia.Enlace) == false)
-					{
-						comando.Parameters.AddWithValue("@enlace", noticia.Enlace);
-					}
-
-					if (string.IsNullOrEmpty(noticia.Juegos) == false)
-					{
-						comando.Parameters.AddWithValue("@juegos", noticia.Juegos);
-					}
-
-					if (noticia.Tipo == NoticiaTipo.Bundles)
-					{
-						comando.Parameters.AddWithValue("@bundleTipo", noticia.BundleTipo);
-					}
-
-					if (noticia.Tipo == NoticiaTipo.Gratis)
-					{
-						comando.Parameters.AddWithValue("@gratisTipo", noticia.GratisTipo);
-					}
-
-					if (noticia.Tipo == NoticiaTipo.Suscripciones)
-					{
-						comando.Parameters.AddWithValue("@suscripcionTipo", noticia.SuscripcionTipo);
-					}
-
-					if (noticia.BundleId > 0)
-					{
-						comando.Parameters.AddWithValue("@bundleId", noticia.BundleId);
-					}
-
-                    if (string.IsNullOrEmpty(noticia.GratisIds) == false)
-					{
-						comando.Parameters.AddWithValue("@gratisIds", noticia.GratisIds);
-					}
-
-                    if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
-                    {
-                        comando.Parameters.AddWithValue("@suscripcionesIds", noticia.SuscripcionesIds);
-                    }
-
-                    comando.Parameters.AddWithValue("@fechaEmpieza", noticia.FechaEmpieza.ToString());
-					comando.Parameters.AddWithValue("@fechaTermina", noticia.FechaTermina.ToString());
-					comando.Parameters.AddWithValue("@tituloEn", WebUtility.HtmlDecode(noticia.TituloEn));
-					comando.Parameters.AddWithValue("@tituloEs", WebUtility.HtmlDecode(noticia.TituloEs));
-					comando.Parameters.AddWithValue("@contenidoEn", noticia.ContenidoEn);
-					comando.Parameters.AddWithValue("@contenidoEs", noticia.ContenidoEs);
-					
-					try
-					{
-						comando.ExecuteNonQuery();
-
-						return Buscar.Ultimo(conexion).Id;
-                    }
-					catch (Exception ex)
-                    {
-                        Errores.Insertar.Mensaje("Portada Noticias", ex, conexion);
-                    }
-				}
-
+				return conexion.ExecuteScalar<int>(sql, p);
+			}
+			catch (Exception ex)
+			{
+				Errores.Insertar.Mensaje("Portada Noticias", ex);
 				return 0;
 			}
 		}

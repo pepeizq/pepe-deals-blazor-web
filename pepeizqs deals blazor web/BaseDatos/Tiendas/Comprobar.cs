@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using ApexCharts;
 using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
@@ -57,7 +58,7 @@ namespace BaseDatos.Tiendas
 					}
 
 					string buscarJuego = "SELECT id, precioMinimosHistoricos, precioActualesTiendas, idSteam, historicos, fechaSteamAPIComprobacion FROM juegos WHERE idSteam=@idSteam";
-
+					
 					var datos = await conexion.QueryFirstOrDefaultAsync<dynamic>(buscarJuego, new { idSteam });
 
 					if (datos != null)
@@ -69,7 +70,7 @@ namespace BaseDatos.Tiendas
 						if (string.IsNullOrEmpty(fechaAPI) == false)
 						{
 							bool actualizarAPI = DateTime.Now.Subtract(DateTime.Parse(fechaAPI)) > TimeSpan.FromDays(91);
-
+							
 							if (actualizarAPI == true)
 							{
 								BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
@@ -138,27 +139,21 @@ namespace BaseDatos.Tiendas
 
 			string esquema = $"tienda{oferta.Tienda}";
 			string sqlBuscar = $@"
-DECLARE @ids NVARCHAR(MAX);
-
-SELECT @ids = idJuegos 
-FROM {esquema}
-WHERE enlace = @Enlace
-  AND descartado = 'no';
-
-IF @ids IS NOT NULL AND @ids <> '0'
-BEGIN
-    DECLARE @tabla TABLE (numero INT NOT NULL);
-
-    INSERT INTO @tabla (numero)
-    SELECT TRY_CAST(value AS INT)
-    FROM STRING_SPLIT(@ids, ',')
-    WHERE value <> '';
-
-    SELECT id, precioMinimosHistoricos, precioActualesTiendas, 
-           idSteam, historicos, analisis
-    FROM juegos
-    WHERE id IN (SELECT numero FROM @tabla);
-END;
+SELECT j.id,
+       j.precioMinimosHistoricos,
+       j.precioActualesTiendas,
+       j.idSteam,
+       j.historicos,
+       j.analisis
+FROM {esquema} t
+CROSS APPLY (
+    SELECT TRY_CAST(value AS INT) AS numero
+    FROM STRING_SPLIT(t.idJuegos, ',')
+) ids
+JOIN juegos j ON j.id = ids.numero
+WHERE t.enlace = @Enlace
+  AND t.descartado = 'no'
+  AND ids.numero IS NOT NULL;
 ";
 
 			var resultados = (await conexion.QueryAsync(sqlBuscar, new

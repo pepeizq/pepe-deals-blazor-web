@@ -277,9 +277,9 @@
 			}
 
 			<div class="cuerpo-ancho" style="position: sticky; top: var(--alturaCabecera); z-index: 1000;">
-				<button @onclick="(e => AbrirBundle(e, enlaceBundle))" class="boton-pequeño" style="text-align: center; padding: 20px; font-size: 20px;">
+				<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="text-align: center; padding: 20px; font-size: 20px;">
 					@Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Bundle")
-				</button>
+				</a>
 			</div>
 		}
 	}
@@ -294,9 +294,9 @@
 		}
 
 		<div class="cuerpo-ancho" style="position: sticky; top: var(--alturaCabecera); z-index: 1000; width: 100%;">
-			<button @onclick="(e => AbrirBundle(e, enlaceBundle))" class="boton-pequeño" style="text-align: center; padding: 20px; font-size: 20px;">
+			<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="text-align: center; padding: 20px; font-size: 20px;">
 				@Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Bundle")
-			</button>
+			</a>
 		</div>
 	}
 

@@ -413,7 +413,7 @@ namespace BaseDatos.Juegos
 			{
 				ahora = DateTime.Now;
 			}
-
+			
 			Juegos.Actualizar.Comprobacion(cambioPrecio, id, ofertasActuales, ofertasHistoricas, historicos, conexion, slugGOG, idGOG, slugEpic, ahora, reseñas);
 		}
 

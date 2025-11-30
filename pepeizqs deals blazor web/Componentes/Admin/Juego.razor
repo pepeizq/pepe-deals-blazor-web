@@ -191,10 +191,17 @@
 							</button>
 						}
 
-						<div style="padding: 10px 15px;">
+						<div style="display: flex; flex-direction: column; gap: 10px; padding: 10px 15px;">
 							<a target="_blank" href="https://www.steamgriddb.com/search/grids?term=@juego.Nombre">
 								Abrir SteamGridDB
 							</a>
+
+                            @if (juego.IdSteam > 0)
+                            {
+                                <a target="_blank" href="https://steamdb.info/app/@juego.IdSteam/info/">
+								    Abrir SteamDB
+							    </a>
+                            }
 						</div>
 					}
 				</div>

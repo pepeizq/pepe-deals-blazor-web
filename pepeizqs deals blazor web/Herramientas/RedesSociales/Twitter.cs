@@ -65,7 +65,7 @@ namespace Herramientas.RedesSociales
 
 			string titulo = noticia.TituloEn;
 
-			if (noticia.Tipo == Noticias.NoticiaTipo.Bundles)
+			if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
 			{
 				Bundles2.BundleTipo tipoBundle = noticia.BundleTipo;
 				Bundles2.Bundle bundle = Bundles2.BundlesCargar.DevolverBundle(tipoBundle);

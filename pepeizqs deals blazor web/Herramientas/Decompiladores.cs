@@ -207,5 +207,52 @@ namespace Herramientas
 				}
 			}
 		}
+
+		private static readonly HttpClient _http = new HttpClient
+		{
+			Timeout = TimeSpan.FromSeconds(20)
+		};
+
+		public static async Task<string> GZipFormato3(string enlace)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				try
+				{
+					using var request = new HttpRequestMessage(HttpMethod.Get, enlace);
+					request.Headers.AcceptEncoding.ParseAdd("gzip");
+					request.Headers.AcceptEncoding.ParseAdd("deflate");
+
+					using var respuesta = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+					if (respuesta.IsSuccessStatusCode == false)
+					{
+						continue;
+					}
+
+					var stream = await respuesta.Content.ReadAsStreamAsync();
+					Stream finalStream = stream;
+
+					if (respuesta.Content.Headers.ContentEncoding.Contains("gzip"))
+					{
+						finalStream = new GZipStream(stream, CompressionMode.Decompress);
+					}
+
+					using var lector = new StreamReader(finalStream);
+					string resultado = await lector.ReadToEndAsync();
+
+					if (string.IsNullOrWhiteSpace(resultado) == false)
+					{
+						return resultado;
+					}			
+				}
+				catch
+				{
+					await Task.Delay(500); 
+				}
+			}
+
+			return "{}";
+		}
 	}
 }

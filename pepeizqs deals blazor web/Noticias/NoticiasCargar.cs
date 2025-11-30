@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using Bundles2;
+
 namespace Noticias
 {
 	public enum NoticiaTipo
@@ -83,7 +85,7 @@ namespace Noticias
 			return noticias;
 		}
 
-        public static List<NoticiaTipo> CargarNoticiasTipo()
+		public static List<NoticiaTipo> CargarNoticiasTipo()
 		{
 			List<NoticiaTipo> tipos = Enum.GetValues(typeof(NoticiaTipo)).Cast<NoticiaTipo>().ToList();
 

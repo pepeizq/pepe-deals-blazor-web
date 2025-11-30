@@ -6,6 +6,7 @@ using Dapper;
 using Gratis2;
 using Herramientas;
 using Microsoft.AspNetCore.Components;
+using Noticias;
 using Suscripciones2;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -362,7 +363,7 @@ namespace Juegos
 
 	#region Dapper
 
-	public class JsonTypeHandler<T> : SqlMapper.TypeHandler<T>
+	public class JuegoHandler<T> : SqlMapper.TypeHandler<T>
 	{
 		public override T Parse(object valor)
 		{
@@ -390,22 +391,23 @@ namespace Juegos
 	{
 		public static void Registrar()
 		{
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoImagenes>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoPrecio>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoAnalisis>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoCaracteristicas>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoMedia>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoBundle>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoGratis>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoSuscripcion>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<string>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoDeckToken>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoHistorico>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoGalaxyGOG>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoCantidadJugadoresSteam>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<List<JuegoIdioma>>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoEpicGames>());
-			SqlMapper.AddTypeHandler(new JsonTypeHandler<JuegoXbox>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoImagenes>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoPrecio>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoAnalisis>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoCaracteristicas>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMedia>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMediaVideo>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoBundle>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoGratis>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoSuscripcion>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<string>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoDeckToken>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoHistorico>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoGalaxyGOG>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoCantidadJugadoresSteam>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoIdioma>>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoEpicGames>());
+			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoXbox>());
 		}
 	}
 

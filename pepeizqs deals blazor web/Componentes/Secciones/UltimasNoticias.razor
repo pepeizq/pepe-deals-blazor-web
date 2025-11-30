@@ -187,7 +187,7 @@
 									@((MarkupString)texto)
 								</div>
 
-								if (noticiaMostrar.Tipo == Noticias.NoticiaTipo.Bundles)
+								if (noticiaMostrar.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
 								{
 									<a href="/news/@noticiaMostrar.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaMostrar.TituloEn, noticiaMostrar.TituloEs))/" class="boton-pequeño" style="width: auto; margin-top: 20px; padding: 10px 15px;">
 										@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "LastNews")
@@ -327,7 +327,7 @@
 				{
 					foreach (var tipoActual in tiposActuales)
 					{
-						if (tipoActual == noticia.Tipo)
+						if (tipoActual == noticia.NoticiaTipo)
 						{
 							añadirTipo = false;
 						}
@@ -336,7 +336,7 @@
 
 				if (añadirTipo == true)
 				{
-					tiposActuales.Add(noticia.Tipo);
+					tiposActuales.Add(noticia.NoticiaTipo);
 				}
 			}
 		}

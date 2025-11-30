@@ -1,26 +1,27 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Portada
 {
 	public static class Limpiar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static void Total(SqlConnection conexion = null)
 		{
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			conexion = CogerConexion(conexion);
 
-            string limpiar = @"DELETE sm
+			string limpiar = @"DELETE sm
 FROM seccionMinimos sm
 CROSS APPLY OPENJSON(sm.PrecioMinimosHistoricos)
 WITH (
@@ -35,10 +36,7 @@ WHERE
         (pmh.FechaActualizacion >= DATEADD(hour, -12, GETDATE()))
     );";
 
-			using (SqlCommand comando = new SqlCommand(limpiar, conexion))
-			{
-				comando.ExecuteNonQuery();
-			}
+			conexion.Execute(limpiar);
 		}
 	}
 }

@@ -1287,7 +1287,7 @@ namespace BaseDatos.Juegos
 		{
 			conexion = CogerConexion(conexion);
 
-			return conexion.QuerySingle<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL AND tipo='1') OR (maestro='no' AND tipo='1') OR (maestro IS NULL AND tipo='3') OR (maestro='no' AND tipo='3') OPTION (MAXDOP 8);");
+			return conexion.QuerySingle<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", commandTimeout: 120);
 		}
 
 		public static List<Juego> Filtro(List<string> ids, int cantidad, SqlConnection conexion = null)

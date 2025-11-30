@@ -873,7 +873,7 @@
 						{
 							foreach (var tipoActual in tiposActualesNoticias)
 							{
-								if (tipoActual == noticia.Tipo)
+								if (tipoActual == noticia.NoticiaTipo)
 								{
 									añadirTipo = false;
 								}
@@ -882,7 +882,7 @@
 
 						if (añadirTipo == true)
 						{
-							tiposActualesNoticias.Add(noticia.Tipo);
+							tiposActualesNoticias.Add(noticia.NoticiaTipo);
 						}
 					}
 				}
@@ -1262,21 +1262,27 @@
 						DeseadoMostrar = false
 					};
 
-					if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+					if (string.IsNullOrEmpty(usuarioId) == false)
 					{
-						juegoMinimoMostrar.Color = "var(--fondoBien)";
-					}
-					else
-					{
-						if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+						if (juego.PrecioMinimosHistoricos?.Count > 0)
 						{
-							juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-							juegoMinimoMostrar.DeseadoImportado = true;
-						}
+							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoBien)";
+							}
+							else
+							{
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+									juegoMinimoMostrar.DeseadoImportado = true;
+								}
 
-						if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-						{
-							juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								}
+							}
 						}
 					}
 

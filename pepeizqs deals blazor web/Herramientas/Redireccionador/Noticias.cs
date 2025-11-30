@@ -15,15 +15,15 @@ namespace Herramientas.Redireccionador
 
 			if (string.IsNullOrEmpty(noticia.Enlace) == false)
 			{
-				if (noticia.Tipo == NoticiaTipo.Bundles)
+				if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 				{
 					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.BundleTipo, false, false));
 				}
-				else if (noticia.Tipo == NoticiaTipo.Gratis)
+				else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 				{
 					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.GratisTipo, false, false));
 				}
-				else if (noticia.Tipo == NoticiaTipo.Suscripciones)
+				else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
 					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.SuscripcionTipo, false, false));
 				}

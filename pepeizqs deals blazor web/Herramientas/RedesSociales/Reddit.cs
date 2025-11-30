@@ -24,13 +24,13 @@ namespace Herramientas.RedesSociales
                 string titulo = string.Empty;
                 string texto = string.Empty;
 
-                if (noticia.Tipo == Noticias.NoticiaTipo.Bundles)
+                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
                 {
                     titulo = "[Bundle] " + noticia.TituloEn;
                     texto = Bundle(global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId));
                 }
 
-                if (noticia.Tipo == Noticias.NoticiaTipo.Gratis)
+                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
                 {
                     titulo = "[Free] " + noticia.TituloEn;
 
@@ -53,7 +53,7 @@ namespace Herramientas.RedesSociales
                     texto = Gratis(juegosGratis);
                 }
 
-                if (noticia.Tipo == Noticias.NoticiaTipo.Suscripciones)
+                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
                 {
                     titulo = "[Subscriptions] " + noticia.TituloEn;
 

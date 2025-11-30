@@ -22,23 +22,7 @@ namespace BaseDatos.Portada
 
 		public static List<JuegoMinimoTarea> BuscarMinimos(SqlConnection conexion = null)
 		{
-			List<JuegoMinimoTarea> resultados = new List<JuegoMinimoTarea>();
-
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string busqueda = @"SELECT j.*,
+			string busqueda = @"SELECT j.*,
        pmh.DRM as DRMElegido
 FROM juegos j
 CROSS APPLY OPENJSON(j.PrecioMinimosHistoricos)
@@ -78,24 +62,9 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
           AND sm_pmh.DRM = pmh.DRM
     );";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							JuegoMinimoTarea juego = new JuegoMinimoTarea();
-							juego = (JuegoMinimoTarea)BaseDatos.Juegos.Buscar.Cargar(juego, lector);
+			conexion = CogerConexion(conexion);
 
-							juego.DRMElegido = (JuegoDRM)lector.GetInt32(lector.GetOrdinal("DRMElegido"));
-
-							resultados.Add(juego);
-						}
-					}
-				}
-			}
-
-			return resultados;
+			return conexion.Query<JuegoMinimoTarea>(busqueda).ToList();
 		}
 
 		public static List<Juego> Destacados(SqlConnection conexion = null)
@@ -150,204 +119,134 @@ ORDER BY NEWID()";
 
 		public static List<Juego> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, SqlConnection conexion = null, int cantidadAnalisis = 199)
 		{
-			List<Juego> resultados = new List<Juego>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
+			string categoria = null;
+
+			if (categorias?.Count > 0)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int i = 0;
+				foreach (var valor in categorias)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string categoria = null;
-
-				if (categorias != null)
-				{
-					if (categorias.Count > 0)
+					if (i == 0)
 					{
-						int i = 0;
-						foreach (var valor in categorias)
-						{
-							if (i == 0)
-							{
-								categoria = categoria + " AND (tipo = " + valor;
-							}
-							else if (i > 0)
-							{
-								categoria = categoria + " OR tipo = " + valor;
-							}
-
-							i += 1;
-						}
-
-						if (string.IsNullOrEmpty(categoria) == false)
-						{
-							categoria = categoria + ")";
-						}
+						categoria = categoria + " AND (tipo = " + valor;
 					}
-				}
-
-				string drm = null;
-
-				if (drms != null)
-				{
-					if (drms.Count > 0)
+					else if (i > 0)
 					{
-						int i = 0;
-						foreach (var valor in drms)
-						{
-							if (i == 0)
-							{
-								drm = drm + " AND (JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
-							}
-							else if (i > 0)
-							{
-								drm = drm + " OR JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
-							}
-
-							i += 1;
-						}
-
-						if (string.IsNullOrEmpty(drm) == false)
-						{
-							drm = drm + ")";
-						}
+						categoria = categoria + " OR tipo = " + valor;
 					}
+
+					i += 1;
 				}
 
-				string busqueda = @"SELECT TOP @cantidadJuegos idMaestra, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro'), bundles, gratis, suscripciones, idSteam, CONVERT(datetime2, JSON_VALUE(precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, idGog, analisis, CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) FROM seccionMinimos 
+				if (string.IsNullOrEmpty(categoria) == false)
+				{
+					categoria = categoria + ")";
+				}
+			}
+
+			string drm = null;
+
+			if (drms?.Count > 0)
+			{
+				int i = 0;
+				foreach (var valor in drms)
+				{
+					if (i == 0)
+					{
+						drm = drm + " AND (JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
+					}
+					else if (i > 0)
+					{
+						drm = drm + " OR JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
+					}
+
+					i += 1;
+				}
+
+				if (string.IsNullOrEmpty(drm) == false)
+				{
+					drm = drm + ")";
+				}
+			}
+
+			string busqueda = @"SELECT TOP @cantidadJuegos idMaestra, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, bundles, gratis, suscripciones, idSteam, CONVERT(datetime2, JSON_VALUE(precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, idGog, analisis, CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos 
                                     WHERE CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > @cantidadAnalisis @categoria @drm";
 
-				if (tipo == 0)
+			if (tipo == 0)
+			{
+				busqueda = busqueda + " ORDER BY Fecha DESC";
+			}
+			else if (tipo == 1)
+			{
+				busqueda = busqueda + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
+			}
+			else if (tipo == 2)
+			{
+				busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) DESC";
+			}
+
+			busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
+			busqueda = busqueda.Replace("@categoria", categoria);
+			busqueda = busqueda.Replace("@drm", drm);
+			busqueda = busqueda.Replace("@cantidadAnalisis", cantidadAnalisis.ToString());
+
+			var filas = conexion.Query(busqueda).ToList();
+
+			List<Juego> resultados = new List<Juego>();
+
+			foreach (var fila in filas)
+			{
+				Juego juego = new Juego
 				{
-					busqueda = busqueda + " ORDER BY Fecha DESC";
-				}
-				else if (tipo == 1)
+					Id = fila.idMaestra,
+					IdMaestra = fila.idMaestra,
+					Nombre = fila.nombre,
+					IdSteam = fila.idSteam,
+					IdGog = fila.idGog,
+					Caracteristicas = fila.FechaLanzamiento != null ? new JuegoCaracteristicas { FechaLanzamientoSteam = fila.FechaLanzamiento } : null
+				};
+
+				if (string.IsNullOrEmpty(fila.imagenes) == false)
 				{
-					busqueda = busqueda + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
-				}
-				else if (tipo == 2)
-				{
-					busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) DESC";
+					juego.Imagenes = JsonSerializer.Deserialize<JuegoImagenes>(fila.imagenes);
 				}
 
-				busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
-				busqueda = busqueda.Replace("@categoria", categoria);
-				busqueda = busqueda.Replace("@drm", drm);
-				busqueda = busqueda.Replace("@cantidadAnalisis", cantidadAnalisis.ToString());
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
 				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+				}
+					
+				if (string.IsNullOrEmpty(fila.video) == false)
+				{
+					juego.Media = new JuegoMedia
 					{
-						while (lector.Read())
-						{
-							Juego juego = new Juego();
-
-							if (lector.IsDBNull(0) == false)
-							{
-								juego.Id = lector.GetInt32(0);
-								juego.IdMaestra = lector.GetInt32(0);
-							}
-
-							if (lector.IsDBNull(1) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-								{
-									juego.Nombre = lector.GetString(1);
-								}
-							}
-
-							if (lector.IsDBNull(2) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-								{
-									juego.Imagenes = JsonSerializer.Deserialize<JuegoImagenes>(lector.GetString(2));
-								}
-							}
-
-							if (lector.IsDBNull(3) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(3)) == false)
-								{
-									juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(lector.GetString(3));
-								}
-							}
-
-							if (lector.IsDBNull(4) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(4)) == false)
-								{
-									JuegoMedia media = new JuegoMedia();
-
-									JuegoMediaVideo video = new JuegoMediaVideo();
-									video.Micro = lector.GetString(4);
-
-									media.Videos = [video];
-
-									juego.Media = media;
-								}
-							}
-
-							if (lector.IsDBNull(5) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(5)) == false)
-								{
-									juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(lector.GetString(5));
-								}
-							}
-
-							if (lector.IsDBNull(6) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(6)) == false)
-								{
-									juego.Gratis = JsonSerializer.Deserialize<List<JuegoGratis>>(lector.GetString(6));
-								}
-							}
-
-							if (lector.IsDBNull(7) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(7)) == false)
-								{
-									juego.Suscripciones = JsonSerializer.Deserialize<List<JuegoSuscripcion>>(lector.GetString(7));
-								}
-							}
-
-							if (lector.IsDBNull(8) == false)
-							{
-								juego.IdSteam = lector.GetInt32(8);
-							}
-
-							if (lector.IsDBNull(10) == false)
-							{
-								juego.IdGog = lector.GetInt32(10);
-							}
-
-							if (lector.IsDBNull(11) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(11)) == false)
-								{
-									juego.Analisis = JsonSerializer.Deserialize<JuegoAnalisis>(lector.GetString(11));
-								}
-							}
-
-							if (lector.IsDBNull(12) == false)
-							{
-								juego.Caracteristicas = new JuegoCaracteristicas();
-								juego.Caracteristicas.FechaLanzamientoSteam = lector.GetDateTime(12);
-							}
-
-							resultados.Add(juego);
-						}
-					}
+						Videos = new List<JuegoMediaVideo> { new JuegoMediaVideo { Micro = fila.video } }
+					};
 				}
+
+				if (string.IsNullOrEmpty(fila.bundles) == false)
+				{
+					juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(fila.bundles);
+				}
+
+				if (string.IsNullOrEmpty(fila.gratis) == false)
+				{
+					juego.Gratis = JsonSerializer.Deserialize<List<JuegoGratis>>(fila.gratis);
+				}
+
+				if (string.IsNullOrEmpty(fila.suscripciones) == false)
+				{
+					juego.Suscripciones = JsonSerializer.Deserialize<List<JuegoSuscripcion>>(fila.suscripciones);
+				}	
+
+				if (string.IsNullOrEmpty(fila.analisis) == false)
+				{
+					juego.Analisis = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
+				}
+
+				resultados.Add(juego);
 			}
 
 			return resultados;
@@ -355,150 +254,49 @@ ORDER BY NEWID()";
 
 		public static List<Juego> Proximamente(int cantidadJuegos, List<string> categorias = null, List<string> drms = null, SqlConnection conexion = null)
 		{
-			List<Juego> resultados = new List<Juego>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				//string categoria = null;
-
-				//if (categorias != null)
-				//{
-				//	if (categorias.Count > 0)
-				//	{
-				//		int i = 0;
-				//		foreach (var valor in categorias)
-				//		{
-				//			if (i == 0)
-				//			{
-				//				categoria = categoria + " AND (tipo = " + valor;
-				//			}
-				//			else if (i > 0)
-				//			{
-				//				categoria = categoria + " OR tipo = " + valor;
-				//			}
-
-				//			i += 1;
-				//		}
-
-				//		if (string.IsNullOrEmpty(categoria) == false)
-				//		{
-				//			categoria = categoria + ")";
-				//		}
-				//	}
-				//}
-
-				//string drm = null;
-
-				//if (drms != null)
-				//{
-				//	if (drms.Count > 0)
-				//	{
-				//		int i = 0;
-				//		foreach (var valor in drms)
-				//		{
-				//			if (i == 0)
-				//			{
-				//				drm = drm + " AND (JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
-				//			}
-				//			else if (i > 0)
-				//			{
-				//				drm = drm + " OR JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
-				//			}
-
-				//			i += 1;
-				//		}
-
-				//		if (string.IsNullOrEmpty(drm) == false)
-				//		{
-				//			drm = drm + ")";
-				//		}
-				//	}
-				//}
-
-				string busqueda = @"SELECT TOP @cantidadJuegos id, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro'), idSteam, idGog FROM juegos 
+			string busqueda = @"SELECT TOP @cantidadJuegos id, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam, idGog, CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM juegos 
                                     WHERE ISJSON(caracteristicas) > 0 AND DATEDIFF(DAY, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam'), GETDATE()) < 0
 ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam'))";
 
-				busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
-				//busqueda = busqueda.Replace("@categoria", categoria);
-				//busqueda = busqueda.Replace("@drm", drm);
+			busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+			var filas = conexion.Query(busqueda).ToList();
+
+			List<Juego> resultados = new List<Juego>();
+
+			foreach (var fila in filas)
+			{
+				Juego juego = new Juego
 				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							Juego juego = new Juego();
+					Id = fila.id,
+					IdMaestra = fila.id,
+					Nombre = fila.nombre,
+					IdSteam = fila.idSteam,
+					IdGog = fila.idGog,
+					Caracteristicas = fila.FechaLanzamiento != null ? new JuegoCaracteristicas { FechaLanzamientoSteam = fila.FechaLanzamiento } : null
+				};
 
-							if (lector.IsDBNull(0) == false)
-							{
-								juego.Id = lector.GetInt32(0);
-								juego.IdMaestra = lector.GetInt32(0);
-							}
-
-							if (lector.IsDBNull(1) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-								{
-									juego.Nombre = lector.GetString(1);
-								}
-							}
-
-							if (lector.IsDBNull(2) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-								{
-									juego.Imagenes = JsonSerializer.Deserialize<JuegoImagenes>(lector.GetString(2));
-								}
-							}
-
-							if (lector.IsDBNull(3) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(3)) == false)
-								{
-									juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(lector.GetString(3));
-								}
-							}
-
-							if (lector.IsDBNull(4) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(4)) == false)
-								{
-									JuegoMedia media = new JuegoMedia();
-									JuegoMediaVideo video = new JuegoMediaVideo();
-									video.Micro = lector.GetString(4);
-									media.Videos = [video];
-									juego.Media = media;
-								}
-							}
-
-							if (lector.IsDBNull(5) == false)
-							{
-								juego.IdSteam = lector.GetInt32(5);
-							}
-
-							if (lector.IsDBNull(6) == false)
-							{
-								juego.IdGog = lector.GetInt32(6);
-							}
-
-							resultados.Add(juego);
-						}
-					}
+				if (string.IsNullOrEmpty(fila.imagenes) == false)
+				{
+					juego.Imagenes = JsonSerializer.Deserialize<JuegoImagenes>(fila.imagenes);
 				}
+
+				if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
+				{
+					juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+				}
+
+				if (string.IsNullOrEmpty(fila.video) == false)
+				{
+					juego.Media = new JuegoMedia
+					{
+						Videos = new List<JuegoMediaVideo> { new JuegoMediaVideo { Micro = fila.video } }
+					};
+				}
+
+				resultados.Add(juego);
 			}
 
 			return resultados;

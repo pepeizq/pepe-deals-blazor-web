@@ -49,19 +49,19 @@
 					@{
 						string icono = string.Empty;
 
-						if (noticia.Tipo == NoticiaTipo.Bundles)
+						if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 						{
 							icono = Bundles2.BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
 						}
-						else if (noticia.Tipo == NoticiaTipo.Gratis)
+						else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 						{
 							icono = Gratis2.GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
 						}
-						else if (noticia.Tipo == NoticiaTipo.Suscripciones)
+						else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 						{
 							icono = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
 						}
-						else if (noticia.Tipo == NoticiaTipo.Web)
+						else if (noticia.NoticiaTipo == NoticiaTipo.Web)
 						{
 							icono = "/favicons/favicon-96x96.png";
 						}
@@ -69,7 +69,7 @@
 						if (string.IsNullOrEmpty(icono) == false)
 						{
 							<div style="display: flex;">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(icono, 18, 18)" style="width: 18px; height: 18px;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.Tipo, idioma)"  />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(icono, 18, 18)" style="width: 18px; height: 18px;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)"  />
 							</div>
 						}
 					}

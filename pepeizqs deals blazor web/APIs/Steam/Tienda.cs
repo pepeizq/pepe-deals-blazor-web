@@ -100,7 +100,7 @@ namespace APIs.Steam
 
 				if (mirarOfertas == true)
 				{
-					string html2 = await Decompiladores.GZipFormato("https://store.steampowered.com/search/results/?query&start=" + i.ToString() + "&count=50&dynamic_data=&force_infinite=1&supportedlang=english&specials=1&ndl=1&infinite=1&ignore_preferences=1&l=english&category1=998%2C21%2C990%2C994" + añadirBundles);
+					string html2 = await Decompiladores.GZipFormato3("https://store.steampowered.com/search/results/?query&start=" + i.ToString() + "&count=50&dynamic_data=&force_infinite=1&supportedlang=english&specials=1&ndl=1&infinite=1&ignore_preferences=1&l=english&category1=998%2C21%2C990%2C994" + añadirBundles);
 
 					try
 					{
@@ -150,7 +150,7 @@ namespace APIs.Steam
 				}
 				else
 				{
-					string html2 = await Decompiladores.GZipFormato("https://store.steampowered.com/search/results/?query&start=" + i.ToString() + "&count=50&dynamic_data=&force_infinite=1&supportedlang=english&ndl=1&infinite=1&l=english");
+					string html2 = await Decompiladores.GZipFormato3("https://store.steampowered.com/search/results/?query&start=" + i.ToString() + "&count=50&dynamic_data=&force_infinite=1&supportedlang=english&ndl=1&infinite=1&l=english");
 
 					try
 					{
@@ -222,14 +222,24 @@ namespace APIs.Steam
 								{
 									enlace = "https://store.steampowered.com/bundle/" + Juego.LimpiarID(enlace);
 								}
-								
+
 								int int9 = temp4.IndexOf("<img src=");
 								string temp9 = temp4.Remove(0, int9 + 10);
 
-								int int10 = temp9.IndexOf("?");
+								int int10 = temp9.IndexOf(Strings.ChrW(34));
 								string temp10 = temp9.Remove(int10, temp9.Length - int10);
 
-								string imagen = temp10.Trim();
+								if (string.IsNullOrEmpty(temp10) == false)
+								{
+									int10 = temp10.IndexOf("?");
+
+									if (int10 > -1)
+									{
+										temp10 = temp10.Remove(int10, temp10.Length - int10);
+									}
+								}
+
+								string imagen = temp10?.Trim();
 
 								JuegoAnalisis reseñas = new JuegoAnalisis
 								{
@@ -442,6 +452,10 @@ namespace APIs.Steam
 										}
 									}
 								}
+							}
+							else
+							{
+								break;
 							}
 
 							j += 1;

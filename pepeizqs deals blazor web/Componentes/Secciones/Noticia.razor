@@ -147,15 +147,15 @@
 			@{
 				string imagenCabecera = string.Empty;
 
-				if (noticia.Tipo == NoticiaTipo.Bundles)
+				if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 				{
 					imagenCabecera = BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenTienda;
 				}
-				else if (noticia.Tipo == NoticiaTipo.Gratis)
+				else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 				{
 					imagenCabecera = GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenLogo;
 				}
-				else if (noticia.Tipo == NoticiaTipo.Suscripciones)
+				else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
 					imagenCabecera = SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenLogo;
 				}
@@ -186,14 +186,14 @@
 		@{
 			string añadirMarginSuperior = string.Empty;
 
-			if (noticia.Tipo != NoticiaTipo.Bundles)
+			if (noticia.NoticiaTipo != NoticiaTipo.Bundles)
 			{
 				añadirMarginSuperior = "margin-top: 40px;";
 			}
 		}
 
 		<div style="position: relative; display: flex; flex-direction: column; gap: 40px; margin-bottom: 40px; @añadirMarginSuperior">
-			@if (noticia.Tipo == NoticiaTipo.Bundles)
+			@if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 			{
 				if (noticia.BundleId > 0)
 				{
@@ -233,7 +233,7 @@
 					}
 				}
 			}
-			else if (noticia.Tipo == NoticiaTipo.Gratis)
+			else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 			{
 				string texto = Herramientas.Idiomas.ElegirTexto(idioma, noticia.ContenidoEn, noticia.ContenidoEs);
 
@@ -318,7 +318,7 @@
 					}
 				}
 			}
-			else if (noticia.Tipo == NoticiaTipo.Suscripciones)
+			else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 			{
 				string texto = Herramientas.Idiomas.ElegirTexto(idioma, noticia.ContenidoEn, noticia.ContenidoEs);
 
@@ -523,7 +523,7 @@
 
 				juegos ??= BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
 
-				if (noticia.Tipo == NoticiaTipo.Suscripciones)
+				if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
 					if (string.IsNullOrEmpty(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenFondo) == false)
 					{

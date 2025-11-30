@@ -754,7 +754,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 noticiaAñadir.FechaEmpieza = DateTime.Now;
                 noticiaAñadir.FechaTermina = noticia.Fecha;
                 noticiaAñadir.Enlace = noticia.Enlace;
-                noticiaAñadir.Tipo = noticiaTipoSeleccionada;
+                noticiaAñadir.NoticiaTipo = noticiaTipoSeleccionada;
 
                 if (noticiaTipoSeleccionada == NoticiaTipo.Bundles)
                 {
@@ -782,35 +782,35 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 {
                     try
                     {
-                        if (usuario.NotificationBundles == true && noticiaAñadir.Tipo == NoticiaTipo.Bundles)
+                        if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
 
-                        if (usuario.NotificationFree == true && noticiaAñadir.Tipo == NoticiaTipo.Gratis)
+                        if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
 
-                        if (usuario.NotificationSubscriptions == true && noticiaAñadir.Tipo == NoticiaTipo.Suscripciones)
+                        if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
 
-                        if (usuario.NotificationWeb == true && noticiaAñadir.Tipo == NoticiaTipo.Web)
+                        if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
 
-                        if (usuario.NotificationDelisted == true && noticiaAñadir.Tipo == NoticiaTipo.Despedidas)
+                        if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
 
                         if (usuario.NotificationOthers == true && 
-                            noticiaAñadir.Tipo != NoticiaTipo.Bundles && noticiaAñadir.Tipo != NoticiaTipo.Gratis && 
-                            noticiaAñadir.Tipo != NoticiaTipo.Suscripciones && noticiaAñadir.Tipo != NoticiaTipo.Web &&
-                            noticiaAñadir.Tipo != NoticiaTipo.Despedidas)
+                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Bundles && noticiaAñadir.NoticiaTipo != NoticiaTipo.Gratis && 
+                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
+                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
                         {
                             Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                         }
