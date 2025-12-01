@@ -15,7 +15,7 @@
 	<div class="caja-admin-bundle cuerpo-ancho" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px;">
 		<div style="display: flex; align-items: center;">
 			<div style="width: 100%;">
-				Admin Editar • @bundle.NombreBundle
+				Admin Editar • @bundle.Nombre
 			</div>
 		</div>
 
@@ -127,8 +127,8 @@
 
 		if (bundle != null)
 		{
-			textoNombre = bundle.NombreBundle;
-			textoImagenBundle = bundle.ImagenBundle;
+			textoNombre = bundle.Nombre;
+			textoImagenBundle = bundle.Imagen;
 			textoImagenNoticia = bundle.ImagenNoticia;
 			textoFechaEmpieza = bundle.FechaEmpieza.ToString();
 			textoFechaTermina = bundle.FechaTermina.ToString();
@@ -296,11 +296,11 @@
 						Tier = tier,
 						DRM = global::Juegos.JuegoDRM.Steam,
 						Enlace = bundle.Enlace,
-						Nombre = bundle.NombreBundle,
-						Imagen = bundle.ImagenBundle,
+						Nombre = bundle.Nombre,
+						Imagen = bundle.Imagen,
 						FechaEmpieza = bundle.FechaEmpieza,
 						FechaTermina = bundle.FechaTermina,
-						Tipo = bundle.Tipo
+						Tipo = bundle.BundleTipo
 					};
 
                     juego.Bundles.Add(bundleJuego2);

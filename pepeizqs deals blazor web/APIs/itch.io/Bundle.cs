@@ -6,8 +6,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.Itchio,
-				NombreTienda = "itch.io",
+				BundleTipo = Bundles2.BundleTipo.Itchio,
+				Tienda = "itch.io",
 				ImagenTienda = "/imagenes/bundles/itchio_300x80.webp",
 				ImagenIcono = "/imagenes/bundles/itchio_icono.ico",
 				EnlaceBase = "itch.io",

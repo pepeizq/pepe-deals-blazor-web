@@ -25,13 +25,13 @@
     <div class="caja-admin-bundles" style="margin-top: 20px;">
         <div>
             <label style="margin-bottom: 10px;">Nombre:</label>
-            <input @onchange="@(e => TextoCambiaNombre(e))" class="entrada-texto" value="@bundle.NombreBundle">
+            <input @onchange="@(e => TextoCambiaNombre(e))" class="entrada-texto" value="@bundle.Nombre">
         </div>
 
         <div style="margin-top: 20px;">
             <label style="margin-bottom: 10px;">Imagen Bundle:</label>
-            <input @onchange="@(e => TextoCambiaImagen(e))" class="entrada-texto" value="@bundle.ImagenBundle">
-            <img src="@bundle.ImagenBundle" style="max-width: 300px; max-height: 300px; margin-top: 10px;" />
+            <input @onchange="@(e => TextoCambiaImagen(e))" class="entrada-texto" value="@bundle.Imagen">
+            <img src="@bundle.Imagen" style="max-width: 300px; max-height: 300px; margin-top: 10px;" />
         </div>
 
         <div style="margin-top: 20px;">
@@ -283,9 +283,9 @@
 
             if (bundle != null)
             {
-                if (string.IsNullOrEmpty(bundle.ImagenBundle) == true)
+                if (string.IsNullOrEmpty(bundle.Imagen) == true)
                 {
-                    bundle.ImagenBundle = bundle.ImagenTienda;
+                    bundle.Imagen = bundle.ImagenTienda;
                 }
 
                 if (string.IsNullOrEmpty(bundle.ImagenNoticia) == true)
@@ -300,7 +300,7 @@
     {
         if (texto.Value.ToString().Trim().Length > 1)
         {
-            bundle.NombreBundle = texto.Value.ToString().Trim();
+            bundle.Nombre = texto.Value.ToString().Trim();
         }
     }
 
@@ -308,7 +308,7 @@
     {
         if (texto.Value.ToString().Trim().Length > 1)
         {
-            bundle.ImagenBundle = texto.Value.ToString().Trim();
+            bundle.Imagen = texto.Value.ToString().Trim();
         }
     }
 

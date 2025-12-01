@@ -502,7 +502,7 @@ namespace Herramientas.RedesSociales
                     // Generar el BBCode para el foro
 
                     texto = texto + "BBCode para el hilo de compras conjuntas:[spoiler][code]";
-                    texto = texto + "[url=" + bundle.Enlace + "]" + bundle.NombreBundle + "[/url] • " + Herramientas.Precios.Euro(precioBundle) + Environment.NewLine + Environment.NewLine;
+                    texto = texto + "[url=" + bundle.Enlace + "]" + bundle.Nombre + "[/url] • " + Herramientas.Precios.Euro(precioBundle) + Environment.NewLine + Environment.NewLine;
                     texto = texto + "[list]";
 
 					foreach (var juego in juegosValoracion.OrderBy(j => j.Nombre))
@@ -517,7 +517,7 @@ namespace Herramientas.RedesSociales
 			else
 			{
 				texto = texto + "BBCode para el hilo de compras conjuntas:[spoiler][code]";
-				texto = texto + "[url=" + bundle.Enlace + "]" + bundle.NombreBundle + "[/url]" + Environment.NewLine + Environment.NewLine;
+				texto = texto + "[url=" + bundle.Enlace + "]" + bundle.Nombre + "[/url]" + Environment.NewLine + Environment.NewLine;
 
 				foreach (var tier in bundle.Tiers)
 				{

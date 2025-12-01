@@ -7,8 +7,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.PlanetPlay,
-				NombreTienda = "PlanetPlay",
+				BundleTipo = Bundles2.BundleTipo.PlanetPlay,
+				Tienda = "PlanetPlay",
 				ImagenTienda = "/imagenes/tiendas/planetplay_300x80.webp",
 				ImagenIcono = "/imagenes/tiendas/planetplay_icono.webp",
 				EnlaceBase = "planetplay.com",

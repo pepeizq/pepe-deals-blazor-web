@@ -43,8 +43,8 @@
             <select>
                 @foreach (Bundles2.Bundle bundle in BundlesCargar.GenerarListado())
                 {
-                    <option @onclick="@(e => CambiarBundleNoticias(e, bundle.Tipo))">
-                        @bundle.NombreTienda
+                    <option @onclick="@(e => CambiarBundleNoticias(e, bundle.BundleTipo))">
+                        @bundle.Tienda
                     </option>
                 }
             </select>
@@ -53,12 +53,12 @@
         @if (bundleTipoSeleccionado != BundleTipo.Desconocido)
         {
             <div>
-                @foreach (var bundle in BaseDatos.Bundles.Buscar.UnTipo(bundleTipoSeleccionado))
+                @foreach (var bundle in BaseDatos.Bundles.Buscar.UnTipo(bundleTipoSeleccionado).OrderByDescending(b => b.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearBundleNoticias(e, bundle.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
-                            <img src="@BundlesCargar.DevolverBundle(bundle.Tipo).ImagenTienda" style="width: 12%; margin: 10px;" />
-                            <div style="margin-left: 20px;">@bundle.NombreBundle</div>
+                            <img src="@BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenTienda" style="width: 12%; margin: 10px;" />
+                            <div style="margin-left: 20px;">@bundle.Nombre</div>
                         </div>
                     </button>
                 }
@@ -85,18 +85,20 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
 {
     <div class="caja-admin-noticias" style="margin-top: 20px;">
         <div class="opciones-combobox" style="width: 33%;">
-            <select @onchange="@(e => CambiarGratisNoticias(e))">
+            <select>
                 @foreach (Gratis2.Gratis gratis in GratisCargar.GenerarListado())
                 {
-                    <option value="@gratis.Tipo">@gratis.Nombre</option>
+                    <option @onclick="@(e => CambiarGratisNoticias(e, gratis.Tipo))">
+                        @gratis.Nombre
+                    </option>
                 }
             </select>
         </div>
 
-        @if (gratisSeleccionadoNoticias != null)
+        @if (gratisSeleccionadoNoticias != GratisTipo.Desconocido)
         {
             <div>
-                @foreach (var gratis in BaseDatos.Gratis.Buscar.UnTipo(gratisSeleccionadoNoticias, Herramientas.Tiempo.Actual).OrderBy(x => x.FechaEmpieza).Reverse().ToList())
+                @foreach (var gratis in BaseDatos.Gratis.Buscar.Actuales(gratisSeleccionadoNoticias).OrderByDescending(g => g.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis.JuegoId, gratis.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -142,21 +144,23 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
 {
     <div class="caja-admin-noticias" style="margin-top: 20px;">
         <div class="opciones-combobox" style="width: 33%;">
-            <select @onchange="@(e => CambiarSuscripcion(e))">
+            <select>
                 @foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
                 {
                     if (suscripcion.AdminInteractuar == true)
                     {
-                        <option value="@suscripcion.Id">@suscripcion.Nombre</option>
+                        <option @onclick="@(e => CambiarSuscripcionNoticias(e, suscripcion.Id))">
+                            @suscripcion.Nombre
+                        </option>
                     }
                 }
             </select>
         </div>
 
-        @if (suscripcionSeleccionadaNoticias != null)
+        @if (suscripcionSeleccionadaNoticias != SuscripcionTipo.Desconocido)
         {
             <div>
-                @foreach (var suscripcion in BaseDatos.Suscripciones.Buscar.UnTipo(suscripcionSeleccionadaNoticias, Herramientas.Tiempo.Actual).OrderBy(x => x.FechaEmpieza).Reverse().ToList())
+                @foreach (var suscripcion in BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias).OrderByDescending(s => s.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearSuscripcionJuego(e, suscripcion.JuegoId, suscripcion.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -655,8 +659,8 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     private NoticiaTipo noticiaTipoSeleccionada = NoticiaTipo.Bundles;
 
     private BundleTipo bundleTipoSeleccionado = BundleTipo.Desconocido;
-    private string gratisSeleccionadoNoticias = null;
-    private string suscripcionSeleccionadaNoticias = null;
+    private GratisTipo gratisSeleccionadoNoticias = GratisTipo.Desconocido;
+    private SuscripcionTipo suscripcionSeleccionadaNoticias = SuscripcionTipo.Desconocido;
 
     private bool plantillaCargada = false;
     private Plantilla noticia = new Plantilla();
@@ -701,11 +705,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
             if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
             {
-                gratisSeleccionadoNoticias = GratisCargar.GenerarListado()[0].Tipo.ToString();
+                gratisSeleccionadoNoticias = GratisCargar.GenerarListado()[0].Tipo;
             }
             else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
             {
-                suscripcionSeleccionadaNoticias = SuscripcionesCargar.GenerarListado()[0].Id.ToString();
+                suscripcionSeleccionadaNoticias = SuscripcionesCargar.GenerarListado()[0].Id;
             }
             else if (noticiaTipoSeleccionada == NoticiaTipo.Web)
             {
@@ -758,7 +762,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
                 if (noticiaTipoSeleccionada == NoticiaTipo.Bundles)
                 {
-                    noticiaAñadir.BundleTipo = BundlesCargar.DevolverBundle(bundleTipoSeleccionado).Tipo;
+                    noticiaAñadir.BundleTipo = BundlesCargar.DevolverBundle(bundleTipoSeleccionado).BundleTipo;
                     noticiaAñadir.BundleId = int.Parse(noticia.BundleId);
                 }
                 else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
@@ -902,8 +906,8 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 plantillaCargada = false;
 
                 bundleTipoSeleccionado = BundleTipo.Desconocido;
-                gratisSeleccionadoNoticias = null;
-                suscripcionSeleccionadaNoticias = null;
+                gratisSeleccionadoNoticias = GratisTipo.Desconocido;
+                suscripcionSeleccionadaNoticias = SuscripcionTipo.Desconocido;
 
                 enlaceDespedidas = string.Empty;
                 fechaDespedidas = DateTime.Now;
@@ -928,9 +932,9 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         noticia.Enlace = BaseDatos.Bundles.Buscar.UnBundle(bundleId).Enlace;
     }
 
-    private void CambiarGratisNoticias(ChangeEventArgs texto)
+    private void CambiarGratisNoticias(MouseEventArgs e, GratisTipo nuevoTipo)
     {
-        gratisSeleccionadoNoticias = texto.Value.ToString();
+        gratisSeleccionadoNoticias = nuevoTipo;
     }
 
     private void ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
@@ -955,9 +959,9 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         }
     }
 
-    private void CambiarSuscripcion(ChangeEventArgs texto)
+    private void CambiarSuscripcionNoticias(MouseEventArgs e, SuscripcionTipo nuevoTipo)
     {
-        suscripcionSeleccionadaNoticias = texto.Value.ToString();
+        suscripcionSeleccionadaNoticias = nuevoTipo;
     }
 
     private void ClickearSuscripcionJuego(MouseEventArgs e, int juegoId, int id)

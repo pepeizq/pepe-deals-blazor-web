@@ -191,8 +191,8 @@ namespace BaseDatos.Extension
 											extension.Bundles.Add(new ExtensionBundle
 											{
 												Datos = bundle,
-												NombreBundle = datosBundle.NombreBundle,
-												TiendaBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda,
+												NombreBundle = datosBundle.Nombre,
+												TiendaBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda,
 												IconoBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenIcono
 											});
 										}

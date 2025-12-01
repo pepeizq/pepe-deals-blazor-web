@@ -2037,13 +2037,13 @@
 
                                             if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                             {
-                                                enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle2.Enlace, bundle3.Tipo, usuarioPatreon, false);
+                                                enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle2.Enlace, bundle3.BundleTipo, usuarioPatreon, false);
                                             }
 
                                             <a class="juego-boton-pequeño" href="@enlaceBundle" target="_blank" rel="nofollow" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; display: inline-block; width: 100%; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                 <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                                     <div style="margin-right: 15px;">
-                                                        <img src="@BundlesCargar.DevolverBundle(bundle3.Tipo).ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Bundle" />
+                                                        <img src="@BundlesCargar.DevolverBundle(bundle3.BundleTipo).ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Bundle" />
                                                     </div>
 
                                                     <div style="margin-right: 30px;">
@@ -2051,7 +2051,7 @@
                                                     </div>
 
                                                     <div style="margin-right: 20px;">
-                                                        <div>@bundle3.NombreBundle • @bundle3.NombreTienda</div>
+                                                        <div>@bundle3.Nombre • @bundle3.Tienda</div>
                                                         <div style="font-size: 13px;">
                                                             @Herramientas.Calculadora.DiferenciaTiempo(bundle3.FechaTermina, idioma, 1)
                                                         </div>
@@ -2087,7 +2087,7 @@
                                         <button @onclick="(e => BundleAbrir(e, bundle2.BundleId))" class="boton-pequeño" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px;">
                                             <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                                 <div style="margin-right: 15px;">
-                                                    <img src="@BundlesCargar.DevolverBundle(bundle3.Tipo).ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Bundle" />
+                                                    <img src="@BundlesCargar.DevolverBundle(bundle3.BundleTipo).ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Bundle" />
                                                 </div>
 
                                                 <div style="margin-right: 30px;">
@@ -2095,7 +2095,7 @@
                                                 </div>
 
                                                 <div style="margin-right: 20px;">
-                                                    <div style="cursor: pointer;">@bundle3.NombreBundle • @bundle3.NombreTienda</div>
+                                                    <div style="cursor: pointer;">@bundle3.Nombre • @bundle3.Tienda</div>
                                                     <div style="font-size: 13px; cursor: pointer;">
                                                         @Herramientas.Calculadora.DiferenciaTiempo(bundle3.FechaTermina, idioma, 0)
                                                     </div>
@@ -2949,7 +2949,7 @@
             @{
                 Bundles2.Bundle bundleSeleccionado = global::BaseDatos.Bundles.Buscar.UnBundle(bundleId);
 
-                string enlaceBundleSeleccionado = "/bundle/" + bundleSeleccionado.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.NombreBundle) + "/";
+                string enlaceBundleSeleccionado = "/bundle/" + bundleSeleccionado.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/";
             }
 
             <div style="margin-bottom: 20px;">
@@ -2965,13 +2965,13 @@
                     <div style="display: flex; align-items: center; flex-direction: row;">
                         <a href="@enlaceBundleSeleccionado" style="width: auto;" target="_blank">
                             <div style="height: 60px; padding-left: 40px; padding-right: 20px;">
-                                <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.Tipo).ImagenTienda" style="height: 100%;" alt="@bundleSeleccionado.NombreBundle"  />
+                                <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda" style="height: 100%;" alt="@bundleSeleccionado.Nombre"  />
                             </div>
                         </a>
 
                         <div style="padding-left: 20px; padding-right: 20px;">
                             <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="background-color: transparent; padding: 0px; font-size: 20px; margin-bottom: 10px; box-shadow: none;" target="_blank">
-                                @bundleSeleccionado.NombreBundle
+                                @bundleSeleccionado.Nombre
                             </a>
 
                             <div style="display: flex; align-items: center; gap: 20px; flex-direction: row; font-size: 14px;">
@@ -4410,7 +4410,7 @@
             {
                 if (bundlesDisponibles.Count == 1)
                 {
-                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String53", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesDisponibles[0].BundleId).NombreBundle, Bundles2.BundlesCargar.DevolverBundle(bundlesDisponibles[0].Tipo).NombreTienda);
+                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String53", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesDisponibles[0].BundleId).Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesDisponibles[0].Tipo).Tienda);
                 }
                 else if (bundlesDisponibles.Count > 1)
                 {
@@ -4427,7 +4427,7 @@
             {
                 if (bundlesAntiguos.Count == 1)
                 {
-                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String57", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesAntiguos[0].BundleId).NombreBundle, Bundles2.BundlesCargar.DevolverBundle(bundlesAntiguos[0].Tipo).NombreTienda);
+                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String57", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesAntiguos[0].BundleId).Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesAntiguos[0].Tipo).Tienda);
                 }
                 else if (bundlesAntiguos.Count > 1)
                 {

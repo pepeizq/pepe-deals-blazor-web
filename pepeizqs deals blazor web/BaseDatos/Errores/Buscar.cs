@@ -1,83 +1,29 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Errores
 {
     public static class Buscar
     {
-        public static List<Error> Todos(SqlConnection conexion = null)
-        {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
-            List<Error> listaErrores = new List<Error>();
-
-            using (conexion)
-            {
-                string busqueda = "SELECT * FROM errores ORDER BY fecha DESC";
-
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    using (SqlDataReader lector = comando.ExecuteReader())
-                    {
-                        while (lector.Read())
-                        {
-                            Error error = new Error
-                            {
-                                Mensaje = lector.GetString(1),
-                                Seccion = lector.GetString(4)
-                            };
-
-                            if (lector.IsDBNull(2) == false)
-                            {
-                                if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-                                {
-                                    error.Stacktrace = lector.GetString(2);
-                                }
-                            }
-
-                            try
-                            {
-                                if (lector.IsDBNull(3) == false)
-                                {
-									error.Fecha = lector.GetDateTime(3);
-								}
-							}
-                            catch { }
-
-                            if (lector.IsDBNull(5) == false)
-                            {
-                                if (string.IsNullOrEmpty(lector.GetString(5)) == false)
-                                {
-                                    error.Enlace = lector.GetString(5);
-                                }
-                            }
-
-                            if (lector.IsDBNull(6) == false)
-                            {
-                                if (string.IsNullOrEmpty(lector.GetString(6)) == false)
-                                {
-                                    error.SentenciaSQL = lector.GetString(6);
-                                }
-                            }
-
-                            listaErrores.Add(error);
-                        }
-                    }
-				}
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
 			}
 
-            return listaErrores;
+			return conexion;
+		}
+
+		public static List<Error> Todos(SqlConnection conexion = null)
+        {
+			conexion = CogerConexion(conexion);
+
+			string busqueda = "SELECT * FROM errores ORDER BY fecha DESC";
+
+			return conexion.Query<Error>(busqueda).ToList();
         }
     }
 

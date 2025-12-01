@@ -1,310 +1,97 @@
 ﻿#nullable disable
 
 using Bundles2;
+using Dapper;
 using Microsoft.Data.SqlClient;
-using Newtonsoft.Json;
 
 namespace BaseDatos.Bundles
 {
 	public static class Buscar
 	{
-		public static Bundle Cargar(SqlDataReader lector)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-            Bundle bundle = new Bundle
-            {
-                Id = lector.GetInt32(0),
-                Tipo = BundlesCargar.DevolverBundle(int.Parse(lector.GetString(1))).Tipo,
-                NombreBundle = lector.GetString(2),
-                NombreTienda = lector.GetString(3),
-                ImagenBundle = lector.GetString(4),
-                Enlace = lector.GetString(5),
-                FechaEmpieza = Convert.ToDateTime(lector.GetString(6)),
-                FechaTermina = Convert.ToDateTime(lector.GetString(7))
-            };
-
-			if (lector.IsDBNull(8) == false)
-			{
-				if (string.IsNullOrEmpty(lector.GetString(8)) == false)
-				{
-					bundle.Juegos = JsonConvert.DeserializeObject<List<BundleJuego>>(lector.GetString(8));
-				}
-			}
-
-			if (lector.IsDBNull(9) == false)
-			{
-				if (string.IsNullOrEmpty(lector.GetString(9)) == false)
-				{
-					bundle.Tiers = JsonConvert.DeserializeObject<List<BundleTier>>(lector.GetString(9));
-				}
-			}
-
-			if (lector.IsDBNull(10) == false)
-			{
-				if (string.IsNullOrEmpty(lector.GetString(10)) == false)
-				{
-					bundle.Pick = Convert.ToBoolean(lector.GetString(10));
-				}
-			}
-
-			if (lector.IsDBNull(11) == false)
-			{
-				if (string.IsNullOrEmpty(lector.GetString(11)) == false)
-				{
-					bundle.ImagenNoticia = lector.GetString(11);
-				}
-			}
-
-			return bundle;
-        }
-
-		public static List<Bundle> Actuales(int ordenamiento = 0, BundleTipo tipo = BundleTipo.Desconocido, SqlConnection conexion = null)
-		{
-			List<Bundle> bundles = new List<Bundle>();
-
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
+
+			return conexion;
+		}
+
+		public static List<Bundle> Actuales(int ordenamiento = 0, BundleTipo tipo = BundleTipo.Desconocido, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = "SELECT * FROM bundles WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";
+
+			if (tipo != BundleTipo.Desconocido)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				busqueda = busqueda + " AND (bundleTipo=" + (int)tipo + ")";
 			}
 
-			using (conexion)
+			if (ordenamiento == 0)
 			{
-				string busqueda = "SELECT * FROM bundles WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";
-
-				if (tipo != BundleTipo.Desconocido)
-				{
-					busqueda = busqueda + " AND (bundleTipo=" + (int)tipo + ")";
-				}
-
-				if (ordenamiento == 0)
-				{
-					busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaTermina), DATEPART(DAY,fechaTermina)";
-				}
-				else if (ordenamiento == 1)
-				{
-					busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaEmpieza) DESC, DATEPART(DAY,fechaEmpieza) DESC";
-				}
-				else if (ordenamiento == 2)
-				{
-					busqueda = busqueda + " ORDER BY nombre";
-				}
-				else if (ordenamiento == 3)
-				{
-					busqueda = busqueda + " ORDER BY nombre DESC";
-				}
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							bundles.Add(Cargar(lector));
-						}
-					}
-				}
+				busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaTermina), DATEPART(DAY,fechaTermina)";
+			}
+			else if (ordenamiento == 1)
+			{
+				busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaEmpieza) DESC, DATEPART(DAY,fechaEmpieza) DESC";
+			}
+			else if (ordenamiento == 2)
+			{
+				busqueda = busqueda + " ORDER BY nombre";
+			}
+			else if (ordenamiento == 3)
+			{
+				busqueda = busqueda + " ORDER BY nombre DESC";
 			}
 
-			return bundles;
+			return conexion.Query<Bundle>(busqueda).ToList();
 		}
 
 		public static List<Bundle> Año(string año, SqlConnection conexion = null)
 		{
-			List<Bundle> bundles = new List<Bundle>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			string busqueda = "SELECT * FROM bundles WHERE YEAR(fechaEmpieza) = " + año + " AND GETDATE() > fechaTermina ORDER BY nombre DESC";
 
-			using (conexion)
-			{
-				string busqueda = "SELECT * FROM bundles WHERE YEAR(fechaEmpieza) = " + año + " AND GETDATE() > fechaTermina ORDER BY nombre DESC";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							bundles.Add(Cargar(lector));
-						}
-					}
-				}
-			}
-
-			return bundles;
+			return conexion.Query<Bundle>(busqueda).ToList();
 		}
 
 		public static List<Bundle> UnTipo(BundleTipo tipo, SqlConnection conexion = null)
 		{
-			List<Bundle> bundles = new List<Bundle>();
+			conexion = CogerConexion(conexion);
 
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			string busqueda = "SELECT * FROM bundles WHERE bundleTipo=@bundleTipo AND fechaEmpieza < GETDATE() AND fechaTermina > GETDATE()";
 
-            using (conexion)
-			{
-				string busqueda = "SELECT * FROM bundles WHERE bundleTipo=@bundleTipo AND fechaEmpieza < GETDATE() AND fechaTermina > GETDATE()";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-                    comando.Parameters.AddWithValue("@bundleTipo", tipo);
-
-                    using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							bundles.Add(Cargar(lector));									
-						}
-					}
-				}
-			}
-
-			return bundles;
+			return conexion.Query<Bundle>(busqueda, new {bundleTipo = tipo}).ToList();
 		}
 
 		public static Bundle UnBundle(int bundleId, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			Bundle bundle = null;
+			conexion = CogerConexion(conexion);
 
 			string busqueda = "SELECT * FROM bundles WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", bundleId);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read() == true)
-					{
-						bundle = Cargar(lector);
-					}
-				}
-			}
-
-			return bundle;
+			return conexion.QueryFirstOrDefault<Bundle>(busqueda, new { id = bundleId });
 		}
 
-        public static List<Bundle> Ultimos(int cantidad)
+        public static List<Bundle> Ultimos(int cantidad, SqlConnection conexion = null)
         {
-            List<Bundle> bundles = new List<Bundle>();
+			conexion = CogerConexion(conexion);
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
+			string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM bundles ORDER BY id DESC";
 
-            using (conexion)
-            {
-                string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM bundles ORDER BY id DESC";
-
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    using (SqlDataReader lector = comando.ExecuteReader())
-                    {
-                        while (lector.Read())
-                        {
-                            bundles.Add(Cargar(lector));
-                        }
-					}
-				}
-            }
-
-			return bundles;
+			return conexion.Query<Bundle>(busqueda).ToList();
         }
 
 		public static List<Bundle> Aleatorios(SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			List<Bundle> bundles = new List<Bundle>();
+			string busqueda = @"SELECT TOP 50 id, nombre FROM bundles ORDER BY NEWID()";
 
-			using (conexion)
-			{
-				string busqueda = @"SELECT TOP 50 id, nombre FROM bundles ORDER BY NEWID()";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							Bundle bundle = new Bundle
-							{
-								Id = 0,
-								NombreBundle = null
-							};
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									bundle.Id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										bundle.NombreBundle = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							bundles.Add(bundle);
-						}
-					}
-				}
-			}
-
-			return bundles;
+			return conexion.Query<Bundle>(busqueda).ToList();
 		}
 	}
 }

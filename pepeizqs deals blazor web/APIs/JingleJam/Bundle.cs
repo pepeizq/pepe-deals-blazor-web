@@ -6,8 +6,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.JingleJam,
-				NombreTienda = "Jingle Jam",
+				BundleTipo = Bundles2.BundleTipo.JingleJam,
+				Tienda = "Jingle Jam",
 				ImagenTienda = "/imagenes/bundles/jinglejam_300x80.webp",
 				ImagenIcono = "/imagenes/bundles/jinglejam_icono.webp",
 				EnlaceBase = "jinglejam.tiltify.com",

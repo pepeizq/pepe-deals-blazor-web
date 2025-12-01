@@ -1,137 +1,60 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
 using System.Globalization;
 
 namespace BaseDatos.Sitemaps
 {
 	public static class Buscar
 	{
-		public static int Cantidad(string tabla, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			int cantidad = 0;
-
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 
-			using (conexion)
-			{
-				string buscar = "SELECT COUNT(*) FROM @tabla";
+			return conexion;
+		}
 
-				buscar = buscar.Replace("@tabla", tabla);
+		public static int Cantidad(string tabla, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
 
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									cantidad = lector.GetInt32(0);
-								}
-							}
-							catch { }
-						}
-					}
-				}
-			}
-
-			return cantidad;
+			return conexion.ExecuteScalar<int>($"SELECT COUNT(*) FROM {tabla}");
 		}
 
 		public static List<string> Juegos(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT id, nombre, ultimaModificacion FROM juegos WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.id;
+				string nombre = fila.nombre;
+				DateTime? fecha = fila.ultimaModificacion;
+
+				if (id > 0 && string.IsNullOrEmpty(nombre) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					string texto = "<url>" + Environment.NewLine +
+						 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
 
-			using (conexion)
-			{
-				string buscar = "SELECT id, nombre, ultimaModificacion FROM juegos WHERE id > @id1 AND id < @id2";
-
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string nombre = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										nombre = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									fecha = lector.GetDateTime(2);
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(nombre) == false)
-							{
-								string texto = "<url>" + Environment.NewLine +
-									 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<lastmod>" + fecha.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
-								}
-
-								texto = texto + "</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 					}
+
+					texto = texto + "</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -140,86 +63,33 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> Bundles(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT id, nombre, fechaEmpieza FROM bundles WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.id;
+				string nombre = fila.nombre;
+				DateTime? fecha = fila.fechaEmpieza != null ? DateTime.Parse(fila.fechaEmpieza.ToString(), CultureInfo.InvariantCulture) : (DateTime?)null;
+
+				if (id > 0 && string.IsNullOrEmpty(nombre) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					string texto = "<url>" + Environment.NewLine +
+						 "<loc>https://" + dominio + "/bundle/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
 
-			using (conexion)
-			{
-				string buscar = "SELECT id, nombre, fechaEmpieza FROM bundles WHERE id > @id1 AND id < @id2";
-
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string nombre = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										nombre = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-									{
-										fecha = DateTime.Parse(lector.GetString(2), CultureInfo.InvariantCulture);
-									}
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(nombre) == false)
-							{
-								string texto = "<url>" + Environment.NewLine +
-									 "<loc>https://" + dominio + "/bundle/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<lastmod>" + fecha.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
-								}
-
-								texto = texto + "</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 					}
+
+					texto = texto + "</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -228,86 +98,33 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> Gratis(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM gratis WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.juegoId;
+				string nombre = fila.nombre;
+				DateTime? fecha = fila.fechaEmpieza != null ? DateTime.Parse(fila.fechaEmpieza.ToString(), CultureInfo.InvariantCulture) : (DateTime?)null;
+
+				if (id > 0 && string.IsNullOrEmpty(nombre) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					string texto = "<url>" + Environment.NewLine +
+						 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
 
-			using (conexion)
-			{
-				string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM gratis WHERE id > @id1 AND id < @id2";
-
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string nombre = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										nombre = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-									{
-										fecha = DateTime.Parse(lector.GetString(2), CultureInfo.InvariantCulture);
-									}
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(nombre) == false)
-							{
-								string texto = "<url>" + Environment.NewLine +
-									 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<lastmod>" + fecha.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
-								}
-
-								texto = texto + "</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 					}
+
+					texto = texto + "</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -316,86 +133,33 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> Suscripciones(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM suscripciones WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.juegoId;
+				string nombre = fila.nombre;
+				DateTime? fecha = fila.fechaEmpieza != null ? DateTime.Parse(fila.fechaEmpieza.ToString(), CultureInfo.InvariantCulture) : (DateTime?)null;
+
+				if (id > 0 && string.IsNullOrEmpty(nombre) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					string texto = "<url>" + Environment.NewLine +
+						 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
 
-			using (conexion)
-			{
-				string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM suscripciones WHERE id > @id1 AND id < @id2";
-
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string nombre = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										nombre = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-									{
-										fecha = DateTime.Parse(lector.GetString(2), CultureInfo.InvariantCulture);
-									}
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(nombre) == false)
-							{
-								string texto = "<url>" + Environment.NewLine +
-									 "<loc>https://" + dominio + "/game/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombre) + "/</loc>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<lastmod>" + fecha.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
-								}
-
-								texto = texto + "</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 					}
+
+					texto = texto + "</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -404,105 +168,42 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> NoticiasIngles(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT id, tituloEn, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.id;
+				string tituloEn = fila.tituloEn;
+				DateTime? fecha = fila.fechaEmpieza != null ? (DateTime?)fila.fechaEmpieza : null;
+
+				if (id > 0 && string.IsNullOrEmpty(tituloEn) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					tituloEn = tituloEn.Replace("&", "&amp;");
 
-			using (conexion)
-			{
-				string buscar = "SELECT id, tituloEn, tituloEs, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
+					string texto = "<url>" + Environment.NewLine +
+						"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEn) + "/</loc>" + Environment.NewLine +
+						"<news:news>" + Environment.NewLine +
+						"<news:publication>" + Environment.NewLine +
+						"<news:name>pepe's deals</news:name>" + Environment.NewLine +
+						"<news:language>en</news:language>" + Environment.NewLine +
+						"</news:publication>" + Environment.NewLine;
 
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string tituloEn = string.Empty;
-							string tituloEs = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										tituloEn = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-									{
-										tituloEs = lector.GetString(2);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(3) == false)
-								{
-									fecha = lector.GetDateTime(3);
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(tituloEn) == false && string.IsNullOrEmpty(tituloEs) == false)
-							{
-								tituloEn = tituloEn.Replace("&", "&amp;");
-
-								string texto = "<url>" + Environment.NewLine +
-									"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEn) + "/</loc>" + Environment.NewLine +
-									"<news:news>" + Environment.NewLine +
-									"<news:publication>" + Environment.NewLine +
-									"<news:name>pepe's deals</news:name>" + Environment.NewLine +
-									"<news:language>en</news:language>" + Environment.NewLine +
-									"</news:publication>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<news:publication_date>" + fecha.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
-								}
-
-								texto = texto + "<news:title>" + tituloEn + "</news:title>" + Environment.NewLine +
-									"</news:news>" + Environment.NewLine +
-									"</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
 					}
+
+					texto = texto + "<news:title>" + tituloEn + "</news:title>" + Environment.NewLine +
+						"</news:news>" + Environment.NewLine +
+						"</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -511,105 +212,42 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> NoticiasEspañol(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT id, tituloEs, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int id = fila.id;
+				string tituloEs = fila.tituloEs;
+				DateTime? fecha = fila.fechaEmpieza != null ? (DateTime?)fila.fechaEmpieza : null;
+
+				if (id > 0 && string.IsNullOrEmpty(tituloEs) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					tituloEs = tituloEs.Replace("&", "&amp;");
 
-			using (conexion)
-			{
-				string buscar = "SELECT id, tituloEs, tituloEn, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
+					string texto = "<url>" + Environment.NewLine +
+						"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEs) + "/</loc>" + Environment.NewLine +
+						"<news:news>" + Environment.NewLine +
+						"<news:publication>" + Environment.NewLine +
+						"<news:name>pepe's deals</news:name>" + Environment.NewLine +
+						"<news:language>es</news:language>" + Environment.NewLine +
+						"</news:publication>" + Environment.NewLine;
 
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							int id = 0;
-							string tituloEs = string.Empty;
-							string tituloEn = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									id = lector.GetInt32(0);
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-									{
-										tituloEs = lector.GetString(1);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(2) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(2)) == false)
-									{
-										tituloEn = lector.GetString(2);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(3) == false)
-								{
-									fecha = lector.GetDateTime(3);
-								}
-							}
-							catch { }
-
-							if (id > 0 && string.IsNullOrEmpty(tituloEs) == false)
-							{
-								tituloEs = tituloEs.Replace("&", "&amp;");
-
-								string texto = "<url>" + Environment.NewLine +
-									"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEs) + "/</loc>" + Environment.NewLine +	
-									"<news:news>" + Environment.NewLine +
-									"<news:publication>" + Environment.NewLine +
-									"<news:name>pepe's deals</news:name>" + Environment.NewLine +
-									"<news:language>es</news:language>" + Environment.NewLine +
-									"</news:publication>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<news:publication_date>" + fecha.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
-								}
-
-								texto = texto + "<news:title>" + tituloEs + "</news:title>" + Environment.NewLine +
-									"</news:news>" + Environment.NewLine +
-									"</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
 					}
+
+					texto = texto + "<news:title>" + tituloEs + "</news:title>" + Environment.NewLine +
+						"</news:news>" + Environment.NewLine +
+						"</url>";
+
+					lineas.Add(texto);
 				}
 			}
 
@@ -618,73 +256,32 @@ namespace BaseDatos.Sitemaps
 
 		public static List<string> Curators(string dominio, int id1, int id2, SqlConnection conexion = null)
 		{
+			conexion = CogerConexion(conexion);
+
+			string buscar = "SELECT slug, fecha FROM curators WHERE id > @id1 AND id < @id2";
+
+			var resultados = conexion.Query(buscar, new { Id1 = id1, Id2 = id2 });
+
 			List<string> lineas = new List<string>();
 
-			if (conexion == null)
+			foreach (var fila in resultados)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				string slug = fila.slug;
+				DateTime? fecha = fila.fecha != null ? (DateTime?)fila.fecha : null;
+
+				if (string.IsNullOrEmpty(slug) == false)
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+					string texto = "<url>" + Environment.NewLine +
+						 "<loc>https://" + dominio + "/curator/" + slug + "/</loc>" + Environment.NewLine;
 
-			using (conexion)
-			{
-				string buscar = "SELECT slug, fecha FROM curators WHERE id > @id1 AND id < @id2";
-
-				buscar = buscar.Replace("@id1", id1.ToString());
-				buscar = buscar.Replace("@id2", id2.ToString());
-
-				using (SqlCommand comando = new SqlCommand(buscar, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
+					if (fecha.HasValue && fecha.Value.Year > 1)
 					{
-						while (lector.Read())
-						{
-							string slug = string.Empty;
-							DateTime fecha = new DateTime();
-
-							try
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-									{
-										slug = lector.GetString(0);
-									}
-								}
-							}
-							catch { }
-
-							try
-							{
-								if (lector.IsDBNull(1) == false)
-								{
-									fecha = lector.GetDateTime(1);
-								}
-							}
-							catch { }
-
-							if (string.IsNullOrEmpty(slug) == false)
-							{
-								string texto = "<url>" + Environment.NewLine +
-									 "<loc>https://" + dominio + "/curator/" + slug + "/</loc>" + Environment.NewLine;
-
-								if (fecha.Year > 1)
-								{
-									texto = texto + "<lastmod>" + fecha.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
-								}
-
-								texto = texto + "</url>";
-
-								lineas.Add(texto);
-							}
-						}
+						texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 					}
+
+					texto = texto + "</url>";
+
+					lineas.Add(texto);
 				}
 			}
 

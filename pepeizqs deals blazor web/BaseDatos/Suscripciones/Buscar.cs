@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using Suscripciones2;
@@ -8,363 +9,114 @@ namespace BaseDatos.Suscripciones
 {
     public static class Buscar
     {
-		public static JuegoSuscripcion Cargar(SqlDataReader lector)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			JuegoSuscripcion suscripcion = new JuegoSuscripcion
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
-				Tipo = SuscripcionesCargar.DevolverSuscripcion(lector.GetInt32(0)).Id,
-				JuegoId = lector.GetInt32(1),
-				Nombre = lector.GetString(2),
-				Imagen = lector.GetString(3),
-				DRM = JuegoDRM2.DevolverDRM(lector.GetInt32(4)),
-				Enlace = lector.GetString(5),
-				FechaEmpieza = lector.GetDateTime(6),
-				FechaTermina = lector.GetDateTime(7)
-			};
-
-			if (lector.IsDBNull(8) == false)
-			{
-				suscripcion.ImagenNoticia = lector.GetString(8);
+				conexion = Herramientas.BaseDatos.Conectar();
 			}
 
-            if (lector.IsDBNull(9) == false)
-            {
-                suscripcion.Id = lector.GetInt32(9);
-            }
-
-            return suscripcion;
+			return conexion;
 		}
 
 		public static List<JuegoSuscripcion> Actuales(SuscripcionTipo tipo = SuscripcionTipo.Desconocido, SqlConnection conexion = null)
         {
-            List<JuegoSuscripcion> suscripciones = new List<JuegoSuscripcion>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE GETDATE() BETWEEN fechaEmpieza AND fechaTermina
+) AS sub";
+
+			if (tipo != SuscripcionTipo.Desconocido)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+				busqueda += " AND sub.suscripcion = " + (int)tipo;
 			}
 
-			using (conexion)
-            {
-				string busqueda = "SELECT * FROM suscripciones WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";
+			busqueda += " ORDER BY DATEPART(MONTH, sub.fechaTermina), DATEPART(DAY, sub.fechaTermina)";
 
-				if (tipo != SuscripcionTipo.Desconocido)
-				{
-					busqueda = busqueda + " AND (suscripcion=" + (int)tipo + ")";
-				}
-
-				busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaTermina), DATEPART(DAY,fechaTermina)";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    using (SqlDataReader lector = comando.ExecuteReader())
-                    {
-                        while (lector.Read())
-                        {
-							suscripciones.Add(Cargar(lector));
-						}
-					}
-				}
-			}
-
-			return suscripciones;
+			return conexion.Query<JuegoSuscripcion>(busqueda).ToList();
         }
 
 		public static List<JuegoSuscripcion> Año(string año, SqlConnection conexion = null)
 		{
-			List<JuegoSuscripcion> suscripciones = new List<JuegoSuscripcion>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE YEAR(fechaEmpieza) = @Año
+      AND GETDATE() > fechaTermina
+) AS sub
+ORDER BY sub.Nombre DESC";
 
-			using (conexion)
-			{
-				string busqueda = "SELECT * FROM suscripciones WHERE YEAR(fechaEmpieza) = " + año + " AND GETDATE() > fechaTermina ORDER BY nombre DESC";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							suscripciones.Add(Cargar(lector));
-						}
-					}
-				}
-			}
-
-			return suscripciones;
-		}
-
-		public static List<JuegoSuscripcion> UnTipo(string suscripcionTexto, Herramientas.Tiempo tiempo)
-		{
-			List<JuegoSuscripcion> suscripciones = new List<JuegoSuscripcion>();
-
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				string busqueda = "SELECT * FROM suscripciones WHERE suscripcion=@suscripcion";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					comando.Parameters.AddWithValue("@suscripcion", SuscripcionesCargar.DevolverSuscripcion(suscripcionTexto).Id);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							JuegoSuscripcion suscripcion = Cargar(lector);
-
-							if (tiempo == Herramientas.Tiempo.Atemporal)
-							{
-								suscripciones.Add(suscripcion);
-							}
-							else if (tiempo == Herramientas.Tiempo.Actual)
-							{ 
-								if (DateTime.Now >= suscripcion.FechaEmpieza && DateTime.Now <= suscripcion.FechaTermina)
-								{
-									suscripciones.Add(suscripcion);
-								}
-							}
-							else if (tiempo == Herramientas.Tiempo.Pasado)
-							{
-								if (DateTime.Now > suscripcion.FechaTermina)
-								{
-									suscripciones.Add(suscripcion);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if (suscripciones.Count > 0) 
-			{
-				suscripciones = suscripciones.OrderBy(x => x.FechaEmpieza).Reverse().ToList().Take(20).ToList();
-            }
-
-			return suscripciones;
-		}
-
-		public static JuegoSuscripcion UnJuego(int id, SqlConnection conexion = null)
-		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			JuegoSuscripcion juego = null;
-
-			string busqueda = "SELECT * FROM suscripciones WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read())
-					{
-						juego = Cargar(lector);
-					}
-				}
-			}
-
-			return juego;
+			return conexion.Query<JuegoSuscripcion>(busqueda, new { año }).ToList();
 		}
 
 		public static JuegoSuscripcion UnJuego(string enlace, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			JuegoSuscripcion juego = null;
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE enlace = @Enlace
+) AS sub";
 
-			using (conexion)
-			{
-				string busqueda = "SELECT * FROM suscripciones WHERE enlace=@enlace";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					comando.Parameters.AddWithValue("@enlace", enlace);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							juego = Cargar(lector);
-						}
-					}
-				}
-			}
-
-			return juego;
-		}
-
-		public static JuegoSuscripcion JuegoId(int juegoId, SqlConnection conexion = null)
-		{
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
-			using (conexion)
-			{
-				string busqueda = "SELECT TOP 1 * FROM suscripciones WHERE juegoId=@juegoId";
-
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					comando.Parameters.AddWithValue("@juegoId", juegoId);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							return Cargar(lector);
-						}
-					}
-				}
-			}
-
-			return null;
+			return conexion.QueryFirstOrDefault<JuegoSuscripcion>(busqueda, new { Enlace = enlace });
 		}
 
 		public static JuegoSuscripcion Id(int id, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			JuegoSuscripcion juego = null;
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE id = @Id
+) AS sub";
 
-			string busqueda = "SELECT * FROM suscripciones WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read())
-					{
-						juego = Cargar(lector);
-					}
-				}
-			}
-
-			return juego;
+			return conexion.QueryFirstOrDefault<JuegoSuscripcion>(busqueda, new { Id = id });
 		}
 
 		public static List<JuegoSuscripcion> UltimasAñadidas(SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			List<JuegoSuscripcion> suscripciones = new List<JuegoSuscripcion>();
-
-			string busqueda = "SELECT * FROM suscripciones WHERE fechaEmpieza >= DATEADD(day,-7, GETDATE()) ORDER BY fechaEmpieza DESC";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read())
-					{
-						suscripciones.Add(Cargar(lector));
-					}
-				}
-			}
-
-			return suscripciones;
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE fechaEmpieza >= DATEADD(day, -7, GETDATE())
+) AS sub
+ORDER BY fechaEmpieza DESC"; 
+			
+			return conexion.Query<JuegoSuscripcion>(busqueda).ToList();
 		}
 
 		public static List<JuegoSuscripcion> Ultimos(string cantidad, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			List<JuegoSuscripcion> juegos = new List<JuegoSuscripcion>();
+			string busqueda = @"
+SELECT TOP {cantidad} sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+) AS sub
+ORDER BY id DESC";
 
-			string busqueda = "SELECT TOP " + cantidad + " * FROM suscripciones ORDER BY id DESC";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read())
-					{
-						juegos.Add(Cargar(lector));
-					}
-				}
-			}
-
-			return juegos;
+			return conexion.Query<JuegoSuscripcion>(busqueda).ToList();
 		}
 	}
 }

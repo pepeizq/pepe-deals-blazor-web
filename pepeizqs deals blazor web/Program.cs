@@ -1,7 +1,6 @@
 ﻿using ApexCharts;
 using BlazorNotification;
 using Herramientas;
-using Juegos;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,7 @@ using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
 
-JuegoDapper.Registrar();
+ClasesDapper.Registrar();
 
 var builder = WebApplication.CreateBuilder(args);
 

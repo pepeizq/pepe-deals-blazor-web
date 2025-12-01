@@ -96,14 +96,14 @@ namespace Tareas
                                             int i = 0;
                                             foreach (var bundle in bundles)
                                             {
-                                                if (bundle.Id > 0 && string.IsNullOrEmpty(bundle.NombreBundle) == false)
+                                                if (bundle.Id > 0 && string.IsNullOrEmpty(bundle.Nombre) == false)
                                                 {
-                                                    peticionBundles = peticionBundles + Strings.ChrW(34) + "https://pepe.deals/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.NombreBundle) + "/" + Strings.ChrW(34);
+                                                    peticionBundles = peticionBundles + Strings.ChrW(34) + "https://pepe.deals/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre) + "/" + Strings.ChrW(34);
                                                 }
 
                                                 i += 1;
 
-                                                if (i < bundles.Count && bundle.Id > 0 && string.IsNullOrEmpty(bundle.NombreBundle) == false)
+                                                if (i < bundles.Count && bundle.Id > 0 && string.IsNullOrEmpty(bundle.Nombre) == false)
                                                 {
                                                     peticionBundles = peticionBundles + "," + Environment.NewLine + Environment.NewLine;
                                                 }

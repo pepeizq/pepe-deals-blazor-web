@@ -6,8 +6,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.IndieGala,
-				NombreTienda = "IndieGala",
+				BundleTipo = Bundles2.BundleTipo.IndieGala,
+				Tienda = "IndieGala",
 				ImagenTienda = "/imagenes/tiendas/indiegala_300x80.webp",
 				ImagenIcono = "/imagenes/tiendas/indiegala_icono.webp",
 				EnlaceBase = "indiegala.com",

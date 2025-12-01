@@ -454,7 +454,7 @@
 
 										if (bundle != null)
 										{
-											string enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, usuarioPatreon, false);
+											string enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
 
 											<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
 												<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;">
@@ -482,7 +482,7 @@
 																</div>
 
 																<div style="width: 20px; height: 20px; margin-left: 10px;">
-																	<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenIcono" style="width: 100%; height: 100%;" />
+																	<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenIcono" style="width: 100%; height: 100%;" />
 																</div>
 															</div>
 														</div>
@@ -564,7 +564,7 @@
 								<ItemContent>
 									@if (juego.IdSuscripcion > 0)
 									{
-										JuegoSuscripcion suscripcion = BaseDatos.Suscripciones.Buscar.UnJuego(juego.IdSuscripcion, null);
+										JuegoSuscripcion suscripcion = BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
 
 										if (suscripcion != null)
 										{

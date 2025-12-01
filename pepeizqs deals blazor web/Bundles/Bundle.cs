@@ -8,10 +8,10 @@ namespace Bundles2
 	public class Bundle
 	{
 		public int Id { get; set; }
-		public BundleTipo Tipo { get; set; }
-		public string NombreBundle { get; set; }
-		public string NombreTienda { get; set; }
-		public string ImagenBundle { get; set; }
+		public BundleTipo BundleTipo { get; set; }
+		public string Nombre { get; set; } //Nombre Bundle
+		public string Tienda { get; set; } //Nombre Tienda
+		public string Imagen { get; set; } //Imagen Bundle
 		public string ImagenTienda { get; set; }
 		public string ImagenIcono { get; set; }
 		public string ImagenNoticia { get; set; }

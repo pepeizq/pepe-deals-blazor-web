@@ -146,7 +146,7 @@ namespace Herramientas
                         if (DateTime.Now >= bundle.FechaEmpieza && DateTime.Now <= bundle.FechaTermina)
                         {
                             mensajeComplementoTipo = "bundle";
-                            mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda;
+                            mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
                             mensajeComplementoCantidadBundles = mensajeComplementoCantidadBundles + 1;
                         }
                     }

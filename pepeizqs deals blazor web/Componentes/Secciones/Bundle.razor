@@ -17,12 +17,12 @@
 {
 	if (tipo == Tipo.Bundle)
 	{
-		string titulo = bundle.NombreBundle + " • " + bundle.NombreTienda;
+		string titulo = bundle.Nombre + " • " + bundle.Tienda;
 		string descripcion = string.Empty;
-		string enlace = "https://" + dominio + "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.NombreBundle) + "/";
+		string enlace = "https://" + dominio + "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre) + "/";
 		string imagen = string.Empty;
 
-		if (bundle.Tiers != null)
+		if (bundle.Tiers?.Count > 0 && string.IsNullOrEmpty(bundle.Tiers[0].Precio) == false)
 		{
 			string precio = bundle.Tiers[0].Precio.ToString();
 			precio = precio.Replace(".", ",");
@@ -46,7 +46,7 @@
 			}
 		}
 
-		string[] keywordsEnBruto = Herramientas.Buscador.LimpiarNombre(bundle.NombreBundle, false).Split(' ');
+		string[] keywordsEnBruto = Herramientas.Buscador.LimpiarNombre(bundle.Nombre, false).Split(' ');
 		List<string> keywordsLista = new List<string>();
 		keywordsLista.AddRange(keywordsEnBruto);
 
@@ -84,7 +84,7 @@
 			}
 		}
 
-		string nombreJson = bundle.NombreBundle.Replace(Strings.ChrW(34).ToString(), null) + " " + bundle.NombreTienda.Replace(Strings.ChrW(34).ToString(), null);
+		string nombreJson = bundle.Nombre.Replace(Strings.ChrW(34).ToString(), null) + " " + bundle.Tienda.Replace(Strings.ChrW(34).ToString(), null);
 		string descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
 		string fechaJson = bundle.FechaEmpieza.ToString("yyyy-MM-dd");
 		string estadoJson = "https://schema.org/InStock";
@@ -254,11 +254,11 @@
 		<div class="subcabecera">
 			<div class="cuerpo-ancho sub-subcabecera">
 				<div style="height: 40px; padding: 0px 20px;">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenTienda)" style="height: 100%;" alt="@bundle.NombreBundle" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenTienda)" style="height: 100%;" alt="@bundle.Nombre" />
 				</div>
 
 				<h1 style="font-size: 18px; padding: 0px 20px; margin: 0px;">
-					@bundle.NombreBundle
+					@bundle.Nombre
 				</h1>
 
 				<div style="font-size: 16px; padding: 0px 20px; margin-left: auto;">
@@ -273,7 +273,7 @@
 
 			if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 			{
-				enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, usuarioPatreon, false);
+				enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
 			}
 
 			<div class="cuerpo-ancho" style="position: sticky; top: var(--alturaCabecera); z-index: 1000;">
@@ -290,7 +290,7 @@
 
 		if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 		{
-			enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, usuarioPatreon, false);
+			enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
 		}
 
 		<div class="cuerpo-ancho" style="position: sticky; top: var(--alturaCabecera); z-index: 1000; width: 100%;">
@@ -553,7 +553,7 @@
 			{
 				if (tipo == Tipo.Bundle && string.IsNullOrEmpty(bundleNombre) == true)
 				{
-					await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.NombreBundle) + "/");
+					await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre) + "/");
 				}
 
 				if (bundle?.Juegos?.Count > 0)

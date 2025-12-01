@@ -6,8 +6,8 @@
         {
             Bundles2.Bundle bundle = new Bundles2.Bundle()
             {
-                Tipo = Bundles2.BundleTipo.GreenManGaming,
-                NombreTienda = "Green Man Gaming",
+                BundleTipo = Bundles2.BundleTipo.GreenManGaming,
+                Tienda = "Green Man Gaming",
                 ImagenTienda = "/imagenes/bundles/gmg_300x80.webp",
                 ImagenIcono = "/imagenes/bundles/gmg_icono.webp",
                 EnlaceBase = "greenmangamingbundles.com",

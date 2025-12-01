@@ -479,7 +479,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It's in the bundle: [" + bundle2.NombreBundle + " • " + bundle2.NombreTienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
+                                        texto = texto + "* It's in the bundle: [" + bundle2.Nombre + " • " + bundle2.Tienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
                                     }
                                 }
                             }
@@ -492,7 +492,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It was in the bundle: " + bundle2.NombreBundle + " • " + bundle2.NombreTienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
+                                        texto = texto + "* It was in the bundle: " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
                                     }
                                 }
                             }
@@ -568,7 +568,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It's in the bundle: [" + bundle2.NombreBundle + " • " + bundle2.NombreTienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
+                                        texto = texto + "* It's in the bundle: [" + bundle2.Nombre + " • " + bundle2.Tienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
                                     }
                                 }
                             }
@@ -581,7 +581,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It was in the bundle: " + bundle2.NombreBundle + " • " + bundle2.NombreTienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
+                                        texto = texto + "* It was in the bundle: " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
                                     }
                                 }
                             }
@@ -710,7 +710,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* [" + bundle2.NombreBundle + " • " + bundle2.NombreTienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
+                                        texto = texto + "* [" + bundle2.Nombre + " • " + bundle2.Tienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
                                     }
                                 }
                             }
@@ -725,7 +725,7 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* " + bundle2.NombreBundle + " • " + bundle2.NombreTienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
+                                        texto = texto + "* " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
                                     }
                                 }
                             }

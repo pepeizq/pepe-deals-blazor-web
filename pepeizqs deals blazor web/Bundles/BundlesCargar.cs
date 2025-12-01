@@ -43,7 +43,7 @@ namespace Bundles2
 				{
 					if (enlace.Contains(bundle.EnlaceBase) == true)
 					{
-						if (bundle.Tipo == BundleTipo.HumbleBundle)
+						if (bundle.BundleTipo == BundleTipo.HumbleBundle)
 						{
 							Bundle nuevoBundle = bundle;
 							nuevoBundle.Enlace = LimpiarEnlace(enlace);
@@ -51,7 +51,7 @@ namespace Bundles2
 
 							return nuevoBundle;
 						}
-						else if (bundle.Tipo == BundleTipo.Fanatical)
+						else if (bundle.BundleTipo == BundleTipo.Fanatical)
 						{
 							Bundle nuevoBundle = bundle;
 							nuevoBundle.Enlace = LimpiarEnlace(enlace);
@@ -91,7 +91,7 @@ namespace Bundles2
 		{
 			foreach (var bundle in GenerarListado())
 			{
-				if (bundle.Tipo == bundleTipo)
+				if (bundle.BundleTipo == bundleTipo)
 				{
 					return bundle;
 				}
@@ -104,7 +104,7 @@ namespace Bundles2
 		{
 			foreach (var bundle in GenerarListado())
 			{
-				if (bundle.Tipo.ToString() == bundleTipo)
+				if (bundle.BundleTipo.ToString() == bundleTipo)
 				{
 					return bundle;
 				}
@@ -119,7 +119,7 @@ namespace Bundles2
 
 			foreach (var bundle in GenerarListado())
 			{
-				if (bundle.Tipo == tipo)
+				if (bundle.BundleTipo == tipo)
 				{
 					return bundle;
 				}

@@ -134,7 +134,7 @@ namespace Tiendas2
 				}
 				else if (id == APIs.EpicGames.Tienda.Generar().Id)
 				{
-					await APIs.EpicGames.Tienda.BuscarOfertas(conexion, decompilador);
+					await APIs.EpicGames.Tienda.BuscarOfertas();
 				}
                 else if (id == APIs._2Game.Tienda.Generar().Id)
                 {
@@ -247,7 +247,7 @@ namespace Tiendas2
 			}
 			else if (id == APIs.EpicGames.Tienda.Generar().Id)
 			{
-				await APIs.EpicGames.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.EpicGames.Tienda.BuscarOfertas();
 			}
             else if (id == APIs._2Game.Tienda.Generar().Id)
             {

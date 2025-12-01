@@ -19,10 +19,10 @@ namespace BaseDatos.Bundles
 
 				using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
 				{
-					comando.Parameters.AddWithValue("@bundleTipo", bundle.Tipo);
-					comando.Parameters.AddWithValue("@nombre", bundle.NombreBundle);
-					comando.Parameters.AddWithValue("@tienda", bundle.NombreTienda);
-					comando.Parameters.AddWithValue("@imagen", bundle.ImagenBundle);
+					comando.Parameters.AddWithValue("@bundleTipo", bundle.BundleTipo);
+					comando.Parameters.AddWithValue("@nombre", bundle.Nombre);
+					comando.Parameters.AddWithValue("@tienda", bundle.Tienda);
+					comando.Parameters.AddWithValue("@imagen", bundle.Imagen);
 					comando.Parameters.AddWithValue("@enlace", bundle.Enlace);
 					comando.Parameters.AddWithValue("@fechaEmpieza", bundle.FechaEmpieza.ToString());
 					comando.Parameters.AddWithValue("@fechaTermina", bundle.FechaTermina.ToString());
@@ -83,7 +83,7 @@ namespace BaseDatos.Bundles
 									juegoBundle.Imagen = juego.Imagen;
 									juegoBundle.Nombre = juego.Nombre;
 									juegoBundle.Enlace = bundle.Enlace;
-									juegoBundle.Tipo = bundle.Tipo;
+									juegoBundle.Tipo = bundle.BundleTipo;
 
 									if (juego2.Bundles == null)
 									{

@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Juegos
 {
@@ -212,7 +213,7 @@ namespace Juegos
 		public string Enlace { get; set; }
 		public string ImagenNoticia { get; set; }
 		public Juego Juego { get; set; }
-		public int Id {get; set;}
+		public int Id { get; set; }
 	}
 
 	public class JuegoSuscripcion
@@ -360,56 +361,4 @@ namespace Juegos
 		public int JugadoTiempo { get; set; }
 		public int JugadoUltimaVez { get; set; }
 	}
-
-	#region Dapper
-
-	public class JuegoHandler<T> : SqlMapper.TypeHandler<T>
-	{
-		public override T Parse(object valor)
-		{
-			if (valor == null || valor == DBNull.Value)
-			{
-				return default;
-			}
-
-			string texto = valor.ToString();
-			if (string.IsNullOrWhiteSpace(texto) || texto == "null")
-			{
-				return default;
-			}
-
-			return JsonSerializer.Deserialize<T>(texto);
-		}
-
-		public override void SetValue(IDbDataParameter parametro, T valor)
-		{
-			parametro.Value = valor == null ? (object)DBNull.Value : JsonSerializer.Serialize(valor);
-		}
-	}
-
-	public static class JuegoDapper
-	{
-		public static void Registrar()
-		{
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoImagenes>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoPrecio>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoAnalisis>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoCaracteristicas>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMedia>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMediaVideo>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoBundle>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoGratis>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoSuscripcion>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<string>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoDeckToken>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoHistorico>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoGalaxyGOG>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoCantidadJugadoresSteam>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoIdioma>>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoEpicGames>());
-			SqlMapper.AddTypeHandler(new JuegoHandler<JuegoXbox>());
-		}
-	}
-
-	#endregion
 }

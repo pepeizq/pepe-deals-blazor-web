@@ -6,8 +6,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.Digiphile,
-				NombreTienda = "Digiphile",
+				BundleTipo = Bundles2.BundleTipo.Digiphile,
+				Tienda = "Digiphile",
 				ImagenTienda = "/imagenes/bundles/digiphile_300x80.webp",
 				ImagenIcono = "/imagenes/bundles/digiphile_icono.ico",
 				EnlaceBase = "digiphile.co",

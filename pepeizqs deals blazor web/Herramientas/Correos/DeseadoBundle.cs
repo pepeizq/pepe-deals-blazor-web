@@ -69,18 +69,18 @@ namespace Herramientas.Correos
 							</body>
 							</html>";
 
-			string enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, false, false);
+			string enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, false, false);
 			html = html.Replace("{{enlace}}", enlace);
 			html = html.Replace("{{imagenJuego}}", juego.Imagen);
 
 			string mensajeAviso = null;
-			if (bundle.NombreBundle.ToLower().Contains("bundle") == true)
+			if (bundle.Nombre.ToLower().Contains("bundle") == true)
 			{
-				mensajeAviso = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Mails"), juego.Nombre, bundle.NombreTienda, bundle.NombreBundle);
+				mensajeAviso = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Mails"), juego.Nombre, bundle.Tienda, bundle.Nombre);
 			}
 			else
 			{
-				mensajeAviso = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Mails"), juego.Nombre, bundle.NombreTienda, bundle.NombreBundle);
+				mensajeAviso = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Mails"), juego.Nombre, bundle.Tienda, bundle.Nombre);
 			}
 
 			html = html.Replace("{{mensajeAviso}}", mensajeAviso);
@@ -91,10 +91,10 @@ namespace Herramientas.Correos
 			html = html.Replace("{{mensaje}}", Herramientas.Idiomas.BuscarTexto(idioma, "Message", "Mails"));
 
 			CorreoDeseadoBundleJson json = new CorreoDeseadoBundleJson();
-			json.BundleNombre = bundle.NombreBundle;
+			json.BundleNombre = bundle.Nombre;
 			json.BundleEnlace = enlace;
 			json.BundleImagen = bundle.ImagenNoticia;
-			json.TiendaNombre = bundle.NombreTienda;
+			json.TiendaNombre = bundle.Tienda;
 			json.NombreJuego = juego.Nombre;
 			json.ImagenJuego = juego.Imagen;
 			json.Idioma = idioma;

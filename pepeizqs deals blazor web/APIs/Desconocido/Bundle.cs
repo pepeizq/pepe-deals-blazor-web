@@ -6,8 +6,8 @@
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.Desconocido,
-				NombreTienda = "Desconocido"
+				BundleTipo = Bundles2.BundleTipo.Desconocido,
+				Tienda = "Desconocido"
 			};
 
 			DateTime fechaBundle = DateTime.Now;

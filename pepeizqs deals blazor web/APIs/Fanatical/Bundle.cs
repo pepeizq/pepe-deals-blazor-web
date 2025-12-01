@@ -13,8 +13,8 @@ namespace APIs.Fanatical
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.Fanatical,
-				NombreTienda = "Fanatical",
+				BundleTipo = Bundles2.BundleTipo.Fanatical,
+				Tienda = "Fanatical",
 				ImagenTienda = "/imagenes/bundles/fanatical_300x80.webp",
 				ImagenIcono = "/imagenes/tiendas/fanatical_icono.webp",
 				EnlaceBase = "fanatical.com",
@@ -65,7 +65,7 @@ namespace APIs.Fanatical
 							temp2 = temp2.Remove(int3, temp2.Length - int3);
 						}
 
-						bundle.NombreBundle = temp2.Trim();
+						bundle.Nombre = temp2.Trim();
 					}
 
 					if (html.Contains("<img srcset=") == true)
@@ -79,7 +79,7 @@ namespace APIs.Fanatical
 						int int3 = temp2.IndexOf("?");
 						string temp3 = temp2.Remove(int3, temp2.Length - int3);
 
-						bundle.ImagenBundle = temp3.Trim();
+						bundle.Imagen = temp3.Trim();
 						bundle.ImagenNoticia = temp3.Trim();
 					}
 				}
@@ -105,11 +105,11 @@ namespace APIs.Fanatical
 							{
 								if (juego.Enlace == bundle.Enlace)
 								{
-									bundle.NombreBundle = WebUtility.HtmlDecode(juego.Nombre);
+									bundle.Nombre = WebUtility.HtmlDecode(juego.Nombre);
 
 									string imagen = juego.Imagen;
 									imagen = imagen.Replace("/400x225/", "/1280x720/");
-									bundle.ImagenBundle = imagen;
+									bundle.Imagen = imagen;
 									bundle.ImagenNoticia = imagen;
 
 									DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

@@ -3,6 +3,7 @@
 using Gratis2;
 using Herramientas;
 using Microsoft.VisualBasic;
+using Suscripciones2;
 
 namespace Noticias
 {
@@ -41,15 +42,15 @@ namespace Noticias
 					Random azarTitulo = new Random();
 					int azarTitulo2 = azarTitulo.Next(1, 5);
 
-					if (bundle.NombreBundle.ToLower().Contains("bundle") == false)
+					if (bundle.Nombre.ToLower().Contains("bundle") == false)
 					{
-						plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "BundleTitle" + azarTitulo2.ToString() + ".1", "NewsTemplates"), bundle.NombreBundle, bundle.NombreTienda);
-						plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "BundleTitle" + azarTitulo2.ToString() + ".1", "NewsTemplates"), bundle.NombreBundle, bundle.NombreTienda);
+						plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "BundleTitle" + azarTitulo2.ToString() + ".1", "NewsTemplates"), bundle.Nombre, bundle.Tienda);
+						plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "BundleTitle" + azarTitulo2.ToString() + ".1", "NewsTemplates"), bundle.Nombre, bundle.Tienda);
 					}
 					else
 					{
-						plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "BundleTitle" + azarTitulo2.ToString() + ".2", "NewsTemplates"), bundle.NombreBundle, bundle.NombreTienda);
-						plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "BundleTitle" + azarTitulo2.ToString() + ".2", "NewsTemplates"), bundle.NombreBundle, bundle.NombreTienda);
+						plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "BundleTitle" + azarTitulo2.ToString() + ".2", "NewsTemplates"), bundle.Nombre, bundle.Tienda);
+						plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "BundleTitle" + azarTitulo2.ToString() + ".2", "NewsTemplates"), bundle.Nombre, bundle.Tienda);
 					}
 
 					#endregion
@@ -58,8 +59,8 @@ namespace Noticias
 
 					if (bundle.Pick == false)
 					{
-						plantilla.ContenidoEn = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("en", "Bundle2", "NewsTemplates"), bundle.NombreTienda) + "</div>";
-						plantilla.ContenidoEs = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("es", "Bundle2", "NewsTemplates"), bundle.NombreTienda) + "</div>";
+						plantilla.ContenidoEn = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("en", "Bundle2", "NewsTemplates"), bundle.Tienda) + "</div>";
+						plantilla.ContenidoEs = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("es", "Bundle2", "NewsTemplates"), bundle.Tienda) + "</div>";
 
 						foreach (var tier in bundle.Tiers.OrderBy(x => x.Posicion))
 						{
@@ -85,8 +86,8 @@ namespace Noticias
 					}
 					else
 					{
-						plantilla.ContenidoEn = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("en", "Bundle3", "NewsTemplates"), bundle.NombreTienda) + "</div>";
-						plantilla.ContenidoEs = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("es", "Bundle3", "NewsTemplates"), bundle.NombreTienda) + "</div>";
+						plantilla.ContenidoEn = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("en", "Bundle3", "NewsTemplates"), bundle.Tienda) + "</div>";
+						plantilla.ContenidoEs = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("es", "Bundle3", "NewsTemplates"), bundle.Tienda) + "</div>";
 
 						foreach (var tier in bundle.Tiers)
 						{
@@ -127,7 +128,7 @@ namespace Noticias
             return plantilla;
         }
 
-        public static Plantilla Gratis(Plantilla plantilla, int juegoId, int id, string tipoSeleccionado)
+        public static Plantilla Gratis(Plantilla plantilla, int juegoId, int id, GratisTipo tipoSeleccionado)
         {
             if (string.IsNullOrEmpty(plantilla.Juegos) == true)
             {
@@ -310,7 +311,7 @@ namespace Noticias
             return plantilla;
         }
 
-        public static Plantilla Suscripciones(Plantilla plantilla, int juegoId, int id, string tipoSeleccionado)
+        public static Plantilla Suscripciones(Plantilla plantilla, int juegoId, int id, SuscripcionTipo tipoSeleccionado)
         {
             if (string.IsNullOrEmpty(plantilla.Juegos) == true)
             {

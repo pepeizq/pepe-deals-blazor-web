@@ -87,11 +87,11 @@ namespace Herramientas
 
 							if (bundlesActuales == 1)
 							{
-								bundleExtraActual = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda;
+								bundleExtraActual = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
 							}
 							else if (bundlesActuales > 1)
 							{
-								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda != bundleExtraActual)
+								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda != bundleExtraActual)
 								{
 									bundleExtraActual = null;
 								}
@@ -103,11 +103,11 @@ namespace Herramientas
 
 							if (bundlesPasados == 1)
 							{
-								bundleExtraPasado = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda;
+								bundleExtraPasado = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
 							}
 							else if (bundlesPasados > 1)
 							{
-								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).NombreTienda != bundleExtraPasado)
+								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda != bundleExtraPasado)
 								{
 									bundleExtraPasado = null;
 								}

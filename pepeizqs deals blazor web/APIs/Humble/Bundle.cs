@@ -12,8 +12,8 @@ namespace APIs.Humble
 		{
 			Bundles2.Bundle bundle = new Bundles2.Bundle()
 			{
-				Tipo = Bundles2.BundleTipo.HumbleBundle,
-				NombreTienda = "Humble Bundle",
+				BundleTipo = Bundles2.BundleTipo.HumbleBundle,
+				Tienda = "Humble Bundle",
 				ImagenTienda = "/imagenes/bundles/humblebundle_300x80.webp",
 				ImagenIcono = "/imagenes/tiendas/humblestore_icono.webp",
 				EnlaceBase = "humblebundle.com",
@@ -78,7 +78,7 @@ namespace APIs.Humble
 							int int5 = temp4.IndexOf(Strings.ChrW(34));
 							string temp5 = temp4.Remove(int5, temp4.Length - int5);
 
-							bundle.NombreBundle = WebUtility.HtmlDecode(temp5.Trim());
+							bundle.Nombre = WebUtility.HtmlDecode(temp5.Trim());
 
 							#endregion
 
@@ -93,7 +93,7 @@ namespace APIs.Humble
 							int int8 = temp7.IndexOf(Strings.ChrW(34));
 							string temp8 = temp7.Remove(int8, temp7.Length - int8);
 
-							bundle.ImagenBundle = WebUtility.HtmlDecode(temp8.Trim());
+							bundle.Imagen = WebUtility.HtmlDecode(temp8.Trim());
 
 							#endregion
 
@@ -202,7 +202,7 @@ namespace APIs.Humble
 							int int5 = temp4.IndexOf("</title>");
 							string temp5 = temp4.Remove(int5, temp4.Length - int5);
 
-							bundle.NombreBundle = WebUtility.HtmlDecode(temp5.Trim());
+							bundle.Nombre = WebUtility.HtmlDecode(temp5.Trim());
 
 							#endregion
 
@@ -217,7 +217,7 @@ namespace APIs.Humble
 							int int8 = temp7.IndexOf(Strings.ChrW(34));
 							string temp8 = temp7.Remove(int8, temp7.Length - int8);
 
-							bundle.ImagenBundle = WebUtility.HtmlDecode(temp8.Trim());
+							bundle.Imagen = WebUtility.HtmlDecode(temp8.Trim());
 
 							#endregion
 
