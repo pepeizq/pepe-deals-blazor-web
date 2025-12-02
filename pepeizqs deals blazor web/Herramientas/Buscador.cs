@@ -118,16 +118,26 @@ namespace Herramientas
 
 			if (buscarGratis == true)
 			{
-                if (juego.Gratis?.Count > 0)
-                {
-                    foreach (var gratis in juego.Gratis)
-                    {
-                        if (DateTime.Now >= gratis.FechaEmpieza && DateTime.Now <= gratis.FechaTermina)
-                        {
-                            return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage5", "Header"), Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre);
-                        }
-                    }
-                }
+				if (juego.GratisActuales?.Count > 0)
+				{
+					foreach (var gratis in juego.GratisActuales)
+					{
+						return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage5", "Header"), Gratis2.GratisCargar.DevolverGratis(gratis.gratis).Nombre);
+					}
+				}
+				else
+				{
+					if (juego.Gratis?.Count > 0)
+					{
+						foreach (var gratis in juego.Gratis)
+						{
+							if (DateTime.Now >= gratis.FechaEmpieza && DateTime.Now <= gratis.FechaTermina)
+							{
+								return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage5", "Header"), Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre);
+							}
+						}
+					}
+				}
             }
 
 			//--------------------------------------------------------------
@@ -139,34 +149,46 @@ namespace Herramientas
 
 			if (buscarBundles == true)
 			{
-                if (juego.Bundles?.Count > 0)
-                {
-                    foreach (var bundle in juego.Bundles)
-                    {
-                        if (DateTime.Now >= bundle.FechaEmpieza && DateTime.Now <= bundle.FechaTermina)
-                        {
-                            mensajeComplementoTipo = "bundle";
-                            mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
-                            mensajeComplementoCantidadBundles = mensajeComplementoCantidadBundles + 1;
-                        }
-                    }
-                }
-            }
+				if (juego.Bundles?.Count > 0)
+				{
+					foreach (var bundle in juego.Bundles)
+					{
+						if (DateTime.Now >= bundle.FechaEmpieza && DateTime.Now <= bundle.FechaTermina)
+						{
+							mensajeComplementoTipo = "bundle";
+							mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
+							mensajeComplementoCantidadBundles = mensajeComplementoCantidadBundles + 1;
+						}
+					}
+				}
+			}
 
 			if (buscarSuscripciones == true)
 			{
-                if (juego.Suscripciones?.Count > 0)
-                {
-                    foreach (var suscripcion in juego.Suscripciones)
-                    {
-                        if (DateTime.Now >= suscripcion.FechaEmpieza && DateTime.Now <= suscripcion.FechaTermina)
-                        {
-                            mensajeComplementoTipo = "suscripcion";
-                            mensajeComplementoTexto = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre;
-                            mensajeComplementoCantidadSuscripciones = mensajeComplementoCantidadSuscripciones + 1;
-                        }
-                    }
-                }
+				if (juego.SuscripcionesActuales?.Count > 0)
+				{
+					foreach (var suscripcion in juego.SuscripcionesActuales)
+					{
+						mensajeComplementoTipo = "suscripcion";
+						mensajeComplementoTexto = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.suscripcion).Nombre;
+						mensajeComplementoCantidadSuscripciones = mensajeComplementoCantidadSuscripciones + 1;
+					}
+				}
+				else
+				{
+					if (juego.Suscripciones?.Count > 0)
+					{
+						foreach (var suscripcion in juego.Suscripciones)
+						{
+							if (DateTime.Now >= suscripcion.FechaEmpieza && DateTime.Now <= suscripcion.FechaTermina)
+							{
+								mensajeComplementoTipo = "suscripcion";
+								mensajeComplementoTexto = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre;
+								mensajeComplementoCantidadSuscripciones = mensajeComplementoCantidadSuscripciones + 1;
+							}
+						}
+					}
+				}
             }
 
 			decimal minimoCantidad = 10000000;

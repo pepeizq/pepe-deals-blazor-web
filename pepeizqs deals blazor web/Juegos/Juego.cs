@@ -2,17 +2,13 @@
 
 using APIs.Steam;
 using Bundles2;
-using Dapper;
 using Gratis2;
 using Herramientas;
 using Microsoft.AspNetCore.Components;
-using Noticias;
 using Suscripciones2;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Juegos
 {
@@ -66,6 +62,10 @@ namespace Juegos
 		public DateTime? UltimaActualizacionGOG { get; set; }
 		public DateTime? UltimaActualizacion { get; set; }
 		public bool InteligenciaArtificial { get; set; }
+		public List<JuegoGratisActuales> GratisActuales { get; set; }
+		public List<JuegoGratisPasados> GratisPasados { get; set; }
+		public List<JuegoSuscripcionActuales> SuscripcionesActuales { get; set; }
+		public List<JuegoSuscripcionPasados> SuscripcionesPasados { get; set; }
 	}
 
 	public static class JuegoCrear
@@ -216,6 +216,16 @@ namespace Juegos
 		public int Id { get; set; }
 	}
 
+	public class JuegoGratisActuales
+	{
+		public int gratis { get; set; }
+	}
+
+	public class JuegoGratisPasados
+	{
+		public int gratis { get; set; }
+	}
+
 	public class JuegoSuscripcion
 	{
 		public SuscripcionTipo Tipo { get; set; }
@@ -230,6 +240,16 @@ namespace Juegos
         public Juego Juego { get; set; }
         public int Id { get; set; }
     }
+
+	public class JuegoSuscripcionActuales
+	{
+		public int suscripcion { get; set; }
+	}
+
+	public class JuegoSuscripcionPasados
+	{
+		public int suscripcion { get; set; }
+	}
 
 	public class JuegoHistorico
 	{

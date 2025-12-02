@@ -212,7 +212,7 @@ else
 		<div class="caja-comparador cuerpo-ancho" style="position: sticky; top: 70px; z-index: 3; padding: 10px;">
 			<div style="font-size: 18px; padding: 5px 0px; display: flex; align-items: center; gap: 20px;">
 				<div style="width: 200%; font-size: 22px;">
-					<button @onclick="@(e => ClickearLimpieza(e))" class="boton-expandir boton-pequeño" style="background-color: transparent; padding: 12px 15px; margin: auto;">
+					<button @onclick="@(e => ClickearLimpieza(e))" class="boton-expandir boton-pequeño" style="background-color: transparent; padding: 12px 15px; margin: auto; box-shadow: none;">
 						<div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
 							<svg xmlns="http://www.w3.org/2000/svg" style="display: block; width: 24px; max-height: 24px;" fill="var(--colorTexto)" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
 						
@@ -1636,34 +1636,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego1.Suscripciones != null)
+										if (juego1.SuscripcionesActuales?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego1.Suscripciones)
+											foreach (var suscripcion2 in juego1.SuscripcionesActuales)
 											{
-												if (DateTime.Now > suscripcion2.FechaEmpieza && DateTime.Now < suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego1.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1682,34 +1665,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego2.Suscripciones != null)
+										if (juego2.SuscripcionesActuales?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego2.Suscripciones)
+											foreach (var suscripcion2 in juego2.SuscripcionesActuales)
 											{
-												if (DateTime.Now > suscripcion2.FechaEmpieza && DateTime.Now < suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego2.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1728,34 +1694,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego3.Suscripciones != null)
+										if (juego3.SuscripcionesActuales?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego3.Suscripciones)
+											foreach (var suscripcion2 in juego3.SuscripcionesActuales)
 											{
-												if (DateTime.Now > suscripcion2.FechaEmpieza && DateTime.Now < suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego3.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1774,34 +1723,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego4.Suscripciones != null)
+										if (juego4.SuscripcionesActuales?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego4.Suscripciones)
+											foreach (var suscripcion2 in juego4.SuscripcionesActuales)
 											{
-												if (DateTime.Now > suscripcion2.FechaEmpieza && DateTime.Now < suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego4.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1842,34 +1774,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego1.Suscripciones != null)
+										if (juego1.SuscripcionesPasados?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego1.Suscripciones)
+											foreach (var suscripcion2 in juego1.SuscripcionesPasados)
 											{
-												if (DateTime.Now > suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego1.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1888,34 +1803,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego2.Suscripciones != null)
+										if (juego2.SuscripcionesPasados?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego2.Suscripciones)
+											foreach (var suscripcion2 in juego2.SuscripcionesPasados)
 											{
-												if (DateTime.Now > suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego2.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1934,34 +1832,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego3.Suscripciones != null)
+										if (juego3.SuscripcionesPasados?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego3.Suscripciones)
+											foreach (var suscripcion2 in juego3.SuscripcionesPasados)
 											{
-												if (DateTime.Now > suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego3.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1980,34 +1861,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego4.Suscripciones != null)
+										if (juego4.SuscripcionesPasados?.Count > 0)
 										{
-											foreach (var suscripcion2 in juego4.Suscripciones)
+											foreach (var suscripcion2 in juego4.SuscripcionesPasados)
 											{
-												if (DateTime.Now > suscripcion2.FechaTermina)
+												if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcion)
 												{
-													bool añadir = true;
+													mensaje = string.Empty;
 
-													if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion != null)
-													{
-														foreach (Juegos.JuegoSuscripcion suscripcion3 in juego4.Suscripciones)
-														{
-															if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).IncluyeSuscripcion == suscripcion3.Tipo)
-															{
-																añadir = false;
-																break;
-															}
-														}
-													}
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-													if (añadir == true && suscripcion2.Tipo == suscripcion)
-													{
-														mensaje = string.Empty;
-
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
-
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -2069,9 +1933,9 @@ else
 
 	protected override void OnInitialized()
 	{
-        Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
-        idioma = datos.Idioma;
-        usuarioId = datos.UsuarioId;
+		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+		idioma = datos.Idioma;
+		usuarioId = datos.UsuarioId;
 		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -2144,7 +2008,7 @@ else
 
 			if (id1 > 0)
 			{
-				juego1 ??= BaseDatos.Juegos.Buscar.UnJuego(id1);
+				juego1 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
 
 				ActualizarCantidadJugadores(juego1);
 				ActualizarPreciosHistoricos(juego1);
@@ -2159,7 +2023,7 @@ else
 
 			if (id2 > 0)
 			{
-				juego2 ??= BaseDatos.Juegos.Buscar.UnJuego(id2);
+				juego2 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
 
 				ActualizarCantidadJugadores(juego2);
 				ActualizarPreciosHistoricos(juego2);
@@ -2174,7 +2038,7 @@ else
 
 			if (id3 > 0)
 			{
-				juego3 ??= BaseDatos.Juegos.Buscar.UnJuego(id3);
+				juego3 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
 
 				ActualizarCantidadJugadores(juego3);
 				ActualizarPreciosHistoricos(juego3);
@@ -2189,7 +2053,7 @@ else
 
 			if (id4 > 0)
 			{
-				juego4 ??= BaseDatos.Juegos.Buscar.UnJuego(id4);
+				juego4 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
 
 				ActualizarCantidadJugadores(juego4);
 				ActualizarPreciosHistoricos(juego4);
@@ -2400,32 +2264,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Gratis != null)
+			if (juego.GratisActuales?.Count > 0)
 			{
-				foreach (var gratis in juego.Gratis)
+				foreach (var gratis in juego.GratisActuales)
 				{
-					if (DateTime.Now > gratis.FechaEmpieza && DateTime.Now < gratis.FechaTermina)
+					var tipo = Gratis2.GratisCargar.DevolverGratis(gratis.gratis).Tipo;
+
+					bool añadir = true;
+
+					if (gratisActuales.Count > 0)
 					{
-						if (gratis.DRM != Juegos.JuegoDRM.NoEspecificado && gratis.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var gratis2 in gratisActuales)
 						{
-							bool añadir = true;
-
-							if (gratisActuales.Count > 0)
+							if (gratis2 == tipo)
 							{
-								foreach (var gratis2 in gratisActuales)
-								{
-									if (gratis2 == gratis.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								gratisActuales.Add(gratis.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						gratisActuales.Add(tipo);
 					}
 				}
 			}
@@ -2436,32 +2296,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Gratis != null)
+			if (juego.GratisPasados?.Count > 0)
 			{
-				foreach (var gratis in juego.Gratis)
+				foreach (var gratis in juego.GratisPasados)
 				{
-					if (DateTime.Now > gratis.FechaTermina)
+					var tipo = Gratis2.GratisCargar.DevolverGratis(gratis.gratis).Tipo;
+
+					bool añadir = true;
+
+					if (gratisAntiguos.Count > 0)
 					{
-						if (gratis.DRM != Juegos.JuegoDRM.NoEspecificado && gratis.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var gratis2 in gratisAntiguos)
 						{
-							bool añadir = true;
-
-							if (gratisAntiguos.Count > 0)
+							if (gratis2 == tipo)
 							{
-								foreach (var gratis2 in gratisAntiguos)
-								{
-									if (gratis2 == gratis.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								gratisAntiguos.Add(gratis.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						gratisAntiguos.Add(tipo);
 					}
 				}
 			}
@@ -2472,44 +2328,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Suscripciones != null)
+			if (juego.SuscripcionesActuales?.Count > 0)
 			{
-				foreach (var suscripcion in juego.Suscripciones)
+				foreach (var suscripcion in juego.SuscripcionesActuales)
 				{
-					if (DateTime.Now > suscripcion.FechaEmpieza && DateTime.Now < suscripcion.FechaTermina)
+					var tipo = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.suscripcion).Id;
+
+					bool añadir = true;
+
+					if (suscripcionesActuales.Count > 0)
 					{
-						if (suscripcion.DRM != Juegos.JuegoDRM.NoEspecificado && suscripcion.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var suscripcion2 in suscripcionesActuales)
 						{
-							bool añadir = true;
-
-							if (suscripcionesActuales.Count > 0)
+							if (suscripcion2 == tipo)
 							{
-								foreach (var suscripcion2 in suscripcionesActuales)
-								{
-									if (suscripcion2 == suscripcion.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).IncluyeSuscripcion != null)
-							{
-								foreach (Juegos.JuegoSuscripcion suscripcion2 in juego.Suscripciones)
-								{
-									if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).IncluyeSuscripcion == suscripcion2.Tipo)
-									{
-										añadir = false;
-										break;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								suscripcionesActuales.Add(suscripcion.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						suscripcionesActuales.Add(tipo);
 					}
 				}
 			}
@@ -2520,44 +2360,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Suscripciones != null)
+			if (juego.SuscripcionesPasados?.Count > 0)
 			{
-				foreach (var suscripcion in juego.Suscripciones)
+				foreach (var suscripcion in juego.SuscripcionesPasados)
 				{
-					if (DateTime.Now > suscripcion.FechaTermina)
+					var tipo = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.suscripcion).Id;
+
+					bool añadir = true;
+
+					if (suscripcionesAntiguas.Count > 0)
 					{
-						if (suscripcion.DRM != Juegos.JuegoDRM.NoEspecificado && suscripcion.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var suscripcion2 in suscripcionesAntiguas)
 						{
-							bool añadir = true;
-
-							if (suscripcionesAntiguas.Count > 0)
+							if (suscripcion2 == tipo)
 							{
-								foreach (var suscripcion2 in suscripcionesAntiguas)
-								{
-									if (suscripcion2 == suscripcion.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).IncluyeSuscripcion != null)
-							{
-								foreach (Juegos.JuegoSuscripcion suscripcion2 in juego.Suscripciones)
-								{
-									if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).IncluyeSuscripcion == suscripcion2.Tipo)
-									{
-										añadir = false;
-										break;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								suscripcionesAntiguas.Add(suscripcion.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						suscripcionesAntiguas.Add(tipo);
 					}
 				}
 			}
@@ -2570,19 +2394,7 @@ else
 	{
 		if (string.IsNullOrEmpty(textoBuscador) == false)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			resultadosBuscador = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 50, false, 0);
+			resultadosBuscador = BaseDatos.Juegos.Buscar.NombreComparador(textoBuscador);
 
 			if (resultadosBuscador.Count > 0)
 			{
@@ -2602,7 +2414,7 @@ else
 		if (posicion == 1)
 		{
 			id1 = int.Parse(id);
-			juego1 = BaseDatos.Juegos.Buscar.UnJuego(id1);
+			juego1 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
 
 			ActualizarCantidadJugadores(juego1);
 			ActualizarPreciosHistoricos(juego1);
@@ -2617,7 +2429,7 @@ else
 		else if (posicion == 2)
 		{
 			id2 = int.Parse(id);
-			juego2 = BaseDatos.Juegos.Buscar.UnJuego(id2);
+			juego2 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
 
 			ActualizarCantidadJugadores(juego2);
 			ActualizarPreciosHistoricos(juego2);
@@ -2632,7 +2444,7 @@ else
 		else if (posicion == 3)
 		{
 			id3 = int.Parse(id);
-			juego3 = BaseDatos.Juegos.Buscar.UnJuego(id3);
+			juego3 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
 
 			ActualizarCantidadJugadores(juego3);
 			ActualizarPreciosHistoricos(juego3);
@@ -2647,7 +2459,7 @@ else
 		else if (posicion == 4)
 		{
 			id4 = int.Parse(id);
-			juego4 = BaseDatos.Juegos.Buscar.UnJuego(id4);
+			juego4 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
 
 			ActualizarCantidadJugadores(juego4);
 			ActualizarPreciosHistoricos(juego4);

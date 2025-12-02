@@ -649,27 +649,15 @@
             return;
         }
 
-        resultadosMostrar = await BuscarAsync(texto);
+        resultadosMostrar = BuscarAsync(texto);
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task<List<Juegos.Juego>> BuscarAsync(string texto)
+    private List<Juegos.Juego> BuscarAsync(string texto)
     {
-        if (conexion == null)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-        else
-        {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
-
         bool usuarioLogeado = string.IsNullOrEmpty(usuarioId) == false;
 
-        return BaseDatos.Juegos.Buscar.Nombre(texto, conexion, 10, false, -1, usuarioLogeado, true).ToList();
+        return BaseDatos.Juegos.Buscar.Nombre2(texto, 10).ToList();
     }
 
     private void LimpiarBusqueda(MouseEventArgs e)

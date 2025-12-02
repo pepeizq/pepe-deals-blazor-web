@@ -446,17 +446,17 @@
                                 }
                             }
 
-                            @if (juego.Bundles != null)
+                            @if (juego.Bundles?.Count > 0)
                             {
                                 <button onclick="moverScroll('bundles')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Bundles", "Header")</button>
                             }
 
-                            @if (juego.Gratis != null)
+                            @if (juego.Gratis?.Count > 0)
                             {
                                 <button onclick="moverScroll('gratis')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Free", "Header")</button>
                             }
 
-                            @if (juego.Suscripciones != null)
+                            @if (juego.Suscripciones?.Count > 0)
                             {
                                 <button onclick="moverScroll('suscripciones')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Subscriptions", "Header")</button>
                             }
@@ -3541,6 +3541,8 @@
                 string mensajeMinimoDRM = CogerMinimoDRM(idioma, drm.Id, juego.Id, juego.Nombre, juego.PrecioMinimosHistoricos, juego.PrecioActualesTiendas, juego.Historicos);
                 drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });                 
             }
+
+            juego.Suscripciones = global::BaseDatos.Suscripciones.Buscar.JuegoId(juego.Id);
 
             if (juego.Tipo == JuegoTipo.Game)
             {

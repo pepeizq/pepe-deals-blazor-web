@@ -31,11 +31,11 @@ namespace BaseDatos.Bundles
 
 			if (ordenamiento == 0)
 			{
-				busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaTermina), DATEPART(DAY,fechaTermina)";
+				busqueda = busqueda + " ORDER BY DATEPART(YEAR,fechaTermina), DATEPART(MONTH,fechaTermina), DATEPART(DAY,fechaTermina)";
 			}
 			else if (ordenamiento == 1)
 			{
-				busqueda = busqueda + " ORDER BY DATEPART(MONTH,fechaEmpieza) DESC, DATEPART(DAY,fechaEmpieza) DESC";
+				busqueda = busqueda + " ORDER BY DATEPART(YEAR,fechaEmpieza) DESC, DATEPART(MONTH,fechaEmpieza) DESC, DATEPART(DAY,fechaEmpieza) DESC";
 			}
 			else if (ordenamiento == 2)
 			{

@@ -88,6 +88,21 @@ FROM (
 			return conexion.QueryFirstOrDefault<JuegoSuscripcion>(busqueda, new { Id = id });
 		}
 
+		public static List<JuegoSuscripcion> JuegoId(int id, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = @"
+SELECT sub.*
+FROM (
+    SELECT *, suscripcion AS Tipo
+    FROM suscripciones
+    WHERE juegoId = @JuegoId
+) AS sub";
+
+			return conexion.Query<JuegoSuscripcion>(busqueda, new { JuegoId = id }).ToList();
+		}
+
 		public static List<JuegoSuscripcion> UltimasAñadidas(SqlConnection conexion = null)
 		{
 			conexion = CogerConexion(conexion);

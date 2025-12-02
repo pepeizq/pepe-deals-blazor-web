@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
@@ -8,82 +9,51 @@ namespace BaseDatos.Streaming
 {
     public static class Buscar
     {
-        public static List<JuegoDRM> DRMs(string tabla, int idJuego, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
+		public static List<JuegoDRM> DRMs(string tabla, int idJuego, SqlConnection conexion = null)
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			conexion = CogerConexion(conexion);
 
-            List<JuegoDRM> listaDRMs = new List<JuegoDRM>();
+			string busqueda = "SELECT drms FROM streaming" + tabla + " WHERE idJuego = " + idJuego.ToString() + " AND fecha > DATEADD(DAY, -7, CAST(GETDATE() as date))";
 
-            using (conexion)
-            {
-                string busqueda = "SELECT drms FROM streaming" + tabla + " WHERE idJuego = " + idJuego.ToString() + " AND fecha > DATEADD(DAY, -7, CAST(GETDATE() as date))";
+			var resultados = conexion.Query<string>(busqueda, new { idJuego });
 
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    SqlDataReader lector = comando.ExecuteReader();
+			List<JuegoDRM> listaDRMs = new List<JuegoDRM>();
 
-                    using (lector)
-                    {
-                        while (lector.Read() == true)
-                        {
-                            if (lector.IsDBNull(0) == false)
-                            {
-                                string drmsTexto = lector.GetString(0);
-                                List<string> drms = JsonSerializer.Deserialize<List<string>>(drmsTexto);
+			foreach (var drmsTexto in resultados)
+			{
+				if (!string.IsNullOrEmpty(drmsTexto))
+				{
+					var drms = JsonSerializer.Deserialize<List<string>>(drmsTexto);
 
-                                foreach (var drm in drms)
-                                {
-                                    listaDRMs.Add(JuegoDRM2.Traducir(drm));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+					foreach (var drm in drms)
+					{
+						listaDRMs.Add(JuegoDRM2.Traducir(drm));
+					}
+				}
+			}
 
             return listaDRMs;
         }
 
         public static bool AmazonLuna(int idJuego, SqlConnection conexion = null)
         {
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
 			string busqueda = "SELECT nombre FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString();
 
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				SqlDataReader lector = comando.ExecuteReader();
+			var existe = conexion.ExecuteScalar<string>(busqueda);
 
-				using (lector)
-				{
-					if (lector.Read() == true)
-					{
-                        return true;
-					}
-				}
-			}
-
-            return false;
+			return existe != null;
 		}
     }
 }

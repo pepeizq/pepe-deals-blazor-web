@@ -276,15 +276,7 @@ else
 
             juegoSuscripciones.Suscripciones.Add(suscripcion);
 
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-
-            using (conexion)
-            {
-                BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(idSeleccionadaSuscripciones), juegoSuscripciones.Suscripciones, suscripcion, conexion);
-            }
+            BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(idSeleccionadaSuscripciones), suscripcion);
         }
 
         idSeleccionadaSuscripciones = null;

@@ -29,7 +29,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosSteamJuegos = new List<Juego>();
 
-				deseadosSteamJuegos = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam(deseadosSteam);
+				deseadosSteamJuegos = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(deseadosSteam.Select(int.Parse).ToList());
 
 				if (deseadosSteamJuegos != null)
 				{

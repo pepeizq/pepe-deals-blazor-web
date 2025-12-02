@@ -4,10 +4,9 @@ using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
-using System.Globalization;
-using System.Text.Json;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BaseDatos.Juegos
 {
@@ -69,7 +68,51 @@ namespace BaseDatos.Juegos
 			return null;
 		}
 
-        public static List<Juego> MultiplesJuegos(List<string> ids, SqlConnection conexion = null)
+		public static Juego UnJuegoComparador(int id, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = @"SELECT
+    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
+FROM juegos j
+WHERE id=@id";
+
+			return conexion.QueryFirstOrDefault<Juego>(busqueda, new { id });
+		}
+
+		public static List<Juego> MultiplesJuegos(List<string> ids, SqlConnection conexion = null)
         {
             string sqlBuscar = string.Empty;
 
@@ -150,26 +193,34 @@ namespace BaseDatos.Juegos
             return juegos;
         }
 
-        public static List<Juego> MultiplesJuegosSteam(List<int> ids, SqlConnection conexion = null)
+		public static List<Juego> MultiplesJuegosSteam2(List<int> ids, SqlConnection conexion = null)
 		{
-			List<string> idsTexto = new List<string>();
-
-			foreach (var id in ids)
-			{
-				idsTexto.Add(id.ToString());
-			}
-
-			return MultiplesJuegosSteam(idsTexto, conexion);
-		}
-
-		public static List<Juego> MultiplesJuegosSteam(List<string> ids, SqlConnection conexion = null)
-		{
-			List<Juego> juegos = new List<Juego>();
 			string sqlBuscar = string.Empty;
 
 			if (ids?.Count > 0)
 			{
-				sqlBuscar = "SELECT * FROM juegos WHERE idSteam IN (";
+				sqlBuscar = @"SELECT 
+    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales
+FROM juegos j
+WHERE idSteam IN (";
 
 				int i = 0;
 				while (i < ids.Count)
@@ -197,7 +248,7 @@ namespace BaseDatos.Juegos
 				return conexion.Query<Juego>(sqlBuscar).ToList();
 			}
 
-			return juegos;
+			return new List<Juego>();
 		}
 
 		public static List<int> MultiplesJuegosSteamOrdenado(List<int> ids, SqlConnection conexion = null)
@@ -416,6 +467,118 @@ namespace BaseDatos.Juegos
 			}
 
 			return null;
+		}
+
+		public static List<Juego> Nombre2(string nombre, int cantidadResultados = 10, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = @"SELECT TOP (@cantidad) 
+    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales
+FROM juegos j
+WHERE 1=1";
+
+			string[] palabras = nombre.Split(" ");
+
+			foreach (var palabra in palabras)
+			{
+				if (string.IsNullOrEmpty(palabra) == false)
+				{
+					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
+
+					busqueda = busqueda + $" AND nombreCodigo LIKE '%{palabraLimpia}%'";
+				}
+			}
+
+			if (string.IsNullOrEmpty(busqueda) == false)
+			{
+				busqueda = busqueda + @" ORDER BY CASE 
+WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+END DESC";
+			}
+
+			return conexion.Query<Juego>(busqueda, new { cantidad = cantidadResultados }).ToList();
+		}
+
+		public static List<Juego> NombreComparador(string nombre, int cantidadResultados = 10, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = @"SELECT TOP (@cantidad) 
+    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
+FROM juegos j
+WHERE 1=1";
+
+			string[] palabras = nombre.Split(" ");
+
+			foreach (var palabra in palabras)
+			{
+				if (string.IsNullOrEmpty(palabra) == false)
+				{
+					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
+
+					busqueda = busqueda + $" AND nombreCodigo LIKE '%{palabraLimpia}%'";
+				}
+			}
+
+			if (string.IsNullOrEmpty(busqueda) == false)
+			{
+				busqueda = busqueda + @" ORDER BY CASE 
+WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+END DESC";
+			}
+
+			return conexion.Query<Juego>(busqueda, new { cantidad = cantidadResultados }).ToList();
 		}
 
 		public static List<Juego> Nombre(string nombre, SqlConnection conexion, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)

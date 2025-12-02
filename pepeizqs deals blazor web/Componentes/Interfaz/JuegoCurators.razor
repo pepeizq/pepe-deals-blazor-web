@@ -252,7 +252,7 @@
                             cantidad = c.Curator.SteamIds.Count;
                         }
 
-                        c.JuegosMostrar = BaseDatos.Juegos.Buscar.MultiplesJuegosSteam(c.Curator.SteamIds.GetRange(c.Posicion, cantidad));
+                        c.JuegosMostrar = BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(c.Curator.SteamIds.GetRange(c.Posicion, cantidad));
                     }
                 });
             }
@@ -274,7 +274,7 @@
             curator.Posicion = 0;
         }
 
-        curator.JuegosMostrar = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam(curator.Curator.SteamIds.GetRange(curator.Posicion, 4));
+        curator.JuegosMostrar = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(curator.Curator.SteamIds.GetRange(curator.Posicion, 4));
     }
 
     private void CuratorAdelante(MouseEventArgs e, global::BaseDatos.Curators.CuratorFicha curator)
@@ -290,6 +290,6 @@
             curator.Posicion = curator.Curator.SteamIds.Count - 4;
         }
 
-        curator.JuegosMostrar = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam(curator.Curator.SteamIds.GetRange(curator.Posicion, 4));
+        curator.JuegosMostrar = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(curator.Curator.SteamIds.GetRange(curator.Posicion, 4));
     }
 }

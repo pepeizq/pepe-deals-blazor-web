@@ -2,6 +2,7 @@
 
 #nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Net.Http.Headers;
@@ -67,21 +68,21 @@ namespace APIs.Ubisoft
 			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + enlace;
 		}
 
-		public static async Task Buscar(SqlConnection conexion = null)
-        {
-			if (conexion == null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0, conexion);
+			return conexion;
+		}
+
+		public static async Task Buscar(SqlConnection conexion = null)
+        {
+			conexion = CogerConexion(conexion);
+
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
             int cantidad = 0;
 
@@ -115,153 +116,80 @@ namespace APIs.Ubisoft
 
                         bool encontrado = false;
 
-						if (conexion == null)
-						{
-							conexion = Herramientas.BaseDatos.Conectar();
-						}
-						else
-						{
-							if (conexion.State != System.Data.ConnectionState.Open)
+						conexion = CogerConexion(conexion);
+
+						string idJuegosTexto = await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
+
+                        if (string.IsNullOrEmpty(idJuegosTexto) == false)
+                        {
+							encontrado = true;
+
+							if (idJuegosTexto != "0")
 							{
-								conexion = Herramientas.BaseDatos.Conectar();
+								List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
+
+								if (idJuegos.Count > 0)
+								{
+									foreach (var id in idJuegos)
+									{
+										cantidad += 1;
+										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+
+										bool insertar = true;
+										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+
+										if (suscripciones?.Count > 0)
+										{
+											foreach (var suscripcion in suscripciones)
+											{
+												if (suscripcion.Tipo == Suscripciones2.SuscripcionTipo.UbisoftPlusClassics)
+												{
+													insertar = false;
+
+													suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(2);
+
+													BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+												}
+											}
+										}
+
+										if (insertar == true)
+										{
+											DateTime nuevaFecha = DateTime.Now;
+											nuevaFecha = nuevaFecha + TimeSpan.FromDays(2);
+
+											JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
+											{
+												DRM = JuegoDRM.Ubisoft,
+												Nombre = juego.Nombre,
+												FechaEmpieza = DateTime.Now,
+												FechaTermina = nuevaFecha,
+												JuegoId = int.Parse(id),
+												Enlace = juego.Id,
+												Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics
+											};
+
+											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+										}
+									}
+								}
 							}
 						}
 
-						string sqlBuscar = "SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace";
-
-                        using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
-                        {
-                            comando.Parameters.AddWithValue("@enlace", enlace);
-
-                            using (SqlDataReader lector = comando.ExecuteReader())
-                            {
-                                if (lector.Read() == true)
-                                {
-                                    cantidad += 1;
-
-									BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad, conexion);
-
-                                    if (lector.IsDBNull(0) == false)
-                                    {
-                                        if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-                                        {
-                                            string idJuegosTexto = lector.GetString(0);
-
-                                            encontrado = true;
-
-                                            if (idJuegosTexto != "0")
-                                            {
-                                                List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
-
-                                                if (idJuegos.Count > 0)
-                                                {
-                                                    foreach (var id in idJuegos)
-                                                    {
-                                                        Juego juegobd = BaseDatos.Juegos.Buscar.UnJuego(int.Parse(id));
-
-                                                        if (juegobd != null)
-                                                        {
-                                                            bool añadirSuscripcion = true;
-
-                                                            if (juegobd.Suscripciones != null)
-                                                            {
-                                                                if (juegobd.Suscripciones.Count > 0)
-                                                                {
-                                                                    bool actualizar = false;
-
-                                                                    foreach (var suscripcion in juegobd.Suscripciones)
-                                                                    {
-                                                                        if (suscripcion.Tipo == Suscripciones2.SuscripcionTipo.UbisoftPlusClassics)
-                                                                        {
-                                                                            añadirSuscripcion = false;
-                                                                            actualizar = true;
-
-                                                                            DateTime nuevaFecha = suscripcion.FechaTermina;
-                                                                            nuevaFecha = DateTime.Now;
-                                                                            nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-                                                                            suscripcion.FechaTermina = nuevaFecha;
-                                                                        }
-                                                                    }
-
-                                                                    if (actualizar == true)
-                                                                    {
-                                                                        BaseDatos.Juegos.Actualizar.Suscripciones(juegobd, conexion);
-
-                                                                        JuegoSuscripcion suscripcion2 = BaseDatos.Suscripciones.Buscar.UnJuego(enlace);
-                                                                      
-                                                                        if (suscripcion2 != null)
-                                                                        {
-                                                                            DateTime nuevaFecha = suscripcion2.FechaTermina;
-                                                                            nuevaFecha = DateTime.Now;
-                                                                            nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-                                                                            suscripcion2.FechaTermina = nuevaFecha;
-                                                                            BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion2, conexion);
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            if (añadirSuscripcion == true)
-                                                            {
-                                                                DateTime nuevaFecha = DateTime.Now;
-                                                                nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-
-                                                                JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
-                                                                {
-                                                                    DRM = JuegoDRM.Ubisoft,
-                                                                    Nombre = juegobd.Nombre,
-                                                                    FechaEmpieza = DateTime.Now,
-                                                                    FechaTermina = nuevaFecha,
-                                                                    Imagen = juegobd.Imagenes.Header_460x215,
-                                                                    ImagenNoticia = juegobd.Imagenes.Header_460x215,
-                                                                    JuegoId = juegobd.Id,
-                                                                    Enlace = enlace,
-                                                                    Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics
-                                                                };
-
-                                                                if (juegobd.Suscripciones == null)
-                                                                {
-                                                                    juegobd.Suscripciones = new List<JuegoSuscripcion>();
-                                                                }
-
-                                                                juegobd.Suscripciones.Add(nuevaSuscripcion);
-
-                                                                BaseDatos.Suscripciones.Insertar.Ejecutar(juegobd.Id, juegobd.Suscripciones, nuevaSuscripcion, conexion);
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (encontrado == false)
-                            {
-                                BaseDatos.Suscripciones.Insertar.Temporal(conexion, Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
-                            }
-                        }
-                    }
-                }
+						if (encontrado == false)
+						{
+							BaseDatos.Suscripciones.Insertar.Temporal(conexion, Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
+						}
+					}
+				}
             }
         }
 
 		public static async Task BuscarPremium(SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -295,133 +223,70 @@ namespace APIs.Ubisoft
 
 						bool encontrado = false;
 
-						if (conexion == null)
+						conexion = CogerConexion(conexion);
+
+						string idJuegosTexto = await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
+
+						if (string.IsNullOrEmpty(idJuegosTexto) == false)
 						{
-							conexion = Herramientas.BaseDatos.Conectar();
-						}
-						else
-						{
-							if (conexion.State != System.Data.ConnectionState.Open)
+							encontrado = true;
+
+							if (idJuegosTexto != "0")
 							{
-								conexion = Herramientas.BaseDatos.Conectar();
-							}
-						}
+								List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
 
-						string sqlBuscar = "SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace";
-
-						using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
-						{
-							comando.Parameters.AddWithValue("@enlace", enlace);
-
-							using (SqlDataReader lector = comando.ExecuteReader())
-							{
-								if (lector.Read() == true)
+								if (idJuegos.Count > 0)
 								{
-									cantidad += 1;
-
-									BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, cantidad, conexion);
-
-									if (lector.IsDBNull(0) == false)
+									foreach (var id in idJuegos)
 									{
-										if (string.IsNullOrEmpty(lector.GetString(0)) == false)
+										cantidad += 1;
+										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+
+										bool insertar = true;
+										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+
+										if (suscripciones?.Count > 0)
 										{
-											string idJuegosTexto = lector.GetString(0);
-
-											encontrado = true;
-
-											if (idJuegosTexto != "0")
+											foreach (var suscripcion in suscripciones)
 											{
-												List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
-
-												if (idJuegos.Count > 0)
+												if (suscripcion.Tipo == Suscripciones2.SuscripcionTipo.UbisoftPlusPremium)
 												{
-													foreach (var id in idJuegos)
-													{
-														Juego juegobd = BaseDatos.Juegos.Buscar.UnJuego(int.Parse(id));
+													insertar = false;
 
-														if (juegobd != null)
-														{
-															bool añadirSuscripcion = true;
+													suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(2);
 
-															if (juegobd.Suscripciones != null)
-															{
-																if (juegobd.Suscripciones.Count > 0)
-																{
-																	bool actualizar = false;
-
-																	foreach (var suscripcion in juegobd.Suscripciones)
-																	{
-																		if (suscripcion.Tipo == Suscripciones2.SuscripcionTipo.UbisoftPlusPremium)
-																		{
-																			añadirSuscripcion = false;
-																			actualizar = true;
-
-																			DateTime nuevaFecha = suscripcion.FechaTermina;
-																			nuevaFecha = DateTime.Now;
-																			nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-																			suscripcion.FechaTermina = nuevaFecha;
-																		}
-																	}
-
-																	if (actualizar == true)
-																	{
-																		BaseDatos.Juegos.Actualizar.Suscripciones(juegobd, conexion);
-
-																		JuegoSuscripcion suscripcion2 = BaseDatos.Suscripciones.Buscar.UnJuego(enlace);
-
-                                                                        if (suscripcion2 != null)
-                                                                        {
-                                                                            DateTime nuevaFecha = suscripcion2.FechaTermina;
-                                                                            nuevaFecha = DateTime.Now;
-                                                                            nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-                                                                            suscripcion2.FechaTermina = nuevaFecha;
-                                                                            BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion2, conexion);
-                                                                        }
-																	}
-																}
-															}
-
-															if (añadirSuscripcion == true)
-															{
-																DateTime nuevaFecha = DateTime.Now;
-																nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-
-																JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
-																{
-																	DRM = JuegoDRM.Ubisoft,
-																	Nombre = juegobd.Nombre,
-																	FechaEmpieza = DateTime.Now,
-																	FechaTermina = nuevaFecha,
-																	Imagen = juegobd.Imagenes.Header_460x215,
-																	ImagenNoticia = juegobd.Imagenes.Header_460x215,
-																	JuegoId = juegobd.Id,
-																	Enlace = enlace,
-																	Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusPremium
-																};
-
-																if (juegobd.Suscripciones == null)
-																{
-																	juegobd.Suscripciones = new List<JuegoSuscripcion>();
-																}
-
-																juegobd.Suscripciones.Add(nuevaSuscripcion);
-
-																BaseDatos.Suscripciones.Insertar.Ejecutar(juegobd.Id, juegobd.Suscripciones, nuevaSuscripcion, conexion);
-															}
-														}
-													}
+													BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
 												}
 											}
+										}
+
+										if (insertar == true)
+										{
+											DateTime nuevaFecha = DateTime.Now;
+											nuevaFecha = nuevaFecha + TimeSpan.FromDays(2);
+
+											JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
+											{
+												DRM = JuegoDRM.Ubisoft,
+												Nombre = juego.Nombre,
+												FechaEmpieza = DateTime.Now,
+												FechaTermina = nuevaFecha,
+												JuegoId = int.Parse(id),
+												Enlace = juego.Id,
+												Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusPremium
+											};
+
+											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 										}
 									}
 								}
 							}
-
-							if (encontrado == false)
-							{
-                                BaseDatos.Suscripciones.Insertar.Temporal(conexion, GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
-                            }
 						}
+
+						if (encontrado == false)
+						{
+                            BaseDatos.Suscripciones.Insertar.Temporal(conexion, GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
+                        }
 					}
 				}
 			}

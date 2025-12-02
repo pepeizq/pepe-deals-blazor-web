@@ -1,9 +1,6 @@
 ﻿#nullable disable
 
-using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
-using Microsoft.VisualBasic;
 
 namespace APIs.EA
 {
