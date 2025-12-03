@@ -171,8 +171,38 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @"SELECT TOP @cantidadJuegos idMaestra, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, bundles, gratis, suscripciones, idSteam, CONVERT(datetime2, JSON_VALUE(precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, idGog, analisis, CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos 
-                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > @cantidadAnalisis @categoria @drm";
+			string busqueda = @"SELECT TOP @cantidadJuegos j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.bundles, 
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos j
+                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis @categoria @drm";
 
 			if (tipo == 0)
 			{
@@ -231,15 +261,25 @@ ORDER BY NEWID()";
 					juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(fila.bundles);
 				}
 
-				if (string.IsNullOrEmpty(fila.gratis) == false)
+				if (string.IsNullOrEmpty(fila.GratisActuales) == false)
 				{
-					juego.Gratis = JsonSerializer.Deserialize<List<JuegoGratis>>(fila.gratis);
+					juego.GratisActuales = JsonSerializer.Deserialize<List<JuegoGratisActuales>>(fila.GratisActuales);
 				}
 
-				if (string.IsNullOrEmpty(fila.suscripciones) == false)
+				if (string.IsNullOrEmpty(fila.GratisPasados) == false)
 				{
-					juego.Suscripciones = JsonSerializer.Deserialize<List<JuegoSuscripcion>>(fila.suscripciones);
-				}	
+					juego.GratisPasados = JsonSerializer.Deserialize<List<JuegoGratisPasados>>(fila.GratisPasados);
+				}
+
+				if (string.IsNullOrEmpty(fila.SuscripcionesActuales) == false)
+				{
+					juego.SuscripcionesActuales = JsonSerializer.Deserialize<List<JuegoSuscripcionActuales>>(fila.SuscripcionesActuales);
+				}
+
+				if (string.IsNullOrEmpty(fila.SuscripcionesPasados) == false)
+				{
+					juego.SuscripcionesPasados = JsonSerializer.Deserialize<List<JuegoSuscripcionPasados>>(fila.SuscripcionesPasados);
+				}
 
 				if (string.IsNullOrEmpty(fila.analisis) == false)
 				{

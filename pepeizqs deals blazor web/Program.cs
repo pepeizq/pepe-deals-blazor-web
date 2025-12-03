@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
@@ -372,5 +373,75 @@ app.UseStatusCodePagesWithRedirects("/error");
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+#region Extension
+
+app.MapGet("extension/steam2/{id}/{clave}/", async (int id, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.Steam2(id.ToString());
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+app.MapGet("extension/gog2/{slug}/{clave}/", async (string slug, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.Gog2(slug);
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+app.MapGet("extension/epic2/{slug}/{clave}/", async (string slug, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.EpicGames2(slug);
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+#endregion
 
 app.Run();

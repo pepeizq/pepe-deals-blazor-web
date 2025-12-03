@@ -1,12 +1,24 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace BaseDatos.Usuarios
 {
     public static class Actualizar
     {
-        public static void PatreonComprobacion(string correoBuscar, DateTime fechaActualizar, int contribucion, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
+		public static void PatreonComprobacion(string correoBuscar, DateTime fechaActualizar, int contribucion, SqlConnection conexion = null)
         {
             if (conexion == null)
             {
@@ -132,131 +144,57 @@ namespace BaseDatos.Usuarios
 
 		public static void Opcion(string variable, bool valor, string usuarioId, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			string sqlActualizar = "UPDATE AspNetUsers " +
-				"SET " + variable + "=@Valor WHERE Id=@Id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@Id", usuarioId);
-				comando.Parameters.AddWithValue("@Valor", valor);
-				
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-				}
+				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Bool", ex, null, false);
 			}
 		}
 
 		public static void Opcion(string variable, string valor, string usuarioId, SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			string sqlActualizar = "UPDATE AspNetUsers " +
-				"SET " + variable + "=@Valor WHERE Id=@Id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@Id", usuarioId);
-				comando.Parameters.AddWithValue("@Valor", valor);
-	
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Actualizar Opcion", ex);
-				}
+				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos String", ex, null, false);
 			}
 		}
 
 		public static void Opcion(string variable, int valor, string usuarioId, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE AspNetUsers " +
-				"SET " + variable + "=@Valor WHERE Id=@Id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@Id", usuarioId);
-				comando.Parameters.AddWithValue("@Valor", valor);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch (Exception ex) 
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos", ex);
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Int", ex, null, false);
 			}
 		}
 
 		public static void Opcion(string variable, decimal valor, string usuarioId, SqlConnection conexion = null)
 		{
-			if (conexion == null)
+			conexion = CogerConexion(conexion);
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id=" + usuarioId);
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE AspNetUsers " +
-				"SET " + variable + "=@Valor WHERE Id=@Id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@Id", usuarioId);
-				comando.Parameters.AddWithValue("@Valor", valor);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Decimal", ex, null, false);
 			}
 		}
 	}

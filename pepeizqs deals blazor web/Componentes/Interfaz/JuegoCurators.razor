@@ -118,146 +118,149 @@
 
     [PersistentState] public List<global::BaseDatos.Curators.CuratorFicha> curators { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool primerRender)
     {
-        List<string> curatorsBuscar = new List<string>();
-
-        if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+        if (primerRender == true)
         {
-            if (juego.Caracteristicas?.Desarrolladores2?.Count > 0)
+            List<string> curatorsBuscar = new List<string>();
+
+            if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
-                juego.Caracteristicas.Desarrolladores2.ForEach(x =>
+                if (juego.Caracteristicas?.Desarrolladores2?.Count > 0)
                 {
-                    if (x.Id > 0)
+                    juego.Caracteristicas.Desarrolladores2.ForEach(x =>
                     {
-                        bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
-
-                        if (añadir == true)
+                        if (x.Id > 0)
                         {
-                            curatorsBuscar.Add(x.Id.ToString());
-                        }
-                    }
-                });
-            }
-
-            if (juego.Caracteristicas?.Editores2?.Count > 0)
-            {
-                juego.Caracteristicas.Editores2.ForEach(x =>
-                {
-                    if (x.Id > 0)
-                    {
-                        bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
-
-                        if (añadir == true)
-                        {
-                            curatorsBuscar.Add(x.Id.ToString());
-                        }
-                    }
-                });
-            }
-
-            if (juego.Caracteristicas?.Franquicias?.Count > 0)
-            {
-                juego.Caracteristicas.Franquicias.ForEach(x =>
-                {
-                    if (x.Id > 0)
-                    {
-                        bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
-
-                        if (añadir == true)
-                        {
-                            curatorsBuscar.Add(x.Id.ToString());
-                        }
-                    }
-                });
-            }
-
-            if (curatorsBuscar?.Count > 0)
-            {
-                curatorsBuscar.ForEach(async (c) =>
-                {
-                    if (string.IsNullOrEmpty(c) == false)
-                    {
-                        global::BaseDatos.Curators.Curator curator2 = global::BaseDatos.Curators.Buscar.Uno(int.Parse(c));
-
-                        if (curator2 == null)
-                        {
-                            global::BaseDatos.Curators.Insertar.Ejecutar(await APIs.Steam.Curator.Extraer(c));
-                        }
-                        else
-                        {
-                            if (curator2.Fecha == null)
-                            {
-                                global::BaseDatos.Curators.Actualizar.Ejecutar(curator2);
-                            }
-                            else
-                            {
-                                if (curator2.Fecha?.Subtract(DateTime.Now) > TimeSpan.FromDays(180))
-                                {
-                                    global::BaseDatos.Curators.Actualizar.Ejecutar(curator2);
-                                }
-                            }
-
-                            global::BaseDatos.Curators.CuratorFicha ficha = new global::BaseDatos.Curators.CuratorFicha();
-                            ficha.Curator = curator2;
-                            ficha.Posicion = 0;
-                            ficha.JuegosMostrar = new List<Juego>();
-
-                            bool añadir = true;
-
-                            if (curators == null)
-                            {
-                                curators = new List<global::BaseDatos.Curators.CuratorFicha>();
-                            }
-                            else
-                            {
-                                añadir = !curators.Any(c => c.Curator.Id == ficha.Curator.Id);
-                            }
+                            bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
 
                             if (añadir == true)
                             {
-                                curators.Add(ficha);
+                                curatorsBuscar.Add(x.Id.ToString());
                             }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            if (curators?.Count > 0)
-            {
-                curators.ForEach(c =>
+                if (juego.Caracteristicas?.Editores2?.Count > 0)
                 {
-                    List<int> juegosSteam = c.Curator.SteamIds;
-
-                    int posicionBorrar = -1;
-
-                    if (juegosSteam?.Count > 0)
+                    juego.Caracteristicas.Editores2.ForEach(x =>
                     {
-                        posicionBorrar = juegosSteam.FindIndex(c => c == juego.IdSteam);
-
-                        if (posicionBorrar > -1)
+                        if (x.Id > 0)
                         {
-                            juegosSteam.RemoveAt(posicionBorrar);
-                        }
-                    }
+                            bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
 
-                    if (juegosSteam?.Count > 0)
+                            if (añadir == true)
+                            {
+                                curatorsBuscar.Add(x.Id.ToString());
+                            }
+                        }
+                    });
+                }
+
+                if (juego.Caracteristicas?.Franquicias?.Count > 0)
+                {
+                    juego.Caracteristicas.Franquicias.ForEach(x =>
                     {
-                        c.Curator.SteamIds = BaseDatos.Juegos.Buscar.MultiplesJuegosSteamOrdenado(juegosSteam);
-
-                        int cantidad = 4;
-
-                        if (c.Curator.SteamIds.Count < 4)
+                        if (x.Id > 0)
                         {
-                            cantidad = c.Curator.SteamIds.Count;
+                            bool añadir = !curatorsBuscar.Any(c => c == x.Id.ToString());
+
+                            if (añadir == true)
+                            {
+                                curatorsBuscar.Add(x.Id.ToString());
+                            }
+                        }
+                    });
+                }
+
+                if (curatorsBuscar?.Count > 0)
+                {
+                    curatorsBuscar.ForEach(async (c) =>
+                    {
+                        if (string.IsNullOrEmpty(c) == false)
+                        {
+                            global::BaseDatos.Curators.Curator curator2 = global::BaseDatos.Curators.Buscar.Uno(int.Parse(c));
+
+                            if (curator2 == null)
+                            {
+                                global::BaseDatos.Curators.Insertar.Ejecutar(await APIs.Steam.Curator.Extraer(c));
+                            }
+                            else
+                            {
+                                if (curator2.Fecha == null)
+                                {
+                                    global::BaseDatos.Curators.Actualizar.Ejecutar(curator2);
+                                }
+                                else
+                                {
+                                    if (curator2.Fecha?.Subtract(DateTime.Now) > TimeSpan.FromDays(180))
+                                    {
+                                        global::BaseDatos.Curators.Actualizar.Ejecutar(curator2);
+                                    }
+                                }
+
+                                global::BaseDatos.Curators.CuratorFicha ficha = new global::BaseDatos.Curators.CuratorFicha();
+                                ficha.Curator = curator2;
+                                ficha.Posicion = 0;
+                                ficha.JuegosMostrar = new List<Juego>();
+
+                                bool añadir = true;
+
+                                if (curators == null)
+                                {
+                                    curators = new List<global::BaseDatos.Curators.CuratorFicha>();
+                                }
+                                else
+                                {
+                                    añadir = !curators.Any(c => c.Curator.Id == ficha.Curator.Id);
+                                }
+
+                                if (añadir == true)
+                                {
+                                    curators.Add(ficha);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                if (curators?.Count > 0)
+                {
+                    curators.ForEach(c =>
+                    {
+                        List<int> juegosSteam = c.Curator.SteamIds;
+
+                        int posicionBorrar = -1;
+
+                        if (juegosSteam?.Count > 0)
+                        {
+                            posicionBorrar = juegosSteam.FindIndex(c => c == juego.IdSteam);
+
+                            if (posicionBorrar > -1)
+                            {
+                                juegosSteam.RemoveAt(posicionBorrar);
+                            }
                         }
 
-                        c.JuegosMostrar = BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(c.Curator.SteamIds.GetRange(c.Posicion, cantidad));
-                    }
-                });
+                        if (juegosSteam?.Count > 0)
+                        {
+                            c.Curator.SteamIds = BaseDatos.Juegos.Buscar.MultiplesJuegosSteamOrdenado(juegosSteam);
+
+                            int cantidad = 4;
+
+                            if (c.Curator.SteamIds.Count < 4)
+                            {
+                                cantidad = c.Curator.SteamIds.Count;
+                            }
+
+                            c.JuegosMostrar = BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(c.Curator.SteamIds.GetRange(c.Posicion, cantidad));
+                        }
+                    });
+                }
+
+                await InvokeAsync(StateHasChanged);
             }
-
-            await InvokeAsync(StateHasChanged);
         }
     }
 

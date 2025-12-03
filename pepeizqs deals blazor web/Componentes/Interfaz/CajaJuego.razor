@@ -272,7 +272,7 @@
 		idTooltip = idTooltip + "-" + idCurator.ToString();
 	}
 
-	Herramientas.ToolTipDatos tooltip = Herramientas.Tooltip.Generar(idioma, tipo, juego, drmUsar, usuarioConectado, usuarioTieneJuego, usuarioTieneDeseado, idBundle, idGratis, idSuscripcion);
+	Herramientas.ToolTipDatos tooltip = Herramientas.Tooltip.Generar(idioma, tipo, juego, drmUsar, usuarioConectado, usuarioTieneJuego, usuarioTieneDeseado, idBundle, tipoGratis, tipoSuscripcion);
 
 	<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-@idTooltip')" @onmouseenter="(e => MostrarTooltip(e))">
 		<div id="tooltip-@idTooltip" class="tooltip-relleno">
@@ -898,9 +898,6 @@
 	public int idCurator { get; set; }
 
 	[Parameter]
-	public int idGratis { get; set; }
-
-	[Parameter]
 	public string enlaceGratis { get; set; }
 
 	[Parameter]
@@ -917,6 +914,9 @@
 
 	[Parameter]
 	public JuegoDRM drmSuscripcion { get; set; }
+
+	[Parameter]
+	public Suscripciones2.SuscripcionTipo tipoSuscripcion { get; set; }
 
 	public enum Tipo
 	{

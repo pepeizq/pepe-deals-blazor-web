@@ -260,7 +260,9 @@
                             </div>
 
                             <div class="admin-busqueda-juego-derecha">
-                                <button @onclick="@(e => ClickearBorrarPendientes(e, juego.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro);">Borrar</button>
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, juego.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
+                                    Borrar
+                                </button>
                             </div>
                         </div>
                     }

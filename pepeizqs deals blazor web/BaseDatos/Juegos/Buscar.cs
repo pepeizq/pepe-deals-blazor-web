@@ -6,7 +6,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BaseDatos.Juegos
 {
@@ -66,6 +65,49 @@ namespace BaseDatos.Juegos
 			}
 
 			return null;
+		}
+
+		public static Juego UnJuegoReducido(int id, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string busqueda = @"SELECT
+    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
+FROM juegos j
+WHERE id=@id";
+
+			return conexion.QueryFirstOrDefault<Juego>(busqueda, new { id });
 		}
 
 		public static Juego UnJuegoComparador(int id, SqlConnection conexion = null)
@@ -678,7 +720,40 @@ END DESC";
 
 		public static List<Juego> Minimos(SqlConnection conexion = null, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
 		{
-			string busqueda = "SELECT * FROM seccionMinimos";
+			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
+FROM seccionMinimos j";
+
 			string dondeTiendas = string.Empty;
 
 			#region Where

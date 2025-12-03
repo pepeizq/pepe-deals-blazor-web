@@ -9,6 +9,7 @@ using Suscripciones2;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Text.Json.Serialization;
 
 namespace Juegos
 {
@@ -216,6 +217,26 @@ namespace Juegos
 		public int Id { get; set; }
 	}
 
+	public class JuegoGratisJson
+	{
+		public GratisTipo Tipo { get; set; }
+		[JsonPropertyName("juegoId")]
+		public int JuegoId { get; set; }
+		public string Nombre { get; set; }
+		public string Imagen { get; set; }
+		[JsonPropertyName("fechaEmpieza")]
+		public DateTime FechaEmpieza { get; set; }
+		[JsonPropertyName("fechaTermina")]
+		public DateTime FechaTermina { get; set; }
+		[JsonPropertyName("drm")]
+		public JuegoDRM DRM { get; set; }
+		[JsonPropertyName("enlace")]
+		public string Enlace { get; set; }
+		public string ImagenNoticia { get; set; }
+		public Juego Juego { get; set; }
+		public int Id { get; set; }
+	}
+
 	public class JuegoGratisActuales
 	{
 		public int gratis { get; set; }
@@ -240,6 +261,26 @@ namespace Juegos
         public Juego Juego { get; set; }
         public int Id { get; set; }
     }
+
+	public class JuegoSuscripcionJson
+	{
+		public SuscripcionTipo Tipo { get; set; }
+		[JsonPropertyName("juegoId")]
+		public int JuegoId { get; set; }
+		public string Nombre { get; set; }
+		public string Imagen { get; set; }
+		[JsonPropertyName("fechaEmpieza")]
+		public DateTime FechaEmpieza { get; set; }
+		[JsonPropertyName("fechaTermina")]
+		public DateTime FechaTermina { get; set; }
+		[JsonPropertyName("drm")]
+		public JuegoDRM DRM { get; set; }
+		[JsonPropertyName("enlace")]
+		public string Enlace { get; set; }
+		public string ImagenNoticia { get; set; }
+		public Juego Juego { get; set; }
+		public int Id { get; set; }
+	}
 
 	public class JuegoSuscripcionActuales
 	{

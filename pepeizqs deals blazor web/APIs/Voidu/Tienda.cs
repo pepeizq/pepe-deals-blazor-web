@@ -58,75 +58,84 @@ namespace APIs.Voidu
 
                         if (string.IsNullOrEmpty(tempBase) == false && string.IsNullOrEmpty(tempRebajado) == false)
                         {
-                            decimal precioBase = decimal.Parse(tempBase);
-                            decimal precioRebajado = decimal.Parse(tempRebajado);
+                            tempBase = tempBase.Replace("decimal_point", ".");
+							tempRebajado = tempRebajado.Replace("decimal_point", ".");
 
-                            int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                            if (descuento > 0)
+                            if (tempBase.Trim().Length < 6 && tempRebajado.Trim().Length < 6)
                             {
-                                string nombre = WebUtility.HtmlDecode(juego.Nombre);
-                                nombre = nombre.Replace("'", null);
+								decimal precioBase = decimal.Parse(tempBase);
+								decimal precioRebajado = decimal.Parse(tempRebajado);
 
-                                string enlace = juego.Enlace;
+								if (precioBase > 0 && precioRebajado > 0)
+								{
+									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									BaseDatos.Errores.Insertar.Mensaje("test", tempBase + " " + precioBase.ToString() + " - " + tempRebajado + " " + precioRebajado.ToString());
+									if (descuento > 0)
+									{
+										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+										nombre = nombre.Replace("'", null);
 
-                                if (string.IsNullOrEmpty(enlace) == false)
-                                {
-                                    if (enlace.Contains("?") == true)
-                                    {
-                                        int int1 = enlace.IndexOf("?");
-                                        enlace = enlace.Remove(int1, enlace.Length - int1);
-                                    }
+										string enlace = juego.Enlace;
 
-                                    bool enlaceCorrecto = false;
+										if (string.IsNullOrEmpty(enlace) == false)
+										{
+											if (enlace.Contains("?") == true)
+											{
+												int int1 = enlace.IndexOf("?");
+												enlace = enlace.Remove(int1, enlace.Length - int1);
+											}
 
-                                    if (enlace.Contains("voidu.com/en/") == true)
-                                    {
-                                        enlaceCorrecto = true;
-                                    }
+											bool enlaceCorrecto = false;
 
-                                    if (enlaceCorrecto == true)
-                                    {
-                                        string imagen = "vacio";
+											if (enlace.Contains("voidu.com/en/") == true)
+											{
+												enlaceCorrecto = true;
+											}
 
-                                        JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+											if (enlaceCorrecto == true)
+											{
+												string imagen = "vacio";
 
-                                        JuegoPrecio oferta = new JuegoPrecio
-                                        {
-                                            Nombre = nombre,
-                                            Enlace = enlace,
-                                            Imagen = imagen,
-                                            Moneda = JuegoMoneda.Euro,
-                                            Precio = precioRebajado,
-                                            Descuento = descuento,
-                                            Tienda = Generar().Id,
-                                            DRM = drm,
-                                            FechaDetectado = DateTime.Now,
-                                            FechaActualizacion = DateTime.Now
-                                        };
+												JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
 
-                                        try
-                                        {
-                                            BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-                                        }
+												JuegoPrecio oferta = new JuegoPrecio
+												{
+													Nombre = nombre,
+													Enlace = enlace,
+													Imagen = imagen,
+													Moneda = JuegoMoneda.Euro,
+													Precio = precioRebajado,
+													Descuento = descuento,
+													Tienda = Generar().Id,
+													DRM = drm,
+													FechaDetectado = DateTime.Now,
+													FechaActualizacion = DateTime.Now
+												};
 
-                                        juegos2 += 1;
+												try
+												{
+													BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+												}
 
-                                        try
-                                        {
-                                            BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-                                        }
-                                    }
-                                }
-                            }
+												juegos2 += 1;
+
+												try
+												{
+													BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+												}
+											}
+										}
+									}
+								}
+							}
                         }
                     }
                 }

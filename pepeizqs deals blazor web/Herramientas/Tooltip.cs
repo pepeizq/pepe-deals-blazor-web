@@ -1,13 +1,15 @@
 ﻿#nullable disable
 
+using Gratis2;
 using Juegos;
 using pepeizqs_deals_blazor_web.Componentes.Interfaz;
+using Suscripciones2;
 
 namespace Herramientas
 {
     public static class Tooltip
     {
-        public static ToolTipDatos Generar(string idioma, CajaJuego.Tipo tipo, Juego juego, JuegoDRM drm, bool usuarioConectado, bool usuarioTieneJuego, bool usuarioDeseaJuego, int idBundleDescartar = 0, int idGratisDescartar = 0, int idSuscripcionDescartar = 0)
+        public static ToolTipDatos Generar(string idioma, CajaJuego.Tipo tipo, Juego juego, JuegoDRM drm, bool usuarioConectado, bool usuarioTieneJuego, bool usuarioDeseaJuego, int idBundleDescartar = 0, GratisTipo gratisTipoActual = GratisTipo.Desconocido, SuscripcionTipo suscripcionTipoActual = SuscripcionTipo.Desconocido)
         {
             ToolTipDatos datos = new ToolTipDatos
             {
@@ -23,23 +25,17 @@ namespace Herramientas
                 SuscripcionesPasadas = null
             };
 
-            if (juego.Media != null)
-            {
-				if (juego.Media.Videos != null)
+			if (juego.Media?.Videos?.Count > 0)
+			{
+				if (string.IsNullOrEmpty(juego.Media.Videos[0].Micro) == false)
 				{
-					if (juego.Media.Videos.Count > 0)
-					{
-						if (string.IsNullOrEmpty(juego.Media.Videos[0].Micro) == false)
-						{
-							datos.Video = juego.Media.Videos[0].Micro;
+					datos.Video = juego.Media.Videos[0].Micro;
 
-							datos.Video = datos.Video.Replace(".mp4", ".webm");
-						}
-					}
+					datos.Video = datos.Video.Replace(".mp4", ".webm");
 				}
-            }
+			}
 
-            if (juego.Analisis != null)
+			if (juego.Analisis != null)
             {
                 if (string.IsNullOrEmpty(juego.Analisis.Porcentaje) == false && string.IsNullOrEmpty(juego.Analisis.Cantidad) == false)
                 {
@@ -145,170 +141,91 @@ namespace Herramientas
 				}
 			}
 
-			if (juego.Gratis != null)
+			if (juego.GratisActuales?.Count > 0)
 			{
-				int gratisActuales = 0;
-				int gratisPasados = 0;
-				string gratisExtraActual = null;
-				string gratisExtraPasado = null;
+				List<JuegoGratisActuales> gratisFinales = new List<JuegoGratisActuales>();
 
-				foreach (var gratis in juego.Gratis)
+				foreach (var gratis2 in juego.GratisActuales)
 				{
-					bool contar = true;
+					bool añadir = true;
 
-					if (idGratisDescartar > 0 && gratis.Id == idGratisDescartar)
+					if (GratisCargar.DevolverGratis(juego.GratisActuales[0].gratis).Tipo == gratisTipoActual)
 					{
-						contar = false;
-                    }
+						añadir = false;
+					}
 
-					if (contar == true)
+					if (añadir == true)
 					{
-                        if (gratis.FechaEmpieza < DateTime.Now && gratis.FechaTermina > DateTime.Now)
-                        {
-                            gratisActuales += 1;
-
-                            if (gratisActuales == 1)
-                            {
-                                gratisExtraActual = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre;
-                            }
-                            else if (gratisActuales > 1)
-                            {
-                                if (Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre != gratisExtraActual)
-                                {
-                                    gratisExtraActual = null;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            gratisPasados += 1;
-
-                            if (gratisPasados == 1)
-                            {
-                                gratisExtraPasado = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre;
-                            }
-                            else if (gratisPasados > 1)
-                            {
-                                if (Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre != gratisExtraPasado)
-                                {
-                                    gratisExtraPasado = null;
-                                }
-                            }
-                        }
-                    }
+						gratisFinales.Add(gratis2);
+					}
 				}
 
-				if (gratisActuales == 1)
+				if (gratisFinales?.Count > 0)
 				{
-					datos.GratisActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Tooltip");
-				}
-				else if (gratisActuales > 1)
-				{
-					datos.GratisActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Tooltip"), gratisActuales.ToString());
-				}
-
-				if (string.IsNullOrEmpty(gratisExtraActual) == false)
-				{
-					datos.GratisActuales = datos.GratisActuales + " (" + gratisExtraActual + ")";
-				}
-
-				if (gratisPasados == 1)
-				{
-					datos.GratisPasados = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Tooltip");
-				}
-				else if (gratisPasados > 1)
-				{
-					datos.GratisPasados = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Tooltip"), gratisPasados.ToString());
-				}
-
-				if (string.IsNullOrEmpty(gratisExtraPasado) == false)
-				{
-					datos.GratisPasados = datos.GratisPasados + " (" + gratisExtraPasado + ")";
+					if (gratisFinales.Count == 1)
+					{
+						datos.GratisActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Tooltip") + " (" + Gratis2.GratisCargar.DevolverGratis(gratisFinales[0].gratis).Nombre + ")";
+					}
+					else
+					{
+						datos.GratisActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Tooltip"), gratisFinales?.Count.ToString());
+					}
 				}
 			}
 
-			if (juego.Suscripciones != null)
+			if (juego.GratisPasados?.Count > 0)
 			{
-				int suscripcionesActuales = 0;
-				int suscripcionesPasados = 0;
-				string suscripcionExtraActual = null;
-				string suscripcionExtraPasada = null;
-
-				foreach (JuegoSuscripcion suscripcion in juego.Suscripciones)
+				if (juego.GratisPasados.Count == 1)
 				{
-                    bool contar = true;
+					datos.GratisPasados = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Tooltip") + " (" + Gratis2.GratisCargar.DevolverGratis(juego.GratisPasados[0].gratis).Nombre + ")";
+				}
+				else
+				{
+					datos.GratisPasados = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Tooltip"), juego.GratisPasados?.Count.ToString());
+				}
+			}
 
-                    if (idSuscripcionDescartar > 0 && suscripcion.Id == idSuscripcionDescartar)
-                    {
-                        contar = false;
-                    }
+			if (juego.SuscripcionesActuales?.Count > 0)
+			{
+				List<JuegoSuscripcionActuales> suscripcionesFinales = new List<JuegoSuscripcionActuales>();
 
-                    if (contar == true)
+				foreach (var suscripcion2 in juego.SuscripcionesActuales)
+				{
+					bool añadir = true;
+
+					if (SuscripcionesCargar.DevolverSuscripcion(juego.SuscripcionesActuales[0].suscripcion).Id == suscripcionTipoActual)
 					{
-                        if (suscripcion != null)
-                        {
-                            if (DateTime.Now >= suscripcion.FechaEmpieza && DateTime.Now <= suscripcion.FechaTermina)
-                            {
-                                suscripcionesActuales += 1;
+						añadir = false;
+					}
 
-                                if (suscripcionesActuales == 1)
-                                {
-                                    suscripcionExtraActual = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre;
-                                }
-                                else if (suscripcionesActuales > 1)
-                                {
-                                    if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre != suscripcionExtraActual)
-                                    {
-                                        suscripcionExtraActual = null;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                suscripcionesPasados += 1;
-
-                                if (suscripcionesPasados == 1)
-                                {
-                                    suscripcionExtraPasada = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre;
-                                }
-                                else if (suscripcionesPasados > 1)
-                                {
-                                    if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre != suscripcionExtraPasada)
-                                    {
-                                        suscripcionExtraPasada = null;
-                                    }
-                                }
-                            }
-                        }
-                    }                       
+					if (añadir == true)
+					{
+						suscripcionesFinales.Add(suscripcion2);
+					}
 				}
 
-				if (suscripcionesActuales == 1)
+				if (suscripcionesFinales?.Count > 0)
 				{
-					datos.SuscripcionesActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Tooltip");
+					if (suscripcionesFinales.Count == 1)
+					{
+						datos.SuscripcionesActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Tooltip") + " (" + SuscripcionesCargar.DevolverSuscripcion(suscripcionesFinales[0].suscripcion).Nombre + ")";
+					}
+					else
+					{
+						datos.SuscripcionesActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Tooltip"), suscripcionesFinales?.Count.ToString());
+					}
 				}
-				else if (suscripcionesActuales > 1)
-				{
-					datos.SuscripcionesActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Tooltip"), suscripcionesActuales.ToString());
-				}
+			}
 
-				if (string.IsNullOrEmpty(suscripcionExtraActual) == false)
+			if (juego.SuscripcionesPasados?.Count > 0)
+			{
+				if (juego.SuscripcionesPasados.Count == 1)
 				{
-					datos.SuscripcionesActuales = datos.SuscripcionesActuales + " (" + suscripcionExtraActual + ")";
+					datos.SuscripcionesPasadas = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Tooltip") + " (" + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.SuscripcionesPasados[0].suscripcion).Nombre + ")";
 				}
-
-				if (suscripcionesPasados == 1)
+				else
 				{
-					datos.SuscripcionesPasadas = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Tooltip");
-				}
-				else if (suscripcionesPasados > 1)
-				{
-					datos.SuscripcionesPasadas = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Tooltip"), suscripcionesPasados.ToString());
-				}
-
-				if (string.IsNullOrEmpty(suscripcionExtraPasada) == false)
-				{
-					datos.SuscripcionesPasadas = datos.SuscripcionesPasadas + " (" + suscripcionExtraPasada + ")";
+					datos.SuscripcionesPasadas = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Tooltip"), juego.SuscripcionesPasados?.Count.ToString());
 				}
 			}
 

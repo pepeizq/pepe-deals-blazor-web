@@ -362,7 +362,7 @@
                             enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(suscripcionSeleccionadaTipo.Enlace, suscripcionSeleccionadaTipo.Id, usuarioPatreon, false);
                         }
 
-                        <CajaJuego idSuscripcion="@juego.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                        <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@suscripcionSeleccionadaTipo.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
                     }
                 </div>
             </div>
@@ -665,7 +665,7 @@ else
 
             foreach (var juegoActual in componente.Juegos)
             {
-                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuego(juegoActual.JuegoId.ToString());
+                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
 
                 if (juego2 != null)
                 {

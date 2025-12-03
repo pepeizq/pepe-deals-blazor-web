@@ -34,7 +34,7 @@ FROM(
 
 			if (tipo != GratisTipo.Desconocido)
 			{
-				busqueda = busqueda + " AND sub.gratis=" + (int)tipo ;
+				busqueda = busqueda + " WHERE sub.gratis=" + (int)tipo ;
 			}
 
 			busqueda = busqueda + " ORDER BY DATEPART(MONTH,sub.fechaTermina), DATEPART(DAY,sub.fechaTermina)";

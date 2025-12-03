@@ -33,7 +33,7 @@ FROM (
 
 			if (tipo != SuscripcionTipo.Desconocido)
 			{
-				busqueda += " AND sub.suscripcion = " + (int)tipo;
+				busqueda += " WHERE sub.suscripcion = " + (int)tipo;
 			}
 
 			busqueda += " ORDER BY DATEPART(MONTH, sub.fechaTermina), DATEPART(DAY, sub.fechaTermina)";

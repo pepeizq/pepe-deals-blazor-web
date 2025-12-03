@@ -220,7 +220,7 @@
                 enlaceGratis = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
             }
 
-            <CajaJuego idGratis="@juego.Id" enlaceGratis="@enlaceGratis" drmGratis="@juego.DRM" tipoGratis="@juego.Tipo" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Gratis" userAgent="@userAgent" />
+            <CajaJuego enlaceGratis="@enlaceGratis" drmGratis="@juego.DRM" tipoGratis="@juego.Tipo" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Gratis" userAgent="@userAgent" />
         }
     </div>
 }
@@ -417,7 +417,7 @@ else
         {
             foreach (var juegoActual in juegosActuales)
             {
-                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuego(juegoActual.JuegoId.ToString());
+                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
                 juegoActual.Imagen = juego2.Imagenes.Header_460x215;
                 juegoActual.Juego = juego2;
 
@@ -464,7 +464,7 @@ else
             {
                 foreach (var juegoActual in juegosActuales)
                 {
-                    Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuego(juegoActual.JuegoId.ToString());
+                    Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
                     juegoActual.Imagen = juego2.Imagenes.Header_460x215;
                     juegoActual.Juego = juego2;
                 }
