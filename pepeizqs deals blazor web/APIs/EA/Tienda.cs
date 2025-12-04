@@ -184,15 +184,25 @@ namespace APIs.EA
 			"zumas-revenge"
 		};
 
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
         {
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
 			foreach (var juego in juegos)
 			{
-				string html = await Decompiladores.Estandar("https://drop-api.ea.com/game/" + juego);
+				string html = await Decompiladores.GZipFormato3("https://drop-api.ea.com/game/" + juego);
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -251,22 +261,22 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+											BaseDatos.Tiendas.Comprobar.Resto(oferta);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 
 										juegos2 += 1;
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 									}
 								}
@@ -317,22 +327,22 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(ofertaDLC, conexion);
+											BaseDatos.Tiendas.Comprobar.Resto(ofertaDLC);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 
 										juegos2 += 1;
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 									}
 								}
@@ -347,6 +357,8 @@ namespace APIs.EA
 
 							foreach (var tipo in tipos)
 							{
+								conexion = CogerConexion(conexion);
+
 								var fila = conexion.QueryFirstOrDefault<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion });
 
 								string idJuegosTexto = fila.IdJuegos;
@@ -411,7 +423,7 @@ namespace APIs.EA
 								{
 									var generar = tipo == Suscripciones2.SuscripcionTipo.EAPlay ? Suscripcion.Generar() : Suscripcion.GenerarPro();
 									
-									BaseDatos.Suscripciones.Insertar.Temporal(conexion, generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
+									BaseDatos.Suscripciones.Insertar.Temporal(generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
 								}
 							}
                         }

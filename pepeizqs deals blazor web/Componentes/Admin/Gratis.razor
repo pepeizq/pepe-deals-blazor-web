@@ -291,7 +291,7 @@ else
             gratis.FechaTermina = Convert.ToDateTime(fechaTerminaSeleccionadaGratis);
             gratis.ImagenNoticia = imagenNoticiaGratis;
 
-            BaseDatos.Gratis.Insertar.Ejecutar(int.Parse(idSeleccionadaGratis), juegoGratis, gratis);
+            BaseDatos.Gratis.Insertar.Ejecutar(gratis);
         }
 
         idSeleccionadaGratis = null;

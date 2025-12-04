@@ -117,7 +117,7 @@ ORDER BY NEWID()";
 			return resultados;
 		}
 
-		public static List<Juego> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, SqlConnection conexion = null, int cantidadAnalisis = 199)
+		public static List<Juego> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199, SqlConnection conexion = null)
 		{
 			conexion = CogerConexion(conexion);
 
@@ -220,7 +220,7 @@ ORDER BY NEWID()";
 			busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
 			busqueda = busqueda.Replace("@categoria", categoria);
 			busqueda = busqueda.Replace("@drm", drm);
-			busqueda = busqueda.Replace("@cantidadAnalisis", cantidadAnalisis.ToString());
+			busqueda = busqueda.Replace("@cantidadAnalisis", cantidadReseñas.ToString());
 
 			var filas = conexion.Query(busqueda).ToList();
 

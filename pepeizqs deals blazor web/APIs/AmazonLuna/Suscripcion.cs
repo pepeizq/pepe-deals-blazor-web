@@ -198,7 +198,7 @@ namespace APIs.AmazonLuna
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(conexion, GenerarStandard().Id.ToString().ToLower(), juego.Id, juego.Nombre);
+							BaseDatos.Suscripciones.Insertar.Temporal(GenerarStandard().Id.ToString().ToLower(), juego.Id, juego.Nombre);
 						}
 					}
 				}
@@ -309,7 +309,7 @@ namespace APIs.AmazonLuna
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(conexion, GenerarPremium().Id.ToString().ToLower(), juego.Id, juego.Nombre);
+							BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString().ToLower(), juego.Id, juego.Nombre);
 						}
 					}
 				}

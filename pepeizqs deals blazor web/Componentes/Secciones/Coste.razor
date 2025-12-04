@@ -40,7 +40,7 @@
 
 	.caja-coste-mini {
 		background-color: var(--fondoSubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);
 		padding: 15px;
 	}
 </style>
@@ -92,6 +92,54 @@
 	</div>
 
 	<div style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
+		<div class="caja-coste-mini" style="display: flex; align-items: center; gap: 20px; justify-content: space-between; padding: 10px 15px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
+				<div style="min-width: 100px; text-align: center;">
+					1/12/2025
+				</div>
+
+				<div>
+					Patreon
+				</div>
+			</div>
+
+			<div style="padding: 5px 10px; background-color: var(--fondoBien); min-width: 120px; text-align: center; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+				28,80 € EUR
+			</div>
+		</div>
+		
+		<div class="caja-coste-mini" style="display: flex; align-items: center; gap: 20px; justify-content: space-between; padding: 10px 15px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
+				<div style="min-width: 100px; text-align: center;">
+					22/11/2025
+				</div>
+
+				<div>
+					SmarterASP SSL + Extra 1 Static IP (1 Year Extra)
+				</div>
+			</div>
+
+			<div style="padding: 5px 10px; background-color: var(--fondoPeligro); min-width: 120px; text-align: center; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+				53 $ USD
+			</div>
+		</div>
+
+		<div class="caja-coste-mini" style="display: flex; align-items: center; gap: 20px; justify-content: space-between; padding: 10px 15px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
+				<div style="min-width: 100px; text-align: center;">
+					5/11/2025
+				</div>
+
+				<div>
+					SmarterASP Domain deals (1 Year)
+				</div>
+			</div>
+
+			<div style="padding: 5px 10px; background-color: var(--fondoPeligro); min-width: 120px; text-align: center; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+				44 $ USD
+			</div>
+		</div>
+		
 		<div class="caja-coste-mini" style="display: flex; align-items: center; gap: 20px; justify-content: space-between; padding: 10px 15px;">
 			<div style="display: flex; align-items: center; gap: 20px;">
 				<div style="min-width: 100px; text-align: center;">
@@ -159,12 +207,12 @@
 			<hr />
 			<div style="display: flex; flex-direction: column; gap: 20px;">
 				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "CostWeb")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "CostWeb")
 				</div>
 
-				<a href="https://clientes.webempresa.com/europa/gestion/aff.php?aff=2609" target="_blank" style="text-decoration: none;">
+				<a href="https://www.smarterasp.net/index?r=pepeizq" target="_blank" style="text-decoration: none;">
 					<div>
-						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "CostWeb"), "15/3/2028")
+						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String5", "CostWeb"), "5/11/2026")
 					</div>
 				</a>
 			</div>
@@ -182,7 +230,7 @@
 
 				<a href="https://www.smarterasp.net/index?r=pepeizq" target="_blank" style="text-decoration: none;">
 					<div>
-						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "CostWeb"), "6/12/2025")
+						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "CostWeb"), "22/11/2026")
 					</div>
 				</a>
 			</div>
@@ -234,7 +282,7 @@
 
 	#nullable disable
 
-	public double saldo = -14.49;
+	public double saldo = -68.87;
 
 	private string idioma = "en";
 	private string usuarioId = null;

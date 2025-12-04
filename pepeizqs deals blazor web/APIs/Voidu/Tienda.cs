@@ -69,7 +69,7 @@ namespace APIs.Voidu
 								if (precioBase > 0 && precioRebajado > 0)
 								{
 									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-									BaseDatos.Errores.Insertar.Mensaje("test", tempBase + " " + precioBase.ToString() + " - " + tempRebajado + " " + precioRebajado.ToString());
+
 									if (descuento > 0)
 									{
 										string nombre = WebUtility.HtmlDecode(juego.Nombre);

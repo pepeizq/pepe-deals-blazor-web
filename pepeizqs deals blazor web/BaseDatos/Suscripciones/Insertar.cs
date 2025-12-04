@@ -44,44 +44,29 @@ namespace BaseDatos.Suscripciones
 			}
 		}
 
-		public static void Temporal(SqlConnection conexion, string nombreTabla, string enlace, string nombreJuego = "vacio", string imagen = "vacio")
+		public static void Temporal(string nombreTabla, string enlace, string nombreJuego = "vacio", string imagen = "vacio", SqlConnection conexion = null)
 		{
-			bool encontrado = false;
-			string sqlBuscar = "SELECT enlace FROM temporal" + nombreTabla + " WHERE enlace=@enlace";
+			conexion = CogerConexion(conexion);
 
-			using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
+			string sqlBuscar = $"SELECT enlace FROM temporal{nombreTabla} WHERE enlace = @enlace";
+			var resultado = conexion.QuerySingleOrDefault<string>(sqlBuscar, new { enlace });
+
+			if (resultado == null)
 			{
-				comando.Parameters.AddWithValue("@enlace", enlace);
+				string sqlInsertar = $"INSERT INTO temporal{nombreTabla} (enlace, nombre, imagen) " +
+									 "VALUES (@enlace, @nombre, @imagen)";
 
-				using (SqlDataReader lector = comando.ExecuteReader())
+				try
 				{
-					if (lector.Read() == true)
-					{
-						encontrado = true;
-					}
+					conexion.Execute(sqlInsertar, new { 
+						enlace, 
+						nombre = nombreJuego, 
+						imagen 
+					});
 				}
-			}
-
-			if (encontrado == false)
-			{
-				string sqlInsertar = "INSERT INTO temporal" + nombreTabla + " " +
-					"(enlace, nombre, imagen) VALUES " +
-					"(@enlace, @nombre, @imagen) ";
-
-				using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
+				catch (Exception ex)
 				{
-					comando.Parameters.AddWithValue("@enlace", enlace);
-					comando.Parameters.AddWithValue("@nombre", nombreJuego);
-					comando.Parameters.AddWithValue("@imagen", imagen);
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch (Exception ex)
-					{
-						BaseDatos.Errores.Insertar.Mensaje("Insertar Temporal Suscripción", ex);
-					}
+					BaseDatos.Errores.Insertar.Mensaje("Insertar Temporal Suscripción", ex);
 				}
 			}
 		}

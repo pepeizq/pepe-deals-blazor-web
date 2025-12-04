@@ -136,7 +136,6 @@ builder.Services.AddSingleton<Tareas.Mantenimiento>();
 builder.Services.AddSingleton<Tareas.Minimos>();
 builder.Services.AddSingleton<Tareas.Pings>();
 builder.Services.AddSingleton<Tareas.CorreosEnviar>();
-builder.Services.AddSingleton<Tareas.Divisas>();
 builder.Services.AddSingleton<Tareas.Patreon>();
 builder.Services.AddSingleton<Tareas.JuegosActualizar>();
 builder.Services.AddSingleton<Tareas.Duplicados>();
@@ -186,7 +185,6 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Pings>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.CorreosEnviar>());
-builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Divisas>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Patreon>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.JuegosActualizar>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Duplicados>());

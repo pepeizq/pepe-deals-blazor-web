@@ -1,105 +1,112 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Pendientes
 {
 	public static class Actualizar
 	{
-		public static void Tienda(string idTienda, string enlace, string idJuegos, SqlConnection conexion)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
+		public static void Tienda(string idTienda, string enlace, string idJuegos, SqlConnection conexion = null)
 		{
             if (string.IsNullOrEmpty(idJuegos) == false)
             {
                 if (idJuegos != "0")
                 {
+					conexion = CogerConexion(conexion);
+
                     string sqlActualizar = "UPDATE tienda" + idTienda + " " +
                     "SET idJuegos=@idJuegos WHERE enlace=@enlace";
 
-                    using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-                    {
-                        comando.Parameters.AddWithValue("@idJuegos", idJuegos);
-                        comando.Parameters.AddWithValue("@enlace", enlace);
-
-                        try
-                        {
-                            comando.ExecuteNonQuery();
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                }
+					try
+					{
+						conexion.Execute(sqlActualizar, new { idJuegos, enlace });
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Actualizar Pendientes Tienda", ex);
+					}
+				}
             }
 		}
 
-        public static void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos, SqlConnection conexion)
+        public static void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos, SqlConnection conexion = null)
         {
-            foreach (var idJuego in idJuegos)
-            {
-                string descartado = "no";
-                global::Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(idJuego);
+			conexion = CogerConexion(conexion);
 
-                if (idJuego != "0")
-                {
-                    if (juego != null)
-                    {
-                        if (nombreJuego == "vacio")
-                        {
-                            nombreJuego = juego.Nombre;
-                        }
+			foreach (var idJuego in idJuegos)
+			{
+				string descartado = "no";
+				var juego = BaseDatos.Juegos.Buscar.UnJuego(idJuego);
 
-                        if (imagen == "vacio")
-                        {
-                            imagen = juego.Imagenes.Header_460x215;
-                        }
-                    }
-                }
-                else
-                {
-                    descartado = "si";
-                }
+				if (idJuego != "0")
+				{
+					if (juego != null)
+					{
+						if (nombreJuego == "vacio")
+						{
+							nombreJuego = juego.Nombre;
+						}
+							
+						if (imagen == "vacio")
+						{
+							imagen = juego.Imagenes.Header_460x215;
+						}
+					}
+				}
+				else
+				{
+					descartado = "si";
+				}
 
-                string sqlInsertar = "INSERT INTO " + tablaInsertar +
-                        "(enlace, nombre, imagen, idJuegos, descartado) VALUES" +
-                        "(@enlace, @nombre, @imagen, @idJuegos, @descartado)";
+				string sqlInsertar = $@"
+					INSERT INTO {tablaInsertar}
+					(enlace, nombre, imagen, idJuegos, descartado)
+					VALUES
+					(@enlace, @nombre, @imagen, @idJuegos, @descartado)
+				";
 
-                using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-                {
-                    comando.Parameters.AddWithValue("@enlace", enlace);
-                    comando.Parameters.AddWithValue("@nombre", nombreJuego);
-                    comando.Parameters.AddWithValue("@imagen", imagen);
-                    comando.Parameters.AddWithValue("@idJuegos", idJuego);
-                    comando.Parameters.AddWithValue("@descartado", descartado);
+				try
+				{
+					conexion.Execute(sqlInsertar, new
+					{
+						enlace,
+						nombre = nombreJuego,
+						imagen,
+						idJuegos = idJuego,
+						descartado
+					});
+				}
+				catch
+				{
+					
+				}
 
-                    comando.ExecuteNonQuery();
-                    try
-                    {
+				string sqlBorrar = $@"
+					DELETE FROM {tablaBorrar}
+					WHERE enlace = @enlace
+				";
 
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
-                string sqlBorrar = "DELETE FROM " + tablaBorrar + " WHERE enlace=@enlace";
-
-                using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
-                {
-                    comando.Parameters.AddWithValue("@enlace", enlace);
-
-                    try
-                    {
-                        comando.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
-        }
+				try
+				{
+					conexion.Execute(sqlBorrar, new { enlace });
+				}
+				catch
+				{
+					
+				}
+			}
+		}
 
         public static void Streaming(string idStreaming, string nombreCodigo, int idJuego, SqlConnection conexion)
         {
@@ -413,6 +420,46 @@ namespace BaseDatos.Pendientes
 				{
 
 				}
+			}
+		}
+
+		public static void DescartarSuscripcion(string idSuscripcion, string enlace, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sqlInsertar = @$"
+				INSERT INTO suscripcion{idSuscripcion}
+				(enlace, idJuegos, descartado) 
+				VALUES 
+				(@Enlace, @IdJuegos, @Descartado)
+			";
+
+			try
+			{
+				conexion.Execute(sqlInsertar, new
+				{
+					Enlace = enlace,
+					IdJuegos = "0",
+					Descartado = "si"
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Error Descarte 1 Suscripcion " + idSuscripcion, ex);
+			}
+
+			try
+			{
+				string sqlBorrar = $"DELETE FROM temporal{idSuscripcion} WHERE enlace = @enlace";
+
+				conexion.Execute(sqlBorrar, new
+				{
+					enlace
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Error Descarte 2 Suscripcion " + idSuscripcion, ex);
 			}
 		}
 

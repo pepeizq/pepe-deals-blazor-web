@@ -178,7 +178,7 @@ namespace APIs.Ubisoft
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(conexion, Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
+							BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
 						}
 					}
 				}
@@ -285,7 +285,7 @@ namespace APIs.Ubisoft
 
 						if (encontrado == false)
 						{
-                            BaseDatos.Suscripciones.Insertar.Temporal(conexion, GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
+                            BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
                         }
 					}
 				}

@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using BaseDatos.Divisas;
-using Microsoft.Data.SqlClient;
 using System.Xml;
 
 namespace Herramientas
@@ -15,7 +14,7 @@ namespace Herramientas
 
 	public static class Divisas
 	{
-		public static async Task ActualizarDatos(SqlConnection conexion)
+		public static async Task ActualizarDatos()
 		{
 			string html = await Decompiladores.Estandar("http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml");
 
@@ -36,16 +35,16 @@ namespace Herramientas
 								{
 									Id = "USD",
 									Cantidad = Convert.ToDecimal(nodo.Attributes["rate"].Value),
-									FechaActualizacion = DateTime.Now
+									Fecha = DateTime.Now
 								};
 
-								if (Buscar.Ejecutar(conexion, dolar.Id) == null)
+								if (Buscar.Ejecutar(dolar.Id) == null)
 								{
-									Insertar.Ejecutar(dolar, conexion);
+									Insertar.Ejecutar(dolar);
 								}
 								else
 								{
-									Actualizar.Ejecutar(dolar, conexion);
+									Actualizar.Ejecutar(dolar);
 								}
 							}
 							else if (nodo.Attributes["currency"].Value == "GBP")
@@ -54,16 +53,16 @@ namespace Herramientas
 								{
 									Id = "GBP",
 									Cantidad = Convert.ToDecimal(nodo.Attributes["rate"].Value),
-									FechaActualizacion = DateTime.Now
+									Fecha = DateTime.Now
 								};
 
-								if (Buscar.Ejecutar(conexion, libra.Id) == null)
+								if (Buscar.Ejecutar(libra.Id) == null)
 								{
-									Insertar.Ejecutar(libra, conexion);
+									Insertar.Ejecutar(libra);
 								}
 								else
 								{
-									Actualizar.Ejecutar(libra, conexion);
+									Actualizar.Ejecutar(libra);
 								}
 							}
 						}
@@ -76,16 +75,11 @@ namespace Herramientas
 		{
 			string mensaje = string.Empty;
 
-			SqlConnection conexion = BaseDatos.Conectar();
+			Divisa dolar = Buscar.Ejecutar("USD");
 
-			using (conexion)
+			if (dolar != null)
 			{
-				Divisa dolar = Buscar.Ejecutar(conexion, "USD");
-
-				if (dolar != null)
-				{
-					mensaje = "Dolar: " + dolar.Cantidad.ToString() + " " + Calculadora.DiferenciaTiempo(dolar.FechaActualizacion, "es-ES");
-				}
+				mensaje = "Dolar: " + dolar.Cantidad.ToString() + " " + Calculadora.DiferenciaTiempo(dolar.Fecha, "es-ES");
 			}
 
 			return mensaje;
@@ -95,22 +89,17 @@ namespace Herramientas
 		{
 			string mensaje = string.Empty;
 
-			SqlConnection conexion = BaseDatos.Conectar();
+			Divisa libra = Buscar.Ejecutar("GBP");
 
-			using (conexion)
+			if (libra != null)
 			{
-				Divisa libra = Buscar.Ejecutar(conexion, "GBP");
-
-				if (libra != null)
-				{
-					mensaje = "Libra: " + libra.Cantidad.ToString() + " " + Calculadora.DiferenciaTiempo(libra.FechaActualizacion, "es-ES");
-				}
+				mensaje = "Libra: " + libra.Cantidad.ToString() + " " + Calculadora.DiferenciaTiempo(libra.Fecha, "es-ES");
 			}
 
 			return mensaje;
 		}
 
-		public static decimal Cambio(decimal cantidad, JuegoMoneda moneda, SqlConnection conexion = null)
+		public static decimal Cambio(decimal cantidad, JuegoMoneda moneda)
 		{
 			string buscar = string.Empty;
 
@@ -125,28 +114,13 @@ namespace Herramientas
 
 			if (buscar != string.Empty)
 			{
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
+				Divisa divisa = Buscar.Ejecutar(buscar);
 
-				using (conexion)
-				{
-					Divisa divisa = Buscar.Ejecutar(conexion, buscar);
+				decimal temp = cantidad / divisa.Cantidad;
 
-					decimal temp = cantidad / divisa.Cantidad;
+				temp = Math.Round(temp, 2);
 
-					temp = Math.Round(temp, 2);
-
-					return temp;
-				}	
+				return temp;
 			}
 
 			return cantidad;
@@ -181,8 +155,8 @@ namespace Herramientas
 
 	public class Divisa
 	{
-		public string Id;
-		public decimal Cantidad;
-		public DateTime FechaActualizacion;
+		public string Id { get; set; }
+		public decimal Cantidad { get; set; }
+		public DateTime Fecha { get; set; }
 	}
 }

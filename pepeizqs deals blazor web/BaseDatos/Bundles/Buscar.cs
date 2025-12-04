@@ -58,15 +58,6 @@ namespace BaseDatos.Bundles
 			return conexion.Query<Bundle>(busqueda).ToList();
 		}
 
-		public static List<Bundle> UnTipo(BundleTipo tipo, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			string busqueda = "SELECT * FROM bundles WHERE bundleTipo=@bundleTipo AND fechaEmpieza < GETDATE() AND fechaTermina > GETDATE()";
-
-			return conexion.Query<Bundle>(busqueda, new {bundleTipo = tipo}).ToList();
-		}
-
 		public static Bundle UnBundle(int bundleId, SqlConnection conexion = null)
 		{
 			conexion = CogerConexion(conexion);

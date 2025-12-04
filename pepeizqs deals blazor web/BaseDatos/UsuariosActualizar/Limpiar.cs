@@ -1,43 +1,44 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.UsuariosActualizar
 {
 	public static class Limpiar
 	{
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
+			}
+
+			return conexion;
+		}
+
 		public static void Una(UsuarioActualizar usuario, SqlConnection conexion = null)
 		{
-			if (usuario != null)
+			if (usuario == null)
 			{
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
+				return;
+			}
 
-				string sqlEliminar = "DELETE FROM usuariosActualizar WHERE idUsuario=@idUsuario AND metodo=@metodo";
+			conexion = CogerConexion(conexion);
 
-				using (SqlCommand comando = new SqlCommand(sqlEliminar, conexion))
+			string sqlEliminar = "DELETE FROM usuariosActualizar WHERE idUsuario=@idUsuario AND metodo=@metodo";
+
+			try
+			{
+				conexion.Execute(sqlEliminar, new
 				{
-					comando.Parameters.AddWithValue("@idUsuario", usuario.IdUsuario);
-					comando.Parameters.AddWithValue("@metodo", usuario.Metodo);
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch (Exception ex)
-					{
-						BaseDatos.Errores.Insertar.Mensaje("Limpiar Usuarios Actualizar", ex);
-					}
-				}
+					usuario.IdUsuario,
+					usuario.Metodo
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuarios Actualizar Limpiar", ex);
 			}
 		}
 	}

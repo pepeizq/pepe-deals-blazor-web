@@ -53,7 +53,7 @@
         @if (bundleTipoSeleccionado != BundleTipo.Desconocido)
         {
             <div>
-                @foreach (var bundle in BaseDatos.Bundles.Buscar.UnTipo(bundleTipoSeleccionado).OrderByDescending(b => b.FechaEmpieza).ToList())
+                @foreach (var bundle in BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado).OrderBy(b => b.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearBundleNoticias(e, bundle.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -98,7 +98,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
         @if (gratisSeleccionadoNoticias != GratisTipo.Desconocido)
         {
             <div>
-                @foreach (var gratis in BaseDatos.Gratis.Buscar.Actuales(gratisSeleccionadoNoticias).OrderByDescending(g => g.FechaEmpieza).ToList())
+                @foreach (var gratis in BaseDatos.Gratis.Buscar.Actuales(gratisSeleccionadoNoticias).OrderBy(g => g.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis.JuegoId, gratis.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -160,7 +160,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
         @if (suscripcionSeleccionadaNoticias != SuscripcionTipo.Desconocido)
         {
             <div>
-                @foreach (var suscripcion in BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias).OrderByDescending(s => s.FechaEmpieza).ToList())
+                @foreach (var suscripcion in BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias).OrderBy(s => s.FechaEmpieza).ToList())
                 {
                     <button @onclick="@(e => ClickearSuscripcionJuego(e, suscripcion.JuegoId, suscripcion.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -782,46 +782,51 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
                 idNoticiaEnviada = id;
 
-                foreach (var usuario in BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo())
+                List<Usuario> usuariosNotificar = BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();
+
+                if (usuariosNotificar?.Count > 0)
                 {
-                    try
+                    foreach (var usuario in usuariosNotificar)
                     {
-                        if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
+                        try
                         {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                        }
+                            if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
 
-                        if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
-                        {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                        }
+                            if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
 
-                        if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
-                        {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                        }
+                            if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
 
-                        if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
-                        {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                        }
+                            if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
 
-                        if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
-                        {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                        }
+                            if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
 
-                        if (usuario.NotificationOthers == true && 
-                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Bundles && noticiaAñadir.NoticiaTipo != NoticiaTipo.Gratis && 
-                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
-                            noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
-                        {
-                            Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            if (usuario.NotificationOthers == true && 
+                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Bundles && noticiaAñadir.NoticiaTipo != NoticiaTipo.Gratis && 
+                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
+                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
+                            {
+                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Noticia", ex);
+                        catch (Exception ex)
+                        {
+                            BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Noticia", ex);
+                        }
                     }
                 }
 

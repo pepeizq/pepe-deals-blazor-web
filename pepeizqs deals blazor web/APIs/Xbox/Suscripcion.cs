@@ -141,7 +141,7 @@ namespace APIs.Xbox
 
 							if (encontrado == false)
 							{
-								BaseDatos.Suscripciones.Insertar.Temporal(conexion, Generar().Id.ToString().ToLower(), enlace);
+								BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace);
 							}
                         }
                     }

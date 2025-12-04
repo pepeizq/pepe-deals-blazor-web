@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 using Microsoft.Data.SqlClient;
 
@@ -7,38 +8,36 @@ namespace BaseDatos.Divisas
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(Divisa divisa, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+
+			return conexion;
+		}
+
+		public static void Ejecutar(Divisa divisa, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
 
 			string sqlAñadir = "INSERT INTO divisas " +
                      "(id, cantidad, fecha) VALUES " +
                      "(@id, @cantidad, @fecha) ";
 
-            using (SqlCommand comando = new SqlCommand(sqlAñadir, conexion))
-            {
-                comando.Parameters.AddWithValue("@id", divisa.Id);
-                comando.Parameters.AddWithValue("@cantidad", divisa.Cantidad);
-                comando.Parameters.AddWithValue("@fecha", divisa.FechaActualizacion);
-
-                try
-                {
-                    comando.ExecuteNonQuery();
-                }
-                catch
-                {
-
-                }
+			try
+			{
+				conexion.Execute(sqlAñadir, new
+				{
+					id = divisa.Id,
+					cantidad = divisa.Cantidad,
+					fecha = divisa.Fecha
+				});
+			}
+			catch (Exception ex) 
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Insertar Divisa " + divisa.Id, ex);
 			}
 		}
 	}

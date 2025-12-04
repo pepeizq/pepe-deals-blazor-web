@@ -25,18 +25,8 @@
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
-
     private async Task ActualizarDivisas(MouseEventArgs e)
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
-        using (conexion)
-        {
-            await Herramientas.Divisas.ActualizarDatos(conexion);
-        }
+        await Herramientas.Divisas.ActualizarDatos();
     }
 }

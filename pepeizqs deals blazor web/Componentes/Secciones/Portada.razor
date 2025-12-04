@@ -744,8 +744,6 @@
 
 	private string videoDestacado = string.Empty;
 
-	private SqlConnection conexion = new SqlConnection();
-
 	protected override void OnInitialized()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -802,128 +800,123 @@
 
 		//------------------------------------------------
 
-		conexion = Herramientas.BaseDatos.Conectar();
+		#region Destacados
 
-		using (conexion)
+		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
-			#region Destacados
+			List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados();
 
-			if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
+			foreach (var juego in juegosDestacadosMostrar2)
 			{
-				List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados(conexion);
-
-				foreach (var juego in juegosDestacadosMostrar2)
+				JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
 				{
-					JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
-					{
-						Juego = juego,
-						DeseadoImportado = false,
-						Color = "var(--fondoBotonPequeño)"
-					};
+					Juego = juego,
+					DeseadoImportado = false,
+					Color = "var(--fondoBotonPequeño)"
+				};
 
-					if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+				if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+				{
+					juegoDestacadoMostrar.Color = "var(--fondoBien)";
+				}
+				else
+				{
+					if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
 					{
-						juegoDestacadoMostrar.Color = "var(--fondoBien)";
+						juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+						juegoDestacadoMostrar.DeseadoImportado = true;
 					}
-					else
+					if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
 					{
-						if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-						{
-							juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
-							juegoDestacadoMostrar.DeseadoImportado = true;
-						}
-						if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-						{
-							juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
-						}
+						juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
 					}
-
-					if (juegosDestacadosMostrar == null)
-					{
-						juegosDestacadosMostrar = new List<JuegoMostrar>();
-					}
-
-					juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
 				}
 
-				if (juegosDestacadosMostrar?.Count > 0)
+				if (juegosDestacadosMostrar == null)
 				{
-					posicionMostrarDestacados = 0;
-					videoDestacado = null;
+					juegosDestacadosMostrar = new List<JuegoMostrar>();
 				}
+
+				juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
 			}
 
-			CronometroDestacados();
-
-			#endregion
-
-			#region Noticias
-
-			try
+			if (juegosDestacadosMostrar?.Count > 0)
 			{
-				noticias ??= BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3, conexion);
+				posicionMostrarDestacados = 0;
+				videoDestacado = null;
+			}
+		}
 
-				if (noticias?.Count > 0)
+		CronometroDestacados();
+
+		#endregion
+
+		#region Noticias
+
+		try
+		{
+			noticias ??= BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+
+			if (noticias?.Count > 0)
+			{
+				foreach (var noticia in noticias)
 				{
-					foreach (var noticia in noticias)
-					{
-						bool añadirTipo = true;
+					bool añadirTipo = true;
 
-						if (tiposActualesNoticias.Count > 0)
+					if (tiposActualesNoticias.Count > 0)
+					{
+						foreach (var tipoActual in tiposActualesNoticias)
 						{
-							foreach (var tipoActual in tiposActualesNoticias)
+							if (tipoActual == noticia.NoticiaTipo)
 							{
-								if (tipoActual == noticia.NoticiaTipo)
-								{
-									añadirTipo = false;
-								}
+								añadirTipo = false;
 							}
 						}
-
-						if (añadirTipo == true)
-						{
-							tiposActualesNoticias.Add(noticia.NoticiaTipo);
-						}
 					}
-				}
 
-				if (string.IsNullOrEmpty(usuarioId) == false)
-				{
-					int limiteTiempoNoticias = 90;
-
-					if (usuarioPatreon == true || usuarioAdmin == true)
+					if (añadirTipo == true)
 					{
-						limiteTiempoNoticias = 30;
+						tiposActualesNoticias.Add(noticia.NoticiaTipo);
 					}
-
-					CronometroNoticias(limiteTiempoNoticias);
 				}
 			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Portada Noticias", ex);
-			}
-
-			#endregion
-
-			#region Minimos
-
-			Filtros(true);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				int limiteTiempoMinimos = 150;
+				int limiteTiempoNoticias = 90;
 
 				if (usuarioPatreon == true || usuarioAdmin == true)
 				{
-					limiteTiempoMinimos = 30;
+					limiteTiempoNoticias = 30;
 				}
 
-				CronometroMinimos(limiteTiempoMinimos);
+				CronometroNoticias(limiteTiempoNoticias);
+			}
+		}
+		catch (Exception ex)
+		{
+			BaseDatos.Errores.Insertar.Mensaje("Portada Noticias", ex);
+		}
+
+		#endregion
+
+		#region Minimos
+
+		Filtros(true);
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			int limiteTiempoMinimos = 150;
+
+			if (usuarioPatreon == true || usuarioAdmin == true)
+			{
+				limiteTiempoMinimos = 30;
 			}
 
-			#endregion
+			CronometroMinimos(limiteTiempoMinimos);
 		}
+
+		#endregion
 	}
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)
@@ -1017,7 +1010,7 @@
 				{
 					juegosDestacadosMostrar.Clear();
 
-					List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados(conexion);
+					List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados();
 
 					if (juegosDestacadosMostrar2?.Count > 0)
 					{
@@ -1103,24 +1096,24 @@
 			{
 				if (cargaInicial == false)
 				{
-					juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, conexion, 199);
+					juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 				}
 				else
 				{
-					juegosMinimosGestor ??= BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, conexion, 199);
+					juegosMinimosGestor ??= BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 				}				
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Populares)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(1, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, conexion, 199);
+				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(1, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Lanzamientos)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(2, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, conexion, 49);
+				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(2, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 49);
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Proximamente(cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, conexion);
+				juegosMinimosGestor = BaseDatos.Portada.Buscar.Proximamente(cantidadJuegosMinimos, categoriasNumeros, drmsNumeros);
 			}
 		}
 		catch (Exception ex)
@@ -1336,7 +1329,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption1", valor, usuarioId, conexion);
+			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption1", valor, usuarioId);
 		}
 
 		Filtros();
@@ -1366,7 +1359,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption2", valor, usuarioId, conexion);
+			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption2", valor, usuarioId);
 		}	
 
 		Filtros();
@@ -1393,7 +1386,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("IndexDRMs", JsonSerializer.Serialize(drms), usuarioId, conexion);
+			BaseDatos.Usuarios.Actualizar.Opcion("IndexDRMs", JsonSerializer.Serialize(drms), usuarioId);
 		}
 
 		Filtros();
@@ -1452,7 +1445,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("IndexCategories", JsonSerializer.Serialize(categorias), usuarioId, conexion);
+			BaseDatos.Usuarios.Actualizar.Opcion("IndexCategories", JsonSerializer.Serialize(categorias), usuarioId);
 		}
 
 		Filtros();
@@ -1506,7 +1499,7 @@
 
 			if (cronometroNoticiasContador >= limite)
 			{
-				noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3, conexion);
+				noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
 
 				cronometroNoticiasContador = 0;
 			}
@@ -1521,7 +1514,7 @@
 	private void CambiarTipo(MouseEventArgs e, NoticiaTipo nuevoTipo)
 	{
 		tipoSeleccionadoNoticias = nuevoTipo;
-		noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3, conexion);
+		noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
 	}
 
 	private string CambiarEstilo(NoticiaTipo nuevoTipo)

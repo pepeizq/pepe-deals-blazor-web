@@ -135,12 +135,9 @@
                         }
                     }
 
-                    @if (string.IsNullOrEmpty(idTiendaPendiente) == false || string.IsNullOrEmpty(idStreamingPendiente) == false || string.IsNullOrEmpty(idPlataformaPendiente) == false)
-                    {
-                        <button @onclick="@(e => ClickearDescartarPendientes(e, enlacePendiente))" class="boton-pequeño" style="width: 130px; text-align: center; margin-left: auto; background-color: var(--fondoPeligro);">
-                            Descartar
-                        </button>
-                    }
+                    <button @onclick="@(e => ClickearDescartarPendientes(e, enlacePendiente))" class="boton-pequeño" style="width: 130px; text-align: center; margin-left: auto; background-color: var(--fondoPeligro);">
+                        Descartar
+                    </button>
                 </div>
 
                 <div>
@@ -521,60 +518,52 @@
     {
         if (string.IsNullOrEmpty(id) == false)
         {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
+            BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoTienda(id);
 
-            using (conexion)
+            if (juego != null)
             {
-                BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoTienda(id, conexion);
+                nombrePendiente = juego.Nombre;
 
-                if (juego != null)
+                string imagen = juego.Imagen;
+
+                if (imagen != null)
                 {
-                    nombrePendiente = juego.Nombre;
+                    imagen = imagen.Replace("&amp;", "&");
+                }
 
-                    string imagen = juego.Imagen;
+                imagenPendiente = imagen;
 
-                    if (imagen != null)
+                enlacePendiente = juego.Enlace;
+
+                if (id == APIs.Steam.Tienda.GenerarBundles().Id)
+                {
+                    await InvokeAsync(() =>
                     {
-                        imagen = imagen.Replace("&amp;", "&");
-                    }
+                        StateHasChanged();
+                    });
 
-                    imagenPendiente = imagen;
+                    idsPendiente = await APIs.Steam.Bundle.CargarDatosBundle(enlacePendiente);
 
-                    enlacePendiente = juego.Enlace;
-
-                    if (id == APIs.Steam.Tienda.GenerarBundles().Id)
+                    if (string.IsNullOrEmpty(idsPendiente) == false)
                     {
-                        await InvokeAsync(() =>
+                        await Task.Delay(2000);
+
+                        BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlacePendiente, idsPendiente);
+
+                        foreach (var pendiente in pendientesTiendas)
                         {
-                            StateHasChanged();
-                        });
-
-                        idsPendiente = await APIs.Steam.Bundle.CargarDatosBundle(enlacePendiente);
-
-                        if (string.IsNullOrEmpty(idsPendiente) == false)
-                        {
-                            await Task.Delay(2000);
-
-                            BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlacePendiente, idsPendiente, conexion);
-
-                            foreach (var pendiente in pendientesTiendas)
+                            if (pendiente.Tienda.Id == idTiendaPendiente)
                             {
-                                if (pendiente.Tienda.Id == idTiendaPendiente)
-                                {
-                                    pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente, conexion);
-                                }
+                                pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente, conexion);
                             }
-
-                            await ClickearTiendaPendientes(idTiendaPendiente);
                         }
+
+                        await ClickearTiendaPendientes(idTiendaPendiente);
                     }
-                    else
-                    {
-                        idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente, conexion);
-                    }
+                }
+                else
+                {
+                    idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente, conexion);
                 }
             }
         }
@@ -738,11 +727,24 @@
                 {
                     if (pendiente.Tienda.Id == idTiendaPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
                     }
                 }
 
                 await ClickearTiendaPendientes(idTiendaPendiente);
+            }
+
+            if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
+            {
+                BaseDatos.Pendientes.Actualizar.DescartarSuscripcion(idSuscripcionPendiente, enlace);
+
+                foreach (var pendiente in pendientesSuscripcion)
+                {
+                    if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
+                    {
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
+                    }
+                }
             }
 
             if (string.IsNullOrEmpty(idStreamingPendiente) == false)
@@ -753,7 +755,7 @@
                 {
                     if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
                     }
                 }
 
@@ -770,7 +772,7 @@
                 {
                     if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
                     }
                 }
 
@@ -790,7 +792,7 @@
         {
             if (string.IsNullOrEmpty(idTiendaPendiente) == false)
             {
-                BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlace, idsPendiente, conexion);
+                BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlace, idsPendiente);
 
                 if (idTiendaPendiente != APIs.Steam.Tienda.GenerarBundles().Id)
                 {
@@ -808,7 +810,7 @@
                 {
                     if (pendiente.Tienda.Id == idTiendaPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
                     }
                 }
 
@@ -817,13 +819,13 @@
 
             if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
             {
-                BaseDatos.Pendientes.Actualizar.Suscripcion(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(idSuscripcionPendiente).TablaPendientes, "temporal" + idSuscripcionPendiente, enlace, nombrePendiente, imagenPendiente, Herramientas.Listados.Generar(idsPendiente), conexion);
+                BaseDatos.Pendientes.Actualizar.Suscripcion(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(idSuscripcionPendiente).TablaPendientes, "temporal" + idSuscripcionPendiente, enlace, nombrePendiente, imagenPendiente, Herramientas.Listados.Generar(idsPendiente));
 
                 foreach (var pendiente in pendientesSuscripcion)
                 {
                     if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
                     }
                 }
 

@@ -5,12 +5,14 @@
 
 #nullable disable
 
+using Dapper;
 using Herramientas;
 using Juegos;
 using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace APIs.Humble
 {
@@ -74,113 +76,59 @@ namespace APIs.Humble
             return "https://humblebundleinc.sjv.io/c/1382810/2059850/25796?u=" + enlace;
 		}
 
-		public static void RecopilarOfertas(string html, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 
-			if (string.IsNullOrEmpty(html) == false)
-			{
-				if (html != "null")
-				{
-					HumbleJuegos juegos = JsonSerializer.Deserialize<HumbleJuegos>(html);
-
-					if (juegos != null)
-					{
-						foreach (HumbleJuego juego in juegos.Resultados)
-						{
-							if (conexion == null)
-							{
-								conexion = Herramientas.BaseDatos.Conectar();
-							}
-							else
-							{
-								if (conexion.State != System.Data.ConnectionState.Open)
-								{
-									conexion = Herramientas.BaseDatos.Conectar();
-								}
-							}
-
-							string sqlAñadir = "INSERT INTO temporalhumble " +
-									"(contenido, fecha, enlace) VALUES " +
-									"(@contenido, @fecha, @enlace) ";
-
-							using (SqlCommand comando = new SqlCommand(sqlAñadir, conexion))
-							{
-								comando.Parameters.AddWithValue("@contenido", JsonSerializer.Serialize(juego));
-								comando.Parameters.AddWithValue("@fecha", DateTime.Now.ToString());
-								comando.Parameters.AddWithValue("@enlace", juego.Enlace);
-
-								try
-								{
-									comando.ExecuteNonQuery();
-								}
-								catch (Exception ex)
-								{
-									global::BaseDatos.Errores.Insertar.Mensaje("Humble Recopilación", ex);
-								}
-							}
-						}
-					}
-				}
-			}	         
-        }
+			return conexion;
+		}
 
 		public static async Task BuscarOfertas(SqlConnection conexion = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			conexion = CogerConexion(conexion);
 
-			await Task.Delay(1000);
-
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			DateTime fechaRecopilado = new DateTime();
 			List<HumbleJuego> juegos = new List<HumbleJuego>();
 
-			string busqueda = "SELECT * FROM temporalhumble";
+			string busqueda = "SELECT contenido, fecha FROM temporalhumble";
 
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+			var filas = conexion.Query(busqueda);
+
+			try
 			{
-				using (SqlDataReader lector = comando.ExecuteReader())
+				foreach (var fila in filas)
 				{
-					while (lector.Read())
+					if (fila.contenido != null && string.IsNullOrEmpty((string)fila.contenido) == false)
 					{
-						if (lector.IsDBNull(1) == false)
-						{
-							if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-							{
-								HumbleJuego juego = new HumbleJuego();
-								juego = JsonSerializer.Deserialize<HumbleJuego>(lector.GetString(1));
+						string jsonReal = Regex.Unescape((string)fila.contenido);
 
-								juegos.Add(juego);
-							}
-						}
-
-						if (lector.IsDBNull(2) == false)
+						var opciones = new JsonSerializerOptions
 						{
-							fechaRecopilado = lector.GetDateTime(2);
+							PropertyNameCaseInsensitive = true
+						};
+
+						var nuevosJuegos = JsonSerializer.Deserialize<HumbleJuegos>(jsonReal, opciones);
+
+						if (nuevosJuegos?.Resultados != null)
+						{
+							juegos.AddRange(nuevosJuegos.Resultados);
 						}
 					}
+
+					if (fila.fecha != null)
+					{
+						fechaRecopilado = (DateTime)fila.fecha;
+					}
 				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Humble Buscar Ofertas 1", ex);
 			}
 
 			if (juegos.Count > 0) 
@@ -295,31 +243,26 @@ namespace APIs.Humble
 								{
 									try
 									{
-										BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+										BaseDatos.Tiendas.Comprobar.Resto(oferta);
 
 										string limpieza = "DELETE FROM temporalhumble WHERE enlace=@enlace";
 
-										using (SqlCommand comando = new SqlCommand(limpieza, conexion))
-										{
-											comando.Parameters.AddWithValue("@enlace", juego.Enlace);
-
-											comando.ExecuteNonQuery();
-										}
+										conexion.Execute(limpieza, new { enlace = juego.Enlace });
 									}
 									catch (Exception ex)
 									{
-                                        BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+                                        BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
                                     }
 
 									juegos2 += 1;
 
 									try
 									{
-										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{
-                                        BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+                                        BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
                                     }
 								}
 							}

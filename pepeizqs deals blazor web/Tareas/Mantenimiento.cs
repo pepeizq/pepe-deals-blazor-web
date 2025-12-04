@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
@@ -30,40 +29,30 @@ namespace Tareas
 
 				if (piscinaApp == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
-
 					try
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
+						TimeSpan tiempoSiguiente = TimeSpan.FromHours(48);
+
+						if (DateTime.Now.Hour == 4)
+						{
+							tiempoSiguiente = TimeSpan.FromMinutes(30);
+						}
+
+						if (BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente) == true)
+						{
+							BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now);
+
+							BaseDatos.Reseñas.Limpiar.Ejecutar();
+							BaseDatos.Juegos.Limpiar.Minimos();
+							BaseDatos.Portapapeles.Borrar.Limpieza();
+							await Divisas.ActualizarDatos();
+
+							BaseDatos.Mantenimiento.Encoger.Ejecutar();
+						}
 					}
-					catch { }
-
-					if (conexion.State == System.Data.ConnectionState.Open)
+					catch (Exception ex)
 					{
-						try
-						{
-							TimeSpan tiempoSiguiente = TimeSpan.FromHours(48);
-
-							if (DateTime.Now.Hour == 4)
-							{
-								tiempoSiguiente = TimeSpan.FromMinutes(30);
-							}
-
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente, conexion) == true)
-							{
-								BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now, conexion);
-
-								BaseDatos.Reseñas.Limpiar.Ejecutar(conexion);
-								BaseDatos.Juegos.Limpiar.Minimos(conexion);
-								BaseDatos.Portapapeles.Borrar.Limpieza(conexion);
-
-								BaseDatos.Mantenimiento.Encoger.Ejecutar(conexion);
-							}
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Tarea - Mantenimiento", ex, conexion);
-						}
+						BaseDatos.Errores.Insertar.Mensaje("Tarea - Mantenimiento", ex);
 					}
 				}
 			}
