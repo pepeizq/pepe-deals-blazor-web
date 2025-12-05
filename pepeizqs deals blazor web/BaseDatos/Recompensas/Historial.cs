@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Recompensas
@@ -14,111 +15,63 @@ namespace BaseDatos.Recompensas
 
     public static class Historial
     {
-        public static RecompensaHistorial Cargar(SqlDataReader lector)
-        {
-            RecompensaHistorial entrada = new RecompensaHistorial
-            {
-                UsuarioId = lector.GetString(1),
-                Coins = lector.GetInt32(2)
-			};
-
-            if (lector.IsDBNull(3) == false)
-            {
-                if (string.IsNullOrEmpty(lector.GetString(3)) == false)
-                {
-                    entrada.Razon = lector.GetString(3);
-                }
+		private static SqlConnection CogerConexion(SqlConnection conexion)
+		{
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			{
+				conexion = Herramientas.BaseDatos.Conectar();
 			}
 
-            if (lector.IsDBNull(4) == false)
-            {
-                entrada.Fecha = lector.GetDateTime(4);
-            }
+			return conexion;
+		}
 
-			return entrada;
-        }
-
-        public static void Insertar(string usuarioId, int coins, string razon, DateTime fecha)
+		public static void Insertar(string usuarioId, int coins, string razon, DateTime fecha, SqlConnection conexion = null)
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
+            conexion = CogerConexion(conexion);
 
-            using (conexion)
+            try
             {
-                string sqlInsertar = "INSERT INTO recompensasHistorial " +
-                    "(usuarioId, coins, razon, fecha) VALUES " +
-                    "(@usuarioId, @coins, @razon, @fecha) ";
+				string sqlInsertar = "INSERT INTO recompensasHistorial " +
+				   "(usuarioId, coins, razon, fecha) VALUES " +
+				   "(@usuarioId, @coins, @razon, @fecha) ";
 
-                using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-                {
-                    comando.Parameters.AddWithValue("@usuarioId", usuarioId);
-                    comando.Parameters.AddWithValue("@coins", coins.ToString());
-                    comando.Parameters.AddWithValue("@razon", razon);
-                    comando.Parameters.AddWithValue("@fecha", fecha);
-                  
-                    try
-                    {
-                        comando.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
+				conexion.Execute(sqlInsertar, new
+				{
+					usuarioId,
+					coins,
+					razon,
+					fecha
+				});
+			}
+            catch (Exception ex)
+            {
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Insertar", ex);
+			}
         }
 
         public static List<RecompensaHistorial> Leer(string usuarioId = null, SqlConnection conexion = null)
         {
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			List<RecompensaHistorial> entradas = new List<RecompensaHistorial>();
+			conexion = CogerConexion(conexion);
 
 			try
-            {
-				using (conexion)
+			{
+				string busqueda = "SELECT TOP 30 * FROM recompensasHistorial";
+				
+				if (string.IsNullOrEmpty(usuarioId) == false)
 				{
-					string busqueda = "SELECT TOP 30 * FROM recompensasHistorial";
-
-					if (string.IsNullOrEmpty(usuarioId) == false)
-					{
-						busqueda = busqueda + " WHERE usuarioId=@usuarioId";
-					}
-
-					busqueda = busqueda + " ORDER BY fecha DESC";
-
-					using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-					{
-						if (string.IsNullOrEmpty(usuarioId) == false)
-						{
-							comando.Parameters.AddWithValue("@usuarioId", usuarioId);
-						}
-
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							while (lector.Read())
-							{
-								entradas.Add(Cargar(lector));
-							}
-						}
-					}
+					busqueda = busqueda + " WHERE usuarioId = @usuarioId";
 				}
+
+				busqueda = busqueda + " ORDER BY fecha DESC";
+
+				return conexion.Query<RecompensaHistorial>(busqueda, new { usuarioId }).ToList();
 			}
-            catch (Exception ex)
-            {
-                BaseDatos.Errores.Insertar.Mensaje("Historial Recompensas", ex, conexion);
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer", ex, conexion);
 			}
 			
-            return entradas;
+            return new List<RecompensaHistorial>();
         }
     }
 }

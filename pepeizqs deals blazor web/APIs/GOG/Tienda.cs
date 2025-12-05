@@ -32,7 +32,7 @@ namespace APIs.GOG
 
 		public static async Task BuscarOfertasAntiguo(SqlConnection conexion, IDecompiladores decompilador, ViewDataDictionary objeto = null)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Tienda.Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Tienda.Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -108,7 +108,7 @@ namespace APIs.GOG
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Tienda.Generar().Id, DateTime.Now, juegos2, conexion);
+											BaseDatos.Admin.Actualizar.Tiendas(Tienda.Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
@@ -139,7 +139,7 @@ namespace APIs.GOG
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -228,7 +228,7 @@ namespace APIs.GOG
 
 								try
 								{
-									BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+									BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 								}
 								catch (Exception ex)
 								{

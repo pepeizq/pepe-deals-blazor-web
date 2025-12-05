@@ -1,29 +1,19 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Admin
 {
 	public static class Actualizar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Tiendas(string tienda, DateTime fecha, int cantidad)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Tiendas(string tienda, DateTime fecha, int cantidad, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad });
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -31,13 +21,14 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static void TiendasValorAdicional(string tienda, string valor, int cantidad, SqlConnection conexion = null)
+		public static void TiendasValorAdicional(string tienda, string valor, int cantidad)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute($"UPDATE adminTiendas SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad });
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute($"UPDATE adminTiendas SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -45,13 +36,14 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static void TareaUso(string id, DateTime fecha, SqlConnection conexion = null)
+		public static void TareaUso(string id, DateTime fecha)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE adminTareas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha });
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute("UPDATE adminTareas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -59,13 +51,14 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static void Dato(string id, int contenido, SqlConnection conexion = null)
+		public static void Dato(string id, int contenido)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE adminDatos SET contenido=@contenido WHERE id=@id", new { id = id, contenido = contenido });
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute("UPDATE adminDatos SET contenido=@contenido WHERE id=@id", new { id = id, contenido = contenido }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{

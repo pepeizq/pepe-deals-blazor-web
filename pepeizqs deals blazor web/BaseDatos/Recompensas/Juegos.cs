@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
 
@@ -58,168 +59,96 @@ namespace BaseDatos.Recompensas
 			return juego;
 		}
 
-		public static void Insertar(RecompensaJuego recompensa, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
+
+			return conexion;
+		}
+
+		public static void Insertar(RecompensaJuego recompensa, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sqlInsertar = @"
+				INSERT INTO recompensasJuegos 
+				(juegoId, clave, coins, fecha, juegoNombre, drm" + (recompensa.FechaCaduca != null ? ", fechaCaduca" : "") + @")
+				VALUES 
+				(@juegoId, @clave, @coins, @fecha, @juegoNombre, @drm" + (recompensa.FechaCaduca != null ? ", @fechaCaduca" : "") + @")";
+
+			try
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				conexion.Execute(sqlInsertar, new
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					juegoId = recompensa.JuegoId.ToString(),
+					clave = recompensa.Clave,
+					coins = recompensa.Coins,
+					fecha = recompensa.FechaEmpieza,
+					juegoNombre = recompensa.JuegoNombre,
+					drm = recompensa.DRM,
+					fechaCaduca = recompensa.FechaCaduca
+				});
 			}
-
-			using (conexion)
+			catch (Exception ex)
 			{
-				string añadirFecha1 = null;
-				string añadirFecha2 = null;
-
-				if (recompensa.FechaCaduca != null)
-				{
-					añadirFecha1 = ", fechaCaduca";
-					añadirFecha2 = ", @fechaCaduca";
-				}
-
-				string sqlInsertar = "INSERT INTO recompensasJuegos " +
-					"(juegoId, clave, coins, fecha, juegoNombre, drm" + añadirFecha1 + ") VALUES " +
-					"(@juegoId, @clave, @coins, @fecha, @juegoNombre, @drm" + añadirFecha2 + ") ";
-
-				using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-				{
-					comando.Parameters.AddWithValue("@juegoId", recompensa.JuegoId.ToString());
-					comando.Parameters.AddWithValue("@clave", recompensa.Clave);
-					comando.Parameters.AddWithValue("@coins", recompensa.Coins);
-					comando.Parameters.AddWithValue("@fecha", recompensa.FechaEmpieza);
-					comando.Parameters.AddWithValue("@juegoNombre", recompensa.JuegoNombre);
-					comando.Parameters.AddWithValue("@drm", recompensa.DRM);
-
-					if (recompensa.FechaCaduca != null)
-					{
-						comando.Parameters.AddWithValue("@fechaCaduca", recompensa.FechaCaduca);
-					}
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Recompensa Insertar", ex);
 			}
 		}
 
 		public static List<RecompensaJuego> Disponibles(SqlConnection conexion = null)
 		{
-			List<RecompensaJuego> juegos = new List<RecompensaJuego>();
+			conexion = CogerConexion(conexion);
 
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
+			try
 			{
 				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId IS NULL AND (fechaCaduca IS NULL OR fechaCaduca > GETDATE()) ORDER BY juegoNombre";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-				{
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						while (lector.Read())
-						{
-							juegos.Add(Cargar(lector));
-						}
-					}
-				}
+				return conexion.Query<RecompensaJuego>(busqueda).ToList();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Disponibles", ex);
 			}
 
-			return juegos;
+			return new List<RecompensaJuego>();
 		}
 
 		public static void Actualizar(int id, string usuarioId, SqlConnection conexion = null)
 		{
-			string sqlActualizar = "UPDATE recompensasJuegos " +
+			conexion = CogerConexion(conexion);
+
+			try
+			{
+				string sqlActualizar = "UPDATE recompensasJuegos " +
 					"SET usuarioId=@usuarioId WHERE id=@id";
 
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				conexion.Execute(sqlActualizar, new { id, usuarioId });
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-				{
-					comando.Parameters.AddWithValue("@usuarioId", usuarioId);
-					comando.Parameters.AddWithValue("@id", id);
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch
-					{
-
-					}
-				}
-			}				
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Actualizar", ex);
+			}			
 		}
 
         public static List<RecompensaJuego> LeerJuegosUsuario(string usuarioId, SqlConnection conexion = null)
 		{
-            List<RecompensaJuego> juegos = new List<RecompensaJuego>();
+			conexion = CogerConexion(conexion);
 
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			try
+			{
+				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId=@usuarioId ORDER BY juegoNombre";
 
-            using (conexion)
-            {
-                string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId=@usuarioId ORDER BY juegoNombre";
+				return conexion.Query<RecompensaJuego>(busqueda, new { usuarioId }).ToList();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer Juegos Usuario", ex);
+			}
 
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    comando.Parameters.AddWithValue("@usuarioId", usuarioId);
-
-                    using (SqlDataReader lector = comando.ExecuteReader())
-                    {
-                        while (lector.Read())
-                        {
-                            juegos.Add(Cargar(lector));
-                        }
-                    }
-                }
-            }
-
-            return juegos;
+			return new List<RecompensaJuego>();
         }
     }
 }

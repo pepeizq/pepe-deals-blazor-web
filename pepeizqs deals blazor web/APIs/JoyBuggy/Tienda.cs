@@ -35,7 +35,7 @@ namespace APIs.JoyBuggy
 
         public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador, ViewDataDictionary objeto = null)
         {
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
             string html = await Decompiladores.Estandar("https://www.joybuggy.com/module/xmlfeeds/api?id=70");
 
@@ -113,7 +113,7 @@ namespace APIs.JoyBuggy
 
 											try
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 											}
 											catch (Exception ex)
 											{

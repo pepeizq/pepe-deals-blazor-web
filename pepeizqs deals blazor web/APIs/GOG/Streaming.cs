@@ -23,7 +23,7 @@ namespace APIs.GOG
 
 		public static async Task Buscar(SqlConnection conexion)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -83,7 +83,7 @@ namespace APIs.GOG
 										encontrado = lector.Read();
 
 										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad, conexion);
+										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad);
 									}
 								}
 

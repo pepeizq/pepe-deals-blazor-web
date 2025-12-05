@@ -114,7 +114,7 @@ namespace Tiendas2
 				}
 				else if (id == APIs.EA.Tienda.Generar().Id)
 				{
-					await APIs.EA.Tienda.BuscarOfertas(conexion, decompilador);
+					await APIs.EA.Tienda.BuscarOfertas(decompilador);
 				}
 				else if (id == APIs.DLGamer.Tienda.Generar().Id)
 				{
@@ -227,7 +227,7 @@ namespace Tiendas2
 			}
 			else if (id == APIs.EA.Tienda.Generar().Id)
 			{
-				await APIs.EA.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.EA.Tienda.BuscarOfertas(decompilador);
 			}
 			else if (id == APIs.DLGamer.Tienda.Generar().Id)
 			{

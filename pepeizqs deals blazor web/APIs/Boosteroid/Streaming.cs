@@ -24,7 +24,7 @@ namespace APIs.Boosteroid
 
 		public static async Task Buscar(SqlConnection conexion)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -103,7 +103,7 @@ namespace APIs.Boosteroid
 												encontrado = lector.Read();
 
 												cantidad += 1;
-												BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad, conexion);
+												BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad);
 											}
 										}
 

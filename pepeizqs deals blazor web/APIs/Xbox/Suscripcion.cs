@@ -47,7 +47,7 @@ namespace APIs.Xbox
         {
 			conexion = CogerConexion(conexion);
 
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
             int cantidad = 0;
 

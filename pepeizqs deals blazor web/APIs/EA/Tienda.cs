@@ -194,7 +194,7 @@ namespace APIs.EA
 			return conexion;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas(IDecompiladores decompilador, SqlConnection conexion = null)
         {
 			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
@@ -283,7 +283,7 @@ namespace APIs.EA
 							}
 						}
 
-						if (juegoEA.DLCs != null && juegoEA.DLCs.DLCs != null && juegoEA.DLCs.DLCs.Count > 0)
+						if (juegoEA?.DLCs?.DLCs?.Count > 0)
 						{
 							foreach (var dlc in juegoEA.DLCs.DLCs)
 							{

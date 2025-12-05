@@ -46,11 +46,11 @@ namespace Tareas
 						{
 							TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(1);
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("correosEnviar", siguienteComprobacion, conexion) == true)
+							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("correosEnviar", siguienteComprobacion) == true)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", DateTime.Now, conexion);
+								BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", DateTime.Now);
 
-								List<BaseDatos.CorreosEnviar.CorreoPendienteEnviar> pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar(conexion);
+								List<BaseDatos.CorreosEnviar.CorreoPendienteEnviar> pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
 								if (pendientes?.Count > 0)
 								{
@@ -145,7 +145,7 @@ namespace Tareas
 
 											if (enviado == true)
 											{
-												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id, conexion);
+												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 											}
 											else
 											{
@@ -166,7 +166,7 @@ namespace Tareas
 											{
 												if (pendiente2.CorreoHacia == correoMinimoFinal.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
 												{
-													BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id, conexion);
+													BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
 												}
 											}
 										}
@@ -182,7 +182,7 @@ namespace Tareas
 
 											if (enviado == true)
 											{
-												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id, conexion);
+												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 											}
 											else
 											{
@@ -205,7 +205,7 @@ namespace Tareas
 											{
 												if (pendiente2.CorreoHacia == correoDeseadoBundle.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle))
 												{
-													BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id, conexion);
+													BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
 												}
 											}
 										}
@@ -221,7 +221,7 @@ namespace Tareas
 
 											if (enviado == true)
 											{
-												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id, conexion);
+												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 											}
 											else
 											{

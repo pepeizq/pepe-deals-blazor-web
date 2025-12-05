@@ -41,7 +41,7 @@ namespace APIs.DLGamer
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -106,7 +106,7 @@ namespace APIs.DLGamer
 
 							try
 							{
-								BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+								BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

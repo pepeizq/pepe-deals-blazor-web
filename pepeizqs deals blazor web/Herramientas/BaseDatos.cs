@@ -7,31 +7,84 @@ namespace Herramientas
 {
 	public static class BaseDatos
 	{
-		public static string cadenaConexion = "pepeizqs_deals_webContextConnection";
+		public static string cadenaConexion;
 
 		public static SqlConnection Conectar(bool usarEstado = true)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string conexionTexto = builder.Configuration.GetConnectionString(cadenaConexion);
-            SqlConnection conexion = new SqlConnection(conexionTexto);
+            SqlConnection conexion = new SqlConnection(cadenaConexion);
 			
             ConnectionState estado = conexion.State;
             
-			if (usarEstado == true)
+			if (usarEstado == true && estado != ConnectionState.Open)
 			{
-				if (estado != ConnectionState.Open)
-				{
-					try
-					{
-						conexion.Close();
-					}
-					catch { }
-
-					conexion.Open();
-				}
+				conexion.Open();
 			}
 
 			return conexion;	
         }
+
+		public static void EjecutarConConexion(Action<SqlTransaction> sentencia, SqlConnection conexion = null)
+		{
+			bool cerrar = conexion == null;
+
+			if (conexion == null || conexion.State != ConnectionState.Open)
+			{
+				conexion = Conectar();
+			}
+
+			using (SqlTransaction transaccion = conexion.BeginTransaction())
+			{
+				try
+				{
+					sentencia(transaccion);
+					transaccion.Commit();
+				}
+				catch
+				{
+					try { transaccion.Rollback(); } catch { }
+					throw;
+				}
+				finally
+				{
+					if (cerrar == true)
+					{
+						conexion.Close();
+					}
+				}
+			}
+		}
+
+		public static T EjecutarConConexion<T>(Func<SqlTransaction, T> sentencia, SqlConnection conexion = null)
+		{
+			bool cerrar = conexion == null;
+
+			if (conexion == null || conexion.State != ConnectionState.Open)
+			{
+				conexion = Conectar();
+			}
+
+			using (SqlTransaction transaccion = conexion.BeginTransaction())
+			{
+				try
+				{
+					T resultado = sentencia(transaccion);
+					transaccion.Commit();
+
+					return resultado;
+				}
+				catch
+				{
+					try { transaccion.Rollback(); } catch { }
+					throw;
+				}
+				finally
+				{
+					if (cerrar == true)
+					{
+						conexion.Close();
+					}
+				}
+			}
+		}
 	}
 }

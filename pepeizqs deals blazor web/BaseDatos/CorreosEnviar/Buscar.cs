@@ -1,74 +1,41 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.CorreosEnviar
 {
 	public static class Buscar
 	{
-		public static List<CorreoPendienteEnviar> PendientesEnviar(SqlConnection conexion = null)
+		public static List<CorreoPendienteEnviar> PendientesEnviar()
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				string busqueda = "SELECT * FROM correosEnviar";
+
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					return sentencia.Connection.Query<CorreoPendienteEnviar>(busqueda, transaction: sentencia).ToList();
+				});
 			}
-
-			List<CorreoPendienteEnviar> lista = new List<CorreoPendienteEnviar>();
-
-			string sqlBusqueda = "SELECT * FROM correosEnviar";
-
-			using (SqlCommand comando = new SqlCommand(sqlBusqueda, conexion))
+			catch (Exception ex)
 			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read() == true)
-					{
-						CorreoPendienteEnviar correo = new CorreoPendienteEnviar
-						{
-							Id = lector.GetInt32(0),
-							Html = lector.GetString(1),
-							Titulo = lector.GetString(2),
-							CorreoDesde = lector.GetString(3),
-							CorreoHacia = lector.GetString(4),
-							Tipo = (CorreoPendienteTipo)lector.GetInt32(5)
-						};
-
-						if (lector.IsDBNull(6) == false)
-						{
-							correo.Json = lector.GetString(6);
-						}
-
-						if (lector.IsDBNull(7) == false)
-						{
-							correo.Fecha = lector.GetDateTime(7);
-						}
-
-						lista.Add(correo);
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Correos Enviar Buscar", ex);
 			}
 
-			return lista;
+			return new List<CorreoPendienteEnviar>();
 		}
 	}
 
 	public class CorreoPendienteEnviar
 	{
-		public int Id;
-		public string Html;
-		public string Titulo;
-		public string CorreoDesde;
-		public string CorreoHacia;
-		public CorreoPendienteTipo Tipo;
-		public string Json;
-		public DateTime Fecha;
+		public int Id { get; set; }
+		public string Html { get; set; }
+		public string Titulo { get; set; }
+		public string CorreoDesde { get; set; }
+		public string CorreoHacia { get; set; }
+		public CorreoPendienteTipo Tipo { get; set; }
+		public string Json { get; set; }
+		public DateTime Fecha { get; set; }
 	}
 
 	public enum CorreoPendienteTipo

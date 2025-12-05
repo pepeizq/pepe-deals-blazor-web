@@ -1,39 +1,23 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.CorreosEnviar
 {
 	public static class Borrar
 	{
-		public static void Ejecutar(int id, SqlConnection conexion = null)
+		public static void Ejecutar(int id)
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Execute("DELETE FROM correosEnviar WHERE id=@id", new { id }, transaction: sentencia);
+				});
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string borrar = "DELETE FROM correosEnviar WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(borrar, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Correos Enviar Borrar", ex);
 			}
 		}
 	}

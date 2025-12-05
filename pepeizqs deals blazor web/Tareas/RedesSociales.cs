@@ -40,11 +40,11 @@ namespace Tareas
 
                     if (conexion.State == System.Data.ConnectionState.Open)
                     {
-                        if (BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60), conexion) == null)
+                        if (BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)) == null)
                         {
-                            if (BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5), conexion) == true)
+                            if (BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5)) == true)
                             {
-                                BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now, conexion);
+                                BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
 
                                 try
                                 {

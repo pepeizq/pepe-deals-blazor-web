@@ -41,7 +41,7 @@ namespace APIs.GameBillet
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://www.gamebillet.com/product/jsonfeed?store=eu&guid=39A6D2B7-A4EF-4E8B-AA19-350B89788365");
 
@@ -142,7 +142,7 @@ namespace APIs.GameBillet
 
 											try
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 											}
 											catch (Exception ex)
 											{

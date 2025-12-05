@@ -184,7 +184,7 @@ namespace APIs.EpicGames
 
 											try
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 											}
 											catch (Exception ex)
 											{

@@ -49,13 +49,13 @@ namespace Tareas
 								tiempoSiguiente = TimeSpan.FromMinutes(30);
 							}
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("duplicados", tiempoSiguiente, conexion) == true)
+							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("duplicados", tiempoSiguiente) == true)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now, conexion);
+								BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
 
 								List<Juegos.Juego> duplicados = BaseDatos.Juegos.Buscar.Duplicados(conexion);
 
-								BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count, conexion);
+								BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
 							}
 						}
 						catch (Exception ex)

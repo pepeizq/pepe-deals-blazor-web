@@ -35,7 +35,7 @@ namespace APIs.WinGameStore
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador) 
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://www.macgamestore.com/affiliate/feeds/p_C1B2A3.json");
 
@@ -143,7 +143,7 @@ namespace APIs.WinGameStore
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+                                    BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {

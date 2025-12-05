@@ -48,7 +48,7 @@ namespace Tareas
                     {
                         try
                         {
-							List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos(conexion);
+							List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos();
 
 							if (juegos?.Count > 0)
 							{

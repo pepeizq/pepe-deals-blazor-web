@@ -3,7 +3,6 @@
 using APIs.Steam;
 using Dapper;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Data.SqlClient;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
@@ -12,80 +11,90 @@ namespace BaseDatos.Curators
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static Curator Uno(int idSteam)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+				});
+
+				if (fila == null)
+				{
+					return null;
+				}
+
+				Curator curator = new Curator
+				{
+					Id = fila.id,
+					IdSteam = fila.idSteam,
+					Nombre = fila.nombre,
+					Imagen = fila.imagen,
+					Descripcion = fila.descripcion,
+					Slug = fila.slug,
+					SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
+					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
+				};
+
+				curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
+
+				if (fila.fecha != null)
+				{
+					curator.Fecha = (DateTime)fila.fecha;
+				}
+
+				return curator;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Curator Buscar Uno", ex);
 			}
 
-			return conexion;
+			return null;
 		}
 
-		public static Curator Uno(int idSteam, SqlConnection conexion = null)
+		public static Curator Uno(string slug)
 		{
-			conexion = CogerConexion(conexion);
-
-			var fila = conexion.QueryFirstOrDefault<dynamic>("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }); 
-			
-			if (fila == null)
+			try
 			{
-				return null;
+				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM curators WHERE slug=@slug", new { slug }, transaction: sentencia);
+				});
+
+				if (fila == null)
+				{
+					return null;
+				}
+
+				Curator curator = new Curator
+				{
+					Id = fila.id,
+					IdSteam = fila.idSteam,
+					Nombre = fila.nombre,
+					Imagen = fila.imagen,
+					Descripcion = fila.descripcion,
+					Slug = fila.slug,
+					SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
+					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
+				};
+
+				curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
+
+				if (fila.fecha != null)
+				{
+					curator.Fecha = (DateTime)fila.fecha;
+				}
+
+				return curator;
 			}
-	
-			Curator curator = new Curator
+			catch (Exception ex)
 			{
-				Id = fila.id,
-				IdSteam = fila.idSteam,
-				Nombre = fila.nombre,
-				Imagen = fila.imagen,
-				Descripcion = fila.descripcion,
-				Slug = fila.slug, 
-				SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds), 
-				Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web) 
-			}; 
-			
-			curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
-
-			if (fila.fecha != null)
-			{
-				curator.Fecha = (DateTime)fila.fecha;
-			}
-
-			return curator;
-		}
-
-		public static Curator Uno(string slug, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			var fila = conexion.QueryFirstOrDefault<dynamic>("SELECT * FROM curators WHERE slug=@slug", new { slug });
-
-			if (fila == null)
-			{
-				return null;
+				BaseDatos.Errores.Insertar.Mensaje("Curator Buscar Uno", ex);
 			}
 
-			Curator curator = new Curator
-			{
-				Id = fila.id,
-				IdSteam = fila.idSteam,
-				Nombre = fila.nombre,
-				Imagen = fila.imagen,
-				Descripcion = fila.descripcion,
-				Slug = fila.slug,
-				SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
-				Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
-			};
-
-			curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
-
-			if (fila.fecha != null)
-			{
-				curator.Fecha = (DateTime)fila.fecha;
-			}
-
-			return curator;
+			return null;
 		}
 	}
 

@@ -48,7 +48,7 @@ namespace APIs.Playsum
 				}
 			}
 
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -163,7 +163,7 @@ namespace APIs.Playsum
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{

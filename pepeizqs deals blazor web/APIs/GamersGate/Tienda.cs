@@ -37,7 +37,7 @@ namespace APIs.GamersGate
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador, ViewDataDictionary objeto = null)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -105,7 +105,7 @@ namespace APIs.GamersGate
 
                             try
                             {
-                                BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+                                BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
                             }
                             catch (Exception ex)
                             {

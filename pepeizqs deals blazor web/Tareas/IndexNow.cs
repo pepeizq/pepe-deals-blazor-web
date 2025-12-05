@@ -50,9 +50,9 @@ namespace Tareas
                         {
                             TimeSpan tiempoSiguiente = TimeSpan.FromHours(1);
 
-                            if (BaseDatos.Admin.Buscar.TareaPosibleUsar("indexNow", tiempoSiguiente, conexion) == true)
+                            if (BaseDatos.Admin.Buscar.TareaPosibleUsar("indexNow", tiempoSiguiente) == true)
                             {
-                                BaseDatos.Admin.Actualizar.TareaUso("indexNow", DateTime.Now, conexion);
+                                BaseDatos.Admin.Actualizar.TareaUso("indexNow", DateTime.Now);
 
                                 List<Juego> juegos = BaseDatos.Juegos.Buscar.Aleatorios();
 								List<Bundle> bundles = BaseDatos.Bundles.Buscar.Aleatorios();

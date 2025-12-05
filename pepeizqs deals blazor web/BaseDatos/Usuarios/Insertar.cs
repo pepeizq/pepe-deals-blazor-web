@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 using Microsoft.Data.SqlClient;
 
@@ -7,62 +8,45 @@ namespace BaseDatos.Usuarios
 {
 	public static class Insertar
 	{
-		public static void NotificacionesPush(NotificacionSuscripcion datos, SqlConnection conexion = null)
+		private static SqlConnection CogerConexion(SqlConnection conexion)
 		{
-			if (conexion == null)
+			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
 			{
 				conexion = Herramientas.BaseDatos.Conectar();
 			}
-			else
+
+			return conexion;
+		}
+
+		public static void NotificacionesPush(NotificacionSuscripcion datos, SqlConnection conexion = null)
+		{
+			conexion = CogerConexion(conexion);
+
+			string sql = @"
+			IF NOT EXISTS (SELECT 1 FROM usuariosNotificaciones WHERE usuarioId = @usuarioId)
+			BEGIN
+				INSERT INTO usuariosNotificaciones
+				(usuarioId, notificacionId, enlace, p256dh, auth, userAgent)
+				VALUES
+				(@usuarioId, @notificacionId, @enlace, @p256dh, @auth, @userAgent)
+			END";
+
+			try
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				conexion.Execute(sql, new
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					usuarioId = datos.UserId,
+					notificacionId = datos.NotificationSubscriptionId,
+					enlace = datos.Url,
+					p256dh = datos.P256dh,
+					auth = datos.Auth,
+					userAgent = datos.UserAgent
+				});
 			}
-
-			bool añadir = false;
-
-			string sqlBusqueda = "SELECT * FROM usuariosNotificaciones WHERE usuarioId=@usuarioId";
-
-			using (SqlCommand comando = new SqlCommand(sqlBusqueda, conexion))
+			catch (Exception ex) 
 			{
-				comando.Parameters.AddWithValue("@usuarioId", datos.UserId);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == false)
-					{
-						añadir = true;
-					}
-				}
-			}
-
-			if (añadir == true)
-			{
-				string sqlAñadir = "INSERT INTO usuariosNotificaciones " +
-					 "(usuarioId, notificacionId, enlace, p256dh, auth, userAgent) VALUES " +
-					 "(@usuarioId, @notificacionId, @enlace, @p256dh, @auth, @userAgent) ";
-
-				using (SqlCommand comando = new SqlCommand(sqlAñadir, conexion))
-				{
-					comando.Parameters.AddWithValue("@usuarioId", datos.UserId);
-					comando.Parameters.AddWithValue("@notificacionId", datos.NotificationSubscriptionId);
-					comando.Parameters.AddWithValue("@enlace", datos.Url);
-					comando.Parameters.AddWithValue("@p256dh", datos.P256dh);
-					comando.Parameters.AddWithValue("@auth", datos.Auth);
-					comando.Parameters.AddWithValue("@userAgent", datos.UserAgent);
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch
-					{
-
-					}
-				}
-			}			
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Insertar Notificaciones Push", ex);
+			}	
 		}
 	}
 }

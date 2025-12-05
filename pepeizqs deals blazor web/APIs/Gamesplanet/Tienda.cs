@@ -86,7 +86,7 @@ namespace APIs.Gamesplanet
 
 		public static async Task BuscarOfertasUk(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -195,7 +195,7 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2, conexion);
+                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
@@ -210,7 +210,7 @@ namespace APIs.Gamesplanet
 
         public static async Task BuscarOfertasFr(SqlConnection conexion, IDecompiladores decompilador)
         {
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -319,7 +319,7 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2, conexion);
+                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
@@ -334,7 +334,7 @@ namespace APIs.Gamesplanet
 
 		public static async Task BuscarOfertasDe(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -443,7 +443,7 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2, conexion);
+                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
@@ -458,7 +458,7 @@ namespace APIs.Gamesplanet
 
 		public static async Task BuscarOfertasUs(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -567,7 +567,7 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2, conexion);
+                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {

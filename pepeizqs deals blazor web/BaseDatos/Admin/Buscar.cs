@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 using Streaming2;
 using Suscripciones2;
 using Tiendas2;
@@ -10,23 +9,14 @@ namespace BaseDatos.Admin
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static int Dato(string id)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static int Dato(string id, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				return conexion.QueryFirstOrDefault<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id });
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -36,13 +26,14 @@ namespace BaseDatos.Admin
 			return 0;
 		}
 
-		public static bool TiendasPosibleUsar(TimeSpan tiempo, string tiendaId, SqlConnection conexion = null)
+		public static bool TiendasPosibleUsar(TimeSpan tiempo, string tiendaId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				DateTime? fecha = conexion.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId });
+				DateTime? fecha = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId }, transaction: sentencia);
+				});
 
 				if (fecha == null)
 				{
@@ -59,219 +50,316 @@ namespace BaseDatos.Admin
 			return false;
 		}
 
-		public static List<AdminTarea> TiendasEnUso(TimeSpan tiempo, SqlConnection conexion = null)
+		public static List<AdminTarea> TiendasEnUso(TimeSpan tiempo)
 		{
-			conexion = CogerConexion(conexion);
-
-			List<AdminTarea> tiendas = conexion.Query<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC").ToList();
-
-			tiendas = tiendas.Where(t =>
+			try
 			{
-				foreach (Tienda tienda2 in TiendasCargar.GenerarListado())
+				List<AdminTarea> tiendas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					if (tienda2.Id == t.Id && tienda2.AdminInteractuar == false)
-					{
-						return false;
-					}			
-				}
+					return sentencia.Connection.Query<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC", transaction: sentencia).ToList();
+				});
 
-				foreach (Suscripcion suscripcion2 in SuscripcionesCargar.GenerarListado())
+				tiendas = tiendas.Where(t =>
 				{
-					if (suscripcion2.Id.ToString() == t.Id && suscripcion2.AdminInteractuar == true)
+					foreach (Tienda tienda2 in TiendasCargar.GenerarListado())
 					{
-						return false;
+						if (tienda2.Id == t.Id && tienda2.AdminInteractuar == false)
+						{
+							return false;
+						}
+					}
+
+					foreach (Suscripcion suscripcion2 in SuscripcionesCargar.GenerarListado())
+					{
+						if (suscripcion2.Id.ToString() == t.Id && suscripcion2.AdminInteractuar == true)
+						{
+							return false;
+						}
+					}
+
+					foreach (Streaming2.Streaming streaming2 in StreamingCargar.GenerarListado())
+					{
+						if (streaming2.Id.ToString() == t.Id)
+						{
+							return false;
+						}
+					}
+
+					return true;
+				}).ToList();
+
+				List<AdminTarea> tiendasEnUso = new List<AdminTarea>();
+
+				foreach (var tienda in tiendas)
+				{
+					if ((DateTime.Now - tienda.Fecha) < tiempo)
+					{
+						tiendasEnUso.Add(tienda);
 					}
 				}
 
-				foreach (Streaming2.Streaming streaming2 in StreamingCargar.GenerarListado())
-				{
-					if (streaming2.Id.ToString() == t.Id)
-					{
-						return false;
-					}
-				}
-
-				return true;
-			}).ToList();
-
-			List<AdminTarea> tiendasEnUso = new List<AdminTarea>();
-
-			foreach (var tienda in tiendas)
+				return tiendasEnUso;
+			}
+			catch (Exception ex)
 			{
-				if ((DateTime.Now - tienda.Fecha) < tiempo)
-				{
-					tiendasEnUso.Add(tienda);
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas En Uso", ex);
 			}
 
-			return tiendasEnUso;
+			return new List<AdminTarea>();
 		}
 
-		public static int TiendasValorAdicional(string id, string valor, SqlConnection conexion = null)
+		public static int TiendasValorAdicional(string id, string valor)
 		{
-			conexion = CogerConexion(conexion);
-
-			var fila = conexion.QueryFirstOrDefault("SELECT * FROM adminTiendas WHERE id=@id", new { id });
-
-			if (fila == null)
+			try
 			{
-				return 0;
+				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM adminTiendas WHERE id=@id", new { id }, transaction: sentencia);
+				});
+
+				if (fila == null)
+				{
+					return 0;
+				}
+
+				var diccionario = (IDictionary<string, object>)fila;
+
+				if (diccionario.ContainsKey(valor) && diccionario[valor] != null)
+				{
+					return Convert.ToInt32(diccionario[valor]);
+				}
 			}
-
-			var diccionario = (IDictionary<string, object>)fila;
-
-			if (diccionario.ContainsKey(valor) && diccionario[valor] != null)
+			catch (Exception ex)
 			{
-				return Convert.ToInt32(diccionario[valor]);
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Valor Adicional", ex);
 			}
 
 			return 0;
 		}
 
-		public static List<AdminTarea> TareasTiendas(SqlConnection conexion = null)
+		public static List<AdminTarea> TareasTiendas()
 		{
-			conexion = CogerConexion(conexion);
-
-			string sql = null;
-
-			foreach (Tienda tienda in TiendasCargar.GenerarListado())
+			try
 			{
-				if (tienda.AdminEnseñar == true)
+				string sql = null;
+
+				foreach (Tienda tienda in TiendasCargar.GenerarListado())
+				{
+					if (tienda.AdminEnseñar == true)
+					{
+						if (string.IsNullOrEmpty(sql) == true)
+						{
+							sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{tienda.Id}'";
+
+						}
+						else
+						{
+							sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{tienda.Id}'";
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(sql) == false)
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+					});
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+			}
+
+			return new List<AdminTarea>();
+		}
+
+		public static List<AdminTarea> TareasSuscripciones()
+		{
+			try
+			{
+				string sql = null;
+
+				foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
+				{
+					if (suscripcion.AdminInteractuar == true)
+					{
+						if (string.IsNullOrEmpty(sql) == true)
+						{
+							sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
+
+						}
+						else
+						{
+							sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(sql) == false)
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+					});
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+			}
+
+			return new List<AdminTarea>();
+		}
+
+		public static List<AdminTarea> TareasStreaming()
+		{
+			try
+			{
+				string sql = null;
+
+				foreach (var streaming in StreamingCargar.GenerarListado())
 				{
 					if (string.IsNullOrEmpty(sql) == true)
 					{
-						sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{tienda.Id}'";
+						sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{streaming.Id}'";
 
 					}
 					else
 					{
-						sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{tienda.Id}'";
+						sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{streaming.Id}'";
 					}
 				}
-			}
 
-			return conexion.Query<AdminTarea>(sql).ToList();
-		}
-
-		public static List<AdminTarea> TareasSuscripciones(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			string sql = null;
-
-			foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
-			{
-				if (suscripcion.AdminInteractuar == true)
+				if (string.IsNullOrEmpty(sql) == false)
 				{
-					if (string.IsNullOrEmpty(sql) == true)
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 					{
-						sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
-
-					}
-					else
-					{
-						sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
-					}
+						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+					});
 				}
 			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+			}
 
-			return conexion.Query<AdminTarea>(sql).ToList();
+			return new List<AdminTarea>();
 		}
 
-		public static List<AdminTarea> TareasStreaming(SqlConnection conexion = null)
+		public static List<AdminTarea> TareasUltimos60Segundos(List<AdminTarea> tareas)
 		{
-			conexion = CogerConexion(conexion);
-
-			string sql = null;
-
-			foreach (var streaming in StreamingCargar.GenerarListado())
+			try
 			{
-				if (string.IsNullOrEmpty(sql) == true)
+				var ids = tareas.Where(t => t.Fecha.AddSeconds(60) >= DateTime.Now).Select(t => t.Id).Distinct().ToList();
+
+				if (ids.Count == 0)
 				{
-					sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{streaming.Id}'";
-
+					return tareas;
 				}
-				else
+
+				string sql = string.Empty;
+
+				if (ids?.Count > 0)
 				{
-					sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{streaming.Id}'";
-				}
-			}
+					sql = "SELECT id, fecha, mensaje AS Cantidad, valorAdicional AS Valor1, valorAdicional2 AS Valor2 FROM adminTiendas WHERE id IN (";
 
-			return conexion.Query<AdminTarea>(sql).ToList();
-		}
-
-		public static List<AdminTarea> TareasUltimos60Segundos(List<AdminTarea> tareas, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			var ids = tareas.Where(t => t.Fecha.AddSeconds(60) >= DateTime.Now).Select(t => t.Id).Distinct().ToList();
-
-			if (ids.Count == 0)
-			{
-				return tareas;
-			}
-
-			string sql = string.Empty;
-
-			if (ids?.Count > 0)
-			{
-				sql = "SELECT id, fecha, mensaje AS Cantidad, valorAdicional AS Valor1, valorAdicional2 AS Valor2 FROM adminTiendas WHERE id IN (";
-
-				int i = 0;
-				while (i < ids.Count)
-				{
-					if (i == 0)
+					int i = 0;
+					while (i < ids.Count)
 					{
-						sql = sql + "'" + ids[i] + "'";
-					}
-					else
-					{
-						sql = sql + ", '" + ids[i] + "'";
+						if (i == 0)
+						{
+							sql = sql + "'" + ids[i] + "'";
+						}
+						else
+						{
+							sql = sql + ", '" + ids[i] + "'";
+						}
+
+						i += 1;
 					}
 
-					i += 1;
+					sql = sql + ")";
 				}
 
-				sql = sql + ")";
+				List<AdminTarea> nuevas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+				});
+
+				var diccionarioNuevas = nuevas.ToDictionary(t => t.Id);
+
+				List<AdminTarea> fusionadas = tareas.Select(t => diccionarioNuevas.TryGetValue(t.Id, out var actualizada) ? actualizada : t).ToList();
+
+				return fusionadas;
 			}
-
-			List<AdminTarea> nuevas = conexion.Query<AdminTarea>(sql).ToList();
-
-			var diccionarioNuevas = nuevas.ToDictionary(t => t.Id);
-
-			List<AdminTarea> fusionadas = tareas.Select(t => diccionarioNuevas.TryGetValue(t.Id, out var actualizada) ? actualizada : t).ToList();
-
-			return fusionadas;
-		}
-
-		public static bool TareaPosibleUsar(string id, TimeSpan tiempo, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			DateTime? fecha = conexion.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id });
-
-			if (fecha == null)
+			catch (Exception ex)
 			{
-				return true;
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Ultimos 60 Segundos", ex);
 			}
 
-			return (DateTime.Now - fecha.Value) >= tiempo;
+			return new List<AdminTarea>();
 		}
 
-		public static bool TiendasLibre(SqlConnection conexion = null)
+		public static bool TareaPosibleUsar(string id, TimeSpan tiempo)
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				DateTime? fecha = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id }, transaction: sentencia);
+				}); 
 
-			int enUso = conexion.QueryFirst<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())");
+				if (fecha == null)
+				{
+					return true;
+				}
 
-			return enUso == 0;
+				return (DateTime.Now - fecha.Value) >= tiempo;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tarea Posible Usar", ex);
+			}
+
+			return true;
 		}
 
-		public static int CantidadErrores(SqlConnection conexion = null)
+		public static bool TiendasLibre()
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				int enUso = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())", transaction: sentencia);
+				}); 
 
-			return conexion.QueryFirst<int>("SELECT COUNT(*) FROM errores OPTION (MAXDOP 8)");
+				return enUso == 0;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Libre", ex);
+			}
+
+			return true;
+		}
+
+		public static int CantidadErrores()
+		{
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM errores OPTION (MAXDOP 8)", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Cantidad Errores", ex);
+			}
+
+			return 0;
 		}
 	}
 

@@ -46,9 +46,9 @@ namespace Tareas
 						{
 							TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(1);
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("fichasActualizar", siguienteComprobacion, conexion) == true && BaseDatos.Admin.Buscar.TiendasLibre(conexion) == true)
+							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("fichasActualizar", siguienteComprobacion) == true && BaseDatos.Admin.Buscar.TiendasLibre() == true)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now, conexion);
+								BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now);
 
 								#region Buscar 
 

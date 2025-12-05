@@ -48,9 +48,9 @@ namespace Tareas
 						{
 							TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(30);
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("usuariosActualizar", siguienteComprobacion, conexion) == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60), conexion) == null)
+							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("usuariosActualizar", siguienteComprobacion) == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Count == 0)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now, conexion);
+								BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now);
 
 								List<BaseDatos.UsuariosActualizar.UsuarioActualizar> usuarios = BaseDatos.UsuariosActualizar.Buscar.Todos(conexion);
 

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
@@ -86,6 +85,7 @@ builder.Services.AddAuthentication(opciones =>
 }).AddIdentityCookies();
 
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+Herramientas.BaseDatos.cadenaConexion = conexionTexto;
 
 builder.Services.AddDbContextPool<pepeizqs_deals_webContext>(opciones => {
 	opciones.UseSqlServer(conexionTexto, opciones2 =>

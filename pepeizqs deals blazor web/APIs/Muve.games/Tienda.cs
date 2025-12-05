@@ -31,7 +31,7 @@ namespace APIs.Muvegames
 
 		public static async Task BuscarOfertas(SqlConnection conexion)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int tope = 10;
 			int juegos2 = 0;
@@ -143,7 +143,7 @@ namespace APIs.Muvegames
 
 												try
 												{
-													BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+													BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 												}
 												catch (Exception ex)
 												{

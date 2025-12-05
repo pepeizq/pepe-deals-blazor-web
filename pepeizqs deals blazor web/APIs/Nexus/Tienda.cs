@@ -32,7 +32,7 @@ namespace APIs.Nexus
 
 		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			HttpClient cliente = new HttpClient();
 			cliente.BaseAddress = new Uri("https://www.nexus.gg//");
@@ -124,7 +124,7 @@ namespace APIs.Nexus
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{

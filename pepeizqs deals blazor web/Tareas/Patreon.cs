@@ -44,9 +44,9 @@ namespace Tareas
 						{
 							TimeSpan tiempoSiguiente = TimeSpan.FromHours(6);
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("patreon", tiempoSiguiente, conexion) == true)
+							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("patreon", tiempoSiguiente) == true)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now, conexion);
+								BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
 
 								Herramientas.Patreon.Leer();
 							}

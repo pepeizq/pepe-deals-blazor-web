@@ -50,7 +50,7 @@ namespace APIs.Ubisoft
 		{
 			Cupon cupon = BaseDatos.Cupones.Buscar.Activos(Generar().Id, conexion);
 
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0, conexion);
+			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int paginas = 10;
 			int juegos2 = 0;
@@ -143,7 +143,7 @@ namespace APIs.Ubisoft
 
 											try
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2, conexion);
+												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 											}
 											catch (Exception ex)
 											{
