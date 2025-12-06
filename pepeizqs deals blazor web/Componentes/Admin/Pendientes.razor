@@ -418,11 +418,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
         pendientesTiendas.Clear();
 
         foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
@@ -431,7 +426,7 @@
             {
                 PendientesTienda pendienteTienda = new PendientesTienda();
                 pendienteTienda.Tienda = tienda;
-                pendienteTienda.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(tienda.Id, conexion);
+                pendienteTienda.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(tienda.Id);
 
                 if (pendienteTienda.Pendientes.Count > 0)
                 {
@@ -452,7 +447,7 @@
             }
             else
             {
-                idsPendiente = BaseDatos.Pendientes.Buscar.IDs(pendientesTiendas[0].Pendientes[0].Nombre, conexion);
+                idsPendiente = BaseDatos.Pendientes.Buscar.IDs(pendientesTiendas[0].Pendientes[0].Nombre);
             }
         }
 
@@ -464,7 +459,7 @@
             {
                 PendientesSuscripcion pendienteSuscripcion = new PendientesSuscripcion();
                 pendienteSuscripcion.Suscripcion = suscripcion;
-                pendienteSuscripcion.Pendientes = BaseDatos.Pendientes.Buscar.Suscripcion(suscripcion.Id, conexion);
+                pendienteSuscripcion.Pendientes = BaseDatos.Pendientes.Buscar.Suscripcion(suscripcion.Id);
 
                 if (pendienteSuscripcion.Pendientes.Count > 0)
                 {
@@ -479,7 +474,7 @@
         {
             PendientesStreaming pendienteStreaming = new PendientesStreaming();
             pendienteStreaming.Streaming = streaming;
-            pendienteStreaming.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(streaming.Id, conexion);
+            pendienteStreaming.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(streaming.Id);
 
             if (pendienteStreaming.Pendientes.Count > 0)
             {
@@ -493,7 +488,7 @@
         {
             PendientesPlataforma pendientePlataforma = new PendientesPlataforma();
             pendientePlataforma.Plataforma = plataforma;
-            pendientePlataforma.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(plataforma.Id, conexion);
+            pendientePlataforma.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(plataforma.Id);
 
             if (pendientePlataforma.Pendientes.Count > 0)
             {
@@ -554,7 +549,7 @@
                         {
                             if (pendiente.Tienda.Id == idTiendaPendiente)
                             {
-                                pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente, conexion);
+                                pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
                             }
                         }
 
@@ -563,7 +558,7 @@
                 }
                 else
                 {
-                    idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente, conexion);
+                    idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente);
                 }
             }
         }
@@ -585,32 +580,24 @@
     {
         if (string.IsNullOrEmpty(id) == false)
         {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
+            BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoSuscripcion(id);
 
-            using (conexion)
+            if (juego != null)
             {
-                BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoSuscripcion(id, conexion);
+                nombrePendiente = juego.Nombre;
 
-                if (juego != null)
+                string imagen = juego.Imagen;
+
+                if (imagen != null)
                 {
-                    nombrePendiente = juego.Nombre;
-
-                    string imagen = juego.Imagen;
-
-                    if (imagen != null)
-                    {
-                        imagen = imagen.Replace("&amp;", "&");
-                    }
-
-                    imagenPendiente = imagen;
-
-                    enlacePendiente = juego.Enlace;
-
-                    idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente, conexion);
+                    imagen = imagen.Replace("&amp;", "&");
                 }
+
+                imagenPendiente = imagen;
+
+                enlacePendiente = juego.Enlace;
+
+                idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente);
             }
         }
     }
@@ -629,32 +616,24 @@
     {
         if (string.IsNullOrEmpty(id) == false)
         {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
+            BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoStreaming(id);
 
-            using (conexion)
+            if (juego != null)
             {
-                BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoStreaming(id, conexion);
+                nombrePendiente = juego.Nombre;
 
-                if (juego != null)
+                string imagen = juego.Imagen;
+
+                if (imagen != null)
                 {
-                    nombrePendiente = juego.Nombre;
-
-                    string imagen = juego.Imagen;
-
-                    if (imagen != null)
-                    {
-                        imagen = imagen.Replace("&amp;", "&");
-                    }
-
-                    imagenPendiente = imagen;
-
-                    enlacePendiente = juego.Enlace;
-
-                    idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente, conexion);
+                    imagen = imagen.Replace("&amp;", "&");
                 }
+
+                imagenPendiente = imagen;
+
+                enlacePendiente = juego.Enlace;
+
+                idsPendiente = BaseDatos.Pendientes.Buscar.IDs(nombrePendiente);
             }
         }
     }
@@ -673,39 +652,31 @@
     {
         if (string.IsNullOrEmpty(id) == false)
         {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
+            BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoPlataforma(id);
 
-            using (conexion)
+            if (juego != null)
             {
-                BaseDatos.Pendientes.Pendiente juego = BaseDatos.Pendientes.Buscar.PrimerJuegoPlataforma(id, conexion);
+                nombrePendiente = juego.Nombre;
 
-                if (juego != null)
+                string imagen = juego.Imagen;
+
+                if (imagen != null)
                 {
-                    nombrePendiente = juego.Nombre;
-
-                    string imagen = juego.Imagen;
-
-                    if (imagen != null)
-                    {
-                        imagen = imagen.Replace("&amp;", "&");
-                    }
-
-                    imagenPendiente = imagen;
-
-                    if (id.ToLower() == "amazon")
-                    {
-                        enlacePendiente = "amazon-games://play/" + juego.Enlace;
-                    }
-                    else
-                    {
-                        enlacePendiente = juego.Enlace;
-                    }
-
-                    idsPendiente = "0";
+                    imagen = imagen.Replace("&amp;", "&");
                 }
+
+                imagenPendiente = imagen;
+
+                if (id.ToLower() == "amazon")
+                {
+                    enlacePendiente = "amazon-games://play/" + juego.Enlace;
+                }
+                else
+                {
+                    enlacePendiente = juego.Enlace;
+                }
+
+                idsPendiente = "0";
             }
         }
     }
@@ -840,7 +811,7 @@
                 {
                     if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
                     }
                 }
 
@@ -875,7 +846,7 @@
                 {
                     if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
                     {
-                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id, conexion);
+                        pendiente.Pendientes = BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
                     }
                 }
 
@@ -959,113 +930,91 @@
 
     private void TextoCambiaBuscador()
     {
-        if (conexion == null)
+        if (textoBuscador.Trim().Length > 2)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-        else
-        {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
+            List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
 
-        using (conexion)
-        {
-            if (textoBuscador.Trim().Length > 2)
+            if (resultados.Count > 0)
             {
-                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true, true);
+                buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+                buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+                buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+                buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
 
-                if (resultados.Count > 0)
+                buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
+                buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
+                buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
+                buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
+
+                if (buscadorPendientesJuegos.Count == 0)
                 {
-                    buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                    buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                    buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                    buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-
-                    buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
-                    buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
-                    buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
-                    buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
-
-                    if (buscadorPendientesJuegos.Count == 0)
-                    {
-                        estiloJuegos = "display: none;";
-                    }
-                    else
-                    {
-                        estiloJuegos = "background-color: transparent;";
-                    }
-
-                    if (buscadorPendientesDLCs.Count == 0)
-                    {
-                        estiloDLCs = "display: none;";
-                    }
-                    else
-                    {
-                        estiloDLCs = "background-color: transparent;";
-                    }
-
-                    if (buscadorPendientesBandasSonoras.Count == 0)
-                    {
-                        estiloBandasSonoras = "display: none;";
-                    }
-                    else
-                    {
-                        estiloBandasSonoras = "background-color: transparent;";
-                    }
-
-                    if (buscadorPendientesSoftware.Count == 0)
-                    {
-                        estiloSoftware = "display: none;";
-                    }
-                    else
-                    {
-                        estiloSoftware = "background-color: transparent;";
-                    }
-
-                    pestañaJuegos = false;
-                    pestañaDLCs = false;
-                    pestañaBandasSonoras = false;
-                    pestañaSoftware = false;
-
-                    if (buscadorPendientesJuegos.Count > 0)
-                    {
-                        pestañaJuegos = true;
-                        estiloJuegos = "background-color: var(--fondoBotonPequeño);";
-                    }
-                    else if (buscadorPendientesJuegos.Count == 0)
-                    {
-                        if (buscadorPendientesDLCs.Count > 0)
-                        {
-                            pestañaDLCs = true;
-                            estiloDLCs = "background-color: var(--fondoBotonPequeño);";
-                        }
-                        else if (buscadorPendientesDLCs.Count == 0)
-                        {
-                            if (buscadorPendientesBandasSonoras.Count > 0)
-                            {
-                                pestañaBandasSonoras = true;
-                                estiloBandasSonoras = "background-color: var(--fondoBotonPequeño);";
-                            }
-                            else if (buscadorPendientesBandasSonoras.Count == 0)
-                            {
-                                if (buscadorPendientesSoftware.Count > 0)
-                                {
-                                    pestañaSoftware = true;
-                                    estiloSoftware = "background-color: var(--fondoBotonPequeño);";
-                                }
-                            }
-                        }
-                    }
-                }    
+                    estiloJuegos = "display: none;";
+                }
                 else
                 {
-                    buscadorPendientesJuegos = new List<global::Juegos.Juego>();
-                    buscadorPendientesDLCs = new List<global::Juegos.Juego>();
-                    buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
-                    buscadorPendientesSoftware = new List<global::Juegos.Juego>();
+                    estiloJuegos = "background-color: transparent;";
+                }
+
+                if (buscadorPendientesDLCs.Count == 0)
+                {
+                    estiloDLCs = "display: none;";
+                }
+                else
+                {
+                    estiloDLCs = "background-color: transparent;";
+                }
+
+                if (buscadorPendientesBandasSonoras.Count == 0)
+                {
+                    estiloBandasSonoras = "display: none;";
+                }
+                else
+                {
+                    estiloBandasSonoras = "background-color: transparent;";
+                }
+
+                if (buscadorPendientesSoftware.Count == 0)
+                {
+                    estiloSoftware = "display: none;";
+                }
+                else
+                {
+                    estiloSoftware = "background-color: transparent;";
+                }
+
+                pestañaJuegos = false;
+                pestañaDLCs = false;
+                pestañaBandasSonoras = false;
+                pestañaSoftware = false;
+
+                if (buscadorPendientesJuegos.Count > 0)
+                {
+                    pestañaJuegos = true;
+                    estiloJuegos = "background-color: var(--fondoBotonPequeño);";
+                }
+                else if (buscadorPendientesJuegos.Count == 0)
+                {
+                    if (buscadorPendientesDLCs.Count > 0)
+                    {
+                        pestañaDLCs = true;
+                        estiloDLCs = "background-color: var(--fondoBotonPequeño);";
+                    }
+                    else if (buscadorPendientesDLCs.Count == 0)
+                    {
+                        if (buscadorPendientesBandasSonoras.Count > 0)
+                        {
+                            pestañaBandasSonoras = true;
+                            estiloBandasSonoras = "background-color: var(--fondoBotonPequeño);";
+                        }
+                        else if (buscadorPendientesBandasSonoras.Count == 0)
+                        {
+                            if (buscadorPendientesSoftware.Count > 0)
+                            {
+                                pestañaSoftware = true;
+                                estiloSoftware = "background-color: var(--fondoBotonPequeño);";
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -1075,6 +1024,13 @@
                 buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
                 buscadorPendientesSoftware = new List<global::Juegos.Juego>();
             }
+        }
+        else
+        {
+            buscadorPendientesJuegos = new List<global::Juegos.Juego>();
+            buscadorPendientesDLCs = new List<global::Juegos.Juego>();
+            buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
+            buscadorPendientesSoftware = new List<global::Juegos.Juego>();
         }
     }
 
@@ -1112,29 +1068,21 @@
 
     private void ClickearBorrarPendientes(MouseEventArgs e, string id)
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
+        BaseDatos.Juegos.Borrar.Ejecutar(id);
+
+        List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
+
+        if (resultados.Count > 0)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
+            buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+            buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+            buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+            buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
 
-        using (conexion)
-        {
-            BaseDatos.Juegos.Borrar.Ejecutar(id, conexion);
-
-            List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true);
-
-            if (resultados.Count > 0)
-            {
-                buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-
-                buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
-                buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
-                buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
-                buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
-            }
+            buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
+            buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
+            buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
+            buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
         }
     }
 

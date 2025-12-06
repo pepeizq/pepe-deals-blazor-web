@@ -184,16 +184,6 @@ namespace APIs.EA
 			"zumas-revenge"
 		};
 
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
 		public static async Task BuscarOfertas(IDecompiladores decompilador, SqlConnection conexion = null)
         {
 			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
@@ -357,9 +347,10 @@ namespace APIs.EA
 
 							foreach (var tipo in tipos)
 							{
-								conexion = CogerConexion(conexion);
-
-								var fila = conexion.QueryFirstOrDefault<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion });
+								EASuscripcionFila fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+								{
+									return await sentencia.Connection.QueryFirstOrDefaultAsync<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion }, transaction: sentencia);
+								});
 
 								string idJuegosTexto = fila.IdJuegos;
 								string descartado = fila.Descartado;

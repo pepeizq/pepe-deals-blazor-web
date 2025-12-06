@@ -36,42 +36,31 @@ namespace Tareas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-                    SqlConnection conexion = new SqlConnection();
+					try
+					{
+						List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos();
 
-                    try
-                    {
-                        conexion = Herramientas.BaseDatos.Conectar();
-                    }
-                    catch { }
+						if (juegos?.Count > 0)
+						{
+							BaseDatos.Portada.Limpiar.Total();
 
-                    if (conexion.State == System.Data.ConnectionState.Open)
-                    {
-                        try
-                        {
-							List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos();
-
-							if (juegos?.Count > 0)
+							foreach (var juego in juegos)
 							{
-								BaseDatos.Portada.Limpiar.Total();
+								juego.IdMaestra = juego.Id;
+								juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido && Herramientas.OfertaActiva.Verificar(x) == true).ToList();
 
-								foreach (var juego in juegos)
+								if (juego.PrecioMinimosHistoricos?.Count > 0)
 								{
-									juego.IdMaestra = juego.Id;
-									juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido && Herramientas.OfertaActiva.Verificar(x) == true).ToList();
-
-									if (juego.PrecioMinimosHistoricos?.Count > 0)
-									{
-										BaseDatos.Juegos.Insertar.Ejecutar(juego, conexion, "seccionMinimos", false);
-									}									
+									BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", false);
 								}
 							}
 						}
-                        catch (Exception ex)
-                        {
-                            BaseDatos.Errores.Insertar.Mensaje("Tarea - Minimos", ex, conexion);
-                        }
-                    }
-                }                  
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Tarea - Minimos", ex);
+					}
+				}                  
             }
         }
 

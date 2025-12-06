@@ -3,26 +3,13 @@
 using Dapper;
 using Gratis2;
 using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Gratis
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static List<JuegoGratis> Actuales(GratisTipo tipo = GratisTipo.Desconocido)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static List<JuegoGratis> Actuales(GratisTipo tipo = GratisTipo.Desconocido, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT sub.*
 FROM(
 	SELECT *, gratis AS Tipo
@@ -39,13 +26,23 @@ FROM(
 
 			busqueda = busqueda + " ORDER BY DATEPART(MONTH,sub.fechaTermina), DATEPART(DAY,sub.fechaTermina)";
 
-			return conexion.Query<JuegoGratis>(busqueda).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<JuegoGratis>(busqueda, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Actuales", ex);
+			}
+
+			return new List<JuegoGratis>();
 		}
 
-        public static List<JuegoGratis> Año(string año, SqlConnection conexion = null)
+        public static List<JuegoGratis> Año(string año)
         {
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT sub.*
 FROM (
     SELECT *, gratis AS Tipo
@@ -56,13 +53,23 @@ FROM (
 ORDER BY sub.nombre DESC;
 ";
 
-			return conexion.Query<JuegoGratis>(busqueda, new { año }).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<JuegoGratis>(busqueda, new { año }, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Año", ex);
+			}
+
+			return new List<JuegoGratis>();
 		}
 
-		public static JuegoGratis UnJuego(string juegoId, SqlConnection conexion = null)
+		public static JuegoGratis UnJuego(string juegoId)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT TOP 1 sub.*
 FROM (
     SELECT *, gratis AS Tipo
@@ -71,13 +78,23 @@ FROM (
 ) AS sub
 ORDER BY sub.ID DESC;";
 
-			return conexion.QueryFirstOrDefault<JuegoGratis>(busqueda, new { juegoId });
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<JuegoGratis>(busqueda, new { juegoId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Uno", ex);
+			}
+
+			return new JuegoGratis();
 		}
 
-		public static JuegoGratis UnGratis(string id, SqlConnection conexion = null)
+		public static JuegoGratis UnGratis(string id)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT sub.*
 FROM (
     SELECT *, gratis AS Tipo
@@ -85,13 +102,23 @@ FROM (
     WHERE id = @id
 ) AS sub;";
 
-			return conexion.QueryFirstOrDefault<JuegoGratis>(busqueda, new { id });
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<JuegoGratis>(busqueda, new { id }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Uno", ex);
+			}
+
+			return new JuegoGratis();
 		}
 
-		public static List<JuegoGratis> Ultimos(int cantidad, SqlConnection conexion = null)
+		public static List<JuegoGratis> Ultimos(int cantidad)
         {
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT sub.*
 FROM (
     SELECT TOP (@cantidad) *, gratis AS Tipo
@@ -100,7 +127,19 @@ FROM (
 ) AS sub;
 ";
 
-			return conexion.Query<JuegoGratis>(busqueda, new { cantidad }).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<JuegoGratis>(busqueda, new { cantidad }, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Ultimos", ex);
+			}
+
+			return new List<JuegoGratis>();
 		}
     }
 }

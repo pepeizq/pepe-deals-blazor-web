@@ -30,38 +30,27 @@ namespace Tareas
 
 				if (piscinaApp == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
-
 					try
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
+						TimeSpan tiempoSiguiente = TimeSpan.FromHours(48);
+
+						if (DateTime.Now.Hour == 2)
+						{
+							tiempoSiguiente = TimeSpan.FromMinutes(30);
+						}
+
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("duplicados", tiempoSiguiente) == true)
+						{
+							BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
+
+							List<Juegos.Juego> duplicados = BaseDatos.Juegos.Buscar.Duplicados();
+
+							BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
+						}
 					}
-					catch { }
-
-					if (conexion.State == System.Data.ConnectionState.Open)
+					catch (Exception ex)
 					{
-						try
-						{
-							TimeSpan tiempoSiguiente = TimeSpan.FromHours(48);
-
-							if (DateTime.Now.Hour == 2)
-							{
-								tiempoSiguiente = TimeSpan.FromMinutes(30);
-							}
-
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("duplicados", tiempoSiguiente) == true)
-							{
-								BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
-
-								List<Juegos.Juego> duplicados = BaseDatos.Juegos.Buscar.Duplicados(conexion);
-
-								BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
-							}
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Tarea - Duplicados", ex, conexion);
-						}
+						BaseDatos.Errores.Insertar.Mensaje("Tarea - Duplicados", ex);
 					}
 				}
 			}

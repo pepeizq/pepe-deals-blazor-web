@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using ApexCharts;
 using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
@@ -20,10 +19,8 @@ namespace BaseDatos.Tiendas
 			return conexion;
 		}
 
-		public static async void Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido, SqlConnection conexion = null)
+		public static async void Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido)
 		{
-			conexion = CogerConexion(conexion);
-
 			string idSteam2 = APIs.Steam.Juego.LimpiarID(oferta.Enlace);
 
 			if (string.IsNullOrEmpty(idSteam2) == false)
@@ -58,74 +55,84 @@ namespace BaseDatos.Tiendas
 					}
 
 					string buscarJuego = "SELECT id, precioMinimosHistoricos, precioActualesTiendas, idSteam, historicos, fechaSteamAPIComprobacion FROM juegos WHERE idSteam=@idSteam";
-					
-					var datos = await conexion.QueryFirstOrDefaultAsync<dynamic>(buscarJuego, new { idSteam });
 
-					if (datos != null)
+					try
 					{
-						juego.IdSteam = idSteam;
-
-						string fechaAPI = datos.fechaSteamAPIComprobacion;
-
-						if (string.IsNullOrEmpty(fechaAPI) == false)
+						var datos = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 						{
-							bool actualizarAPI = DateTime.Now.Subtract(DateTime.Parse(fechaAPI)) > TimeSpan.FromDays(91);
-							
-							if (actualizarAPI == true)
-							{
-								BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
-							}
-							else
-							{
-								int id = datos.id ?? 0;
+							return sentencia.Connection.QueryFirstOrDefault<dynamic>(buscarJuego, new { idSteam }, transaction: sentencia);
+						});
 
-								if (id > 0)
+						if (datos != null)
+						{
+							juego.IdSteam = idSteam;
+
+							string fechaAPI = datos.fechaSteamAPIComprobacion;
+
+							if (string.IsNullOrEmpty(fechaAPI) == false)
+							{
+								bool actualizarAPI = DateTime.Now.Subtract(DateTime.Parse(fechaAPI)) > TimeSpan.FromDays(91);
+
+								if (actualizarAPI == true)
 								{
-									List<JuegoPrecio> ofertasHistoricas = string.IsNullOrEmpty((string)datos.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos);
+									BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+								}
+								else
+								{
+									int id = datos.id ?? 0;
 
-									if (ofertasHistoricas.Count == 0)
+									if (id > 0)
 									{
-										ofertasHistoricas.Add(oferta);
+										List<JuegoPrecio> ofertasHistoricas = string.IsNullOrEmpty((string)datos.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos);
+
+										if (ofertasHistoricas.Count == 0)
+										{
+											ofertasHistoricas.Add(oferta);
+										}
+
+										List<JuegoPrecio> ofertasActuales = string.IsNullOrEmpty((string)datos.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioActualesTiendas);
+
+										if (ofertasActuales.Count == 0)
+										{
+											ofertasActuales.Add(oferta);
+										}
+
+										List<JuegoHistorico> historicos = string.IsNullOrEmpty((string)datos.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(datos.historicos);
+
+										Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis);
+									}
+								}
+							}
+						}
+						else
+						{
+							if (rapido == false)
+							{
+								try
+								{
+									juego = await APIs.Steam.Juego.CargarDatosJuego(idSteam2);
+								}
+								catch { }
+
+								if (juego != null)
+								{
+									juego.PrecioActualesTiendas ??= new List<JuegoPrecio>();
+									juego.PrecioMinimosHistoricos ??= new List<JuegoPrecio>();
+
+									if (juego.PrecioActualesTiendas.Count == 0)
+									{
+										juego.PrecioActualesTiendas.Add(oferta);
+										juego.PrecioMinimosHistoricos.Add(oferta);
 									}
 
-									List<JuegoPrecio> ofertasActuales = string.IsNullOrEmpty((string)datos.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioActualesTiendas);
-
-									if (ofertasActuales.Count == 0)
-									{
-										ofertasActuales.Add(oferta);
-									}
-
-									List<JuegoHistorico> historicos = string.IsNullOrEmpty((string)datos.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(datos.historicos);
-
-									Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, conexion, null, null, null, juego.Analisis);
+									Juegos.Insertar.Ejecutar(juego);
 								}
 							}
 						}
 					}
-					else
+					catch (Exception ex)
 					{
-						if (rapido == false)
-						{
-							try
-							{
-								juego = await APIs.Steam.Juego.CargarDatosJuego(idSteam2);
-							}
-							catch { }
-
-							if (juego != null)
-							{
-								juego.PrecioActualesTiendas ??= new List<JuegoPrecio>();
-								juego.PrecioMinimosHistoricos ??= new List<JuegoPrecio>();
-
-								if (juego.PrecioActualesTiendas.Count == 0)
-								{
-									juego.PrecioActualesTiendas.Add(oferta);
-									juego.PrecioMinimosHistoricos.Add(oferta);
-								}
-
-								Juegos.Insertar.Ejecutar(juego, conexion);
-							}
-						}
+						BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Steam", ex);
 					}
 				}
 			}
@@ -133,8 +140,6 @@ namespace BaseDatos.Tiendas
 
 		public static async void Resto(JuegoPrecio oferta, SqlConnection conexion = null, string idGog = null, string slugGOG = null, string slugEpic = null)
 		{
-			conexion = CogerConexion(conexion);
-
 			bool encontrado = false;
 
 			string esquema = $"tienda{oferta.Tienda}";
@@ -156,43 +161,58 @@ WHERE t.enlace = @Enlace
   AND ids.numero IS NOT NULL;
 ";
 
-			var resultados = (await conexion.QueryAsync(sqlBuscar, new
+			List<dynamic> resultados = new List<dynamic>();
+
+			try
 			{
-				Enlace = oferta.Enlace
-			})).ToList();
-
-			foreach (var fila in resultados)
+				resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query(sqlBuscar, new
+					{
+						Enlace = oferta.Enlace
+					}, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
 			{
-				encontrado = true;
+				BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 1", ex);
+			}
 
-				int id = fila.id ?? 0;
-				int idSteam = fila.idSteam ?? 0;
-
-				var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
-
-				var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
-
-				var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
-
-				JuegoAnalisis reseñas = null;
-				if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+			if (resultados?.Count > 0)
+			{
+				foreach (var fila in resultados)
 				{
-					reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
-				}
+					encontrado = true;
 
-				if (ofertasHistoricas.Count == 0)
-				{
-					ofertasHistoricas.Add(oferta);
-				}
+					int id = fila.id ?? 0;
+					int idSteam = fila.idSteam ?? 0;
 
-				if (ofertasActuales.Count == 0)
-				{
-					ofertasActuales.Add(oferta);
-				}
+					var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
 
-				if (id > 0)
-				{
-					Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, conexion, slugGOG, idGog, slugEpic, reseñas);
+					var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
+
+					var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
+
+					JuegoAnalisis reseñas = null;
+					if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+					{
+						reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
+					}
+
+					if (ofertasHistoricas.Count == 0)
+					{
+						ofertasHistoricas.Add(oferta);
+					}
+
+					if (ofertasActuales.Count == 0)
+					{
+						ofertasActuales.Add(oferta);
+					}
+
+					if (id > 0)
+					{
+						Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, slugGOG, idGog, slugEpic, reseñas);
+					}
 				}
 			}
 
@@ -200,8 +220,6 @@ WHERE t.enlace = @Enlace
 
 			if (encontrado == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				string sqlInsertar = $@"
 IF NOT EXISTS (SELECT 1 FROM {esquema} WHERE enlace = @Enlace)
 BEGIN
@@ -220,17 +238,20 @@ END;
 
 				try
 				{
-					await conexion.ExecuteAsync(sqlInsertar, new
+					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 					{
-						Enlace = oferta.Enlace,
-						Nombre = oferta.Nombre,
-						Imagen = oferta.Imagen,
-						NombreCodigo = Herramientas.Buscador.LimpiarNombre(oferta.Nombre)
+						sentencia.Connection.Execute(sqlInsertar, new
+						{
+							oferta.Enlace,
+							oferta.Nombre,
+							oferta.Imagen,
+							NombreCodigo = Herramientas.Buscador.LimpiarNombre(oferta.Nombre)
+						}, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
 				{
-					Errores.Insertar.Mensaje("Insertar Tienda: " + oferta?.Enlace, ex);
+					BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 2", ex);
 				}
 			}
 		}

@@ -48,19 +48,12 @@
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
-
     private List<global::Juegos.Juego> dlcsPendientes = new List<global::Juegos.Juego>();
     private global::Juegos.Juego dlcMostrar = new global::Juegos.Juego();
 
     protected override void OnInitialized()
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
-        dlcsPendientes = BaseDatos.Juegos.Buscar.DLCs(null, global::Juegos.JuegoTipo.DLC, conexion);
+        dlcsPendientes = BaseDatos.Juegos.Buscar.DLCs(null, global::Juegos.JuegoTipo.DLC);
 		dlcMostrar = dlcsPendientes.FirstOrDefault();
     }
 
@@ -68,11 +61,6 @@
 
     private async Task BuscarDlcMaestro()
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
         noEncontrado = false;
 
         foreach (var dlcPendiente in dlcsPendientes)
@@ -86,11 +74,8 @@
             {
                 if (string.IsNullOrEmpty(nuevoJuego.Maestro) == false)
                 {
-                    using (conexion)
-                    {
-                        dlcPendiente.Maestro = nuevoJuego.Maestro;
-                        BaseDatos.Juegos.Actualizar.DlcMaestro(dlcPendiente);
-                    }
+                    dlcPendiente.Maestro = nuevoJuego.Maestro;
+                    BaseDatos.Juegos.Actualizar.DlcMaestro(dlcPendiente);
                 }
                 else
                 {
@@ -105,20 +90,12 @@
 
     private void DescartarDlcMaestro()
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
         noEncontrado = false;
 
-        using (conexion)
-        {
-            dlcMostrar.Maestro = "descartado";
-            BaseDatos.Juegos.Actualizar.DlcMaestro(dlcMostrar, conexion);
+        dlcMostrar.Maestro = "descartado";
+        BaseDatos.Juegos.Actualizar.DlcMaestro(dlcMostrar);
 
-			dlcsPendientes.Remove(dlcMostrar);
-            dlcMostrar = dlcsPendientes.FirstOrDefault();
-        }
+        dlcsPendientes.Remove(dlcMostrar);
+        dlcMostrar = dlcsPendientes.FirstOrDefault();
 	}
 }

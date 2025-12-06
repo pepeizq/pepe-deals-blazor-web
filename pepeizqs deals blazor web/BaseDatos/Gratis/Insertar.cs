@@ -2,26 +2,13 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Gratis
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Ejecutar(JuegoGratis actual)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(JuegoGratis actual, SqlConnection conexion = null)
-		{
-            conexion = CogerConexion(conexion);
-
 			string sqlInsertar = @"
 				INSERT INTO gratis 
 				(gratis, juegoId, nombre, imagen, drm, enlace, fechaEmpieza, fechaTermina, imagenNoticia) 
@@ -31,22 +18,25 @@ namespace BaseDatos.Gratis
 
 			try
 			{
-				conexion.Execute(sqlInsertar, new
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					actual.Tipo,
-					actual.JuegoId,
-					actual.Nombre,
-					actual.Imagen,
-					actual.DRM,
-					actual.Enlace,
-					actual.FechaEmpieza,
-					actual.FechaTermina,
-					actual.ImagenNoticia
+					return sentencia.Connection.Execute(sqlInsertar, new
+					{
+						actual.Tipo,
+						actual.JuegoId,
+						actual.Nombre,
+						actual.Imagen,
+						actual.DRM,
+						actual.Enlace,
+						actual.FechaEmpieza,
+						actual.FechaTermina,
+						actual.ImagenNoticia
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Insertar juego gratis", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Gratis Insertar", ex);
 			}
 		}
 	}

@@ -48,15 +48,15 @@ namespace BaseDatos.Bundles
 			return new List<Bundle>();
 		}
 
-		public static List<Bundle> Año(string año)
+		public static async Task<List<Bundle>> Año(string año)
 		{
 			string busqueda = "SELECT * FROM bundles WHERE YEAR(fechaEmpieza) = " + año + " AND GETDATE() > fechaTermina ORDER BY nombre DESC";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Bundle>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)

@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using APIs.Steam;
+using BaseDatos.Pendientes;
 using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
@@ -20,40 +21,60 @@ namespace BaseDatos.Reseñas
 			return conexion;
 		}
 
-		public static JuegoAnalisisAmpliado Cargar(int id, string idioma, SqlConnection conexion = null)
+		public static JuegoAnalisisAmpliado Cargar(int id, string idioma)
 		{
-			conexion = CogerConexion(conexion);
-
-			var fila = conexion.QueryFirstOrDefault($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id });
-
-			JuegoAnalisisAmpliado reseñas = new JuegoAnalisisAmpliado();
-
-			if (fila != null)
+			try
 			{
-				if (!string.IsNullOrEmpty(fila.Contenido))
+				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					reseñas.Contenido = JsonSerializer.Deserialize<List<SteamAnalisisAPIAnalisis>>(fila.Contenido);
+					return sentencia.Connection.QueryFirstOrDefault($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+				});
+
+				JuegoAnalisisAmpliado reseñas = new JuegoAnalisisAmpliado();
+
+				if (fila != null)
+				{
+					if (!string.IsNullOrEmpty(fila.Contenido))
+					{
+						reseñas.Contenido = JsonSerializer.Deserialize<List<SteamAnalisisAPIAnalisis>>(fila.Contenido);
+					}
+
+					reseñas.CantidadPositivos = fila.CantidadPositivos ?? 0;
+					reseñas.CantidadNegativos = fila.CantidadNegativos ?? 0;
 				}
 
-				reseñas.CantidadPositivos = fila.CantidadPositivos ?? 0;
-				reseñas.CantidadNegativos = fila.CantidadNegativos ?? 0;
+				return reseñas;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Reseñas Cargar", ex);
 			}
 
-			return reseñas;
+			return null;
 		}
 
-		public static bool DebeModificarse(int id, string idioma, SqlConnection conexion = null)
+		public static bool DebeModificarse(int id, string idioma)
 		{
-			conexion = CogerConexion(conexion);
-
-			DateTime? fechaRegistrada = conexion.ExecuteScalar<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id });
-
-			if (fechaRegistrada.HasValue == false)
+			try
 			{
-				return true;
+				DateTime? fechaRegistrada = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.ExecuteScalar<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+				});
+
+				if (fechaRegistrada.HasValue == false)
+				{
+					return true;
+				}
+
+				return fechaRegistrada.Value.AddDays(7) < DateTime.Now;
 			}
-			
-			return fechaRegistrada.Value.AddDays(7) < DateTime.Now;
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Reseñas Debe Modificarse", ex);
+			}
+
+			return false;
 		}
 	}
 }

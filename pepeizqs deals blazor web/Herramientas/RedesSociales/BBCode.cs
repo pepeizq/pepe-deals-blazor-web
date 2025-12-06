@@ -373,146 +373,149 @@ namespace Herramientas.RedesSociales
 
 			if (bundle.Pick == false)
             {
-                double precioBundle = double.Parse(bundle.Tiers.LastOrDefault().Precio);
+    //            double precioBundle = double.Parse(bundle.Tiers.LastOrDefault().Precio);
 
-                List<JuegoValoracion> juegosValoracion = new List<JuegoValoracion>();
+    //            List<JuegoValoracion> juegosValoracion = new List<JuegoValoracion>();
 
-                //Carga inicial de los juegos
-                foreach (var juego in bundle.Juegos)
-                {
-                    JuegoValoracion juegoValoracion = new JuegoValoracion();
-                    juegoValoracion.Nombre = juego.Nombre;
-                    juegoValoracion.DRM = juego.DRM;
+    //            //Carga inicial de los juegos
+    //            foreach (var juego in bundle.Juegos)
+    //            {
+    //                JuegoValoracion juegoValoracion = new JuegoValoracion();
+    //                juegoValoracion.Nombre = juego.Nombre;
+    //                juegoValoracion.DRM = juego.DRM;
 
-                    if (juego.Juego == null)
-                    {
-						juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId); // Cargo datos de la web en caso de ser tan subnormal de no haberlos cargados llegados a este punto
-					}
+    //                if (juego.Juego == null)
+    //                {
+				//		juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId); // Cargo datos de la web en caso de ser tan subnormal de no haberlos cargados llegados a este punto
+				//	}
                     
-                    if (juego.Juego?.PrecioMinimosHistoricos != null)
-                    {
-                        foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
-                        {
-                            if (historico.DRM == juego.DRM)
-                            {
-                                if (historico.PrecioCambiado > 0)
-                                {
-                                    juegoValoracion.PrecioMinimoHistorico = (double)historico.PrecioCambiado;
-                                }
-                                else
-                                {
-                                    juegoValoracion.PrecioMinimoHistorico = (double)historico.Precio;
-                                }
+    //                if (juego.Juego?.PrecioMinimosHistoricos != null)
+    //                {
+    //                    foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
+    //                    {
+    //                        if (historico.DRM == juego.DRM)
+    //                        {
+    //                            if (historico.PrecioCambiado > 0)
+    //                            {
+    //                                juegoValoracion.PrecioMinimoHistorico = (double)historico.PrecioCambiado;
+    //                            }
+    //                            else
+    //                            {
+    //                                juegoValoracion.PrecioMinimoHistorico = (double)historico.Precio;
+    //                            }
 
-                                break;
-							}
-                        }
-                    }
+    //                            break;
+				//			}
+    //                    }
+    //                }
 
-                    if (juego.Juego?.Bundles != null)
-                    {
-						juegoValoracion.NumeroBundles = juego.Juego.Bundles.Count - 1; // Excluyo el bundle actual
+    //                if (juego.Juego?.Bundles != null)
+    //                {
+				//		juegoValoracion.NumeroBundles = juego.Juego.Bundles.Count - 1; // Excluyo el bundle actual
 
-                        if (juego.Juego.Suscripciones?.Count > 0)
-                        {
-                            foreach (var suscripcion in juego.Juego.Suscripciones)
-                            {
-                                if (suscripcion.DRM == JuegoDRM.Steam && suscripcion.Tipo == Suscripciones2.SuscripcionTipo.HumbleChoice)
-                                {
-                                    juegoValoracion.NumeroBundles = juegoValoracion.NumeroBundles + 1; // Sumo Humble Choice como si fuera un bundle extra
-                                    break;
-                                }
-                            }
-                        }
-					}
+    //                    if (juego.Juego.Suscripciones?.Count > 0)
+    //                    {
+    //                        foreach (var suscripcion in juego.Juego.Suscripciones)
+    //                        {
+    //                            if (suscripcion.DRM == JuegoDRM.Steam && suscripcion.Tipo == Suscripciones2.SuscripcionTipo.HumbleChoice)
+    //                            {
+    //                                juegoValoracion.NumeroBundles = juegoValoracion.NumeroBundles + 1; // Sumo Humble Choice como si fuera un bundle extra
+    //                                break;
+    //                            }
+    //                        }
+    //                    }
+				//	}
 
-                    if (juego.Juego?.Analisis != null)
-                    {
-                        if (string.IsNullOrEmpty(juego.Juego.Analisis?.Cantidad) == false)
-                        {
-							juegoValoracion.NumeroReseñas = int.Parse(juego.Juego.Analisis.Cantidad.Replace(",", null));
-						}
-                    }
+    //                if (juego.Juego?.Analisis != null)
+    //                {
+    //                    if (string.IsNullOrEmpty(juego.Juego.Analisis?.Cantidad) == false)
+    //                    {
+				//			juegoValoracion.NumeroReseñas = int.Parse(juego.Juego.Analisis.Cantidad.Replace(",", null));
+				//		}
+    //                }
 
-                    if (juego.Juego?.Caracteristicas != null)
-                    {
-                        juegoValoracion.FechaSalida = juego.Juego.Caracteristicas.FechaLanzamientoSteam;
-					}
+    //                if (juego.Juego?.Caracteristicas != null)
+    //                {
+    //                    juegoValoracion.FechaSalida = juego.Juego.Caracteristicas.FechaLanzamientoSteam;
+				//	}
 
-                    juegoValoracion.Tier = juego.Tier.Posicion;
+    //                juegoValoracion.Tier = juego.Tier.Posicion;
 
-					juegosValoracion.Add(juegoValoracion);
+				//	juegosValoracion.Add(juegoValoracion);
+				//}
+
+    //            if (juegosValoracion.Count > 0)
+    //            {
+    //                int cantidadReseñasMinima = juegosValoracion.Min(j => j.NumeroReseñas);
+    //                int cantidadReseñasMaxima = juegosValoracion.Max(j => j.NumeroReseñas);
+
+				//	// Primer cálculo para estimar el valor de los juegos (mirar abajo)
+				//	foreach (var juego in juegosValoracion)
+				//	{
+				//		juego.Valoracion = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima);
+				//	}
+
+				//	// Segundo cálculo para encajar la suma total de valoraciones y que no supere el precio mínimo histórico en cada juego
+				//	double sumaValoraciones = juegosValoracion.Sum(j => j.Valoracion);
+				//	foreach (var juego in juegosValoracion)
+				//	{
+				//		juego.Valoracion = juego.Valoracion / sumaValoraciones * precioBundle;
+
+				//		if (juego.Valoracion > juego.PrecioMinimoHistorico)
+    //                    {
+				//			juego.Valoracion = juego.PrecioMinimoHistorico;
+				//		}
+				//	}
+
+				//	// Tercer cálculo donde voy a aplicar un bucle hasta que se ajusten las valoraciones al precio del bundle (limitado a 10000 pasadas), si la cago es aquí
+				//	bool sigueSobrando = true;
+    //                int i = 0;
+				//	while (sigueSobrando == true && i < 10000)
+				//	{
+				//		sigueSobrando = false;
+    //                    i += 1;
+
+				//		double sumaFinal = juegosValoracion.Sum(j => j.Valoracion);
+				//		double sobrante = precioBundle - sumaFinal;
+
+				//		if (sobrante > 0.00001)
+				//		{
+				//			List<JuegoValoracion> juegosDondeAplicarRestante = juegosValoracion.Where(j => j.Valoracion < j.PrecioMinimoHistorico).ToList();
+
+    //                        if (juegosDondeAplicarRestante.Count == 0)
+    //                        {
+    //                            break;
+    //                        }
+
+				//			sigueSobrando = true;
+
+				//			double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => CalcularValoracionJuego(j, cantidadReseñasMinima, cantidadReseñasMaxima));
+
+				//			foreach (JuegoValoracion juego in juegosDondeAplicarRestante)
+				//			{
+				//				double extra = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima) / cantidadARepartir * sobrante;
+				//				juego.Valoracion = Math.Min(juego.Valoracion + extra, juego.PrecioMinimoHistorico);
+				//			}
+				//		}
+				//	}
+
+    //                // Generar el BBCode para el foro
+
+                    
+				//}
+
+
+				texto = texto + "BBCode para el hilo de compras conjuntas:[spoiler][code]";
+				texto = texto + "[url=" + bundle.Enlace + "]" + bundle.Nombre + "[/url] • " + Herramientas.Precios.Euro(double.Parse(bundle.Tiers.LastOrDefault().Precio)) + Environment.NewLine + Environment.NewLine;
+				texto = texto + "[list]";
+
+				foreach (var juego in bundle.Juegos.OrderBy(j => j.Nombre))
+				{
+					texto = texto + "[*]" + juego.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ") - Libre" + Environment.NewLine;
 				}
 
-                if (juegosValoracion.Count > 0)
-                {
-                    int cantidadReseñasMinima = juegosValoracion.Min(j => j.NumeroReseñas);
-                    int cantidadReseñasMaxima = juegosValoracion.Max(j => j.NumeroReseñas);
-
-					// Primer cálculo para estimar el valor de los juegos (mirar abajo)
-					foreach (var juego in juegosValoracion)
-					{
-						juego.Valoracion = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima);
-					}
-
-					// Segundo cálculo para encajar la suma total de valoraciones y que no supere el precio mínimo histórico en cada juego
-					double sumaValoraciones = juegosValoracion.Sum(j => j.Valoracion);
-					foreach (var juego in juegosValoracion)
-					{
-						juego.Valoracion = juego.Valoracion / sumaValoraciones * precioBundle;
-
-						if (juego.Valoracion > juego.PrecioMinimoHistorico)
-                        {
-							juego.Valoracion = juego.PrecioMinimoHistorico;
-						}
-					}
-
-					// Tercer cálculo donde voy a aplicar un bucle hasta que se ajusten las valoraciones al precio del bundle (limitado a 10000 pasadas), si la cago es aquí
-					bool sigueSobrando = true;
-                    int i = 0;
-					while (sigueSobrando == true && i < 10000)
-					{
-						sigueSobrando = false;
-                        i += 1;
-
-						double sumaFinal = juegosValoracion.Sum(j => j.Valoracion);
-						double sobrante = precioBundle - sumaFinal;
-
-						if (sobrante > 0.00001)
-						{
-							List<JuegoValoracion> juegosDondeAplicarRestante = juegosValoracion.Where(j => j.Valoracion < j.PrecioMinimoHistorico).ToList();
-
-                            if (juegosDondeAplicarRestante.Count == 0)
-                            {
-                                break;
-                            }
-
-							sigueSobrando = true;
-
-							double cantidadARepartir = juegosDondeAplicarRestante.Sum(j => CalcularValoracionJuego(j, cantidadReseñasMinima, cantidadReseñasMaxima));
-
-							foreach (JuegoValoracion juego in juegosDondeAplicarRestante)
-							{
-								double extra = CalcularValoracionJuego(juego, cantidadReseñasMinima, cantidadReseñasMaxima) / cantidadARepartir * sobrante;
-								juego.Valoracion = Math.Min(juego.Valoracion + extra, juego.PrecioMinimoHistorico);
-							}
-						}
-					}
-
-                    // Generar el BBCode para el foro
-
-                    texto = texto + "BBCode para el hilo de compras conjuntas:[spoiler][code]";
-                    texto = texto + "[url=" + bundle.Enlace + "]" + bundle.Nombre + "[/url] • " + Herramientas.Precios.Euro(precioBundle) + Environment.NewLine + Environment.NewLine;
-                    texto = texto + "[list]";
-
-					foreach (var juego in juegosValoracion.OrderBy(j => j.Nombre))
-                    {
-                        texto = texto + "[*]" + juego.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + "): " + Herramientas.Precios.Euro((decimal)juego.Valoracion) + " - Libre" + Environment.NewLine;
-                    }
-
-					texto = texto + "[/list]";
-					texto = texto + "[/code][/spoiler]";
-				}
+				texto = texto + "[/list]";
+				texto = texto + "[/code][/spoiler]";
 			}
 			else
 			{

@@ -12,7 +12,7 @@ namespace BaseDatos.CorreosEnviar
 			{
 				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					return sentencia.Connection.Execute("DELETE FROM correosEnviar WHERE id=@id", new { id }, transaction: sentencia);
+					sentencia.Connection.Execute("DELETE FROM correosEnviar WHERE id=@id", new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

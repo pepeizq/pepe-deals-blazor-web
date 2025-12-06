@@ -30,34 +30,23 @@ namespace Tareas
 
                 if (piscinaApp == piscinaUsada)
                 {
-                    SqlConnection conexion = new SqlConnection();
+					if (BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)) == null)
+					{
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5)) == true)
+						{
+							BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
 
-                    try
-                    {
-                        conexion = Herramientas.BaseDatos.Conectar();
-                    }
-                    catch { }
-
-                    if (conexion.State == System.Data.ConnectionState.Open)
-                    {
-                        if (BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)) == null)
-                        {
-                            if (BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5)) == true)
-                            {
-                                BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
-
-                                try
-                                {
-                                    await BaseDatos.RedesSociales.Buscar.PendientesPosteo(conexion);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales", ex, conexion);
-                                }
-                            }
-                        }
-                    }
-                }
+							try
+							{
+								await BaseDatos.RedesSociales.Buscar.PendientesPosteo();
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales", ex);
+							}
+						}
+					}
+				}
             }
         }
 

@@ -1,27 +1,23 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
-
 namespace BaseDatos.Juegos
 {
 	public static class Limpiar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Minimos()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Execute("TRUNCATE TABLE seccionMinimos", transaction: sentencia);
+				});
 			}
-
-			return conexion;
-		}
-
-		public static void Minimos(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			conexion.Execute("TRUNCATE TABLE seccionMinimos");
+			catch (Exception ex)
+			{
+				Errores.Insertar.Mensaje("Limpiar Minimos", ex);
+			}
 		}
 	}
 }

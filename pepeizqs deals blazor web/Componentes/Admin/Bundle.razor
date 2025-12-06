@@ -145,12 +145,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.Nombre(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.Nombre(bundleId.ToString(), nuevoTexto);
 		}
 	}
 
@@ -162,12 +157,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.ImagenBundle(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.ImagenBundle(bundleId.ToString(), nuevoTexto);
 		}
 	}
 
@@ -179,12 +169,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.ImagenNoticia(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.ImagenNoticia(bundleId.ToString(), nuevoTexto);
 		}
 	}
 
@@ -196,12 +181,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.FechaEmpieza(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.FechaEmpieza(bundleId.ToString(), nuevoTexto);
 		}
 	}
 
@@ -213,12 +193,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.FechaTermina(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.FechaTermina(bundleId.ToString(), nuevoTexto);
 		}
 	}
 
@@ -228,12 +203,7 @@
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), nuevoTexto, conexion);
-		}
+		BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), nuevoTexto);
 	}
 
 	private string textoAñadirJuegoID = string.Empty;
@@ -287,7 +257,7 @@
 
 				using (conexion)
 				{
-					BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), Newtonsoft.Json.JsonConvert.SerializeObject(bundle.Juegos), conexion);
+					BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), Newtonsoft.Json.JsonConvert.SerializeObject(bundle.Juegos));
 
 					global::Juegos.JuegoBundle bundleJuego2 = new global::Juegos.JuegoBundle()
 					{
@@ -319,12 +289,7 @@
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Bundles.Actualizar.Tiers(bundleId.ToString(), nuevoTexto, conexion);
-			}
+			BaseDatos.Bundles.Actualizar.Tiers(bundleId.ToString(), nuevoTexto);
 		}
 	}
 }

@@ -871,15 +871,7 @@ else
             juegoAñadir.Imagenes.Library_1920x620 = vacioLibrary_1920x620;
         }
 
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
-        using (conexion)
-        {
-            BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir, conexion);
-        }
+        BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir);
 
         juegoAñadir = null;
     }

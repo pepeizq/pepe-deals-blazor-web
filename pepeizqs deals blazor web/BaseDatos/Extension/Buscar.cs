@@ -2,7 +2,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Extension
@@ -54,17 +53,7 @@ namespace BaseDatos.Extension
 
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static Extension Steam2(string id, SqlConnection conexion = null)
+		public static Extension Steam2(string id)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -80,10 +69,10 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
 
-			return GenerarDatos(buscar, conexion);
+			return GenerarDatos(buscar);
 		}
 
-		public static Extension Gog2(string slug, SqlConnection conexion = null)
+		public static Extension Gog2(string slug)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -99,10 +88,10 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
 
-			return GenerarDatos(buscar, conexion);
+			return GenerarDatos(buscar);
 		}
 
-		public static Extension EpicGames2(string slug, SqlConnection conexion = null)
+		public static Extension EpicGames2(string slug)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -118,159 +107,170 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
 
-			return GenerarDatos(buscar, conexion);
+			return GenerarDatos(buscar);
 		}
 
-		private static Extension GenerarDatos(string buscar, SqlConnection conexion = null)
+		private static Extension GenerarDatos(string buscar)
 		{
-			conexion = CogerConexion(conexion);
-
-			var fila2 = conexion.QueryFirstOrDefault<dynamic>(buscar);
-			IDictionary<string, object> fila = (IDictionary<string, object>)fila2;
-
-			Extension extension = new Extension();
-
-			if (fila == null)
+			try
 			{
-				return null;
-			}
-
-			string CogerString(IDictionary<string, object> fila, string columna)
-			{
-				return (fila).ContainsKey(columna) && fila[columna] != null ? fila[columna].ToString() : null;
-			}
-
-			int? CogerInt(IDictionary<string, object> fila, string columna)
-			{
-				return (fila).ContainsKey(columna) && fila[columna] != null ? Convert.ToInt32(fila[columna]) : (int?)null;
-			}
-
-			extension.Id = CogerInt(fila, "id") ?? 0;
-			extension.Nombre = CogerString(fila, "nombre");
-
-			string jsonMinimos = CogerString(fila, "precioMinimosHistoricos");
-			if (string.IsNullOrEmpty(jsonMinimos) == false)
-			{
-				var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonMinimos);
-				if (lista != null)
+				var fila2 = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					extension.MinimosHistoricos = new List<ExtensionPrecio>();
+					return sentencia.Connection.QueryFirstOrDefault<dynamic>(buscar, transaction: sentencia);
+				});
 
-					foreach (var precio in lista)
-					{
-						precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
+				IDictionary<string, object> fila = (IDictionary<string, object>)fila2;
 
-						extension.MinimosHistoricos.Add(new ExtensionPrecio
-						{
-							Datos = precio,
-							Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
-							TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
-						});
-					}
+				Extension extension = new Extension();
+
+				if (fila == null)
+				{
+					return null;
 				}
-			}
 
-			string jsonActuales = CogerString(fila, "precioActualesTiendas");
-			if (string.IsNullOrEmpty(jsonActuales) == false)
-			{
-				var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonActuales);
-				if (lista != null)
+				string CogerString(IDictionary<string, object> fila, string columna)
 				{
-					extension.PreciosActuales = new List<ExtensionPrecio>();
-
-					foreach (var precio in lista)
-					{
-						precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
-
-						extension.PreciosActuales.Add(new ExtensionPrecio
-						{
-							Datos = precio,
-							Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
-							TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
-						});
-					}
+					return (fila).ContainsKey(columna) && fila[columna] != null ? fila[columna].ToString() : null;
 				}
-			}
 
-			var jsonBundles = CogerString(fila, "bundles");
-			if (string.IsNullOrEmpty(jsonBundles) == false)
-			{
-				var lista = JsonSerializer.Deserialize<List<JuegoBundle>>(jsonBundles);
-				if (lista != null)
+				int? CogerInt(IDictionary<string, object> fila, string columna)
 				{
-					extension.Bundles = new List<ExtensionBundle>();
+					return (fila).ContainsKey(columna) && fila[columna] != null ? Convert.ToInt32(fila[columna]) : (int?)null;
+				}
 
-					foreach (var bundle in lista)
+				extension.Id = CogerInt(fila, "id") ?? 0;
+				extension.Nombre = CogerString(fila, "nombre");
+
+				string jsonMinimos = CogerString(fila, "precioMinimosHistoricos");
+				if (string.IsNullOrEmpty(jsonMinimos) == false)
+				{
+					var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonMinimos);
+					if (lista != null)
 					{
-						var datosBundle = BaseDatos.Bundles.Buscar.UnBundle(bundle.BundleId);
-						if (datosBundle != null)
-						{
-							bundle.Enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, false, false);
+						extension.MinimosHistoricos = new List<ExtensionPrecio>();
 
-							extension.Bundles.Add(new ExtensionBundle
+						foreach (var precio in lista)
+						{
+							precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
+
+							extension.MinimosHistoricos.Add(new ExtensionPrecio
 							{
-								Datos = bundle,
-								NombreBundle = datosBundle.Nombre,
-								TiendaBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda,
-								IconoBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenIcono
+								Datos = precio,
+								Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
+								TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
 							});
 						}
 					}
 				}
-			}
 
-			var jsonGratis = CogerString(fila, "gratis2");
-			if (string.IsNullOrEmpty(jsonGratis) == false)
-			{
-				var lista = JsonSerializer.Deserialize<List<JuegoGratisJson>>(jsonGratis);
-				if (lista != null)
+				string jsonActuales = CogerString(fila, "precioActualesTiendas");
+				if (string.IsNullOrEmpty(jsonActuales) == false)
 				{
-					extension.Gratis = new List<ExtensionGratis>();
-
-					foreach (var gratis in lista)
+					var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonActuales);
+					if (lista != null)
 					{
-						gratis.Enlace = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, false, false);
+						extension.PreciosActuales = new List<ExtensionPrecio>();
 
-						extension.Gratis.Add(new ExtensionGratis
+						foreach (var precio in lista)
 						{
-							Datos = gratis,
-							NombreGratis = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre,
-							IconoGratis = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).ImagenIcono
-						});
+							precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
+
+							extension.PreciosActuales.Add(new ExtensionPrecio
+							{
+								Datos = precio,
+								Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
+								TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
+							});
+						}
 					}
 				}
-			}
 
-			var jsonSuscripciones = CogerString(fila, "suscripciones2");
-			if (string.IsNullOrEmpty(jsonSuscripciones) == false)
-			{
-				var lista = JsonSerializer.Deserialize<List<JuegoSuscripcionJson>>(jsonSuscripciones);
-			
-				if (lista != null)
+				var jsonBundles = CogerString(fila, "bundles");
+				if (string.IsNullOrEmpty(jsonBundles) == false)
 				{
-					extension.Suscripciones = new List<ExtensionSuscripcion>();
-
-					foreach (var suscripcion in lista)
+					var lista = JsonSerializer.Deserialize<List<JuegoBundle>>(jsonBundles);
+					if (lista != null)
 					{
-						suscripcion.Enlace = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, false, false);
+						extension.Bundles = new List<ExtensionBundle>();
 
-						extension.Suscripciones.Add(new ExtensionSuscripcion
+						foreach (var bundle in lista)
 						{
-							Datos = suscripcion,
-							NombreSuscripcion = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre,
-							IconoSuscripcion = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono
-						});
+							var datosBundle = BaseDatos.Bundles.Buscar.UnBundle(bundle.BundleId);
+							if (datosBundle != null)
+							{
+								bundle.Enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, false, false);
+
+								extension.Bundles.Add(new ExtensionBundle
+								{
+									Datos = bundle,
+									NombreBundle = datosBundle.Nombre,
+									TiendaBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda,
+									IconoBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenIcono
+								});
+							}
+						}
 					}
 				}
+
+				var jsonGratis = CogerString(fila, "gratis2");
+				if (string.IsNullOrEmpty(jsonGratis) == false)
+				{
+					var lista = JsonSerializer.Deserialize<List<JuegoGratisJson>>(jsonGratis);
+					if (lista != null)
+					{
+						extension.Gratis = new List<ExtensionGratis>();
+
+						foreach (var gratis in lista)
+						{
+							gratis.Enlace = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, false, false);
+
+							extension.Gratis.Add(new ExtensionGratis
+							{
+								Datos = gratis,
+								NombreGratis = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre,
+								IconoGratis = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).ImagenIcono
+							});
+						}
+					}
+				}
+
+				var jsonSuscripciones = CogerString(fila, "suscripciones2");
+				if (string.IsNullOrEmpty(jsonSuscripciones) == false)
+				{
+					var lista = JsonSerializer.Deserialize<List<JuegoSuscripcionJson>>(jsonSuscripciones);
+
+					if (lista != null)
+					{
+						extension.Suscripciones = new List<ExtensionSuscripcion>();
+
+						foreach (var suscripcion in lista)
+						{
+							suscripcion.Enlace = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, false, false);
+
+							extension.Suscripciones.Add(new ExtensionSuscripcion
+							{
+								Datos = suscripcion,
+								NombreSuscripcion = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre,
+								IconoSuscripcion = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono
+							});
+						}
+					}
+				}
+
+				extension.IdSteam = CogerInt(fila, "idSteam") ?? 0;
+				extension.IdGOG = CogerInt(fila, "idGOG") ?? 0;
+
+				extension.SlugGOG = CogerString(fila, "slugGOG");
+				extension.SlugEpic = CogerString(fila, "slugEpic");
+
+				return extension;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Extension Generar", ex);
 			}
 
-			extension.IdSteam = CogerInt(fila, "idSteam") ?? 0;
-			extension.IdGOG = CogerInt(fila, "idGOG") ?? 0;
-
-			extension.SlugGOG = CogerString(fila, "slugGOG");
-			extension.SlugEpic = CogerString(fila, "slugEpic");
-
-			return extension;
+			return null;
 		}
 	}
 }

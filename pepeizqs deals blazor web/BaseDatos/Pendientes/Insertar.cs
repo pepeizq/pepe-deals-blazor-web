@@ -1,65 +1,38 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Pendientes
 {
-
 	public static class Insertar
 	{
-        public static void AñadirId(string nombre, string ids, SqlConnection conexion = null)
+        public static async void AñadirId(string nombre, string ids)
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
-            bool existe = false;
-
             string busqueda = "SELECT ids FROM juegosIDs WHERE nombre=@nombre";
 
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+            try
             {
-                comando.Parameters.AddWithValue("@nombre", nombre);
+				string resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<string>(busqueda, new { nombre }, transaction: sentencia);
+				});
 
-                using (SqlDataReader lector = comando.ExecuteReader())
+                if (string.IsNullOrEmpty(resultado) == true)
                 {
-                    while (lector.Read())
-                    {
-                        existe = true;
-                        break;
-                    }
-                }
-            }
+					string insertar = "INSERT INTO juegosIDs " +
+						   "(nombre, ids) VALUES " +
+						   "(@nombre, @ids) ";
 
-			if (existe == false)
-			{
-                string sqlInsertar = "INSERT INTO juegosIDs " +
-                            "(nombre, ids) VALUES " +
-                            "(@nombre, @ids) ";
-
-                using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-                {
-                    comando.Parameters.AddWithValue("@nombre", nombre);
-                    comando.Parameters.AddWithValue("@ids", ids);
-
-                    try
-                    {
-                        comando.ExecuteNonQuery();
-                    }
-                    catch (Exception ex)
-                    {
-                        BaseDatos.Errores.Insertar.Mensaje("Insertar JuegosIDs", ex);
-                    }
-                }
-            }
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(insertar, new { nombre, ids }, transaction: sentencia);
+					});
+				}
+			}
+            catch (Exception ex)
+            {
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Insertar", ex);
+			}
         }
     }
 }

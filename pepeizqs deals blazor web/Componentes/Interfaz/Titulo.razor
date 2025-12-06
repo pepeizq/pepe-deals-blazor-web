@@ -13,16 +13,7 @@
 	<meta name="robots" content="noimageindex" />
 	<meta name="keywords" content="@keywords2" />
 
-	@if (tipo == Tipo.Bundles)
-	{
-		if (string.IsNullOrEmpty(contenidoJsonBundles) == false)
-		{
-			<script type="application/ld+json">
-				@((MarkupString)contenidoJsonBundles)
-			</script>
-		}
-	}
-	else if (tipo == Tipo.Bundle)
+	@if (tipo == Tipo.Bundle)
 	{
 		if (string.IsNullOrEmpty(contenidoJsonBundle) == false)
 		{
@@ -282,16 +273,6 @@
 
 	#endregion
 
-	#region Parametros Bundles
-
-	[Parameter]
-	public string tituloBundles { get; set; }
-
-	[Parameter]
-	public string contenidoJsonBundles { get; set; }
-
-	#endregion
-
 	#region Parametros Coste
 
 	[Parameter]
@@ -491,11 +472,11 @@
 		}
 		else if (tipo == Tipo.Bundles)
 		{
-			titulo ??= tituloBundles;
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Bundle");
 			enlace ??= "https://" + dominio + "/bundles/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
-			keywords2 ??= keywords;
+			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.Comparador)
 		{

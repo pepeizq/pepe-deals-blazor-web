@@ -33,37 +33,26 @@ namespace Tareas.Tiendas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(6);
 
-					try
+					if (DateTime.Now.Hour == 19 || DateTime.Now.Hour == 20)
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
+						siguienteComprobacion = TimeSpan.FromMinutes(30);
 					}
-					catch { }
 
-					if (conexion.State == System.Data.ConnectionState.Open)
+					bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
+
+					if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
 					{
-						TimeSpan siguienteComprobacion = TimeSpan.FromHours(6);
-
-						if (DateTime.Now.Hour == 19 || DateTime.Now.Hour == 20)
+						try
 						{
-							siguienteComprobacion = TimeSpan.FromMinutes(30);
+							await Tiendas2.TiendasCargar.TareasGestionador(null, id);
+
+							Environment.Exit(1);
 						}
-
-						bool sePuedeUsar = BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
-
-						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Count == 0)
+						catch (Exception ex)
 						{
-							try
-							{
-								await Tiendas2.TiendasCargar.TareasGestionador(null, id);
-
-								Environment.Exit(1);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(id, ex);
-							}
+							BaseDatos.Errores.Insertar.Mensaje(id, ex);
 						}
 					}
 				}

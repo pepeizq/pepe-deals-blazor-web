@@ -7,43 +7,32 @@ namespace BaseDatos.Pendientes
 {
 	public static class Actualizar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Tienda(string idTienda, string enlace, string idJuegos, SqlConnection conexion = null)
+		public static void Tienda(string idTienda, string enlace, string idJuegos)
 		{
             if (string.IsNullOrEmpty(idJuegos) == false)
             {
                 if (idJuegos != "0")
                 {
-					conexion = CogerConexion(conexion);
-
                     string sqlActualizar = "UPDATE tienda" + idTienda + " " +
                     "SET idJuegos=@idJuegos WHERE enlace=@enlace";
 
 					try
 					{
-						conexion.Execute(sqlActualizar, new { idJuegos, enlace });
+						Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						{
+							sentencia.Connection.Execute(sqlActualizar, new { idJuegos, enlace }, transaction: sentencia);
+						});
 					}
 					catch (Exception ex)
 					{
-						BaseDatos.Errores.Insertar.Mensaje("Actualizar Pendientes Tienda", ex);
+						BaseDatos.Errores.Insertar.Mensaje("Pendientes Actualizar Tienda", ex);
 					}
 				}
             }
 		}
 
-        public static void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos, SqlConnection conexion = null)
+        public static void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos)
         {
-			conexion = CogerConexion(conexion);
-
 			foreach (var idJuego in idJuegos)
 			{
 				string descartado = "no";
@@ -78,18 +67,21 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					conexion.Execute(sqlInsertar, new
+					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 					{
-						enlace,
-						nombre = nombreJuego,
-						imagen,
-						idJuegos = idJuego,
-						descartado
+						sentencia.Connection.Execute(sqlInsertar, new
+						{
+							enlace,
+							nombre = nombreJuego,
+							imagen,
+							idJuegos = idJuego,
+							descartado
+						}, transaction: sentencia);
 					});
 				}
-				catch
+				catch (Exception ex)
 				{
-					
+					BaseDatos.Errores.Insertar.Mensaje("Pendientes Actualizar Suscripcion 1", ex);
 				}
 
 				string sqlBorrar = $@"
@@ -99,11 +91,14 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					conexion.Execute(sqlBorrar, new { enlace });
+					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						sentencia.Connection.Execute(sqlBorrar, new { enlace }, transaction: sentencia);
+					});
 				}
-				catch
+				catch (Exception ex)
 				{
-					
+					BaseDatos.Errores.Insertar.Mensaje("Pendientes Actualizar Suscripcion 2", ex);
 				}
 			}
 		}
@@ -423,10 +418,8 @@ namespace BaseDatos.Pendientes
 			}
 		}
 
-		public static void DescartarSuscripcion(string idSuscripcion, string enlace, SqlConnection conexion = null)
+		public static void DescartarSuscripcion(string idSuscripcion, string enlace)
 		{
-			conexion = CogerConexion(conexion);
-
 			string sqlInsertar = @$"
 				INSERT INTO suscripcion{idSuscripcion}
 				(enlace, idJuegos, descartado) 
@@ -436,30 +429,36 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				conexion.Execute(sqlInsertar, new
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					Enlace = enlace,
-					IdJuegos = "0",
-					Descartado = "si"
+					sentencia.Connection.Execute(sqlInsertar, new
+					{
+						Enlace = enlace,
+						IdJuegos = "0",
+						Descartado = "si"
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Error Descarte 1 Suscripcion " + idSuscripcion, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 1 " + idSuscripcion, ex);
 			}
 
 			try
 			{
 				string sqlBorrar = $"DELETE FROM temporal{idSuscripcion} WHERE enlace = @enlace";
 
-				conexion.Execute(sqlBorrar, new
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					enlace
+					sentencia.Connection.Execute(sqlBorrar, new
+					{
+						enlace
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Error Descarte 2 Suscripcion " + idSuscripcion, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 2 " + idSuscripcion, ex);
 			}
 		}
 

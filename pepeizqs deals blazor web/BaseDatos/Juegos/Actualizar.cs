@@ -11,20 +11,8 @@ namespace BaseDatos.Juegos
 {
 	public static class Actualizar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Comprobacion(bool cambioPrecio, int id, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, string slugGOG = null, string idGOG = null, string slugEpic = null, DateTime? ultimaModificacion = null, JuegoAnalisis reseñas = null)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Comprobacion(bool cambioPrecio, int id, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, SqlConnection conexion = null, string slugGOG = null, string idGOG = null, string slugEpic = null, DateTime? ultimaModificacion = null, JuegoAnalisis reseñas = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			var sql = new StringBuilder();
 			sql.Append("UPDATE juegos SET ");
 			sql.Append("precioActualesTiendas=@precioActualesTiendas, ");
@@ -80,11 +68,14 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				conexion.ExecuteAsync(sql.ToString(), parametros, commandTimeout: 120);
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute(sql.ToString(), parametros, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
-				Errores.Insertar.Mensaje2("Actualizar Juego " + id, ex, null, false, sql.ToString());
+				BaseDatos.Errores.Insertar.Mensaje2("Juego Actualizar " + id, ex, null, false, sql.ToString());
 			}
 		}
 
@@ -1146,16 +1137,17 @@ namespace BaseDatos.Juegos
 			}
 		}
 
-		public static void CantidadJugadoresSteam(Juego juego, SqlConnection conexion = null)
+		public static void CantidadJugadoresSteam(Juego juego)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					id = juego.Id,
-					cantidadJugadoresSteam = JsonSerializer.Serialize(juego.CantidadJugadores)
+					sentencia.Connection.Execute("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
+					{
+						id = juego.Id,
+						cantidadJugadoresSteam = JsonSerializer.Serialize(juego.CantidadJugadores)
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -1163,7 +1155,6 @@ namespace BaseDatos.Juegos
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Cantidad Jugadores " + juego.Id.ToString(), ex);
 			}
 		}
-
 		public static void UltimasActualizacioneseInteligenciaArticial(int idJuego, DateTime? fechaSteam, DateTime? fechaGOG, bool inteligenciaArtificial = false, SqlConnection conexion = null)
 		{
 			if (conexion == null)

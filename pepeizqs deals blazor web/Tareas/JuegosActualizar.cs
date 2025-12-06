@@ -2,8 +2,6 @@
 
 using APIs.Steam;
 using Herramientas;
-using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
@@ -32,198 +30,187 @@ namespace Tareas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
-
 					try
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-					catch { }
+						TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(1);
 
-					if (conexion.State == System.Data.ConnectionState.Open)
-					{
-						try
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("fichasActualizar", siguienteComprobacion) == true && await BaseDatos.Admin.Buscar.TiendasLibre() == true)
 						{
-							TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(1);
+							BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now);
 
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("fichasActualizar", siguienteComprobacion) == true && BaseDatos.Admin.Buscar.TiendasLibre() == true)
+							#region Buscar 
+
+							List<Juegos.Juego> juegosAleatorios = BaseDatos.Juegos.Buscar.Aleatorios(true);
+
+							if (juegosAleatorios?.Count > 0)
 							{
-								BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now);
-
-								#region Buscar 
-
-								List<Juegos.Juego> juegosAleatorios = BaseDatos.Juegos.Buscar.Aleatorios(true);
-
-								if (juegosAleatorios?.Count > 0)
+								foreach (var juego in juegosAleatorios)
 								{
-									foreach (var juego in juegosAleatorios)
+									bool actualizarDatosAPI = false;
+									TimeSpan tiempoComprobar = TimeSpan.FromDays(60);
+
+									if (juego.Caracteristicas?.FechaLanzamientoSteam != null)
 									{
-										bool actualizarDatosAPI = false;
-										TimeSpan tiempoComprobar = TimeSpan.FromDays(60);
-
-										if (juego.Caracteristicas?.FechaLanzamientoSteam != null)
+										if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 1)
 										{
-											if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 1)
-											{
-												tiempoComprobar = TimeSpan.FromHours(6);
-											}
-											else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 3)
-											{
-												tiempoComprobar = TimeSpan.FromHours(12);
-											}
-											else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 7)
-											{
-												tiempoComprobar = TimeSpan.FromDays(1);
-											}
-											else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 14)
-											{
-												tiempoComprobar = TimeSpan.FromDays(3);
-											}
-											else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 30)
-											{
-												tiempoComprobar = TimeSpan.FromDays(5);
-											}
-											else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 120)
-											{
-												tiempoComprobar = TimeSpan.FromDays(30);
-											}
+											tiempoComprobar = TimeSpan.FromHours(6);
 										}
-
-										if (juego.FechaSteamAPIComprobacion.Add(tiempoComprobar) < DateTime.Now)
+										else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 3)
 										{
-											actualizarDatosAPI = true;
+											tiempoComprobar = TimeSpan.FromHours(12);
 										}
-
-										if (actualizarDatosAPI == true)
+										else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 7)
 										{
-											BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+											tiempoComprobar = TimeSpan.FromDays(1);
+										}
+										else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 14)
+										{
+											tiempoComprobar = TimeSpan.FromDays(3);
+										}
+										else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 30)
+										{
+											tiempoComprobar = TimeSpan.FromDays(5);
+										}
+										else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 120)
+										{
+											tiempoComprobar = TimeSpan.FromDays(30);
 										}
 									}
-								}
 
-								#endregion
-
-								#region Actualizar
-
-								List<BaseDatos.JuegosActualizar.JuegoActualizar> fichas = BaseDatos.JuegosActualizar.Buscar.Todos(conexion);
-
-								if (fichas?.Count > 0)
-								{
-									foreach (var ficha in fichas)
+									if (juego.FechaSteamAPIComprobacion.Add(tiempoComprobar) < DateTime.Now)
 									{
-										if (ficha.Metodo == "SteamAPI")
-										{
-											Juegos.Juego nuevoJuego = await APIs.Steam.Juego.CargarDatosJuego(ficha.IdPlataforma.ToString());
-											Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										actualizarDatosAPI = true;
+									}
 
-											if (nuevoJuego != null && juego != null)
-											{
-												BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
-
-												BaseDatos.JuegosActualizar.Limpiar.Una(ficha, conexion);
-											}
-										}
-
-										if (ficha.Metodo == "GOGAPI")
-										{
-											Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
-
-											if (juego != null)
-											{
-												Juegos.JuegoGalaxyGOG datosGOG = await APIs.GOG.Juego.GalaxyDatos(ficha.IdPlataforma.ToString());
-
-												if (datosGOG != null)
-												{
-													juego.GalaxyGOG = datosGOG;
-													juego.Idiomas = await APIs.GOG.Juego.GalaxyIdiomas(ficha.IdPlataforma.ToString(), juego.Idiomas);
-
-													BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
-												}
-
-												BaseDatos.JuegosActualizar.Limpiar.Una(ficha, conexion);
-											}
-										}
-
-										if (ficha.Metodo == "EpicAPI")
-										{
-											Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
-
-											if (juego != null)
-											{
-												if (string.IsNullOrEmpty(juego.SlugEpic) == false)
-												{
-													juego.EpicGames = await APIs.EpicGames.Juego.EpicGamesDatos(juego.SlugEpic);
-													juego.Idiomas = await APIs.EpicGames.Juego.EpicGamesIdiomas(juego.SlugEpic, juego.Idiomas);
-
-													BaseDatos.Juegos.Actualizar.EpicGames(juego);
-												}
-
-												BaseDatos.JuegosActualizar.Limpiar.Una(ficha, conexion);
-											}
-										}
-
-										if (ficha.Metodo == "XboxAPI")
-										{
-											Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
-
-											if (juego != null)
-											{
-												if (string.IsNullOrEmpty(juego.IdXbox) == false)
-												{
-													juego.Xbox = await APIs.Xbox.Juego.XboxDatos(juego.IdXbox);
-													juego.Idiomas = await APIs.Xbox.Juego.XboxIdiomas(juego.IdXbox, juego.Idiomas);
-
-													BaseDatos.Juegos.Actualizar.Xbox(juego);
-												}
-
-												BaseDatos.JuegosActualizar.Limpiar.Una(ficha, conexion);
-											}
-										}
-
-										if (ficha.Metodo == "SteamCMD")
-										{
-											Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
-
-											bool inteligenciaArtificial = false;
-											DateTime? fechaSteam = null;
-
-											if (juego.IdSteam > 0)
-											{
-												SteamCMDDatos datosCmd = await APIs.Steam.Juego.UltimaActualizacioneInteligenciaArtificial(juego.IdSteam);
-
-												if (datosCmd != null)
-												{
-													if (datosCmd.UltimaActualizacion != null)
-													{
-														fechaSteam = datosCmd.UltimaActualizacion;
-													}
-
-													if (datosCmd.InteligenciaArtificial == true)
-													{
-														inteligenciaArtificial = true;
-													}
-												}
-											}
-
-											DateTime? fechaGOG = null;
-
-											if (juego.IdGog > 0)
-											{
-												fechaGOG = await APIs.GOG.Juego.UltimaActualizacion(juego.IdGog.ToString());
-											}
-
-											global::BaseDatos.Juegos.Actualizar.UltimasActualizacioneseInteligenciaArticial(juego.Id, fechaSteam, fechaGOG, inteligenciaArtificial);
-										}
+									if (actualizarDatosAPI == true)
+									{
+										BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
 									}
 								}
-
-								#endregion
 							}
+
+							#endregion
+
+							#region Actualizar
+
+							List<BaseDatos.JuegosActualizar.JuegoActualizar> fichas = BaseDatos.JuegosActualizar.Buscar.Todos();
+
+							if (fichas?.Count > 0)
+							{
+								foreach (var ficha in fichas)
+								{
+									if (ficha.Metodo == "SteamAPI")
+									{
+										Juegos.Juego nuevoJuego = await APIs.Steam.Juego.CargarDatosJuego(ficha.IdPlataforma.ToString());
+										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+
+										if (nuevoJuego != null && juego != null)
+										{
+											BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
+
+											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+										}
+									}
+
+									if (ficha.Metodo == "GOGAPI")
+									{
+										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+
+										if (juego != null)
+										{
+											Juegos.JuegoGalaxyGOG datosGOG = await APIs.GOG.Juego.GalaxyDatos(ficha.IdPlataforma.ToString());
+
+											if (datosGOG != null)
+											{
+												juego.GalaxyGOG = datosGOG;
+												juego.Idiomas = await APIs.GOG.Juego.GalaxyIdiomas(ficha.IdPlataforma.ToString(), juego.Idiomas);
+
+												BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
+											}
+
+											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+										}
+									}
+
+									if (ficha.Metodo == "EpicAPI")
+									{
+										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+
+										if (juego != null)
+										{
+											if (string.IsNullOrEmpty(juego.SlugEpic) == false)
+											{
+												juego.EpicGames = await APIs.EpicGames.Juego.EpicGamesDatos(juego.SlugEpic);
+												juego.Idiomas = await APIs.EpicGames.Juego.EpicGamesIdiomas(juego.SlugEpic, juego.Idiomas);
+
+												BaseDatos.Juegos.Actualizar.EpicGames(juego);
+											}
+
+											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+										}
+									}
+
+									if (ficha.Metodo == "XboxAPI")
+									{
+										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+
+										if (juego != null)
+										{
+											if (string.IsNullOrEmpty(juego.IdXbox) == false)
+											{
+												juego.Xbox = await APIs.Xbox.Juego.XboxDatos(juego.IdXbox);
+												juego.Idiomas = await APIs.Xbox.Juego.XboxIdiomas(juego.IdXbox, juego.Idiomas);
+
+												BaseDatos.Juegos.Actualizar.Xbox(juego);
+											}
+
+											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+										}
+									}
+
+									if (ficha.Metodo == "SteamCMD")
+									{
+										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+
+										bool inteligenciaArtificial = false;
+										DateTime? fechaSteam = null;
+
+										if (juego.IdSteam > 0)
+										{
+											SteamCMDDatos datosCmd = await APIs.Steam.Juego.UltimaActualizacioneInteligenciaArtificial(juego.IdSteam);
+
+											if (datosCmd != null)
+											{
+												if (datosCmd.UltimaActualizacion != null)
+												{
+													fechaSteam = datosCmd.UltimaActualizacion;
+												}
+
+												if (datosCmd.InteligenciaArtificial == true)
+												{
+													inteligenciaArtificial = true;
+												}
+											}
+										}
+
+										DateTime? fechaGOG = null;
+
+										if (juego.IdGog > 0)
+										{
+											fechaGOG = await APIs.GOG.Juego.UltimaActualizacion(juego.IdGog.ToString());
+										}
+
+										global::BaseDatos.Juegos.Actualizar.UltimasActualizacioneseInteligenciaArticial(juego.Id, fechaSteam, fechaGOG, inteligenciaArtificial);
+									}
+								}
+							}
+
+							#endregion
 						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Tarea - Fichas Actualizar", ex, conexion);
-						}
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Tarea - Fichas Actualizar", ex);
 					}
 				}
 			}

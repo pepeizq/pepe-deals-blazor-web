@@ -154,35 +154,20 @@ else
 
     private void TextoCambiaBuscador()
     {
-        if (conexion == null)
+        if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
+            List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
+
+            if (resultados.Count > 0)
+            {
+                juegosBuscadorGratis.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+
+                juegosBuscadorGratis.AddRange(resultados.Where(x => juegosBuscadorGratis.FirstOrDefault(y => y.Nombre == x.Nombre) == null).ToList());
+            }
         }
         else
         {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
-
-        using (conexion)
-        {
-            if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
-            {
-                List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, conexion, 250, true, -1, true, true);
-
-                if (resultados.Count > 0)
-                {
-                    juegosBuscadorGratis.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-
-                    juegosBuscadorGratis.AddRange(resultados.Where(x => juegosBuscadorGratis.FirstOrDefault(y => y.Nombre == x.Nombre) == null).ToList());
-                }
-            }
-            else
-            {
-                juegosBuscadorGratis.Clear();
-            }
+            juegosBuscadorGratis.Clear();
         }
     }
 

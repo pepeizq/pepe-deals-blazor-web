@@ -38,7 +38,7 @@ namespace Tareas
 							tiempoSiguiente = TimeSpan.FromMinutes(30);
 						}
 
-						if (BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente) == true)
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente) == true)
 						{
 							BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now);
 

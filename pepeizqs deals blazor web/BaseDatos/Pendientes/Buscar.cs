@@ -1,55 +1,60 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Pendientes
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static string IDs(string nombre)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				string busqueda1 = "SELECT id FROM juegos WHERE nombre = @nombre OR nombreCodigo = @nombreLimpio";
+
+				var id = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<int?>(busqueda1, new
+					{
+						nombre,
+						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, false)
+					}, transaction: sentencia);
+				});
+
+				if (id != null)
+				{
+					return id.Value.ToString();
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Buscar IDs 1", ex);
 			}
 
-			return conexion;
-		}
-
-		public static string IDs(string nombre, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			string sql1 = @"SELECT id FROM juegos WHERE nombre = @nombre OR nombreCodigo = @nombreLimpio";
-
-			var id = conexion.QueryFirstOrDefault<int?>(sql1, new
+			try
 			{
-				nombre,
-				nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, false)
-			});
+				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre = @nombre";
 
-			if (id != null)
-			{
-				return id.Value.ToString();
+				var ids = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<string>(busqueda2, new { nombre }, transaction: sentencia);
+				});
+
+				if (ids != null)
+				{
+					return ids;
+				}
 			}
-
-			string sql2 = @"SELECT ids FROM juegosIDs WHERE nombre = @nombre";
-
-			var ids = conexion.QueryFirstOrDefault<string>(sql2, new { nombre });
-
-			if (ids != null)
+			catch (Exception ex)
 			{
-				return ids;
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Buscar IDs 2", ex);
 			}
 
 			return "0";
 		}
 
-        public static int TiendasCantidad(SqlConnection conexion = null)
+        public static int TiendasCantidad()
         {
-			conexion = CogerConexion(conexion);
-
 			List<string> sentencias = new List<string>();
 
 			foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
@@ -68,15 +73,25 @@ namespace BaseDatos.Pendientes
 
 			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
-			var resultados = conexion.Query<int>(sql).ToList();
+			try
+			{
+				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<int>(sql, transaction: sentencia).ToList();
+				});
 
-			return resultados.Sum();
+				return resultados.Sum();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Tiendas Cantidad", ex);
+			}
+
+			return 0;
 		}
 
-		public static int SuscripcionCantidad(SqlConnection conexion = null)
+		public static int SuscripcionCantidad()
 		{
-			conexion = CogerConexion(conexion);
-
 			List<string> sentencias = new List<string>();
 
 			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
@@ -95,13 +110,25 @@ namespace BaseDatos.Pendientes
 
 			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
-			return conexion.Query<int>(sql).Sum();
+			try
+			{
+				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<int>(sql, transaction: sentencia).ToList();
+				});
+
+				return resultados.Sum();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Suscripcion Cantidad", ex);
+			}
+
+			return 0;
 		}
 
-		public static int StreamingCantidad(SqlConnection conexion = null)
+		public static int StreamingCantidad()
 		{
-			conexion = CogerConexion(conexion);
-
 			List<string> sentencias = new List<string>();
 
 			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
@@ -119,13 +146,25 @@ namespace BaseDatos.Pendientes
 
 			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
-			return conexion.Query<int>(sql).Sum();
+			try
+			{
+				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<int>(sql, transaction: sentencia).ToList();
+				});
+
+				return resultados.Sum();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Streaming Cantidad", ex);
+			}
+
+			return 0;
 		}
 
-        public static int PlataformaCantidad(SqlConnection conexion = null)
+        public static int PlataformaCantidad()
         {
-			conexion = CogerConexion(conexion);
-
 			List<string> sentencias = new List<string>();
 
 			foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
@@ -141,33 +180,65 @@ namespace BaseDatos.Pendientes
 
 			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
 
-			return conexion.Query<int>(sql).Sum();
+			try
+			{
+				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<int>(sql, transaction: sentencia).ToList();
+				});
+
+				return resultados.Sum();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Plataforma Cantidad", ex);
+			}
+
+			return 0;
 		}
 
-		public static List<Pendiente> Tienda(string tiendaId, SqlConnection conexion = null)
+		public static List<Pendiente> Tienda(string tiendaId)
         {
-			conexion = CogerConexion(conexion);
-
 			string tabla = $"tienda{tiendaId}";
 			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'";
 
-			return conexion.Query<Pendiente>(sql).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Pendiente>(sql, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Tienda " + tiendaId, ex);
+			}
+
+			return new List<Pendiente>();
 		}
 
-        public static List<Pendiente> Suscripcion(Suscripciones2.SuscripcionTipo id, SqlConnection conexion = null)
+        public static List<Pendiente> Suscripcion(Suscripciones2.SuscripcionTipo id)
         {
-			conexion = CogerConexion(conexion);
-
 			string tabla = $"temporal{id}";
 			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla}";
 
-			return conexion.Query<Pendiente>(sql).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Pendiente>(sql, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Suscripcion " + id.ToString(), ex);
+			}
+
+			return new List<Pendiente>();
 		}
 
-        public static List<Pendiente> Streaming(Streaming2.StreamingTipo id, SqlConnection conexion = null)
+        public static List<Pendiente> Streaming(Streaming2.StreamingTipo id)
         {
-			conexion = CogerConexion(conexion);
-
 			string tabla = $"streaming{id}";
 			string sql = $@"SELECT nombreCodigo as Enlace, nombre FROM {tabla} WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
 
@@ -176,103 +247,158 @@ namespace BaseDatos.Pendientes
 				sql = $@"SELECT id as Enlace, nombre FROM {tabla} WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
 			}
 
-			var filas = conexion.Query(sql);
-
-			List<Pendiente> lista = new List<Pendiente>();
-
-			foreach (var fila in filas)
+			try
 			{
-				lista.Add(new Pendiente
+				var filas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					Enlace = fila.Enlace?.ToString(),
-					Nombre = fila.Nombre
+					return sentencia.Connection.Query<Pendiente>(sql, transaction: sentencia).ToList();
 				});
+
+				List<Pendiente> lista = new List<Pendiente>();
+
+				foreach (var fila in filas)
+				{
+					lista.Add(new Pendiente
+					{
+						Enlace = fila.Enlace?.ToString(),
+						Nombre = fila.Nombre
+					});
+				}
+
+				return lista;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Streaming " + id.ToString(), ex);
 			}
 
-			return lista;
+			return new List<Pendiente>();			
 		}
 
-        public static List<Pendiente> Plataforma(Plataformas2.PlataformaTipo id, SqlConnection conexion = null)
+        public static List<Pendiente> Plataforma(Plataformas2.PlataformaTipo id)
         {
-			conexion = CogerConexion(conexion);
-
 			string tabla = $"temporal{id}juegos";
 			string sql = $@"SELECT id as Enlace, Nombre FROM {tabla}";
 
-			return conexion.Query<Pendiente>(sql).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Pendiente>(sql, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Plataforma " + id.ToString(), ex);
+			}
+
+			return new List<Pendiente>();
 		}
 
-        public static Pendiente PrimerJuegoTienda(string tiendaId, SqlConnection conexion = null)
+        public static Pendiente PrimerJuegoTienda(string tiendaId)
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Pendiente>($"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Tienda Primer Juego " + tiendaId, ex);
+			}
 
-			string sql = $"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'";
-
-			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+			return null;
 		}
 
-        public static Pendiente PrimerJuegoSuscripcion(string suscripcionId, SqlConnection conexion = null)
+        public static Pendiente PrimerJuegoSuscripcion(string suscripcionId)
         {
-			conexion = CogerConexion(conexion);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Pendiente>($"SELECT TOP 1 * FROM temporal{suscripcionId}", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Suscripcion Primer Juego " + suscripcionId, ex);
+			}
 
-			string sql = $"SELECT TOP 1 * FROM temporal{suscripcionId}";
-
-			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+			return null;
 		}
 
-        public static Pendiente PrimerJuegoStreaming(string streamingId, SqlConnection conexion = null)
+        public static Pendiente PrimerJuegoStreaming(string streamingId)
         {
-			conexion = CogerConexion(conexion);
-
 			string sql = $"SELECT TOP 1 nombreCodigo as Enlace, nombre FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
 
 			if (streamingId == Streaming2.StreamingTipo.Boosteroid.ToString())
 			{
 				sql = $@"SELECT TOP 1 id as Enlace, nombre FROM streaming{streamingId} WHERE idJuego IS NULL AND descartado IS NULL";
-
 			}
 
-			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Pendiente>(sql, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Streaming Primer Juego " + streamingId, ex);
+			}
+
+			return null;
 		}
 
-		public static Pendiente PrimerJuegoPlataforma(string plataformaId, SqlConnection conexion = null)
+		public static Pendiente PrimerJuegoPlataforma(string plataformaId)
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Pendiente>($"SELECT TOP 1 * FROM temporal{plataformaId}juegos", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Plataforma Primer Juego " + plataformaId, ex);
+			}
 
-			string sql = $"SELECT TOP 1 * FROM temporal{plataformaId}juegos";
-
-			return conexion.QueryFirstOrDefault<Pendiente>(sql);
+			return null;
 		}
 	}
 
 	public class Pendiente
 	{
-		public string Enlace;
-		public string Nombre;
-		public string Imagen;
+		public string Enlace { get; set; }
+		public string Nombre { get; set; }
+		public string Imagen { get; set; }
 	}
 
 	public class PendientesTienda
 	{
-		public List<Pendiente> Pendientes;
-		public Tiendas2.Tienda Tienda;
+		public List<Pendiente> Pendientes { get; set; }
+		public Tiendas2.Tienda Tienda { get; set; }
 	}
 
 	public class PendientesSuscripcion
 	{
-		public List<Pendiente> Pendientes;
-		public Suscripciones2.Suscripcion Suscripcion;
+		public List<Pendiente> Pendientes { get; set; }
+		public Suscripciones2.Suscripcion Suscripcion { get; set; }
 	}
 
 	public class PendientesStreaming
     {
-        public List<Pendiente> Pendientes;
-        public Streaming2.Streaming Streaming;
-    }
+        public List<Pendiente> Pendientes { get; set; }
+		public Streaming2.Streaming Streaming { get; set; }
+	}
 
 	public class PendientesPlataforma
 	{
-		public List<Pendiente> Pendientes;
-		public Plataformas2.Plataforma Plataforma;
+		public List<Pendiente> Pendientes { get; set; }
+		public Plataformas2.Plataforma Plataforma { get; set; }
 	}
 }

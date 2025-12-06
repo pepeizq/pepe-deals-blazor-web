@@ -181,7 +181,7 @@
     [Parameter]
     public string subpagina { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (Contexto == null || Contexto.HttpContext == null || Contexto.HttpContext.User == null || Contexto.HttpContext.User.Identity == null || Contexto.HttpContext.User.Identity.IsAuthenticated == false)
         {
@@ -201,14 +201,14 @@
 
         if (usuarioAdmin == true)
         {
-            nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores();
+            nuevosErroresCantidad = await BaseDatos.Admin.Buscar.CantidadErrores();
 
             if (nuevosErroresCantidad > 0)
             {
                 subpagina = subpaginaErrores;
             }
 
-            nuevosDuplicadosCantidad = BaseDatos.Admin.Buscar.Dato("duplicados");
+            nuevosDuplicadosCantidad = await BaseDatos.Admin.Buscar.Dato("duplicados");
 
             if (nuevosDuplicadosCantidad > 0)
             {
@@ -403,7 +403,7 @@
         mostrarErrores = true;
         estiloErrores = fondo;
 
-        nuevosErroresCantidad = BaseDatos.Admin.Buscar.CantidadErrores();
+        nuevosErroresCantidad = await BaseDatos.Admin.Buscar.CantidadErrores();
         await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaErrores + "/");
     }
 

@@ -1,25 +1,21 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
 
 namespace BaseDatos.Juegos
 {
 	public static class Borrar
 	{
-		public static void Ejecutar(string id, SqlConnection conexion)
+		public static async void Ejecutar(string id)
 		{
-            string borrarJuego = "DELETE FROM juegos WHERE id=@id";
-
-            using (SqlCommand comando = new SqlCommand(borrarJuego, conexion))
-            {
-                comando.Parameters.AddWithValue("@id", id);
-
-                try
-                {
-                    comando.ExecuteNonQuery();
-                }
-                catch
-                {
-
-                }
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("DELETE FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Uno Web", ex);
 			}
 		}
 	}

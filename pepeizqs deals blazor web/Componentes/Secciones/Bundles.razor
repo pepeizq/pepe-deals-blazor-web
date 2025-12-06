@@ -12,84 +12,7 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-@{
-	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
-	string keywords = "bundles";
-
-	if (bundlesActuales?.Count > 0)
-	{
-		if (bundlesActuales.Count == 1)
-		{
-			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Bundle"), bundlesActuales.Count.ToString());
-		}
-		else if (bundlesActuales.Count > 1)
-		{
-			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Bundle"), bundlesActuales.Count.ToString());
-		}
-
-		foreach (var bundleActual in bundlesActuales)
-		{
-			if (string.IsNullOrEmpty(bundleActual.Tienda) == false)
-			{
-				if (keywords.Contains(bundleActual.Tienda.ToLower()) == false)
-				{
-					keywords = keywords + ", " + bundleActual.Tienda.ToLower();
-				}
-			}	
-		}
-	}
-	else
-	{
-		titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Bundle");
-	}
-
-	string contenidoJson = @"{
-        ""@context"": ""https://schema.org"",
-		""@type"": ""ItemList"",
-		""name"": ""PC Game Bundles"",
-		""numberOfItems"": ""@cantidad"",
-        ""itemListOrder"": ""Descending""
-	";
-
-	contenidoJson = contenidoJson.Replace("@cantidad", (bundlesActuales?.Count > 0 ? bundlesActuales?.Count : 0).ToString());
-
-	if (bundlesActuales?.Count > 0)
-	{
-		contenidoJson = contenidoJson + @",
-			""itemListElement"": [";
-
-		int i = 0;
-		while (i < bundlesActuales?.Count)
-		{
-			if (i != 0)
-			{
-				contenidoJson = contenidoJson + ",";
-			}
-
-			contenidoJson = contenidoJson + @"{
-				""@type"": ""ListItem"",
-				""position"": ""@posicion"",
-				""name"": ""@nombre"",
-				""url"": ""@enlace"",
-				""image"": ""@imagen"" 
-			}";
-
-			contenidoJson = contenidoJson.Replace("@posicion", (i + 1).ToString());
-			contenidoJson = contenidoJson.Replace("@nombre", bundlesActuales[i].Nombre);
-			contenidoJson = contenidoJson.Replace("@enlace", "https://" + dominio + "/bundle/" + bundlesActuales[i].Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundlesActuales[i].Nombre) + "/");
-			contenidoJson = contenidoJson.Replace("@imagen", bundlesActuales[i].Imagen);
-
-			i += 1;
-		}
-
-		contenidoJson = contenidoJson + "]";
-	}
-
-	contenidoJson = contenidoJson + @"
-			}";
-
-	<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio" tituloBundles="@titulo" keywords="@keywords" contenidoJsonBundles="@contenidoJson"/>
-}
+<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio"/>
 
 <script>
 	function moverScroll(id) {
@@ -268,11 +191,14 @@
 					{
 						List<Bundles2.Bundle> bundlesAño = new List<Bundles2.Bundle>();
 
-						foreach (var bundlePasado in bundlesPasados)
+						if (bundlesPasados?.Count > 0)
 						{
-							if (bundlePasado.FechaEmpieza.Year.ToString() == añoSeleccionado && bundleTipo == bundlePasado.BundleTipo)
+							foreach (var bundlePasado in bundlesPasados)
 							{
-								bundlesAño.Add(bundlePasado);
+								if (bundlePasado.FechaEmpieza.Year.ToString() == añoSeleccionado && bundleTipo == bundlePasado.BundleTipo)
+								{
+									bundlesAño.Add(bundlePasado);
+								}
 							}
 						}
 
@@ -302,11 +228,14 @@
 				{
 					List<Bundles2.Bundle> bundlesAño = new List<Bundles2.Bundle>();
 
-					foreach (var bundlePasado in bundlesPasados)
+					if (bundlesPasados?.Count > 0)
 					{
-						if (bundlePasado.FechaEmpieza.Year.ToString() == añoSeleccionado && bundleTipo == bundlePasado.BundleTipo)
+						foreach (var bundlePasado in bundlesPasados)
 						{
-							bundlesAño.Add(bundlePasado);
+							if (bundlePasado.FechaEmpieza.Year.ToString() == añoSeleccionado && bundleTipo == bundlePasado.BundleTipo)
+							{
+								bundlesAño.Add(bundlePasado);
+							}
 						}
 					}
 
@@ -436,7 +365,7 @@ else
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
-        dominio = datos.Dominio;
+		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -461,20 +390,31 @@ else
 
 		años.Add(DateTime.Now.Year.ToString());
 		años.Reverse();
+	}
 
-		//--------------------------------------------------------------------
+	protected override async Task OnInitializedAsync()
+	{
+		int ordenamientoUsuario = 0;
 
-		if (bundlesActuales == null || bundlesActuales?.Count == 0)
+		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			int ordenamientoUsuario = 0;
-
-			if (string.IsNullOrEmpty(usuarioId) == false)
-			{
-				ordenamientoUsuario = BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
-			}
-
-			CargarOrdenamiento(true, ordenamientoUsuario);
+			ordenamientoUsuario = BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
 		}
+
+		CargarBundles(ordenamientoUsuario);
+	}
+
+	[PersistentState] public string ordenamientoElegido { get; set; } 
+	[PersistentState] public int ordenamientoNumero2 { get; set; }
+
+	private void ElegirOrdenamiento(MouseEventArgs e, int nuevoNumero)
+	{
+		CargarBundles(nuevoNumero);
+	}
+
+	private async void CargarBundles(int ordenamientoNumero)
+	{
+		bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
 
 		if (bundlesActuales?.Count > 0)
 		{
@@ -506,26 +446,6 @@ else
 		{
 			tiposActuales = tiposActuales.OrderBy(x => (int)x).ToList();
 		}
-	}
-
-	[PersistentState] public string ordenamientoElegido { get; set; } 
-	[PersistentState] public int ordenamientoNumero2 { get; set; }
-
-	private void ElegirOrdenamiento(MouseEventArgs e, int nuevoNumero)
-	{
-		CargarOrdenamiento(false, nuevoNumero);
-	}
-
-	private void CargarOrdenamiento(bool inicio, int ordenamientoNumero)
-	{
-		if (inicio == true)
-		{
-			bundlesActuales ??= BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
-		}
-		else
-		{
-			bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
-		}
 
         ordenamientoNumero2 = ordenamientoNumero;
 
@@ -546,30 +466,34 @@ else
 			ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Bundle");
 		}
 
-		if (inicio == false && string.IsNullOrEmpty(usuarioId) == false)
+		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			BaseDatos.Usuarios.Actualizar.Opcion("BundlesSort", ordenamientoNumero, usuarioId);
 		}
+
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private Bundles2.BundleTipo tipoSeleccionado = Bundles2.BundleTipo.Desconocido;
 	private List<Bundles2.BundleTipo> tiposActuales = new List<Bundles2.BundleTipo>();
 	private bool mostrarArchivo = false;
 
-	private void CambiarTipo(MouseEventArgs e, Bundles2.BundleTipo nuevoTipo, bool esArchivo)
+	private async void CambiarTipo(MouseEventArgs e, Bundles2.BundleTipo nuevoTipo, bool esArchivo)
 	{
 		mostrarArchivo = esArchivo;
 
 		if (esArchivo == false)
 		{
 			tipoSeleccionado = nuevoTipo;
-			bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
+			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
 		}
 		else
 		{
 			añoSeleccionado = DateTime.Now.Year.ToString();
-			bundlesPasados = BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
+			bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
 		}
+
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private string CambiarEstilo(Bundles2.BundleTipo nuevoTipo, bool esArchivo)
@@ -600,11 +524,11 @@ else
 
 	#region Archivo
 
-	private void CambiarAño(MouseEventArgs e, string nuevoAño)
+	private async void CambiarAño(MouseEventArgs e, string nuevoAño)
 	{
 		añoSeleccionado = nuevoAño;
 
-		bundlesPasados = BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
+		bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
 	}
 
 	private string MostrarFecha(DateTime fechaEmpieza, DateTime fechaTermina)

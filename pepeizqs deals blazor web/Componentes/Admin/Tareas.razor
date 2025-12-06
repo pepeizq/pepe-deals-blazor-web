@@ -13,66 +13,65 @@
 </style>
 
 <div style="display: flex; flex-direction: column; gap: 30px;">
-    @{
-        var tareasEnUso = BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+    @if (tareasEnUso?.Count > 0)
+    {
+        string mensaje = string.Empty;
 
-        if (tareasEnUso?.Count > 0)
+        foreach (var tareaEnUso in tareasEnUso)
         {
-            string mensaje = string.Empty;
+            mensaje = mensaje + " " + tareaEnUso.Id;
+        }
 
-            foreach (var tareaEnUso in tareasEnUso)
-            {
-                mensaje = mensaje + " " + tareaEnUso.Id;
-            }
-
-            if (string.IsNullOrEmpty(mensaje) == false)
-            {
-                <div class="caja-admin-tareas">
-                    Comprobando: @mensaje
-                </div>
-            }
+        if (string.IsNullOrEmpty(mensaje) == false)
+        {
+            <div class="caja-admin-tareas">
+                Comprobando: @mensaje
+            </div>
         }
     }
 
     <div class="caja-admin-tareas">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            @foreach (AdminTarea tarea in tareasTiendas)
+            @if (tareasTiendas?.Count > 0)
             {
-                if (tarea != null)
+                foreach (AdminTarea tarea in tareasTiendas)
                 {
-                    string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
+                    if (tarea != null)
+                    {
+                        string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
 
-                    <button @onclick="(e => ClickearTienda(e, tarea.Id))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
-                        <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.ImagenIcono" style="height: 22px;" />
-                                    <div>@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.Nombre</div>
+                        <button @onclick="(e => ClickearTienda(e, tarea.Id))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.ImagenIcono" style="height: 22px;" />
+                                        <div>@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.Nombre</div>
+                                    </div>
+
+                                    <div>@tiempo</div>
                                 </div>
 
-                                <div>@tiempo</div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="text-align: right;">@tarea.Cantidad</div>
+
+                                    @if (tarea.Valor1 > 0)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                            @if (tarea.Valor1 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor1</div>
+                                            }
+
+                                            @if (tarea.Valor2 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor2</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="text-align: right;">@tarea.Cantidad</div>
-
-                                @if (tarea.Valor1 > 0)
-                                {
-                                    <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                        @if (tarea.Valor1 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor1</div>
-                                        }
-
-                                        @if (tarea.Valor2 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor2</div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </button>
+                        </button>
+                    }
                 }
             }
         </div>
@@ -80,43 +79,46 @@
 
     <div class="caja-admin-tareas">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            @foreach (AdminTarea tarea in tareasSuscripciones)
+            @if (tareasSuscripciones?.Count > 0)
             {
-                if (tarea != null)
+                foreach (AdminTarea tarea in tareasSuscripciones)
                 {
-                    string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
+                    if (tarea != null)
+                    {
+                        string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
 
-                    <button @onclick="(e => ClickearSuscripcionStreaming(e, tarea))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
-                        <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tarea.Id)?.ImagenIcono" style="height: 22px;" />
-                                    <div>@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tarea.Id)?.Nombre</div>
+                        <button @onclick="(e => ClickearSuscripcionStreaming(e, tarea))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tarea.Id)?.ImagenIcono" style="height: 22px;" />
+                                        <div>@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tarea.Id)?.Nombre</div>
+                                    </div>
+
+                                    <div>@tiempo</div>
                                 </div>
-
-                                <div>@tiempo</div>
-                            </div>
                             
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="text-align: right;">@tarea.Cantidad</div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="text-align: right;">@tarea.Cantidad</div>
 
-                                @if (tarea.Valor1 > 0)
-                                {
-                                    <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                        @if (tarea.Valor1 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor1</div>
-                                        }
+                                    @if (tarea.Valor1 > 0)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                            @if (tarea.Valor1 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor1</div>
+                                            }
 
-                                        @if (tarea.Valor2 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor2</div>
-                                        }
-                                    </div>
-                                }
+                                            @if (tarea.Valor2 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor2</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    </button>
+                        </button>
+                    }
                 }
             }
         </div>
@@ -124,43 +126,46 @@
 
     <div class="caja-admin-tareas">
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            @foreach (AdminTarea tarea in tareasStreaming)
+            @if (tareasStreaming?.Count > 0)
             {
-                if (tarea != null)
+                foreach (AdminTarea tarea in tareasStreaming)
                 {
-                    string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
+                    if (tarea != null)
+                    {
+                        string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
 
-                    <button @onclick="(e => ClickearSuscripcionStreaming(e, tarea))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
-                        <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="@Streaming2.StreamingCargar.DevolverStreaming(tarea.Id)?.ImagenIcono" style="height: 22px;" />
-                                    <div>@Streaming2.StreamingCargar.DevolverStreaming(tarea.Id)?.Nombre</div>
+                        <button @onclick="(e => ClickearSuscripcionStreaming(e, tarea))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
+                            <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <img src="@Streaming2.StreamingCargar.DevolverStreaming(tarea.Id)?.ImagenIcono" style="height: 22px;" />
+                                        <div>@Streaming2.StreamingCargar.DevolverStreaming(tarea.Id)?.Nombre</div>
+                                    </div>
+
+                                    <div>@tiempo</div>
                                 </div>
 
-                                <div>@tiempo</div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <div style="text-align: right;">@tarea.Cantidad</div>
+
+                                    @if (tarea.Valor1 > 0)
+                                    {
+                                        <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                            @if (tarea.Valor1 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor1</div>
+                                            }
+
+                                            @if (tarea.Valor2 > 0)
+                                            {
+                                                <div style="font-size: 14px;">@tarea.Valor2</div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
                             </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="text-align: right;">@tarea.Cantidad</div>
-
-                                @if (tarea.Valor1 > 0)
-                                {
-                                    <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                        @if (tarea.Valor1 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor1</div>
-                                        }
-
-                                        @if (tarea.Valor2 > 0)
-                                        {
-                                            <div style="font-size: 14px;">@tarea.Valor2</div>
-                                        }
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </button>
+                        </button>
+                    }
                 }
             }
         </div>
@@ -175,17 +180,21 @@
     [Inject]
     protected Herramientas.IDecompiladores decompilador { get; set; }
 
+    public List<AdminTarea> tareasEnUso = new List<AdminTarea>();
+
     [PersistentState] public List<AdminTarea> tareasTiendas { get; set; }
     [PersistentState] public List<AdminTarea> tareasSuscripciones { get; set; }
     [PersistentState] public List<AdminTarea> tareasStreaming { get; set; }
 
     private PeriodicTimer cronometro = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        tareasTiendas ??= BaseDatos.Admin.Buscar.TareasTiendas();
-        tareasSuscripciones ??= BaseDatos.Admin.Buscar.TareasSuscripciones();
-        tareasStreaming ??= BaseDatos.Admin.Buscar.TareasStreaming();
+        tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
+        tareasTiendas ??= await BaseDatos.Admin.Buscar.TareasTiendas();
+        tareasSuscripciones ??= await BaseDatos.Admin.Buscar.TareasSuscripciones();
+        tareasStreaming ??= await BaseDatos.Admin.Buscar.TareasStreaming();
 
         Actualizar();
     }
@@ -198,17 +207,17 @@
         {
             if (tareasTiendas?.Count > 0)
             {
-                tareasTiendas = BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasTiendas);
+                tareasTiendas = await BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasTiendas);
             }
 
             if (tareasSuscripciones?.Count > 0)
             {
-                tareasSuscripciones = BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasSuscripciones);
+                tareasSuscripciones = await BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasSuscripciones);
             }
 
             if (tareasStreaming?.Count > 0)
             {
-                tareasStreaming = BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasStreaming);
+                tareasStreaming = await BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasStreaming);
             }
 
             await InvokeAsync(StateHasChanged);

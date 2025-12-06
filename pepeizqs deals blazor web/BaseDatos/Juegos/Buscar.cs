@@ -11,54 +11,76 @@ namespace BaseDatos.Juegos
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
 		public static Juego UnJuego(int id)
 		{
 			return UnJuego(id.ToString());
 		}
 
-		public static Juego UnJuego(string id = null, string idSteam = null, string idGog = null, string idEpic = null, SqlConnection conexion = null)
+		public static Juego UnJuego(string id = null, string idSteam = null, string idGog = null, string idEpic = null)
 		{
 			string sqlBuscar = string.Empty;
 
 			if (string.IsNullOrEmpty(id) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE id=@id", new { id });
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Uno Web", ex);
+				}
 			}
 			else
 			{
 				if (string.IsNullOrEmpty(idSteam) == false)
 				{
-					conexion = CogerConexion(conexion);
-
-					return conexion.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam });
+					try
+					{
+						return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						{
+							return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+						});
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Juego Uno Steam", ex);
+					}
 				}
 				else
 				{
 					if (string.IsNullOrEmpty(idGog) == false)
 					{
-						conexion = CogerConexion(conexion);
-
-						return conexion.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog });
+						try
+						{
+							return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+							{
+								return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
+							});
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Juego Uno GOG", ex);
+						}
 					}
 					else
 					{
 						if (string.IsNullOrEmpty(idEpic) == false)
 						{
-							conexion = CogerConexion(conexion);
-
-							return conexion.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic });
+							try
+							{
+								return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+								{
+									return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
+								});
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje("Juego Uno Epic", ex);
+							}
 						}
 					}
 				}
@@ -67,10 +89,8 @@ namespace BaseDatos.Juegos
 			return null;
 		}
 
-		public static Juego UnJuegoReducido(int id, SqlConnection conexion = null)
+		public static Juego UnJuegoReducido(int id)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
@@ -107,13 +127,23 @@ namespace BaseDatos.Juegos
 FROM juegos j
 WHERE id=@id";
 
-			return conexion.QueryFirstOrDefault<Juego>(busqueda, new { id });
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Juego>(busqueda, new { id }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Uno Reducido", ex);
+			}
+
+			return null;
 		}
 
-		public static Juego UnJuegoComparador(int id, SqlConnection conexion = null)
+		public static Juego UnJuegoComparador(int id)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
@@ -151,10 +181,22 @@ WHERE id=@id";
 FROM juegos j
 WHERE id=@id";
 
-			return conexion.QueryFirstOrDefault<Juego>(busqueda, new { id });
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QueryFirstOrDefault<Juego>(busqueda, new { id }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Uno Comparador", ex);
+			}
+
+			return null;
 		}
 
-		public static List<Juego> MultiplesJuegos(List<string> ids, SqlConnection conexion = null)
+		public static List<Juego> MultiplesJuegos(List<string> ids)
         {
             string sqlBuscar = string.Empty;
 
@@ -186,15 +228,23 @@ WHERE id=@id";
 
 			if (string.IsNullOrEmpty(sqlBuscar) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(sqlBuscar).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
+				}
 			}
 
 			return new List<Juego>();
         }
 
-        public static List<Juego> MultiplesJuegos(List<JuegoDeseado> ids, SqlConnection conexion = null)
+        public static List<Juego> MultiplesJuegos(List<JuegoDeseado> ids)
         {
             List<Juego> juegos = new List<Juego>();
             string sqlBuscar = string.Empty;
@@ -227,15 +277,23 @@ WHERE id=@id";
 
             if (string.IsNullOrEmpty(sqlBuscar) == false)
             {
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(sqlBuscar).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
+				}
 			}
 
             return juegos;
         }
 
-		public static List<Juego> MultiplesJuegosSteam2(List<int> ids, SqlConnection conexion = null)
+		public static List<Juego> MultiplesJuegosSteam2(List<int> ids)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -285,15 +343,23 @@ WHERE idSteam IN (";
 
 			if (string.IsNullOrEmpty(sqlBuscar) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(sqlBuscar).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam", ex);
+				}
 			}
 
 			return new List<Juego>();
 		}
 
-		public static List<int> MultiplesJuegosSteamOrdenado(List<int> ids, SqlConnection conexion = null)
+		public static List<int> MultiplesJuegosSteamOrdenado(List<int> ids)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -322,17 +388,24 @@ WHERE idSteam IN (";
 
 			if (string.IsNullOrEmpty(sqlBuscar) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<int>(sqlBuscar).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<int>(sqlBuscar, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam Ordenado", ex);
+				}
 			}
 
 			return new List<int>();
 		}
 
-		public static List<Juego> MultiplesJuegosGOG(List<string> ids, SqlConnection conexion = null)
+		public static List<Juego> MultiplesJuegosGOG(List<string> ids)
 		{
-			List<Juego> juegos = new List<Juego>();
 			string sqlBuscar = string.Empty;
 
 			if (ids != null)
@@ -362,15 +435,23 @@ WHERE idSteam IN (";
 
 			if (string.IsNullOrEmpty(sqlBuscar) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(sqlBuscar).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples GOG", ex);
+				}
 			}
 
-			return juegos;
+			return new List<Juego>();
 		}
 
-		public static List<JuegoUsuario> MultiplesJuegosUsuario(List<JuegoUsuario> juegos, JuegoDRM drm, List<string> ids, SqlConnection conexion = null)
+		public static List<JuegoUsuario> MultiplesJuegosUsuario(List<JuegoUsuario> juegos, JuegoDRM drm, List<string> ids)
 		{
 			bool cogerNumero = false;
 			string campo = string.Empty;
@@ -432,48 +513,56 @@ WHERE idSteam IN (";
 
 					if (string.IsNullOrEmpty(sqlBuscar) == false)
 					{
-						conexion = CogerConexion(conexion);
-
-						var resultados = conexion.Query<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar);
-
-						foreach (var fila in resultados)
+						try
 						{
-							var existente = juegos?.FirstOrDefault(j => j.Id == fila.id);
-
-							string drmId = null;
-
-							if (fila.drmValor != null && fila.drmValor is not DBNull)
+							var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 							{
-								drmId = cogerNumero ? fila.drmValor.ToString() : (string)fila.drmValor;
-							}
+								return sentencia.Connection.Query<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar, transaction: sentencia).ToList();
+							});
 
-							if (existente != null)
+							foreach (var fila in resultados)
 							{
-								existente.DRMs.Add(new JuegoUsuarioDRM
+								var existente = juegos?.FirstOrDefault(j => j.Id == fila.id);
+
+								string drmId = null;
+
+								if (fila.drmValor != null && fila.drmValor is not DBNull)
 								{
-									DRM = drm,
-									Id = drmId
-								});
+									drmId = cogerNumero ? fila.drmValor.ToString() : (string)fila.drmValor;
+								}
 
-								continue;
-							}
-
-							var nuevo = new JuegoUsuario
-							{
-								Id = fila.id,
-								Nombre = fila.nombre,
-								Imagen = fila.imagen,
-								DRMs = new List<JuegoUsuarioDRM>
+								if (existente != null)
 								{
-									new JuegoUsuarioDRM
+									existente.DRMs.Add(new JuegoUsuarioDRM
 									{
 										DRM = drm,
 										Id = drmId
-									}
-								}
-							};
+									});
 
-							juegos.Add(nuevo);
+									continue;
+								}
+
+								var nuevo = new JuegoUsuario
+								{
+									Id = fila.id,
+									Nombre = fila.nombre,
+									Imagen = fila.imagen,
+									DRMs = new List<JuegoUsuarioDRM>
+									{
+										new JuegoUsuarioDRM
+										{
+											DRM = drm,
+											Id = drmId
+										}
+									}
+								};
+
+								juegos.Add(nuevo);
+							}
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Usuario", ex);
 						}
 					}
 				}
@@ -482,39 +571,8 @@ WHERE idSteam IN (";
 			return juegos;
 		}
 
-		public static List<Juego> Nombre(string nombre, int cantidad = 30, SqlConnection conexion = null)
+		public static List<Juego> Nombre2(string nombre, int cantidadResultados = 10)
 		{
-			List<Juego> juegos = new List<Juego>();
-
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				juegos = Nombre(nombre, conexion, cantidad, true, -1, true);
-			}
-
-			if (juegos.Count > 0)
-			{
-				return juegos;
-			}
-
-			return null;
-		}
-
-		public static List<Juego> Nombre2(string nombre, int cantidadResultados = 10, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
@@ -557,13 +615,23 @@ WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON
 END DESC";
 			}
 
-			return conexion.Query<Juego>(busqueda, new { cantidad = cantidadResultados }).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Nombre", ex);
+			}
+
+			return new List<Juego>();
 		}
 
-		public static List<Juego> NombreComparador(string nombre, int cantidadResultados = 10, SqlConnection conexion = null)
+		public static List<Juego> NombreComparador(string nombre, int cantidadResultados = 10)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
@@ -620,15 +688,25 @@ WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON
 END DESC";
 			}
 
-			return conexion.Query<Juego>(busqueda, new { cantidad = cantidadResultados }).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Comparador", ex);
+			}
+
+			return new List<Juego>();
 		}
 
-		public static List<Juego> Nombre(string nombre, SqlConnection conexion, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)
+		public static List<Juego> Nombre(string nombre, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)
 		{
 			if (string.IsNullOrEmpty(nombre) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				string busqueda = string.Empty;
 				string busquedaTodo = "*";
 
@@ -712,13 +790,23 @@ END DESC";
 					busqueda = busqueda + " OPTION (MAXDOP 8);";
 				}
 
-				return conexion.Query<Juego>(busqueda).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Nombre", ex);
+				}
 			}
 
 			return null;
 		}
 
-		public static List<Juego> Minimos(SqlConnection conexion = null, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
+		public static List<Juego> Minimos(int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
 		{
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
@@ -971,25 +1059,41 @@ FROM seccionMinimos j";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(busqueda).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Minimos", ex);
+				}
 			}
 
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Ultimos(SqlConnection conexion, string tabla, int cantidad)
+		public static List<Juego> Ultimos(string tabla, int cantidad)
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC", transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Ultimos", ex);
+			}
 
-			return conexion.Query<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC").ToList();
+			return new List<Juego>();
 		}
 
-		public static List<Juego> DLCs(string idMaestro = null, JuegoTipo tipo = JuegoTipo.DLC, SqlConnection conexion = null)
+		public static List<Juego> DLCs(string idMaestro = null, JuegoTipo tipo = JuegoTipo.DLC)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = null;
 
 			if (string.IsNullOrEmpty(idMaestro) == false)
@@ -1008,14 +1112,36 @@ FROM seccionMinimos j";
 				busqueda = "SELECT * FROM juegos WHERE (maestro IS NULL AND tipo='1') OR (maestro='no' AND tipo='1') OR (maestro IS NULL AND tipo='3') OR (maestro='no' AND tipo='3') ORDER BY nombre DESC";
 			}
 
-			return conexion.Query<Juego>(busqueda).ToList();
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego DLCs", ex);
+			}
+
+			return new List<Juego>();
 		}
 
-		public static int DLCsCantidad(SqlConnection conexion = null)
+		public static int DLCsCantidad()
 		{
-			conexion = CogerConexion(conexion);
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.QuerySingle<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego DLCs Cantidad", ex);
+			}
 
-			return conexion.QuerySingle<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", commandTimeout: 120);
+			return 0;
 		}
 
 		public static List<Juego> Filtro(List<string> ids, int cantidad, SqlConnection conexion = null)
@@ -1269,15 +1395,23 @@ FROM seccionMinimos j";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(busqueda).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Filtro", ex);
+				}
 			}
 
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Duplicados(SqlConnection conexion = null)
+		public static List<Juego> Duplicados()
 		{
 			string busqueda = @"SELECT * FROM juegos
  WHERE idSteam > 0 AND idSteam IN
@@ -1286,164 +1420,128 @@ FROM seccionMinimos j";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.Query<Juego>(busqueda).ToList();
+				try
+				{
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Duplicados", ex);
+				}
 			}
 
 			return new List<Juego>();
 		}
 
-		public static List<int> BundleSteam(string id, SqlConnection conexion = null)
+		public static List<int> BundleSteam(string id)
 		{
-			List<int> lista = new List<int>();
-
-			if (string.IsNullOrEmpty(id) == false)
+			if (string.IsNullOrEmpty(id))
 			{
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
-
-				using (conexion)
-				{
-					string busqueda = @"DECLARE @ids NVARCHAR(MAX); 
-
-SET @ids = (SELECT idjuegos FROM tiendasteambundles WHERE enlace = '@enlaceSteam');
-
-				SELECT idSteam FROM juegos WHERE id IN(SELECT value FROM STRING_SPLIT(@ids, ','))";
-
-					busqueda = busqueda.Replace("@enlaceSteam", id);
-
-					using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-					{
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							while (lector.Read())
-							{
-								if (lector.IsDBNull(0) == false)
-								{
-									lista.Add(lector.GetInt32(0));
-								}
-							}
-						}
-					}
-				}
+				return new List<int>();
 			}
-			
 
-			return lista;
+			string sql = @"
+				SELECT j.idSteam
+				FROM juegos j
+				WHERE j.id IN (
+					SELECT value 
+					FROM STRING_SPLIT(
+						(SELECT idjuegos FROM tiendasteambundles WHERE enlace = @enlaceSteam),
+						','
+					)
+				)";
+
+			try
+			{
+				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query<int>(sql, new { enlaceSteam = id }, transaction: sentencia).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Bundle Steam", ex);
+			}
+
+			return new List<int>();
 		}
 
-        public static List<Juego> Aleatorios(bool fechaAPISteam = false, SqlConnection conexion = null)
+        public static List<Juego> Aleatorios(bool fechaAPISteam = false)
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+			string sqlBase = @"SELECT TOP 300 id, nombre FROM juegos ORDER BY NEWID()";
 
-            List<Juego> juegos = new List<Juego>();
+			string sqlFecha = @"
+				SELECT TOP 300 
+					id, 
+					nombre, 
+					idSteam, 
+					fechaSteamAPIComprobacion,
+					JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') AS FechaLanzamientoSteam
+				FROM juegos
+				WHERE idSteam > 0
+				ORDER BY NEWID()";
 
-            using (conexion)
-            {
-                string busqueda = @"SELECT TOP 300 id, nombre FROM juegos ORDER BY NEWID()";
-
-				if (fechaAPISteam == true)
+			if (fechaAPISteam == false)
+			{
+				try
 				{
-					busqueda = @"SELECT TOP 300 id, nombre, idSteam, fechaSteamAPIComprobacion, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') FROM juegos WHERE idSteam > 0 ORDER BY NEWID()";
+					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					{
+						return sentencia.Connection.Query<Juego>(sqlBase, transaction: sentencia).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Aleatorios 1", ex);
+				}
+			}
+
+			try
+			{
+				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Query(sqlFecha, transaction: sentencia).ToList();
+				});
+
+				List<Juego> juegos = new List<Juego>();
+
+				foreach (var resultado in resultados)
+				{
+					Juego juego = new Juego
+					{
+						Id = resultado.id,
+						Nombre = resultado.nombre,
+						IdSteam = resultado.idSteam,
+						Caracteristicas = null
+					};
+
+					if (resultado.fechaSteamAPIComprobacion != null)
+					{
+						juego.FechaSteamAPIComprobacion = DateTime.Parse(resultado.fechaSteamAPIComprobacion);
+					}
+
+					if (resultado.FechaLanzamientoSteam != null)
+					{
+						juego.Caracteristicas = new JuegoCaracteristicas
+						{
+							FechaLanzamientoSteam = DateTime.Parse(resultado.FechaLanzamientoSteam)
+						};
+					}
+
+					juegos.Add(juego);
 				}
 
-                using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-                {
-                    using (SqlDataReader lector = comando.ExecuteReader())
-                    {
-                        while (lector.Read())
-                        {
-							Juego juego = new Juego
-							{
-								Id = 0,
-								Nombre = null
-							};
+				return juegos;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Aleatorios 2", ex);
+			}
 
-							try
-                            {
-                                if (lector.IsDBNull(0) == false)
-                                {
-                                    juego.Id = lector.GetInt32(0);
-                                }
-                            }
-                            catch { }
-
-                            try
-                            {
-                                if (lector.IsDBNull(1) == false)
-                                {
-                                    if (string.IsNullOrEmpty(lector.GetString(1)) == false)
-                                    {
-                                        juego.Nombre = lector.GetString(1);
-                                    }
-                                }
-                            }
-                            catch { }
-
-							if (fechaAPISteam == true)
-							{
-								try
-								{
-									if (lector.IsDBNull(2) == false)
-									{
-										juego.IdSteam = lector.GetInt32(2);
-									}
-								}
-								catch { }
-
-								try
-								{
-									if (lector.IsDBNull(3) == false)
-									{
-										if (string.IsNullOrEmpty(lector.GetString(3)) == false)
-										{
-											juego.FechaSteamAPIComprobacion = DateTime.Parse(lector.GetString(3));
-										}
-									}
-								}
-								catch { }
-
-								try
-								{
-									if (lector.IsDBNull(4) == false)
-									{
-										if (string.IsNullOrEmpty(lector.GetString(4)) == false)
-										{
-											juego.Caracteristicas = new JuegoCaracteristicas();
-											juego.Caracteristicas.FechaLanzamientoSteam = DateTime.Parse(lector.GetString(4));
-										}
-									}
-								}
-								catch { }
-							}
-
-                            juegos.Add(juego);
-                        }
-                    }
-                }
-            }
-
-            return juegos;
-        }
+			return new List<Juego>();
+		}
     }
 }

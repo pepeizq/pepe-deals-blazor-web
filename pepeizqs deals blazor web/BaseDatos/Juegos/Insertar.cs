@@ -2,27 +2,14 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Juegos
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Ejecutar(Juego juego, string tabla = "juegos", bool noExiste = false)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(Juego juego, SqlConnection conexion = null, string tabla = "juegos", bool noExiste = false)
-		{
-			conexion = CogerConexion(conexion);
-
 			if (string.IsNullOrEmpty(juego.Nombre) == true)
 			{
 				return;
@@ -146,7 +133,10 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				conexion.Execute(sqlInsertar, parametros);
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					return sentencia.Connection.Execute(sqlInsertar, parametros, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -155,68 +145,47 @@ namespace BaseDatos.Juegos
 			}
 		}
 
-		public static async Task<string> GogReferencia(string idReferencia, SqlConnection conexion = null)
+		public static async Task<string> GogReferencia(string idReferencia)
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				int? idJuegoBD = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
+					return sentencia.Connection.QueryFirstOrDefault<int?>("SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia", new { idReferencia }, transaction: sentencia);
+				}); 
+
+				if (idJuegoBD.HasValue == true && idJuegoBD.Value > 0)
+				{
+					return idJuegoBD.Value.ToString();
 				}
 			}
-
-			bool sePuedeInsertar = true;
-			string buscar = "SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia";
-
-			using (SqlCommand comando = new SqlCommand(buscar, conexion))
+			catch (Exception ex)
 			{
-				comando.Parameters.AddWithValue("@idReferencia", idReferencia);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						if (lector.IsDBNull(1) == false)
-						{
-							sePuedeInsertar = false;
-							return lector.GetInt32(1).ToString();
-						}
-					}
-
-					lector.Dispose();
-				}
-
-				comando.Dispose();
+				Errores.Insertar.Mensaje("GOG Referencia 1", ex);
 			}
 
-			if (sePuedeInsertar == true)
+			string idJuego = await APIs.GOG.Juego.BuscarReferencia(idReferencia);
+
+			if (string.IsNullOrEmpty(idJuego) == false)
 			{
-				string idJuego = await APIs.GOG.Juego.BuscarReferencia(idReferencia);
+				string sqlInsert = @"
+                INSERT INTO gogReferencias2 (idReferencia, idJuego)
+                VALUES (@idReferencia, @idJuego)";
 
-				if (string.IsNullOrEmpty(idJuego) == false)
+				try
 				{
-					string insertar = "INSERT INTO gogReferencias2 (idReferencia, idJuego) VALUES (@idReferencia, @idJuego)";
-
-					using (SqlCommand comando = new SqlCommand(insertar, conexion))
+					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
 					{
-						comando.Parameters.AddWithValue("@idReferencia", idReferencia);
-						comando.Parameters.AddWithValue("@idJuego", idJuego);
-
-						try
+						return sentencia.Connection.Execute(sqlInsert, new
 						{
-							comando.ExecuteNonQuery();
-						}
-						catch (Exception ex)
-						{
-							Errores.Insertar.Mensaje("Añadir GOG Referencia " + idJuego, ex);
-						}
-					}
-
-					return idJuego;
+							idReferencia,
+							idJuego
+						}, transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					Errores.Insertar.Mensaje("GOG Referencia 2 " + idJuego, ex);
 				}
 			}
 

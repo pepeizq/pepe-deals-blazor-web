@@ -53,7 +53,7 @@
         @if (bundleTipoSeleccionado != BundleTipo.Desconocido)
         {
             <div>
-                @foreach (var bundle in BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado).OrderBy(b => b.FechaEmpieza).ToList())
+                @foreach (var bundle in bundles)
                 {
                     <button @onclick="@(e => ClickearBundleNoticias(e, bundle.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -924,9 +924,12 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         enviandoNoticia = false;
     }
 
-    private void CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
+    private List<Bundles2.Bundle> bundles { get; set; }
+
+    private async void CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
     {
         bundleTipoSeleccionado = nuevoTipo;
+        bundles = (await BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado)).OrderBy(b => b.FechaEmpieza).ToList();
     }
 
     private void ClickearBundleNoticias(MouseEventArgs e, int bundleId)
@@ -1146,26 +1149,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         {
             resultadosMostrar.Clear();
 
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+            resultadosMostrar = BaseDatos.Juegos.Buscar.Nombre(cadenaBusqueda, 250, true, -1, true);
 
-            using (conexion)
+            if (resultadosMostrar.Count > 0)
             {
-                resultadosMostrar = BaseDatos.Juegos.Buscar.Nombre(cadenaBusqueda, conexion, 250, true, -1, true);            
-
-                if (resultadosMostrar.Count > 0)
-                {
-                    await InvokeAsync(StateHasChanged);
-                }
+                await InvokeAsync(StateHasChanged);
             }
         }
     }

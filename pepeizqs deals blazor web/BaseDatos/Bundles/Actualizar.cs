@@ -1,169 +1,141 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Bundles
 {
 	public static class Actualizar
 	{
-		public static void Nombre(string id, string nombre, SqlConnection conexion)
+		public static async void Nombre(string id, string nombre)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET nombre=@nombre " +
 					"WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@nombre", nombre);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, nombre }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Nombre", ex);
 			}
 		}
 
-		public static void FechaEmpieza(string id, string fechaEmpieza, SqlConnection conexion)
+		public static async void FechaEmpieza(string id, string fechaEmpieza)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET fechaEmpieza=@fechaEmpieza " +
 					"WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@fechaEmpieza", fechaEmpieza);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, fechaEmpieza }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Fecha Empieza", ex);
 			}
 		}
 
-		public static void FechaTermina(string id, string fechaTermina, SqlConnection conexion)
+		public static async void FechaTermina(string id, string fechaTermina)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET fechaTermina=@fechaTermina " +
 					"WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@fechaTermina", fechaTermina);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, fechaTermina }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Fecha Termina", ex);
 			}
 		}
 
-        public static void ImagenBundle(string id, string imagen, SqlConnection conexion)
+        public static async void ImagenBundle(string id, string imagen)
         {
             string sqlActualizar = "UPDATE bundles " +
                     "SET imagen=@imagen " +
                     "WHERE id=@id";
 
-            using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-            {
-                comando.Parameters.AddWithValue("@id", id);
-                comando.Parameters.AddWithValue("@imagen", imagen);
-
-                comando.ExecuteNonQuery();
-                try
-                {
-
-                }
-                catch
-                {
-
-                }
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, imagen }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Imagen", ex);
 			}
 		}
 
-        public static void ImagenNoticia(string id, string imagen, SqlConnection conexion)
+        public static async void ImagenNoticia(string id, string imagen)
         {
             string sqlActualizar = "UPDATE bundles " +
                     "SET imagenNoticia=@imagenNoticia " +
                     "WHERE id=@id";
 
-            using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-            {
-                comando.Parameters.AddWithValue("@id", id);
-                comando.Parameters.AddWithValue("@imagenNoticia", imagen);
-
-                comando.ExecuteNonQuery();
-                try
-                {
-
-                }
-                catch
-                {
-
-                }
-            }
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, imagenNoticia = imagen }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Imagen Noticia", ex);
+			}
         }
 
-        public static void Juegos(string id, string juegos, SqlConnection conexion)
+        public static async void Juegos(string id, string juegos)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET juegos=@juegos " +
 					"WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@juegos", juegos);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, juegos }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Juegos", ex);
 			}
 		}
 
-		public static void Tiers(string id, string tiers, SqlConnection conexion)
+		public static async void Tiers(string id, string tiers)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET tiers=@tiers " +
 					"WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-				comando.Parameters.AddWithValue("@tiers", tiers);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, tiers }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Actualizar Tiers", ex);
 			}
 		}
 	}

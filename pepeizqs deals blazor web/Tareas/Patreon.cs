@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
@@ -30,31 +29,20 @@ namespace Tareas
 
 				if (piscinaApp == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
-
 					try
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
+						TimeSpan tiempoSiguiente = TimeSpan.FromHours(6);
+
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("patreon", tiempoSiguiente) == true)
+						{
+							BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
+
+							Herramientas.Patreon.Leer();
+						}
 					}
-					catch { }
-
-					if (conexion.State == System.Data.ConnectionState.Open)
+					catch (Exception ex)
 					{
-						try
-						{
-							TimeSpan tiempoSiguiente = TimeSpan.FromHours(6);
-
-							if (BaseDatos.Admin.Buscar.TareaPosibleUsar("patreon", tiempoSiguiente) == true)
-							{
-								BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
-
-								Herramientas.Patreon.Leer();
-							}
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Tarea - Patreon", ex, conexion);
-						}
+						BaseDatos.Errores.Insertar.Mensaje("Tarea - Patreon", ex);
 					}
 				}
 			}

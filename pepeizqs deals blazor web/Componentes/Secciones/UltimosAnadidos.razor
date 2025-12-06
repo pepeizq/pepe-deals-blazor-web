@@ -94,11 +94,6 @@
 			deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 		}
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			juegosMostrar ??= Buscar.Ultimos(conexion, "juegos", 500);
-		}
+		juegosMostrar ??= Buscar.Ultimos("juegos", 500);
 	}
 }

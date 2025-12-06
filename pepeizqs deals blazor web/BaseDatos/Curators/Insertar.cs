@@ -35,7 +35,7 @@ namespace BaseDatos.Curators
 					} 
 					catch (Exception ex) 
 					{ 
-						BaseDatos.Errores.Insertar.Mensaje("Curator", ex); 
+						BaseDatos.Errores.Insertar.Mensaje("Curator Insertar", ex); 
 					}
 				}
 			}

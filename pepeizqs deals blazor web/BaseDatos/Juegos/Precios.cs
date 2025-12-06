@@ -2,14 +2,13 @@
 
 using BaseDatos.Usuarios;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Juegos
 {
 	public static class Precios
 	{
-		public static void Actualizar(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta, SqlConnection conexion, 
+		public static void Actualizar(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta,  
 			string slugGOG = null, string idGOG = null, string slugEpic = null, JuegoAnalisis reseñas = null)
 		{
 			bool cambioPrecio = true;
@@ -417,7 +416,7 @@ namespace BaseDatos.Juegos
 				ahora = DateTime.Now;
 			}
 			
-			Juegos.Actualizar.Comprobacion(cambioPrecio, id, ofertasActuales, ofertasHistoricas, historicos, conexion, slugGOG, idGOG, slugEpic, ahora, reseñas);
+			Juegos.Actualizar.Comprobacion(cambioPrecio, id, ofertasActuales, ofertasHistoricas, historicos, slugGOG, idGOG, slugEpic, ahora, reseñas);
 		}
 
 		private static List<JuegoHistorico> ComprobarHistoricos(List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta)

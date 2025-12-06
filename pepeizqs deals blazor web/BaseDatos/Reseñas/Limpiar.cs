@@ -1,27 +1,24 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Reseñas
 {
 	public static class Limpiar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static void Ejecutar()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				{
+					sentencia.Connection.Execute("TRUNCATE TABLE juegosAnalisis", transaction: sentencia);
+				});
 			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			conexion.Execute("TRUNCATE TABLE juegosAnalisis");
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Reseñas Limpiar", ex);
+			}
 		}
 	}
 }

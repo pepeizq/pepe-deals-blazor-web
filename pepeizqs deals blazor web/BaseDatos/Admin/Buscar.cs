@@ -9,13 +9,13 @@ namespace BaseDatos.Admin
 {
 	public static class Buscar
 	{
-		public static int Dato(string id)
+		public static async Task<int> Dato(string id)
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -26,13 +26,13 @@ namespace BaseDatos.Admin
 			return 0;
 		}
 
-		public static bool TiendasPosibleUsar(TimeSpan tiempo, string tiendaId)
+		public static async Task<bool> TiendasPosibleUsar(TimeSpan tiempo, string tiendaId)
 		{
 			try
 			{
-				DateTime? fecha = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				DateTime? fecha = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId }, transaction: sentencia);
 				});
 
 				if (fecha == null)
@@ -44,19 +44,19 @@ namespace BaseDatos.Admin
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Admin Buscar Dato", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Posible Usar", ex);
 			}
 
 			return false;
 		}
 
-		public static List<AdminTarea> TiendasEnUso(TimeSpan tiempo)
+		public static async Task<List<AdminTarea>> TiendasEnUso(TimeSpan tiempo)
 		{
 			try
 			{
-				List<AdminTarea> tiendas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				List<AdminTarea> tiendas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC", transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC", transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				tiendas = tiendas.Where(t =>
@@ -108,13 +108,13 @@ namespace BaseDatos.Admin
 			return new List<AdminTarea>();
 		}
 
-		public static int TiendasValorAdicional(string id, string valor)
+		public static async Task<int> TiendasValorAdicional(string id, string valor)
 		{
 			try
 			{
-				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM adminTiendas WHERE id=@id", new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendas WHERE id=@id", new { id }, transaction: sentencia);
 				});
 
 				if (fila == null)
@@ -137,7 +137,7 @@ namespace BaseDatos.Admin
 			return 0;
 		}
 
-		public static List<AdminTarea> TareasTiendas()
+		public static async Task<List<AdminTarea>> TareasTiendas()
 		{
 			try
 			{
@@ -161,9 +161,9 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 			}
@@ -175,7 +175,7 @@ namespace BaseDatos.Admin
 			return new List<AdminTarea>();
 		}
 
-		public static List<AdminTarea> TareasSuscripciones()
+		public static async Task<List<AdminTarea>> TareasSuscripciones()
 		{
 			try
 			{
@@ -199,21 +199,21 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Suscripciones", ex);
 			}
 
 			return new List<AdminTarea>();
 		}
 
-		public static List<AdminTarea> TareasStreaming()
+		public static async Task<List<AdminTarea>> TareasStreaming()
 		{
 			try
 			{
@@ -234,21 +234,21 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Streaming", ex);
 			}
 
 			return new List<AdminTarea>();
 		}
 
-		public static List<AdminTarea> TareasUltimos60Segundos(List<AdminTarea> tareas)
+		public static async Task<List<AdminTarea>> TareasUltimos60Segundos(List<AdminTarea> tareas)
 		{
 			try
 			{
@@ -283,9 +283,9 @@ namespace BaseDatos.Admin
 					sql = sql + ")";
 				}
 
-				List<AdminTarea> nuevas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				List<AdminTarea> nuevas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<AdminTarea>(sql, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				var diccionarioNuevas = nuevas.ToDictionary(t => t.Id);
@@ -302,13 +302,13 @@ namespace BaseDatos.Admin
 			return new List<AdminTarea>();
 		}
 
-		public static bool TareaPosibleUsar(string id, TimeSpan tiempo)
+		public static async Task<bool> TareaPosibleUsar(string id, TimeSpan tiempo)
 		{
 			try
 			{
-				DateTime? fecha = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				DateTime? fecha = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id }, transaction: sentencia);
 				}); 
 
 				if (fecha == null)
@@ -326,13 +326,13 @@ namespace BaseDatos.Admin
 			return true;
 		}
 
-		public static bool TiendasLibre()
+		public static async Task<bool> TiendasLibre()
 		{
 			try
 			{
-				int enUso = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				int enUso = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())", transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())", transaction: sentencia);
 				}); 
 
 				return enUso == 0;
@@ -345,13 +345,13 @@ namespace BaseDatos.Admin
 			return true;
 		}
 
-		public static int CantidadErrores()
+		public static async Task<int> CantidadErrores()
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<int>("SELECT COUNT(*) FROM errores OPTION (MAXDOP 8)", transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM errores OPTION (MAXDOP 8)", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
