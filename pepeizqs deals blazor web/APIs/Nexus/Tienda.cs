@@ -2,7 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -30,9 +29,9 @@ namespace APIs.Nexus
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			HttpClient cliente = new HttpClient();
 			cliente.BaseAddress = new Uri("https://www.nexus.gg//");
@@ -61,75 +60,72 @@ namespace APIs.Nexus
 				{
 					int juegos2 = 0;
 
-					if (juegos.Resultados != null)
+					if (juegos.Resultados?.Count > 0)
 					{
-						if (juegos.Resultados.Count > 0)
+						foreach (var juego in juegos.Resultados)
 						{
-							foreach (var juego in juegos.Resultados)
+							decimal precioRebajado = juego.PrecioRebajado;
+							decimal precioBase = juego.PrecioBase;
+
+							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+							if (descuento > 0)
 							{
-								decimal precioRebajado = juego.PrecioRebajado;
-								decimal precioBase = juego.PrecioBase;
+								bool drmValido = false;
 
-								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-								if (descuento > 0)
+								if (juego.DRMs.Count > 0)
 								{
-									bool drmValido = false;
-
-									if (juego.DRMs.Count > 0)
+									foreach (var drm in juego.DRMs)
 									{
-										foreach (var drm in juego.DRMs)
+										if (drm.ToLower() == "steam")
 										{
-											if (drm.ToLower() == "steam")
-											{
-												drmValido = true;
-												break;
-											}
+											drmValido = true;
+											break;
 										}
 									}
+								}
 
-									if (drmValido == true)
+								if (drmValido == true)
+								{
+									string nombre = juego.Nombre;
+									nombre = WebUtility.HtmlDecode(nombre);
+
+									string enlace = "https://www.nexus.gg/pepeizq/" + juego.Slug;
+
+									string imagen = string.Empty;
+
+									JuegoPrecio oferta = new JuegoPrecio
 									{
-										string nombre = juego.Nombre;
-										nombre = WebUtility.HtmlDecode(nombre);
+										Nombre = nombre,
+										Enlace = enlace,
+										Imagen = imagen,
+										Moneda = JuegoMoneda.Dolar,
+										Precio = precioRebajado,
+										Descuento = descuento,
+										Tienda = Generar().Id,
+										DRM = JuegoDRM.Steam,
+										FechaDetectado = DateTime.Now,
+										FechaActualizacion = DateTime.Now
+									};
 
-										string enlace = "https://www.nexus.gg/pepeizq/" + juego.Slug;
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									}
 
-										string imagen = string.Empty;
+									juegos2 += 1;
 
-										JuegoPrecio oferta = new JuegoPrecio
-										{
-											Nombre = nombre,
-											Enlace = enlace,
-											Imagen = imagen,
-											Moneda = JuegoMoneda.Dolar,
-											Precio = precioRebajado,
-											Descuento = descuento,
-											Tienda = Generar().Id,
-											DRM = JuegoDRM.Steam,
-											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now
-										};
-
-										try
-										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-										}
-
-										juegos2 += 1;
-
-										try
-										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-										}
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 									}
 								}
 							}

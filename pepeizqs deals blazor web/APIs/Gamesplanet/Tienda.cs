@@ -2,8 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Xml.Serialization;
 
@@ -84,9 +82,9 @@ namespace APIs.Gamesplanet
 			return enlace + "?ref=pepeizq";
 		}
 
-		public static async Task BuscarOfertasUk(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertasUk()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -184,22 +182,22 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+                                    await BaseDatos.Tiendas.Comprobar.Resto(oferta);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
                                 }
 
                                 juegos2 += 1;
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
+                                    await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
                                 }
                             }
                         }
@@ -208,9 +206,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-        public static async Task BuscarOfertasFr(SqlConnection conexion, IDecompiladores decompilador)
+        public static async Task BuscarOfertasFr()
         {
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -308,22 +306,22 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
                                 }
 
                                 juegos2 += 1;
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
+                                    await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
                                 }
                             }
                         }
@@ -332,9 +330,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-		public static async Task BuscarOfertasDe(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertasDe()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -432,22 +430,22 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
                                 }
 
                                 juegos2 += 1;
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
+									await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
                                 }
                             }
                         }
@@ -456,9 +454,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-		public static async Task BuscarOfertasUs(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertasUs()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0);
 
             int juegos2 = 0;
 
@@ -556,22 +554,22 @@ namespace APIs.Gamesplanet
 
                                 try
                                 {
-                                    BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
                                 }
 
                                 juegos2 += 1;
 
                                 try
                                 {
-                                    BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
+									await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
                                 }
                                 catch (Exception ex)
                                 {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex, conexion);
+                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
                                 }
                             }
                         }

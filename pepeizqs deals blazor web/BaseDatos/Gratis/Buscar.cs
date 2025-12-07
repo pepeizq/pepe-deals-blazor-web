@@ -41,7 +41,7 @@ FROM(
 			return new List<JuegoGratis>();
 		}
 
-        public static List<JuegoGratis> Año(string año)
+        public static async Task<List<JuegoGratis>> Año(string año)
         {
 			string busqueda = @"SELECT sub.*
 FROM (
@@ -55,9 +55,9 @@ ORDER BY sub.nombre DESC;
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<JuegoGratis>(busqueda, new { año }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, new { año }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -68,7 +68,7 @@ ORDER BY sub.nombre DESC;
 			return new List<JuegoGratis>();
 		}
 
-		public static JuegoGratis UnJuego(string juegoId)
+		public static async Task<JuegoGratis> UnJuego(string juegoId)
 		{
 			string busqueda = @"SELECT TOP 1 sub.*
 FROM (
@@ -80,9 +80,9 @@ ORDER BY sub.ID DESC;";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<JuegoGratis>(busqueda, new { juegoId }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { juegoId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -117,7 +117,7 @@ FROM (
 			return new JuegoGratis();
 		}
 
-		public static List<JuegoGratis> Ultimos(int cantidad)
+		public static async Task<List<JuegoGratis>> Ultimos(int cantidad)
         {
 			string busqueda = @"SELECT sub.*
 FROM (
@@ -129,9 +129,9 @@ FROM (
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<JuegoGratis>(busqueda, new { cantidad }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, new { cantidad }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)

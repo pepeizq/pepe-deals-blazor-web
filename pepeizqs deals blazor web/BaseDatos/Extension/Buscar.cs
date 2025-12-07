@@ -53,7 +53,7 @@ namespace BaseDatos.Extension
 
 	public static class Buscar
 	{
-		public static Extension Steam2(string id)
+		public static async Task<Extension> Steam2(string id)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -69,10 +69,10 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
 
-			return GenerarDatos(buscar);
+			return await GenerarDatos(buscar);
 		}
 
-		public static Extension Gog2(string slug)
+		public static async Task<Extension> Gog2(string slug)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -88,10 +88,10 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
 
-			return GenerarDatos(buscar);
+			return await GenerarDatos(buscar);
 		}
 
-		public static Extension EpicGames2(string slug)
+		public static async Task<Extension> EpicGames2(string slug)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
 (
@@ -107,16 +107,16 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
 
-			return GenerarDatos(buscar);
+			return await GenerarDatos(buscar);
 		}
 
-		private static Extension GenerarDatos(string buscar)
+		private static async Task<Extension> GenerarDatos(string buscar)
 		{
 			try
 			{
-				var fila2 = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var fila2 = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<dynamic>(buscar, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<dynamic>(buscar, transaction: sentencia);
 				});
 
 				IDictionary<string, object> fila = (IDictionary<string, object>)fila2;

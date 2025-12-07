@@ -1,39 +1,29 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Errores
 {
     public static class Buscar
     {
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static List<Error> Todos(SqlConnection conexion = null)
+		public static async Task<List<Error>> Todos()
         {
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT * FROM errores ORDER BY fecha DESC";
 
-			return conexion.Query<Error>(busqueda).ToList();
+			return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			{
+				return await sentencia.Connection.QueryAsync<Error>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+			});
         }
     }
 
     public class Error
     {
-        public string Seccion;
-        public string Mensaje;
-        public string Stacktrace;
-        public DateTime Fecha;
-        public string Enlace;
-        public string SentenciaSQL;
-    }
+        public string Seccion { get; set; }
+        public string Mensaje { get; set; }
+		public string Stacktrace { get; set; }
+		public DateTime Fecha { get; set; }
+		public string Enlace { get; set; }
+		public string SentenciaSQL { get; set; }
+	}
 }

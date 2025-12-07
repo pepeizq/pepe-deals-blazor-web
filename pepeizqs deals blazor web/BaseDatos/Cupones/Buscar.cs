@@ -1,65 +1,32 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Cupones
 {
 	public static class Buscar
 	{
-		public static Cupon Cargar(SqlDataReader lector)
+		public static async Task<Cupon> Activos(string tienda)
 		{
-			Cupon cupon = new Cupon();
-			cupon.Codigo = lector.GetString(1);
-			cupon.FechaEmpieza = lector.GetDateTime(2);
-			cupon.FechaTermina = lector.GetDateTime(3);
+			string sql = @"
+				SELECT *
+				FROM cupones
+				WHERE fechaEmpieza < GETDATE() 
+				  AND fechaTermina > GETDATE()
+				  AND tienda = @tienda
+			";
 
-			if (lector.IsDBNull(4) == false)
+			try
 			{
-				cupon.Porcentaje = lector.GetInt32(4);
-			}
-
-			if (lector.IsDBNull(5) == false)
-			{
-				cupon.PrecioMinimo = lector.GetDecimal(5);
-			}
-
-			cupon.TiendaID = lector.GetString(6);
-
-			if (lector.IsDBNull(7) == false)
-			{
-				cupon.PrecioRebaja = lector.GetDecimal(7);
-			}
-
-			return cupon;
-		}
-
-		public static Cupon Activos(string tienda, SqlConnection conexion = null)
-		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Cupon>(sql, new { tienda }, transaction: sentencia);
+				});
+
 			}
-
-			string busqueda = "SELECT * FROM cupones WHERE fechaEmpieza < GETDATE() AND fechaTermina > GETDATE() AND tienda='@tienda'";
-
-			busqueda = busqueda.Replace("@tienda", tienda);
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+			catch (Exception ex)
 			{
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					while (lector.Read() == true)
-					{
-						return Cargar(lector);
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Cupones Activos", ex, null, false);
 			}
 
 			return null;

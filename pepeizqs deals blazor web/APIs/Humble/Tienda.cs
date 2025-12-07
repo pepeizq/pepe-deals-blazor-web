@@ -8,7 +8,6 @@
 using Dapper;
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -76,30 +75,21 @@ namespace APIs.Humble
             return "https://humblebundleinc.sjv.io/c/1382810/2059850/25796?u=" + enlace;
 		}
 
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task BuscarOfertas()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static async Task BuscarOfertas(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
 			string busqueda = "SELECT contenido, enlace FROM temporalhumble";
 
-			var filas = conexion.Query(busqueda);
-
 			try
 			{
+				IEnumerable<dynamic> filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia);
+				});
+
 				foreach (var fila in filas)
 				{
 					if (fila.contenido != null && string.IsNullOrEmpty((string)fila.contenido) == false)
@@ -223,7 +213,7 @@ namespace APIs.Humble
 											{
 												try
 												{
-													BaseDatos.Tiendas.Comprobar.Resto(oferta);
+													await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 												}
 												catch (Exception ex)
 												{
@@ -252,7 +242,10 @@ namespace APIs.Humble
 					{
 						string limpieza = "DELETE FROM temporalhumble WHERE enlace=@enlace";
 
-						conexion.Execute(limpieza, new { enlace = fila.enlace });
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.ExecuteAsync(limpieza, new { enlace = fila.enlace }, transaction: sentencia);
+						});
 					}
 				}
 			}

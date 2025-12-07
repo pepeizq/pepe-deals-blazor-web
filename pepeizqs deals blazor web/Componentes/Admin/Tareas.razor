@@ -190,8 +190,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
-
         tareasTiendas ??= await BaseDatos.Admin.Buscar.TareasTiendas();
         tareasSuscripciones ??= await BaseDatos.Admin.Buscar.TareasSuscripciones();
         tareasStreaming ??= await BaseDatos.Admin.Buscar.TareasStreaming();
@@ -205,6 +203,8 @@
 
         while (await cronometro.WaitForNextTickAsync())
         {
+            tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
             if (tareasTiendas?.Count > 0)
             {
                 tareasTiendas = await BaseDatos.Admin.Buscar.TareasUltimos60Segundos(tareasTiendas);
@@ -228,7 +228,7 @@
     {
         if (string.IsNullOrEmpty(id) == false)
         {
-            await TiendasCargar.AdminTiendas(id, decompilador);
+            await TiendasCargar.TareasGestionador(id);
         }
     }
 

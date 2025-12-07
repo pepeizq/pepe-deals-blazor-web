@@ -6,13 +6,13 @@ namespace BaseDatos.CorreosEnviar
 {
 	public static class Borrar
 	{
-		public static void Ejecutar(int id)
+		public static async void Ejecutar(int id)
 		{
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute("DELETE FROM correosEnviar WHERE id=@id", new { id }, transaction: sentencia);
+					await sentencia.Connection.ExecuteAsync("DELETE FROM correosEnviar WHERE id=@id", new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

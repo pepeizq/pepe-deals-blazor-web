@@ -3615,44 +3615,6 @@
                     }
 
                     #endregion
-
-                    if (juego.Tipo == JuegoTipo.Game)
-                    {
-                        #region Cantidad Jugadores
-
-                        if (juego.Caracteristicas?.FechaLanzamientoSteam != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
-                        {
-                            if (DateTime.Now > juego.Caracteristicas?.FechaLanzamientoSteam)
-                            {
-                                bool actualizarCantidadJugadores = false;
-
-                                if (juego.CantidadJugadores == null)
-                                {
-                                    actualizarCantidadJugadores = true;
-                                }
-                                else
-                                {
-                                    if (juego.CantidadJugadores.Fecha.AddMinutes(30) < DateTime.Now)
-                                    {
-                                        actualizarCantidadJugadores = true;
-                                    }
-                                }
-
-                                if (actualizarCantidadJugadores == true)
-                                {
-                                    JuegoCantidadJugadoresSteam cantidadNueva = new JuegoCantidadJugadoresSteam();
-                                    cantidadNueva.Cantidad = await APIs.Steam.Juego.CargarCantidadJugadores(juego.IdSteam.ToString());
-                                    cantidadNueva.Fecha = DateTime.Now;
-
-                                    juego.CantidadJugadores = cantidadNueva;
-
-                                    global::BaseDatos.Juegos.Actualizar.CantidadJugadoresSteam(juego);
-                                }
-                            }
-                        }
-
-                        #endregion
-                    }
                 }
 
                 if (juego.IdGog > 0)

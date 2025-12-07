@@ -382,7 +382,7 @@ app.MapGet("extension/steam2/{id}/{clave}/", async (int id, string clave) =>
 
 	if (clave == claveExtension)
 	{
-		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.Steam2(id.ToString());
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Steam2(id.ToString());
 
 		if (juego != null)
 		{
@@ -404,7 +404,7 @@ app.MapGet("extension/gog2/{slug}/{clave}/", async (string slug, string clave) =
 
 	if (clave == claveExtension)
 	{
-		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.Gog2(slug);
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Gog2(slug);
 
 		if (juego != null)
 		{
@@ -426,7 +426,7 @@ app.MapGet("extension/epic2/{slug}/{clave}/", async (string slug, string clave) 
 
 	if (clave == claveExtension)
 	{
-		BaseDatos.Extension.Extension juego = BaseDatos.Extension.Buscar.EpicGames2(slug);
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.EpicGames2(slug);
 
 		if (juego != null)
 		{

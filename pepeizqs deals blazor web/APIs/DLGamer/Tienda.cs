@@ -39,9 +39,9 @@ namespace APIs.DLGamer
 			return enlace + "?affil=pepeizqdeals";
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -57,7 +57,7 @@ namespace APIs.DLGamer
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+					BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 				}
 
 				if (basedatos != null)
@@ -95,22 +95,22 @@ namespace APIs.DLGamer
 
 							try
 							{
-								BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+								await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 							}
 							catch (Exception ex)
 							{
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
                             }
 
 							juegos2 += 1;
 
 							try
 							{
-								BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
                             }
 						}
 					}

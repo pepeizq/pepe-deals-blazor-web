@@ -1,119 +1,108 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 using Newtonsoft.Json;
 
 namespace BaseDatos.Bundles
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(Bundles2.Bundle bundle) 
+		public static async void Ejecutar(Bundles2.Bundle bundle) 
 		{
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				string sqlInsertar = "INSERT INTO bundles " +
+			string sqlInsertar = "INSERT INTO bundles " +
 					"(bundleTipo, nombre, tienda, imagen, enlace, fechaEmpieza, fechaTermina, juegos, tiers, pick, imagenNoticia) VALUES " +
 					"(@bundleTipo, @nombre, @tienda, @imagen, @enlace, @fechaEmpieza, @fechaTermina, @juegos, @tiers, @pick, @imagenNoticia) ";
 
-				using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
+			var parametros = new
+			{
+				bundleTipo = bundle.BundleTipo,
+				nombre = bundle.Nombre,
+				tienda = bundle.Tienda,
+				imagen = bundle.Imagen,
+				enlace = bundle.Enlace,
+				fechaEmpieza = bundle.FechaEmpieza,
+				fechaTermina = bundle.FechaTermina,
+				juegos = JsonConvert.SerializeObject(bundle.Juegos),
+				tiers = JsonConvert.SerializeObject(bundle.Tiers),
+				pick = bundle.Pick.ToString(),
+				imagenNoticia = bundle.ImagenNoticia
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@bundleTipo", bundle.BundleTipo);
-					comando.Parameters.AddWithValue("@nombre", bundle.Nombre);
-					comando.Parameters.AddWithValue("@tienda", bundle.Tienda);
-					comando.Parameters.AddWithValue("@imagen", bundle.Imagen);
-					comando.Parameters.AddWithValue("@enlace", bundle.Enlace);
-					comando.Parameters.AddWithValue("@fechaEmpieza", bundle.FechaEmpieza.ToString());
-					comando.Parameters.AddWithValue("@fechaTermina", bundle.FechaTermina.ToString());
-					comando.Parameters.AddWithValue("@juegos", JsonConvert.SerializeObject(bundle.Juegos));
-					comando.Parameters.AddWithValue("@tiers", JsonConvert.SerializeObject(bundle.Tiers));
-					comando.Parameters.AddWithValue("@pick", bundle.Pick.ToString());
-					comando.Parameters.AddWithValue("@imagenNoticia", bundle.ImagenNoticia);
+					return await sentencia.Connection.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Insertar 1", ex);
+			}
 
-					try
-					{
-                        comando.ExecuteNonQuery();
-                    }
-					catch
-					{
+			try
+			{
+				int id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QuerySingleOrDefaultAsync<int>("SELECT MAX(id) FROM bundles", transaction: sentencia);
+				});
 
-					}
-
-					comando.Dispose();
+				if (id <= 0 || bundle.Juegos == null || bundle.Juegos?.Count == 0)
+				{
+					return;
 				}
 
-				if (bundle.Juegos != null)
+				foreach (var juego in bundle.Juegos)
 				{
-					int id = 0;
-					string sqlBuscarId = "SELECT * FROM bundles WHERE id = (SELECT MAX(id) FROM bundles)";
+					var juego2 = Juegos.Buscar.UnJuego(juego.JuegoId);
 
-					using (SqlCommand comando = new SqlCommand(sqlBuscarId, conexion))
+					if (juego2 == null)
 					{
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							while (lector.Read())
-							{
-								id = lector.GetInt32(0);
-							}
-
-							lector.Dispose();
-						}
-
-						comando.Dispose();
+						continue;
 					}
 
-					if (id > 0) 
+					if (juego2.Bundles == null)
 					{
-						if (bundle.Juegos.Count > 0)
-						{
-							foreach (var juego in bundle.Juegos)
-							{
-								global::Juegos.Juego juego2 = Juegos.Buscar.UnJuego(juego.JuegoId);
+						juego2.Bundles = new List<global::Juegos.JuegoBundle>();
+					}
 
-								if (juego2 != null)
-								{
-									global::Juegos.JuegoBundle juegoBundle = new global::Juegos.JuegoBundle();
-									juegoBundle.DRM = juego.DRM;
-									juegoBundle.JuegoId = int.Parse(juego.JuegoId);
-									juegoBundle.Tier = juego.Tier;
-									juegoBundle.BundleId = id;
-									juegoBundle.FechaEmpieza = bundle.FechaEmpieza;
-									juegoBundle.FechaTermina = bundle.FechaTermina;
-									juegoBundle.Imagen = juego.Imagen;
-									juegoBundle.Nombre = juego.Nombre;
-									juegoBundle.Enlace = bundle.Enlace;
-									juegoBundle.Tipo = bundle.BundleTipo;
+					var juegoBundle = new global::Juegos.JuegoBundle
+					{
+						DRM = juego.DRM,
+						JuegoId = int.Parse(juego.JuegoId),
+						Tier = juego.Tier,
+						BundleId = id,
+						FechaEmpieza = bundle.FechaEmpieza,
+						FechaTermina = bundle.FechaTermina,
+						Imagen = juego.Imagen,
+						Nombre = juego.Nombre,
+						Enlace = bundle.Enlace,
+						Tipo = bundle.BundleTipo
+					};
 
-									if (juego2.Bundles == null)
-									{
-										juego2.Bundles = new List<global::Juegos.JuegoBundle>();
-									}
+					juego2.Bundles.Add(juegoBundle);
 
-									juego2.Bundles.Add(juegoBundle);
+					string sqlActualizarJuego = @"
+						UPDATE juegos 
+						SET bundles = @bundles
+						WHERE id = @id;
+					";
 
-									string sqlActualizarJuego = "UPDATE juegos " +
-											"SET bundles=@bundles WHERE id=@id";
+					var parametrosJuego = new
+					{
+						id = juego.JuegoId,
+						bundles = JsonConvert.SerializeObject(juego2.Bundles)
+					};
 
-									using (SqlCommand comando = new SqlCommand(sqlActualizarJuego, conexion))
-									{
-										comando.Parameters.AddWithValue("@id", juego.JuegoId);
-										comando.Parameters.AddWithValue("@bundles", JsonConvert.SerializeObject(juego2.Bundles));
-
-										try
-										{
-											comando.ExecuteNonQuery();
-										}
-										catch
-										{
-
-										}
-									}
-								}
-							}
-						}
-					}					
-				}		
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.ExecuteAsync(sqlActualizarJuego, parametrosJuego, transaction: sentencia);
+					});
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Insertar 2", ex);
 			}
 		}
 	}

@@ -92,35 +92,20 @@
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
+    public List<BaseDatos.Errores.Error> listaErrores = new List<BaseDatos.Errores.Error>();
+    public BaseDatos.Errores.Error errorSeleccionado = null;
 
-    List<BaseDatos.Errores.Error> listaErrores = new List<BaseDatos.Errores.Error>();
-    BaseDatos.Errores.Error errorSeleccionado = null;
-
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-
-        listaErrores = BaseDatos.Errores.Buscar.Todos(conexion);
+         listaErrores = await BaseDatos.Errores.Buscar.Todos();
     }
 
     private void LimpiarErrores(MouseEventArgs e)
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
+        BaseDatos.Errores.Limpiar.Ejecutar();
 
-        using (conexion)
-        {
-            BaseDatos.Errores.Limpiar.Ejecutar(conexion);
-
-            listaErrores = new List<BaseDatos.Errores.Error>();
-			errorSeleccionado = null;
-        }
+        listaErrores = new List<BaseDatos.Errores.Error>();
+        errorSeleccionado = null;
     }
 
     private async void AmpliarError(MouseEventArgs e, BaseDatos.Errores.Error error)

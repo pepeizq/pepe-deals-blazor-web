@@ -4,7 +4,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Xml.Serialization;
 
@@ -34,21 +33,9 @@ namespace APIs.Playsum
 			return enlace + "?plysm_ref_id=YiEguGaNJjlnglvi5JTNrVZi1z5OUoli";
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -152,22 +139,22 @@ namespace APIs.Playsum
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 
 										juegos2 += 1;
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 									}
 								}

@@ -2117,7 +2117,7 @@ else
 
 				juego.CantidadJugadores = cantidadNueva;
 
-				global::BaseDatos.Juegos.Actualizar.CantidadJugadoresSteam(juego);
+				await global::BaseDatos.Juegos.Actualizar.CantidadJugadoresSteam(juego);
 			}
 		}
 	}

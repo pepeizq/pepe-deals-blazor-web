@@ -2,42 +2,32 @@
 
 using Dapper;
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Divisas
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async void Ejecutar(Divisa divisa)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(Divisa divisa, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string sqlAñadir = "INSERT INTO divisas " +
                      "(id, cantidad, fecha) VALUES " +
                      "(@id, @cantidad, @fecha) ";
 
 			try
 			{
-				conexion.Execute(sqlAñadir, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					id = divisa.Id,
-					cantidad = divisa.Cantidad,
-					fecha = divisa.Fecha
+					return await sentencia.Connection.ExecuteAsync(sqlAñadir, new
+					{
+						id = divisa.Id,
+						cantidad = divisa.Cantidad,
+						fecha = divisa.Fecha
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex) 
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Insertar Divisa " + divisa.Id, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Divisas Insertar " + divisa.Id, ex);
 			}
 		}
 	}

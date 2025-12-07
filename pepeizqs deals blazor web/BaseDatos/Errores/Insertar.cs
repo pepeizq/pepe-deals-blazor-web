@@ -1,27 +1,15 @@
 ﻿#nullable disable
 
 using Dapper;
+using Herramientas;
 using Microsoft.Data.SqlClient;
-using System.Data;
 
 namespace BaseDatos.Errores
 {
     public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async void Mensaje2(string seccion, Exception ex, bool reiniciar = true, string comandoUsado = null)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Mensaje2(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, string comandoUsado = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string sqlInsertar = @"
                 INSERT INTO errores (seccion, mensaje, stacktrace, fecha {0})
                 VALUES (@seccion, @mensaje, @stacktrace, @fecha {1});
@@ -38,16 +26,17 @@ namespace BaseDatos.Errores
 
 			sqlInsertar = string.Format(sqlInsertar, columnasExtra, valoresExtra);
 
-			conexion.Execute(sqlInsertar,
-				new
+			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			{
+				return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
 				{
 					seccion,
 					mensaje = ex.Message,
 					stacktrace = ex.StackTrace,
 					fecha = DateTime.Now,
 					sentenciaSQL = comandoUsado
-				}
-			);
+				}, transaction: sentencia);
+			});
 
 			if (reiniciar == true)
 			{
@@ -62,10 +51,8 @@ namespace BaseDatos.Errores
 			}
 		}
 
-		public static void Mensaje(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, SqlCommand comandoUsado = null)
+		public static async void Mensaje(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, SqlCommand comandoUsado = null)
 		{
-			conexion = CogerConexion(conexion);
-
 			string sql = @"
                 INSERT INTO errores
                 (seccion, mensaje, stacktrace, fecha, sentenciaSQL)
@@ -74,13 +61,16 @@ namespace BaseDatos.Errores
 
 			string sentencia = comandoUsado != null ? GenerarSentencia(comandoUsado) : null;
 
-			conexion.Execute(sql, new
+			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 			{
-				seccion,
-				mensaje = ex.Message,
-				stacktrace = ex.StackTrace,
-				fecha = DateTime.Now,
-				sentenciaSQL = sentencia
+				return await sentencia.Connection.ExecuteAsync(sql, new
+				{
+					seccion,
+					mensaje = ex.Message,
+					stacktrace = ex.StackTrace,
+					fecha = DateTime.Now,
+					sentenciaSQL = sentencia
+				}, transaction: sentencia);
 			});
 
 			if (reiniciar == true)
@@ -96,24 +86,25 @@ namespace BaseDatos.Errores
 			}  
         }
 
-        public static void Mensaje(string seccion, string mensaje, string enlace = null, SqlCommand comandoUsado = null, SqlConnection conexion = null)
+        public static async void Mensaje(string seccion, string mensaje, string enlace = null, SqlCommand comandoUsado = null, SqlConnection conexion = null)
         {
-			conexion = CogerConexion(conexion);
-
 			string sql = @"
 				INSERT INTO errores
 				(seccion, mensaje, stacktrace, fecha, enlace, sentenciaSQL)
 				VALUES (@seccion, @mensaje, @stacktrace, @fecha, @enlace, @sentenciaSQL);
 			";
 
-			conexion.Execute(sql, new
+			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 			{
-				seccion,
-				mensaje,
-				stacktrace = "",
-				fecha = DateTime.Now,
-				enlace = (object)enlace ?? DBNull.Value,
-				sentenciaSQL = comandoUsado != null ? GenerarSentencia(comandoUsado) : null
+				return await sentencia.Connection.ExecuteAsync(sql, new
+				{
+					seccion,
+					mensaje,
+					stacktrace = "",
+					fecha = DateTime.Now,
+					enlace = (object)enlace ?? DBNull.Value,
+					sentenciaSQL = comandoUsado != null ? GenerarSentencia(comandoUsado) : null
+				}, transaction: sentencia);
 			});
 		}
 

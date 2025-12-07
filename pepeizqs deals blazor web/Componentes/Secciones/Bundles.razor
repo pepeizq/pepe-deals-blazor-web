@@ -12,7 +12,84 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio"/>
+@{
+	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
+	string keywords = "bundles";
+
+	if (bundlesActuales?.Count > 0)
+	{
+		if (bundlesActuales.Count == 1)
+		{
+			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Bundle"), bundlesActuales.Count.ToString());
+		}
+		else if (bundlesActuales.Count > 1)
+		{
+			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Bundle"), bundlesActuales.Count.ToString());
+		}
+
+		foreach (var bundleActual in bundlesActuales)
+		{
+			if (string.IsNullOrEmpty(bundleActual.Tienda) == false)
+			{
+				if (keywords.Contains(bundleActual.Tienda.ToLower()) == false)
+				{
+					keywords = keywords + ", " + bundleActual.Tienda.ToLower();
+				}
+			}
+		}
+	}
+	else
+	{
+		titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Bundle");
+	}
+
+	string contenidoJson = @"{
+        ""@context"": ""https://schema.org"",
+		""@type"": ""ItemList"",
+		""name"": ""PC Game Bundles"",
+		""numberOfItems"": ""@cantidad"",
+        ""itemListOrder"": ""Descending""
+	";
+
+	contenidoJson = contenidoJson.Replace("@cantidad", (bundlesActuales?.Count > 0 ? bundlesActuales?.Count : 0).ToString());
+
+	if (bundlesActuales?.Count > 0)
+	{
+		contenidoJson = contenidoJson + @",
+			""itemListElement"": [";
+
+		int i = 0;
+		while (i < bundlesActuales?.Count)
+		{
+			if (i != 0)
+			{
+				contenidoJson = contenidoJson + ",";
+			}
+
+			contenidoJson = contenidoJson + @"{
+				""@type"": ""ListItem"",
+				""position"": ""@posicion"",
+				""name"": ""@nombre"",
+				""url"": ""@enlace"",
+				""image"": ""@imagen""
+			}";
+
+			contenidoJson = contenidoJson.Replace("@posicion", (i + 1).ToString());
+			contenidoJson = contenidoJson.Replace("@nombre", bundlesActuales[i].Nombre);
+			contenidoJson = contenidoJson.Replace("@enlace", "https://" + dominio + "/bundle/" + bundlesActuales[i].Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundlesActuales[i].Nombre) + "/");
+			contenidoJson = contenidoJson.Replace("@imagen", bundlesActuales[i].Imagen);
+
+			i += 1;
+		}
+
+		contenidoJson = contenidoJson + "]";
+	}
+
+	contenidoJson = contenidoJson + @"
+			}";
+
+	<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio" tituloBundles="@titulo" keywords="@keywords" contenidoJsonBundles="@contenidoJson" />
+}
 
 <script>
 	function moverScroll(id) {
@@ -412,9 +489,9 @@ else
 		CargarBundles(nuevoNumero);
 	}
 
-	private async void CargarBundles(int ordenamientoNumero)
+	private void CargarBundles(int ordenamientoNumero)
 	{
-		bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
+		bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
 
 		if (bundlesActuales?.Count > 0)
 		{
@@ -470,8 +547,6 @@ else
 		{
 			BaseDatos.Usuarios.Actualizar.Opcion("BundlesSort", ordenamientoNumero, usuarioId);
 		}
-
-		await InvokeAsync(StateHasChanged);
 	}
 
 	private Bundles2.BundleTipo tipoSeleccionado = Bundles2.BundleTipo.Desconocido;
@@ -485,7 +560,7 @@ else
 		if (esArchivo == false)
 		{
 			tipoSeleccionado = nuevoTipo;
-			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
+			bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
 		}
 		else
 		{

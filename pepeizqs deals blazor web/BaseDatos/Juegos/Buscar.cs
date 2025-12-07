@@ -20,6 +20,11 @@ namespace BaseDatos.Juegos
 		{
 			string sqlBuscar = string.Empty;
 
+			if (id == "descartado")
+			{
+				return null;
+			}
+
 			if (string.IsNullOrEmpty(id) == false)
 			{
 				try

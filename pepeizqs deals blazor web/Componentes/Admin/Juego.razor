@@ -1128,22 +1128,16 @@
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
+            idSteam = APIs.Steam.Juego.LimpiarID(texto.Value.ToString());
 
-            using (conexion)
-            {
-                idSteam = APIs.Steam.Juego.LimpiarID(texto.Value.ToString());
+            juego.IdSteam = int.Parse(idSteam);
 
-                juego.IdSteam = int.Parse(idSteam);
-
-                BaseDatos.Juegos.Actualizar.IdSteam(juego, conexion);
-
-                await ActualizarSteamApi();
-            }
+            await BaseDatos.Juegos.Actualizar.IdSteam(juego);
+            await ActualizarSteamApi();
         }
     }
 
-    private void TextoCambiaIdGOG(ChangeEventArgs texto)
+    private async void TextoCambiaIdGOG(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1151,17 +1145,12 @@
 
             idGOG = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.IdGog = int.Parse(idGOG);
-                BaseDatos.Juegos.Actualizar.IdGOG(juego, conexion);
-            }
+            juego.IdGog = int.Parse(idGOG);
+            await BaseDatos.Juegos.Actualizar.IdGOG(juego);
         }
     }
 
-    private void TextoCambiaSlugGOG(ChangeEventArgs texto)
+    private async void TextoCambiaSlugGOG(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1169,17 +1158,12 @@
 
             slugGOG = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.SlugGOG = slugGOG;
-                BaseDatos.Juegos.Actualizar.SlugGOG(juego, conexion);
-            }
+            juego.SlugGOG = slugGOG;
+            await BaseDatos.Juegos.Actualizar.SlugGOG(juego);
         }
     }
 
-    private void TextoCambiaSlugEpic(ChangeEventArgs texto)
+    private async void TextoCambiaSlugEpic(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1187,17 +1171,12 @@
 
             slugEpic = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.SlugEpic = slugEpic;
-                BaseDatos.Juegos.Actualizar.SlugEpic(juego, conexion);
-            }
+            juego.SlugEpic = slugEpic;
+            await BaseDatos.Juegos.Actualizar.SlugEpic(juego);
         }
     }
 
-    private void TextoCambiaExeEpic(ChangeEventArgs texto)
+    private async void TextoCambiaExeEpic(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1205,17 +1184,12 @@
 
             exeEpic = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.ExeEpic = exeEpic;
-                BaseDatos.Juegos.Actualizar.ExeEpic(juego, conexion);
-            }
+            juego.ExeEpic = exeEpic;
+            await BaseDatos.Juegos.Actualizar.ExeEpic(juego);
         }
     }
 
-    private void TextoCambiaIdXbox(ChangeEventArgs texto)
+    private async void TextoCambiaIdXbox(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1223,13 +1197,8 @@
 
             idXbox = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.IdXbox = idXbox;
-                BaseDatos.Juegos.Actualizar.IdXbox(juego.Id, idXbox, conexion);
-            }
+            juego.IdXbox = idXbox;
+            await BaseDatos.Juegos.Actualizar.IdXbox(juego.Id, idXbox);
         }
     }
 
@@ -1251,7 +1220,7 @@
         }
     }
 
-    private void TextoCambiaExeUbisoft(ChangeEventArgs texto)
+    private async void TextoCambiaExeUbisoft(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1259,13 +1228,8 @@
 
             exeUbisoft = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.ExeUbisoft = exeUbisoft;
-                BaseDatos.Juegos.Actualizar.ExeUbisoft(juego, conexion);
-            }
+            juego.ExeUbisoft = exeUbisoft;
+            await BaseDatos.Juegos.Actualizar.ExeUbisoft(juego);
         }
     }
 
@@ -1286,7 +1250,7 @@
         {
             try
             {
-                BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
+                await BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
             }
             catch (Exception ex)
             {
@@ -1302,71 +1266,62 @@
         APIs.Steam.SteamDeckAPI deckAPI = await APIs.Steam.Juego.CargarDatosDeck(juego.Id, juego.IdSteam);
         bool vacio = true;
 
-        if (deckAPI != null)
+        if (deckAPI?.Datos?.Resultado != null)
         {
-            if (deckAPI.Datos != null)
+            juego.Deck = (JuegoDeck)int.Parse(deckAPI.Datos.Resultado.ToString());
+            juego.DeckComprobacion = DateTime.Now;
+
+            if (deckAPI?.Datos?.Tokens?.Count > 0)
             {
-                if (deckAPI.Datos.Resultado != null)
+                List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                foreach (var token in deckAPI.Datos.Tokens)
                 {
-                    juego.Deck = (JuegoDeck)int.Parse(deckAPI.Datos.Resultado.ToString());
-                    juego.DeckComprobacion = DateTime.Now;
-
-                    if (deckAPI.Datos.Tokens != null)
+                    if (string.IsNullOrEmpty(token.Token) == false)
                     {
-                        if (deckAPI.Datos.Tokens.Count > 0)
+                        JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                        nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                        nuevoToken.Mensaje = token.Token;
+
+                        tokens.Add(nuevoToken);
+                    }
+                }
+
+                juego.DeckTokens = tokens;
+            }
+
+            juego.SteamOS = (JuegoSteamOS)int.Parse(deckAPI.Datos.SteamOSResultado.ToString());
+
+            if (deckAPI.Datos.SteamOSTokens != null)
+            {
+                if (deckAPI.Datos.SteamOSTokens.Count > 0)
+                {
+                    List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                    foreach (var token in deckAPI.Datos.SteamOSTokens)
+                    {
+                        if (string.IsNullOrEmpty(token.Token) == false)
                         {
-                            List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+                            JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                            nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                            nuevoToken.Mensaje = token.Token;
 
-                            foreach (var token in deckAPI.Datos.Tokens)
-                            {
-                                if (string.IsNullOrEmpty(token.Token) == false)
-                                {
-                                    JuegoDeckToken nuevoToken = new JuegoDeckToken();
-                                    nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
-                                    nuevoToken.Mensaje = token.Token;
-
-                                    tokens.Add(nuevoToken);
-                                }
-                            }
-
-                            juego.DeckTokens = tokens;
+                            tokens.Add(nuevoToken);
                         }
                     }
 
-                    juego.SteamOS = (JuegoSteamOS)int.Parse(deckAPI.Datos.SteamOSResultado.ToString());
-
-                    if (deckAPI.Datos.SteamOSTokens != null)
-                    {
-                        if (deckAPI.Datos.SteamOSTokens.Count > 0)
-                        {
-                            List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
-
-                            foreach (var token in deckAPI.Datos.SteamOSTokens)
-                            {
-                                if (string.IsNullOrEmpty(token.Token) == false)
-                                {
-                                    JuegoDeckToken nuevoToken = new JuegoDeckToken();
-                                    nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
-                                    nuevoToken.Mensaje = token.Token;
-
-                                    tokens.Add(nuevoToken);
-                                }
-                            }
-
-                            juego.SteamOSTokens = tokens;
-                        }
-                    }
-
-                    vacio = false;
-                    global::BaseDatos.Juegos.Actualizar.Deck(juego);
+                    juego.SteamOSTokens = tokens;
                 }
             }
+
+            vacio = false;
+            await global::BaseDatos.Juegos.Actualizar.Deck(juego);
         }
 
         if (vacio == true)
         {
             juego.DeckComprobacion = DateTime.Now;
-            global::BaseDatos.Juegos.Actualizar.DeckVacio(juego);
+            await global::BaseDatos.Juegos.Actualizar.DeckVacio(juego);
         }
     }
 
@@ -1375,7 +1330,7 @@
         juego.GalaxyGOG = await APIs.GOG.Juego.GalaxyDatos(juego.IdGog.ToString());
         juego.Idiomas = await APIs.GOG.Juego.GalaxyIdiomas(juego.IdGog.ToString(), juego.Idiomas);
 
-        global::BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
+        await global::BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
     }
 
     private async Task ActualizarEpicGamesApi()
@@ -1383,7 +1338,7 @@
         juego.EpicGames = await APIs.EpicGames.Juego.EpicGamesDatos(juego.SlugEpic);
         juego.Idiomas = await APIs.EpicGames.Juego.EpicGamesIdiomas(juego.SlugEpic, juego.Idiomas);
 
-        global::BaseDatos.Juegos.Actualizar.EpicGames(juego);
+        await global::BaseDatos.Juegos.Actualizar.EpicGames(juego);
     }
 
     private async Task ActualizarXboxApi()
@@ -1391,44 +1346,39 @@
         juego.Xbox = await APIs.Xbox.Juego.XboxDatos(juego.IdXbox);
         juego.Idiomas = await APIs.Xbox.Juego.XboxIdiomas(juego.IdXbox, juego.Idiomas);
 
-        global::BaseDatos.Juegos.Actualizar.Xbox(juego);
+        await global::BaseDatos.Juegos.Actualizar.Xbox(juego);
     }
 
     private string tipo = string.Empty;
 
-    private void ActualizarTipo(MouseEventArgs e, string nuevoTipo)
+    private async void ActualizarTipo(MouseEventArgs e, string nuevoTipo)
     {
         if (string.IsNullOrEmpty(nuevoTipo) == false)
         {
             tipo = nuevoTipo;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
+            if (nuevoTipo == "0")
             {
-                if (nuevoTipo == "0")
-                {
-                    juego.Tipo = global::Juegos.JuegoTipo.Game;
-                }
-                else if (nuevoTipo == "1")
-                {
-                    juego.Tipo = global::Juegos.JuegoTipo.DLC;
-                }
-                else if (nuevoTipo == "2")
-                {
-                    juego.Tipo = global::Juegos.JuegoTipo.Bundle;
-                }
-                else if (nuevoTipo == "3")
-                {
-                    juego.Tipo = global::Juegos.JuegoTipo.Music;
-                }
-                else if (nuevoTipo == "4")
-                {
-                    juego.Tipo = global::Juegos.JuegoTipo.Software;
-                }
-
-                BaseDatos.Juegos.Actualizar.Tipo(juego, conexion);
+                juego.Tipo = global::Juegos.JuegoTipo.Game;
             }
+            else if (nuevoTipo == "1")
+            {
+                juego.Tipo = global::Juegos.JuegoTipo.DLC;
+            }
+            else if (nuevoTipo == "2")
+            {
+                juego.Tipo = global::Juegos.JuegoTipo.Bundle;
+            }
+            else if (nuevoTipo == "3")
+            {
+                juego.Tipo = global::Juegos.JuegoTipo.Music;
+            }
+            else if (nuevoTipo == "4")
+            {
+                juego.Tipo = global::Juegos.JuegoTipo.Software;
+            }
+
+            await BaseDatos.Juegos.Actualizar.Tipo(juego);
         }
     }
 
@@ -1508,7 +1458,7 @@
 
 	private string textoHistoricos = string.Empty;
 
-	private void TextoCambiaHistoricos(ChangeEventArgs texto)
+	private async void TextoCambiaHistoricos(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
@@ -1517,27 +1467,17 @@
 			textoHistoricos = nuevoTexto;
 			juego.Historicos = JsonSerializer.Deserialize<List<global::Juegos.JuegoHistorico>>(textoHistoricos);
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Juegos.Actualizar.Historicos(juego, conexion);
-			}
+			await BaseDatos.Juegos.Actualizar.Historicos(juego);
 		}
 	}
 
-	private void BorrarRegistroHistorico(MouseEventArgs e, JuegoHistorico historicoBorrar)
+	private async void BorrarRegistroHistorico(MouseEventArgs e, JuegoHistorico historicoBorrar)
 	{
 		if (historicoBorrar != null)
 		{
 			juego.Historicos.Remove(historicoBorrar);
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Juegos.Actualizar.Historicos(juego, conexion);
-			}
+			await BaseDatos.Juegos.Actualizar.Historicos(juego);
 		}
 	}
 

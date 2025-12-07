@@ -39,7 +39,7 @@ namespace Tareas
 						{
 							BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", DateTime.Now);
 
-							List<BaseDatos.CorreosEnviar.CorreoPendienteEnviar> pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
+							List<BaseDatos.CorreosEnviar.CorreoPendienteEnviar> pendientes = await BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
 							if (pendientes?.Count > 0)
 							{
@@ -161,7 +161,7 @@ namespace Tareas
 									}
 								}
 
-								pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
+								pendientes = await BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
 								foreach (var pendiente in pendientes.ToList())
 								{
@@ -200,7 +200,7 @@ namespace Tareas
 									}
 								}
 
-								pendientes = BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
+								pendientes = await BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
 								foreach (var pendiente in pendientes.ToList())
 								{

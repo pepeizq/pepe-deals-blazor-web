@@ -39,11 +39,9 @@
     [Parameter]
     public string userAgent { get; set; }
 
-    private bool añadirDiv = false;
-
-    protected override async Task OnAfterRenderAsync(bool primerRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (juego.Tipo == JuegoTipo.Game && primerRender == true)
+        if (juego.Tipo == JuegoTipo.Game)
         {
             if (juego.Caracteristicas?.FechaLanzamientoSteam != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
@@ -71,7 +69,7 @@
 
                         juego.CantidadJugadores = cantidadNueva;
 
-                        global::BaseDatos.Juegos.Actualizar.CantidadJugadoresSteam(juego);
+                        await global::BaseDatos.Juegos.Actualizar.CantidadJugadoresSteam(juego);
                     }
                 }
             }

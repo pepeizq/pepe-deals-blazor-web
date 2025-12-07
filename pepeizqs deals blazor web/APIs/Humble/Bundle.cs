@@ -22,13 +22,13 @@ namespace APIs.Humble
 			};
 
 			DateTime fechaEmpieza = DateTime.Now;
-			fechaEmpieza = new DateTime(fechaEmpieza.Year, fechaEmpieza.Month, fechaEmpieza.Day, 20, 0, 0);
+			fechaEmpieza = new DateTime(fechaEmpieza.Year, fechaEmpieza.Month, fechaEmpieza.Day, DateTime.Now.Hour, 0, 0);
 
 			bundle.FechaEmpieza = fechaEmpieza;
 
 			DateTime fechaTermina = DateTime.Now;
 			fechaTermina = fechaTermina.AddDays(21);
-			fechaTermina = new DateTime(fechaTermina.Year, fechaTermina.Month, fechaTermina.Day, 20, 0, 0);
+			fechaTermina = new DateTime(fechaTermina.Year, fechaTermina.Month, fechaTermina.Day, 23, 0, 0);
 
 			bundle.FechaTermina = fechaTermina;
 

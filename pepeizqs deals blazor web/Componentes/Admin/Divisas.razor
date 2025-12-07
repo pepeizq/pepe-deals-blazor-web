@@ -16,14 +16,23 @@
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
-        <div>@Herramientas.Divisas.MensajeDolar()</div>
-        <div>@Herramientas.Divisas.MensajeLibra()</div>
+        <div>@dolar</div>
+        <div>@libra</div>
     </div>
 </div>
 
 @code {
 
     #nullable disable
+
+    public string dolar { get; set; }
+    public string libra { get; set; }
+
+    protected override void OnInitialized()
+    {
+        dolar = Herramientas.Divisas.MensajeDolar();
+        libra = Herramientas.Divisas.MensajeLibra();
+    }
 
     private async Task ActualizarDivisas(MouseEventArgs e)
     {

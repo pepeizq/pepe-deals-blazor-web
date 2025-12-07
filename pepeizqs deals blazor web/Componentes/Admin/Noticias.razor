@@ -926,10 +926,10 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
     private List<Bundles2.Bundle> bundles { get; set; }
 
-    private async void CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
+    private void CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
     {
         bundleTipoSeleccionado = nuevoTipo;
-        bundles = (await BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado)).OrderBy(b => b.FechaEmpieza).ToList();
+        bundles = BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado).OrderBy(b => b.FechaEmpieza).ToList();
     }
 
     private void ClickearBundleNoticias(MouseEventArgs e, int bundleId)
@@ -945,9 +945,9 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         gratisSeleccionadoNoticias = nuevoTipo;
     }
 
-    private void ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
+    private async void ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
     {
-        noticia = Plantillas.Gratis(noticia, juegoId, id, gratisSeleccionadoNoticias);
+        noticia = await Plantillas.Gratis(noticia, juegoId, id, gratisSeleccionadoNoticias);
         plantillaCargada = true;
 
         if (string.IsNullOrEmpty(noticia.GratisIds) == false)

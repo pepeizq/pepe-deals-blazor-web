@@ -6,7 +6,7 @@ namespace BaseDatos.Admin
 {
 	public static class Actualizar
 	{
-		public static async void Tiendas(string tienda, DateTime fecha, int cantidad)
+		public static async Task Tiendas(string tienda, DateTime fecha, int cantidad)
 		{
 			try
 			{
@@ -21,7 +21,7 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static async void TiendasValorAdicional(string tienda, string valor, int cantidad)
+		public static async Task TiendasValorAdicional(string tienda, string valor, int cantidad)
 		{
 			try
 			{

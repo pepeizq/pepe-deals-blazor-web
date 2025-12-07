@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas.Tiendas
 {
@@ -51,7 +50,7 @@ namespace Tareas.Tiendas
 					{
 						try
 						{
-							await Tiendas2.TiendasCargar.TareasGestionador(null, id);
+							await Tiendas2.TiendasCargar.TareasGestionador(id);
 
 							Environment.Exit(1);
 						}

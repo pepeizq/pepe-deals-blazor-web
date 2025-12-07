@@ -5,10 +5,8 @@
 
 #nullable disable
 
-using BaseDatos.Cupones;
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -46,11 +44,11 @@ namespace APIs.Ubisoft
 			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + enlace;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			Cupon cupon = BaseDatos.Cupones.Buscar.Activos(Generar().Id, conexion);
+			BaseDatos.Cupones.Cupon cupon = await BaseDatos.Cupones.Buscar.Activos(Generar().Id);
 
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int paginas = 10;
 			int juegos2 = 0;
@@ -132,22 +130,22 @@ namespace APIs.Ubisoft
 
 											try
 											{
-												BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+												await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 											}
 											catch (Exception ex)
 											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 											}
 
 											juegos2 += 1;
 
 											try
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+												await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 											}
 											catch (Exception ex)
 											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 											}
 										}
 									}

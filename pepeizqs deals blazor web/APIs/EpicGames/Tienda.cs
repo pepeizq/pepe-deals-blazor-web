@@ -5,7 +5,6 @@
 using Dapper;
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -31,171 +30,161 @@ namespace APIs.EpicGames
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion = null)
+		public static async Task BuscarOfertas()
 		{
-			await Task.Yield();	
-
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			List<int> idsBorrar = new List<int>();
 
 			int juegos2 = 0;
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT * FROM temporalepictienda";
 
-			var filas = (await conexion.QueryAsync(busqueda)).ToList();
-
-			foreach (var fila in filas)
+			IEnumerable<dynamic> filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 			{
-				string contenido = fila.contenido; 
-				
-				if (string.IsNullOrEmpty(contenido) || contenido.Contains("<title>404 Not Found</title>") || contenido == "null" || contenido == "elements\":[]") 
-				{ 
-					idsBorrar.Add(fila.id); 
-					continue; 
-				}
+				return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia);
+			});
 
-				EpicGamesStorePrincipal principal = null;
-
-				try
+			if (filas?.Count() > 0)
+			{
+				foreach (var fila in filas)
 				{
-					principal = JsonSerializer.Deserialize<EpicGamesStorePrincipal>(contenido);
-				}
-				catch (Exception ex)
-				{
-					idsBorrar.Add(fila.id);
+					string contenido = fila.contenido;
 
-					BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, conexion, false);
-				}
-
-				if (juegos2 > 6000)
-				{
-					break;
-				}
-
-				if (principal?.Datos?.Catalogo?.Busqueda?.Juegos?.Count > 0)
-				{
-					foreach (var juego in principal?.Datos?.Catalogo?.Busqueda?.Juegos)
+					if (string.IsNullOrEmpty(contenido) || contenido.Contains("<title>404 Not Found</title>") || contenido == "null" || contenido == "elements\":[]")
 					{
-						if (conexion == null)
+						idsBorrar.Add(fila.id);
+						continue;
+					}
+
+					EpicGamesStorePrincipal principal = null;
+
+					try
+					{
+						principal = JsonSerializer.Deserialize<EpicGamesStorePrincipal>(contenido);
+					}
+					catch (Exception ex)
+					{
+						idsBorrar.Add(fila.id);
+
+						BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, null, false);
+					}
+
+					if (juegos2 > 6000)
+					{
+						break;
+					}
+
+					if (principal?.Datos?.Catalogo?.Busqueda?.Juegos?.Count > 0)
+					{
+						foreach (var juego in principal?.Datos?.Catalogo?.Busqueda?.Juegos)
 						{
-							conexion = Herramientas.BaseDatos.Conectar();
-						}
-						else
-						{
-							if (conexion.State != System.Data.ConnectionState.Open)
+							if (juego.Precio?.PrecioTotal?.PrecioFmt != null)
 							{
-								conexion = Herramientas.BaseDatos.Conectar();
-							}
-						}
-
-						if (juego.Precio?.PrecioTotal?.PrecioFmt != null)
-						{
-							if (string.IsNullOrEmpty(juego.Precio.PrecioTotal.PrecioFmt.PrecioRebajado) == false)
-							{
-								string textoPrecioRebajado = juego.Precio.PrecioTotal.PrecioFmt.PrecioRebajado;
-
-								if (string.IsNullOrEmpty(textoPrecioRebajado) == false)
+								if (string.IsNullOrEmpty(juego.Precio.PrecioTotal.PrecioFmt.PrecioRebajado) == false)
 								{
-									textoPrecioRebajado = textoPrecioRebajado.Replace("€", null);
-									textoPrecioRebajado = textoPrecioRebajado.Replace(",", ".");
-									textoPrecioRebajado = textoPrecioRebajado.Trim();
-								}
+									string textoPrecioRebajado = juego.Precio.PrecioTotal.PrecioFmt.PrecioRebajado;
 
-								string textoPrecioBase = juego.Precio.PrecioTotal.PrecioFmt.PrecioBase;
-
-								if (string.IsNullOrEmpty(textoPrecioBase) == false)
-								{
-									textoPrecioBase = textoPrecioBase.Replace("€", null);
-									textoPrecioBase = textoPrecioBase.Replace(",", ".");
-									textoPrecioBase = textoPrecioBase.Trim();
-								}
-
-								if (string.IsNullOrEmpty(textoPrecioRebajado) == false && string.IsNullOrEmpty(textoPrecioBase) == false)
-								{
-									decimal precioRebajado = decimal.Parse(textoPrecioRebajado);
-									decimal precioBase = decimal.Parse(textoPrecioBase);
-
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-									string slug = juego.Enlace;
-
-									if (string.IsNullOrEmpty(slug) == false)
+									if (string.IsNullOrEmpty(textoPrecioRebajado) == false)
 									{
-										if (slug.Contains("/") == true)
-										{
-											int int1 = slug.IndexOf("/");
-											slug = slug.Remove(int1, slug.Length - int1);
-										}
-									}
-									else
-									{
-										if (juego.Enlaces?.Count > 0)
-										{
-											slug = juego.Enlaces[0].Slug;
-										}
+										textoPrecioRebajado = textoPrecioRebajado.Replace("€", null);
+										textoPrecioRebajado = textoPrecioRebajado.Replace(",", ".");
+										textoPrecioRebajado = textoPrecioRebajado.Trim();
 									}
 
-									if (string.IsNullOrEmpty(slug) == true)
+									string textoPrecioBase = juego.Precio.PrecioTotal.PrecioFmt.PrecioBase;
+
+									if (string.IsNullOrEmpty(textoPrecioBase) == false)
 									{
-										if (juego.Enlaces2?.Mapeos != null)
-										{
-											slug = juego.Enlaces2.Mapeos[0].Slug;
-										}
+										textoPrecioBase = textoPrecioBase.Replace("€", null);
+										textoPrecioBase = textoPrecioBase.Replace(",", ".");
+										textoPrecioBase = textoPrecioBase.Trim();
 									}
 
-									if (descuento > 0 && string.IsNullOrEmpty(slug) == false && juego.Imagenes != null)
+									if (string.IsNullOrEmpty(textoPrecioRebajado) == false && string.IsNullOrEmpty(textoPrecioBase) == false)
 									{
-										if (juego.Imagenes.Count > 0)
+										decimal precioRebajado = decimal.Parse(textoPrecioRebajado);
+										decimal precioBase = decimal.Parse(textoPrecioBase);
+
+										int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+										string slug = juego.Enlace;
+
+										if (string.IsNullOrEmpty(slug) == false)
 										{
-											string nombre = juego.Nombre;
-											nombre = WebUtility.HtmlDecode(nombre);
-
-											string enlace = "https://store.epicgames.com/p/" + slug;
-
-											string imagen = juego.Imagenes[0].Enlace;
-
-											JuegoPrecio oferta = new JuegoPrecio
+											if (slug.Contains("/") == true)
 											{
-												Nombre = nombre,
-												Enlace = enlace,
-												Imagen = imagen,
-												Moneda = JuegoMoneda.Euro,
-												Precio = precioRebajado,
-												Descuento = descuento,
-												Tienda = Generar().Id,
-												DRM = JuegoDRM.Epic,
-												FechaDetectado = DateTime.Now,
-												FechaActualizacion = DateTime.Now
-											};
-
-											try
-											{
-												BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion, null, null, slug);
+												int int1 = slug.IndexOf("/");
+												slug = slug.Remove(int1, slug.Length - int1);
 											}
-											catch (Exception ex)
+										}
+										else
+										{
+											if (juego.Enlaces?.Count > 0)
 											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+												slug = juego.Enlaces[0].Slug;
 											}
+										}
 
-											juegos2 += 1;
-
-											try
+										if (string.IsNullOrEmpty(slug) == true)
+										{
+											if (juego.Enlaces2?.Mapeos != null)
 											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+												slug = juego.Enlaces2.Mapeos[0].Slug;
 											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-											}
+										}
 
-											idsBorrar.Add(fila.id);
-
-											if (juegos2 > 6000)
+										if (descuento > 0 && string.IsNullOrEmpty(slug) == false && juego.Imagenes != null)
+										{
+											if (juego.Imagenes.Count > 0)
 											{
-												break;
+												string nombre = juego.Nombre;
+												nombre = WebUtility.HtmlDecode(nombre);
+
+												string enlace = "https://store.epicgames.com/p/" + slug;
+
+												string imagen = juego.Imagenes[0].Enlace;
+
+												JuegoPrecio oferta = new JuegoPrecio
+												{
+													Nombre = nombre,
+													Enlace = enlace,
+													Imagen = imagen,
+													Moneda = JuegoMoneda.Euro,
+													Precio = precioRebajado,
+													Descuento = descuento,
+													Tienda = Generar().Id,
+													DRM = JuegoDRM.Epic,
+													FechaDetectado = DateTime.Now,
+													FechaActualizacion = DateTime.Now
+												};
+
+												try
+												{
+													await BaseDatos.Tiendas.Comprobar.Resto(oferta, null, null, slug);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+												}
+
+												juegos2 += 1;
+
+												try
+												{
+													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+												}
+
+												idsBorrar.Add(fila.id);
+
+												if (juegos2 > 6000)
+												{
+													break;
+												}
 											}
 										}
 									}
@@ -205,6 +194,7 @@ namespace APIs.EpicGames
 					}
 				}
 			}
+			
 
 			if (idsBorrar.Count > 0)
 			{
@@ -212,11 +202,12 @@ namespace APIs.EpicGames
 				
 				foreach (var id in idsBorrar) 
 				{
-					conexion = CogerConexion(conexion);
-
 					try 
-					{ 
-						await conexion.ExecuteAsync(limpieza, new { id }); 
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.ExecuteAsync(limpieza, new { id }, transaction: sentencia);
+						});
 					} 
 					catch (Exception ex) 
 					{ 
@@ -224,16 +215,6 @@ namespace APIs.EpicGames
 					} 
 				}
 			}
-		}
-
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
 		}
 	}
 

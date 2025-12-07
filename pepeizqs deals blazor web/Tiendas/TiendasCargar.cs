@@ -1,8 +1,5 @@
 ﻿#nullable disable
 
-using Herramientas;
-using Microsoft.Data.SqlClient;
-
 namespace Tiendas2
 {
 	public static class TiendasCargar
@@ -44,206 +41,79 @@ namespace Tiendas2
 			return tiendas;
 		}
 
-        public static async Task AdminTiendas(string id, IDecompiladores decompilador, SqlConnection conexion = null)
-        {
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				if (id == APIs.Steam.Tienda.Generar().Id)
-				{
-					await APIs.Steam.Tienda.BuscarOfertas(conexion, decompilador, true);
-				}
-				else if (id == APIs.GamersGate.Tienda.Generar().Id)
-				{
-					await APIs.GamersGate.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.Humble.Tienda.Generar().Id)
-				{
-					await APIs.Humble.Tienda.BuscarOfertas(conexion);
-				}
-				else if (id == APIs.Gamesplanet.Tienda.GenerarUk().Id)
-				{
-					await APIs.Gamesplanet.Tienda.BuscarOfertasUk(conexion, decompilador);
-				}
-				else if (id == APIs.Gamesplanet.Tienda.GenerarFr().Id)
-				{
-					await APIs.Gamesplanet.Tienda.BuscarOfertasFr(conexion, decompilador);
-				}
-				else if (id == APIs.Gamesplanet.Tienda.GenerarDe().Id)
-				{
-					await APIs.Gamesplanet.Tienda.BuscarOfertasDe(conexion, decompilador);
-				}
-				else if (id == APIs.Gamesplanet.Tienda.GenerarUs().Id)
-				{
-					await APIs.Gamesplanet.Tienda.BuscarOfertasUs(conexion, decompilador);
-				}
-				else if (id == APIs.Fanatical.Tienda.Generar().Id)
-				{
-					await APIs.Fanatical.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.GreenManGaming.Tienda.Generar().Id)
-				{
-					await APIs.GreenManGaming.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.GreenManGaming.Tienda.GenerarGold().Id)
-				{
-					await APIs.GreenManGaming.Tienda.BuscarOfertasGold(conexion, decompilador);
-				}
-				else if (id == APIs.GOG.Tienda.Generar().Id)
-				{
-					await APIs.GOG.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.IndieGala.Tienda.Generar().Id)
-				{
-					await APIs.IndieGala.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.WinGameStore.Tienda.Generar().Id)
-				{
-					await APIs.WinGameStore.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.EA.Tienda.Generar().Id)
-				{
-					await APIs.EA.Tienda.BuscarOfertas(decompilador);
-				}
-				else if (id == APIs.DLGamer.Tienda.Generar().Id)
-				{
-					await APIs.DLGamer.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.Battlenet.Tienda.Generar().Id)
-				{
-					await APIs.Battlenet.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-                else if (id == APIs.JoyBuggy.Tienda.Generar().Id)
-                {
-                    await APIs.JoyBuggy.Tienda.BuscarOfertas(conexion, decompilador);
-                }
-				else if (id == APIs.Voidu.Tienda.Generar().Id)
-				{
-					await APIs.Voidu.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.EpicGames.Tienda.Generar().Id)
-				{
-					await APIs.EpicGames.Tienda.BuscarOfertas();
-				}
-                else if (id == APIs._2Game.Tienda.Generar().Id)
-                {
-                    await APIs._2Game.Tienda.BuscarOfertas(conexion, decompilador);
-                }
-				else if (id == APIs.GameBillet.Tienda.Generar().Id)
-				{
-					await APIs.GameBillet.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-                else if (id == APIs.Ubisoft.Tienda.Generar().Id)
-                {
-                    await APIs.Ubisoft.Tienda.BuscarOfertas(conexion, decompilador);
-                }
-				else if (id == APIs.Allyouplay.Tienda.Generar().Id)
-				{
-					await APIs.Allyouplay.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.Playsum.Tienda.Generar().Id)
-				{
-					await APIs.Playsum.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.PlanetPlay.Tienda.Generar().Id)
-				{
-					await APIs.PlanetPlay.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.Nexus.Tienda.Generar().Id)
-				{
-					await APIs.Nexus.Tienda.BuscarOfertas(conexion, decompilador);
-				}
-				else if (id == APIs.Muvegames.Tienda.Generar().Id)
-				{
-					await APIs.Muvegames.Tienda.BuscarOfertas(conexion);
-				}
-			}
-        }
-
-		public static async Task TareasGestionador(SqlConnection conexion = null, string id = null, IDecompiladores decompilador = null)
+		public static async Task TareasGestionador(string id = null)
 		{
 			if (id == APIs.Steam.Tienda.Generar().Id)
 			{
-				await APIs.Steam.Tienda.BuscarOfertas(conexion, decompilador, true);
+				await APIs.Steam.Tienda.BuscarOfertas(true);
 			}
 			else if (id == APIs.GamersGate.Tienda.Generar().Id)
 			{
-				await APIs.GamersGate.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.GamersGate.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Humble.Tienda.Generar().Id)
 			{
-				await APIs.Humble.Tienda.BuscarOfertas(conexion);
+				await APIs.Humble.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Gamesplanet.Tienda.GenerarUk().Id)
 			{
-				await APIs.Gamesplanet.Tienda.BuscarOfertasUk(conexion, decompilador);
+				await APIs.Gamesplanet.Tienda.BuscarOfertasUk();
 			}
 			else if (id == APIs.Gamesplanet.Tienda.GenerarFr().Id)
 			{
-				await APIs.Gamesplanet.Tienda.BuscarOfertasFr(conexion, decompilador);
+				await APIs.Gamesplanet.Tienda.BuscarOfertasFr();
 			}
 			else if (id == APIs.Gamesplanet.Tienda.GenerarDe().Id)
 			{
-				await APIs.Gamesplanet.Tienda.BuscarOfertasDe(conexion, decompilador);
+				await APIs.Gamesplanet.Tienda.BuscarOfertasDe();
 			}
 			else if (id == APIs.Gamesplanet.Tienda.GenerarUs().Id)
 			{
-				await APIs.Gamesplanet.Tienda.BuscarOfertasUs(conexion, decompilador);
+				await APIs.Gamesplanet.Tienda.BuscarOfertasUs();
 			}
 			else if (id == APIs.Fanatical.Tienda.Generar().Id)
 			{
-				await APIs.Fanatical.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Fanatical.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.GreenManGaming.Tienda.Generar().Id)
 			{
-				await APIs.GreenManGaming.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.GreenManGaming.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.GreenManGaming.Tienda.GenerarGold().Id)
 			{
-				await APIs.GreenManGaming.Tienda.BuscarOfertasGold(conexion, decompilador);
+				await APIs.GreenManGaming.Tienda.BuscarOfertasGold();
 			}
 			else if (id == APIs.GOG.Tienda.Generar().Id)
 			{
-				await APIs.GOG.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.GOG.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.IndieGala.Tienda.Generar().Id)
 			{
-				await APIs.IndieGala.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.IndieGala.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.WinGameStore.Tienda.Generar().Id)
 			{
-				await APIs.WinGameStore.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.WinGameStore.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.EA.Tienda.Generar().Id)
 			{
-				await APIs.EA.Tienda.BuscarOfertas(decompilador);
+				await APIs.EA.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.DLGamer.Tienda.Generar().Id)
 			{
-				await APIs.DLGamer.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.DLGamer.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Battlenet.Tienda.Generar().Id)
 			{
-				await APIs.Battlenet.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Battlenet.Tienda.BuscarOfertas();
 			}
             else if (id == APIs.JoyBuggy.Tienda.Generar().Id)
             {
-                await APIs.JoyBuggy.Tienda.BuscarOfertas(conexion, decompilador);
+                await APIs.JoyBuggy.Tienda.BuscarOfertas();
             }
 			else if (id == APIs.Voidu.Tienda.Generar().Id)
 			{
-				await APIs.Voidu.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Voidu.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.EpicGames.Tienda.Generar().Id)
 			{
@@ -251,35 +121,35 @@ namespace Tiendas2
 			}
             else if (id == APIs._2Game.Tienda.Generar().Id)
             {
-                await APIs._2Game.Tienda.BuscarOfertas(conexion, decompilador);
+                await APIs._2Game.Tienda.BuscarOfertas();
             }
 			else if (id == APIs.GameBillet.Tienda.Generar().Id)
 			{
-				await APIs.GameBillet.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.GameBillet.Tienda.BuscarOfertas();
 			}
             else if (id == APIs.Ubisoft.Tienda.Generar().Id)
             {
-                await APIs.Ubisoft.Tienda.BuscarOfertas(conexion, decompilador);
+                await APIs.Ubisoft.Tienda.BuscarOfertas();
             }
 			else if (id == APIs.Allyouplay.Tienda.Generar().Id)
 			{
-				await APIs.Allyouplay.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Allyouplay.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Playsum.Tienda.Generar().Id)
 			{
-				await APIs.Playsum.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Playsum.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.PlanetPlay.Tienda.Generar().Id)
 			{
-				await APIs.PlanetPlay.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.PlanetPlay.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Nexus.Tienda.Generar().Id)
 			{
-				await APIs.Nexus.Tienda.BuscarOfertas(conexion, decompilador);
+				await APIs.Nexus.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Muvegames.Tienda.Generar().Id)
 			{
-				await APIs.Muvegames.Tienda.BuscarOfertas(conexion);
+				await APIs.Muvegames.Tienda.BuscarOfertas();
 			}
 		}
 

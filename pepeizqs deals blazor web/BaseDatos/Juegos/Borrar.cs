@@ -15,7 +15,7 @@ namespace BaseDatos.Juegos
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Juego Uno Web", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Juego Borrar", ex);
 			}
 		}
 	}

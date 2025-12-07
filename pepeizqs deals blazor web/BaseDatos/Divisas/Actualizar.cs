@@ -2,41 +2,31 @@
 
 using Dapper;
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Divisas
 {
 	public static class Actualizar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async void Ejecutar(Divisa divisa)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(Divisa divisa, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string sqlActualizar = "UPDATE divisas " +
                     "SET id=@id, cantidad=@cantidad, fecha=@fecha WHERE id=@id";
 
 			try
 			{
-				conexion.Execute(sqlActualizar, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					id = divisa.Id,
-					cantidad = divisa.Cantidad,
-					fecha = divisa.Fecha
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = divisa.Id,
+						cantidad = divisa.Cantidad,
+						fecha = divisa.Fecha
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex) 
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Divisa " + divisa.Id, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Divisa Actualizar " + divisa.Id, ex);
 			}
 		}
 	}

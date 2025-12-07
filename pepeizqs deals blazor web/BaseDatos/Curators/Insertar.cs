@@ -8,7 +8,7 @@ namespace BaseDatos.Curators
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(SteamCuratorAPI api)
+		public static async void Ejecutar(SteamCuratorAPI api)
 		{
 			if (api != null)
 			{
@@ -18,9 +18,9 @@ namespace BaseDatos.Curators
 					string slug = string.IsNullOrEmpty(api.Slug) ? Herramientas.EnlaceAdaptador.Nombre(api.Nombre) : api.Slug; 
 					
 					try {
-						Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							return sentencia.Connection.Execute(@"INSERT INTO curators (idSteam, nombre, imagen, descripcion, slug, steamIds, web, fecha) VALUES (@idSteam, @nombre, @imagen, @descripcion, @slug, @steamIds, @web, @fecha)", new
+							return await sentencia.Connection.ExecuteAsync(@"INSERT INTO curators (idSteam, nombre, imagen, descripcion, slug, steamIds, web, fecha) VALUES (@idSteam, @nombre, @imagen, @descripcion, @slug, @steamIds, @web, @fecha)", new
 							{
 								idSteam = api.Id,
 								nombre,

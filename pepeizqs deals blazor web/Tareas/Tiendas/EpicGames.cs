@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas.Tiendas
 {
@@ -33,42 +32,31 @@ namespace Tareas.Tiendas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					SqlConnection conexion = new SqlConnection();
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(9);
 
-					try
+					if (DateTime.Now.Hour == 19)
 					{
-						conexion = Herramientas.BaseDatos.Conectar();
+						siguienteComprobacion = TimeSpan.FromHours(10);
 					}
-					catch { }
 
-					if (conexion.State == System.Data.ConnectionState.Open)
+					if (DateTime.Now.Hour == 17)
 					{
-						TimeSpan siguienteComprobacion = TimeSpan.FromHours(9);
+						siguienteComprobacion = TimeSpan.FromMinutes(30);
+					}
 
-						if (DateTime.Now.Hour == 19)
+					bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
+
+					if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
+					{
+						try
 						{
-							siguienteComprobacion = TimeSpan.FromHours(10);
+							await Tiendas2.TiendasCargar.TareasGestionador(id);
+
+							Environment.Exit(1);
 						}
-
-						if (DateTime.Now.Hour == 17)
-                        {
-                            siguienteComprobacion = TimeSpan.FromMinutes(30);
-                        }
-
-						bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
-
-						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
+						catch (Exception ex)
 						{
-							try
-							{
-								await Tiendas2.TiendasCargar.TareasGestionador(null, id);
-
-								Environment.Exit(1);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(id, ex);
-							}
+							BaseDatos.Errores.Insertar.Mensaje(id, ex);
 						}
 					}
 				}

@@ -1,26 +1,13 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Mantenimiento
 {
 	public static class Encoger
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async void Ejecutar()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			WebApplicationBuilder builder = WebApplication.CreateBuilder();
 			string baseDatos = builder.Configuration.GetValue<string>("Mantenimiento:BaseDatos");
 
@@ -28,11 +15,14 @@ namespace BaseDatos.Mantenimiento
 
 			try
 			{
-				conexion.Execute(sqlEncoger, commandTimeout: 5000);
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteAsync(sqlEncoger, commandTimeout: 5000, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje2("Encoger Base Datos", ex, null, true, sqlEncoger);
+				BaseDatos.Errores.Insertar.Mensaje2("Encoger Base Datos", ex, true, sqlEncoger);
 			}
 		}
 	}

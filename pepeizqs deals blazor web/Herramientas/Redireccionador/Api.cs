@@ -92,9 +92,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-bundles/")]
-		public IActionResult BundlesUltimos()
+		public async Task<IActionResult> BundlesUltimos()
 		{
-			List<Bundle> bundles = global::BaseDatos.Bundles.Buscar.Ultimos(5);
+			List<Bundle> bundles = await global::BaseDatos.Bundles.Buscar.Ultimos(5);
 
 			if (bundles != null)
 			{
@@ -106,7 +106,7 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-bundles/{cantidad}/")]
-		public IActionResult BundlesUltimos(int cantidad)
+		public async Task<IActionResult> BundlesUltimos(int cantidad)
 		{
 			int cantidadFinal = 5;
 
@@ -120,7 +120,7 @@ namespace Herramientas.Redireccionador
 				cantidadFinal = 25;
 			}
 
-			List<Bundle> bundles = global::BaseDatos.Bundles.Buscar.Ultimos(cantidadFinal);
+			List<Bundle> bundles = await global::BaseDatos.Bundles.Buscar.Ultimos(cantidadFinal);
 
 			if (bundles != null)
 			{
@@ -186,9 +186,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-free/")]
-		public IActionResult GratisUltimos()
+		public async Task<IActionResult> GratisUltimos()
 		{
-			List<JuegoGratis> gratis = global::BaseDatos.Gratis.Buscar.Ultimos(5);
+			List<JuegoGratis> gratis = await global::BaseDatos.Gratis.Buscar.Ultimos(5);
 
 			if (gratis != null)
 			{
@@ -200,7 +200,7 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-free/{cantidad}/")]
-		public IActionResult GratisUltimos(int cantidad)
+		public async Task<IActionResult> GratisUltimos(int cantidad)
 		{
 			int cantidadFinal = 5;
 
@@ -214,7 +214,7 @@ namespace Herramientas.Redireccionador
 				cantidadFinal = 25;
 			}
 
-			List<JuegoGratis> gratis = global::BaseDatos.Gratis.Buscar.Ultimos(cantidadFinal);
+			List<JuegoGratis> gratis = await global::BaseDatos.Gratis.Buscar.Ultimos(cantidadFinal);
 
 			if (gratis != null)
 			{

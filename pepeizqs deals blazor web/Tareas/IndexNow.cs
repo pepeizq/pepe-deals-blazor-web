@@ -45,7 +45,7 @@ namespace Tareas
 							BaseDatos.Admin.Actualizar.TareaUso("indexNow", DateTime.Now);
 
 							List<Juego> juegos = BaseDatos.Juegos.Buscar.Aleatorios();
-							List<Bundle> bundles = BaseDatos.Bundles.Buscar.Aleatorios();
+							List<Bundle> bundles = await BaseDatos.Bundles.Buscar.Aleatorios();
 							List<Noticia> noticias = BaseDatos.Noticias.Buscar.Aleatorias();
 
 							var handler = new HttpClientHandler()

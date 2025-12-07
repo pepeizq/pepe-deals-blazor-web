@@ -86,15 +86,15 @@ namespace BaseDatos.Bundles
 			return new Bundle();
 		}
 
-        public static List<Bundle> Ultimos(int cantidad)
+        public static async Task<List<Bundle>> Ultimos(int cantidad)
         {
 			string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM bundles ORDER BY id DESC";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Bundle>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -105,20 +105,20 @@ namespace BaseDatos.Bundles
 			return new List<Bundle>();
 		}
 
-		public static List<Bundle> Aleatorios()
+		public static async Task<List<Bundle>> Aleatorios()
 		{
 			string busqueda = @"SELECT TOP 50 id, nombre FROM bundles ORDER BY NEWID()";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Bundle>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Bundles Ultimos", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Bundles Aleatorios", ex);
 			}
 
 			return new List<Bundle>();

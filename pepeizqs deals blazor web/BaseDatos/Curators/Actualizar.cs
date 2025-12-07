@@ -7,7 +7,7 @@ namespace BaseDatos.Curators
 {
 	public static class Actualizar
 	{
-		public static void Ejecutar(Curator curator)
+		public static async void Ejecutar(Curator curator)
 		{
 			string añadirImagenFondo = null;
 
@@ -18,9 +18,9 @@ namespace BaseDatos.Curators
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Execute($@"UPDATE curators SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha {añadirImagenFondo} WHERE idSteam=@idSteam", new
+					return await sentencia.Connection.ExecuteAsync($@"UPDATE curators SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha {añadirImagenFondo} WHERE idSteam=@idSteam", new
 					{
 						idSteam = curator.IdSteam,
 						nombre = curator.Nombre,
@@ -40,13 +40,13 @@ namespace BaseDatos.Curators
 			}
 		}
 
-		public static void ImagenFondo(string imagenFondo, int id)
+		public static async void ImagenFondo(string imagenFondo, int id)
 		{
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute("UPDATE curators SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam", new
+					await sentencia.Connection.ExecuteAsync("UPDATE curators SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam", new
 					{
 						imagenFondo,
 						idSteam = id

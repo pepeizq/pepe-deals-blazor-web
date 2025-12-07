@@ -28,9 +28,9 @@ namespace APIs.PlanetPlay
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int tope = 10;
 			int juegos2 = 0;
@@ -48,69 +48,66 @@ namespace APIs.PlanetPlay
 					{
 						tope = datos.Total / 20;
 
-						if (datos.Juegos != null)
+						if (datos.Juegos?.Count > 0)
 						{
-							if (datos.Juegos.Count > 0)
+							foreach (var juego in datos.Juegos)
 							{
-								foreach (var juego in datos.Juegos)
+								decimal precioBase = juego.PrecioBase;
+								decimal precioRebajado = juego.PrecioRebajado;
+
+								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+								if (descuento > 0)
 								{
-									decimal precioBase = juego.PrecioBase;
-									decimal precioRebajado = juego.PrecioRebajado;
+									string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									string enlace = juego.Enlace;
 
-									if (descuento > 0)
+									bool parar = false;
+
+									if (enlace.Contains("/store-mobile/games/") == true)
 									{
-										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+										parar = true;
+									}
 
-										string enlace = juego.Enlace;
+									if (parar == false)
+									{
+										string imagen = juego.Imagen;
 
-										bool parar = false;
+										JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
 
-										if (enlace.Contains("/store-mobile/games/") == true)
+										JuegoPrecio oferta = new JuegoPrecio
 										{
-											parar = true;
+											Nombre = nombre,
+											Enlace = enlace,
+											Imagen = imagen,
+											Moneda = JuegoMoneda.Euro,
+											Precio = precioRebajado,
+											Descuento = descuento,
+											Tienda = Generar().Id,
+											DRM = drm,
+											FechaDetectado = DateTime.Now,
+											FechaActualizacion = DateTime.Now
+										};
+
+										try
+										{
+											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 
-										if (parar == false)
+										juegos2 += 1;
+
+										try
 										{
-											string imagen = juego.Imagen;
-
-											JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-											JuegoPrecio oferta = new JuegoPrecio
-											{
-												Nombre = nombre,
-												Enlace = enlace,
-												Imagen = imagen,
-												Moneda = JuegoMoneda.Euro,
-												Precio = precioRebajado,
-												Descuento = descuento,
-												Tienda = Generar().Id,
-												DRM = drm,
-												FechaDetectado = DateTime.Now,
-												FechaActualizacion = DateTime.Now
-											};
-
-											try
-											{
-												BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-											}
-
-											juegos2 += 1;
-
-											try
-											{
-												BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
-											}
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 									}
 								}

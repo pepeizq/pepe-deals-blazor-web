@@ -61,9 +61,9 @@ namespace APIs.Steam
             return enlace + "?curator_clanid=33500256";
         }
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador, bool mirarOfertas)
+		public static async Task BuscarOfertas(bool mirarOfertas)
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			string añadirBundles = string.Empty;
 
@@ -169,7 +169,7 @@ namespace APIs.Steam
 					}
 				}
 
-				BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional2", tope);
+				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional2", tope);
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -430,7 +430,7 @@ namespace APIs.Steam
 
 													try
 													{
-														BaseDatos.Tiendas.Comprobar.Resto(oferta);
+														await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 													}
 													catch (Exception ex)
 													{
@@ -442,7 +442,7 @@ namespace APIs.Steam
 
 												try
 												{
-													BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos);
+													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos);
 												}
 												catch (Exception ex)
 												{
@@ -464,7 +464,7 @@ namespace APIs.Steam
 				}
 
 				i += 50;
-				BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", i);
+				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", i);
 			}
 		}
 

@@ -106,7 +106,7 @@ namespace Tareas
 
 										if (nuevoJuego != null && juego != null)
 										{
-											BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
+											await BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
 
 											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
 										}
@@ -125,7 +125,7 @@ namespace Tareas
 												juego.GalaxyGOG = datosGOG;
 												juego.Idiomas = await APIs.GOG.Juego.GalaxyIdiomas(ficha.IdPlataforma.ToString(), juego.Idiomas);
 
-												BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
+												await BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
 											}
 
 											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
@@ -143,7 +143,7 @@ namespace Tareas
 												juego.EpicGames = await APIs.EpicGames.Juego.EpicGamesDatos(juego.SlugEpic);
 												juego.Idiomas = await APIs.EpicGames.Juego.EpicGamesIdiomas(juego.SlugEpic, juego.Idiomas);
 
-												BaseDatos.Juegos.Actualizar.EpicGames(juego);
+												await BaseDatos.Juegos.Actualizar.EpicGames(juego);
 											}
 
 											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
@@ -161,7 +161,7 @@ namespace Tareas
 												juego.Xbox = await APIs.Xbox.Juego.XboxDatos(juego.IdXbox);
 												juego.Idiomas = await APIs.Xbox.Juego.XboxIdiomas(juego.IdXbox, juego.Idiomas);
 
-												BaseDatos.Juegos.Actualizar.Xbox(juego);
+												await BaseDatos.Juegos.Actualizar.Xbox(juego);
 											}
 
 											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);

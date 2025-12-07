@@ -7,7 +7,7 @@ namespace BaseDatos.Gratis
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(JuegoGratis actual)
+		public static async void Ejecutar(JuegoGratis actual)
 		{
 			string sqlInsertar = @"
 				INSERT INTO gratis 
@@ -18,9 +18,9 @@ namespace BaseDatos.Gratis
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Execute(sqlInsertar, new
+					return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
 					{
 						actual.Tipo,
 						actual.JuegoId,

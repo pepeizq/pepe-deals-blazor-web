@@ -6,15 +6,15 @@ namespace BaseDatos.CorreosEnviar
 {
 	public static class Buscar
 	{
-		public static List<CorreoPendienteEnviar> PendientesEnviar()
+		public static async Task<List<CorreoPendienteEnviar>> PendientesEnviar()
 		{
 			try
 			{
 				string busqueda = "SELECT * FROM correosEnviar";
 
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<CorreoPendienteEnviar>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<CorreoPendienteEnviar>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)

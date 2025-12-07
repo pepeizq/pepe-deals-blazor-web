@@ -511,9 +511,9 @@ else
         GenerarArchivo();
     }
 
-    private void GenerarArchivo()
+    private async void GenerarArchivo()
     {
-        List<Juegos.JuegoGratis> juegosPasados = BaseDatos.Gratis.Buscar.Año(añoSeleccionado);
+        List<Juegos.JuegoGratis> juegosPasados = await BaseDatos.Gratis.Buscar.Año(añoSeleccionado);
 
         if (juegosPasados.Count > 0)
         {

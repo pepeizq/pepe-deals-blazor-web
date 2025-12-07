@@ -2,23 +2,12 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Tiendas
 {
 	public static class Comprobar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
 		public static async void Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido)
 		{
 			string idSteam2 = APIs.Steam.Juego.LimpiarID(oferta.Enlace);
@@ -138,7 +127,7 @@ namespace BaseDatos.Tiendas
 			}
 		}
 
-		public static async void Resto(JuegoPrecio oferta, SqlConnection conexion = null, string idGog = null, string slugGOG = null, string slugEpic = null)
+		public static async Task Resto(JuegoPrecio oferta, string idGog = null, string slugGOG = null, string slugEpic = null)
 		{
 			bool encontrado = false;
 
@@ -165,12 +154,12 @@ WHERE t.enlace = @Enlace
 
 			try
 			{
-				resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(sqlBuscar, new
+					return await sentencia.Connection.QueryAsync(sqlBuscar, new
 					{
 						Enlace = oferta.Enlace
-					}, transaction: sentencia).ToList();
+					}, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -238,9 +227,9 @@ END;
 
 				try
 				{
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						sentencia.Connection.Execute(sqlInsertar, new
+						await sentencia.Connection.ExecuteAsync(sqlInsertar, new
 						{
 							oferta.Enlace,
 							oferta.Nombre,

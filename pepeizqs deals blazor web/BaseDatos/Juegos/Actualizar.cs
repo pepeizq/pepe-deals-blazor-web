@@ -11,7 +11,7 @@ namespace BaseDatos.Juegos
 {
 	public static class Actualizar
 	{
-		public static void Comprobacion(bool cambioPrecio, int id, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, string slugGOG = null, string idGOG = null, string slugEpic = null, DateTime? ultimaModificacion = null, JuegoAnalisis reseñas = null)
+		public static async void Comprobacion(bool cambioPrecio, int id, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, string slugGOG = null, string idGOG = null, string slugEpic = null, DateTime? ultimaModificacion = null, JuegoAnalisis reseñas = null)
 		{
 			var sql = new StringBuilder();
 			sql.Append("UPDATE juegos SET ");
@@ -68,14 +68,14 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute(sql.ToString(), parametros, transaction: sentencia);
+					await sentencia.Connection.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje2("Juego Actualizar " + id, ex, null, false, sql.ToString());
+				BaseDatos.Errores.Insertar.Mensaje2("Juego Actualizar " + id, ex,false, sql.ToString());
 			}
 		}
 
@@ -484,666 +484,481 @@ namespace BaseDatos.Juegos
 			}
 		}
 
-		public static void Media(Juego nuevoJuego, Juego juego, SqlConnection conexion = null)
+		public static async Task Media(Juego nuevoJuego, Juego juego)
 		{
-			if (nuevoJuego != null && juego != null)
+			if (nuevoJuego == null || juego == null)
 			{
-				if (juego.Imagenes == null)
+				return;
+			}
+
+			if (juego.Imagenes == null)
+			{ 
+				juego.Imagenes = new JuegoImagenes();
+			}
+
+			juego.Imagenes.Library_600x900 = ProcesarImagen(juego.Imagenes.Library_600x900,
+						   nuevoJuego.Imagenes.Library_600x900,
+						   juego.IdSteam,
+						   "library_capsule.");
+
+			juego.Imagenes.Library_1920x620 = ProcesarImagen(juego.Imagenes.Library_1920x620,
+						   nuevoJuego.Imagenes.Library_1920x620,
+						   juego.IdSteam,
+						   "library_hero.");
+
+			juego.Imagenes.Logo = ProcesarImagen(juego.Imagenes.Logo,
+						   nuevoJuego.Imagenes.Logo,
+						   juego.IdSteam,
+						   "logo.");
+
+			juego.Imagenes.Capsule_231x87 = nuevoJuego.Imagenes.Capsule_231x87;
+			juego.Imagenes.Header_460x215 = nuevoJuego.Imagenes.Header_460x215;
+
+			juego.Nombre = nuevoJuego.Nombre;
+			juego.Caracteristicas = nuevoJuego.Caracteristicas ?? new JuegoCaracteristicas();
+			juego.Deck = nuevoJuego.Deck;
+			juego.SteamOS = nuevoJuego.SteamOS;
+			juego.Media = nuevoJuego.Media;
+			juego.Categorias = nuevoJuego.Categorias;
+			juego.Etiquetas = nuevoJuego.Etiquetas;
+
+			if (juego.Idiomas == null)
+			{
+				juego.Idiomas = new List<JuegoIdioma>();
+			}
+
+			if (nuevoJuego.Idiomas != null)
+			{
+				foreach (var nuevo in nuevoJuego.Idiomas)
 				{
-					juego.Imagenes = new JuegoImagenes();
-				}
+					var existente = juego.Idiomas.FirstOrDefault(x => x.DRM == nuevo.DRM && x.Idioma == nuevo.Idioma);
 
-				if (string.IsNullOrEmpty(juego.Imagenes.Library_600x900) == false)
-				{
-					bool cambiar = true;
-
-					if (juego.Imagenes.Library_600x900.Contains("i.imgur.com") == true)
+					if (existente != null)
 					{
-						cambiar = false;
+						existente.Audio = nuevo.Audio;
+						existente.Texto = nuevo.Texto;
 					}
-					else if (!Regex.IsMatch(juego.Imagenes.Library_600x900, $"{Regex.Escape("library_capsule.")}.*?{Regex.Escape("/" + juego.IdSteam.ToString() + "/")}"))
+					else
 					{
-						cambiar = false;
-					}
-
-					if (cambiar == true)
-					{
-						juego.Imagenes.Library_600x900 = nuevoJuego.Imagenes.Library_600x900;
-					}
-                }
-				else
-				{
-                    juego.Imagenes.Library_600x900 = nuevoJuego.Imagenes.Library_600x900;
-                }
-
-                if (string.IsNullOrEmpty(juego.Imagenes.Library_1920x620) == false)
-                {
-					bool cambiar = true;
-
-					if (juego.Imagenes.Library_1920x620.Contains("i.imgur.com") == true)
-					{
-						cambiar = false;
-					}
-					else if (!Regex.IsMatch(juego.Imagenes.Library_1920x620, $"{Regex.Escape("library_hero.")}.*?{Regex.Escape("/" + juego.IdSteam.ToString() + "/")}"))
-					{
-						cambiar = false;
-					}
-
-					if (cambiar == true)
-					{
-						juego.Imagenes.Library_1920x620 = nuevoJuego.Imagenes.Library_1920x620;
-					}
-				}
-                else
-                {
-                    juego.Imagenes.Library_1920x620 = nuevoJuego.Imagenes.Library_1920x620;
-                }
-
-                if (string.IsNullOrEmpty(juego.Imagenes.Logo) == false)
-                {
-					bool cambiar = true;
-
-					if (juego.Imagenes.Logo.Contains("i.imgur.com") == true)
-					{
-						cambiar = false;
-					}
-					else if (!Regex.IsMatch(juego.Imagenes.Logo, $"{Regex.Escape("logo.")}.*?{Regex.Escape("/" + juego.IdSteam.ToString() + "/")}"))
-					{
-						cambiar = false;
-					}
-
-					if (cambiar == true)
-					{
-						juego.Imagenes.Logo = nuevoJuego.Imagenes.Logo;
-					}
-                }
-                else
-                {
-                    juego.Imagenes.Logo = nuevoJuego.Imagenes.Logo;
-                }
-
-				juego.Imagenes.Capsule_231x87 = nuevoJuego.Imagenes.Capsule_231x87;
-				juego.Imagenes.Header_460x215 = nuevoJuego.Imagenes.Header_460x215;
-
-				juego.Nombre = nuevoJuego.Nombre;
-				
-				if (juego.Caracteristicas == null)
-				{
-					juego.Caracteristicas = new JuegoCaracteristicas();
-				}
-
-				juego.Caracteristicas = nuevoJuego.Caracteristicas;
-				juego.Deck = nuevoJuego.Deck;
-				juego.SteamOS = nuevoJuego.SteamOS;
-
-				juego.Media = nuevoJuego.Media;
-				juego.Categorias = nuevoJuego.Categorias;
-				juego.Etiquetas = nuevoJuego.Etiquetas;
-
-				if (juego.Idiomas == null)
-				{
-					juego.Idiomas = new List<JuegoIdioma>();
-				}
-
-				if (nuevoJuego.Idiomas?.Count > 0)
-				{
-					foreach (var nuevoIdioma in nuevoJuego.Idiomas)
-					{
-						bool existe = false;
-
-						if (juego.Idiomas != null)
-						{
-							foreach (var viejoIdioma in juego.Idiomas)
-							{
-								if (viejoIdioma.DRM == nuevoIdioma.DRM && nuevoIdioma.Idioma == viejoIdioma.Idioma)
-								{
-									existe = true;
-
-									viejoIdioma.Audio = nuevoIdioma.Audio;
-									viejoIdioma.Texto = nuevoIdioma.Texto;
-
-									break;
-								}
-							}
-						}
-
-						if (existe == false)
-						{
-							juego.Idiomas.Add(nuevoIdioma);
-						}
+						juego.Idiomas.Add(nuevo);
 					}
 				}
+			}
 
-				string añadirReseñas = null;
+			string columnasAnalisis = "";
+			object paramReseñas = null;
 
-				if (nuevoJuego.Analisis != null)
+			if (string.IsNullOrEmpty(nuevoJuego.Analisis?.Porcentaje) == false &&
+				string.IsNullOrEmpty(nuevoJuego.Analisis?.Cantidad) == false)
+			{
+				columnasAnalisis = ", analisis=@analisis";
+				paramReseñas = JsonSerializer.Serialize(nuevoJuego.Analisis);
+			}
+
+			string sql = $@"
+				UPDATE juegos SET
+					nombre=@nombre,
+					imagenes=@imagenes,
+					caracteristicas=@caracteristicas,
+					media=@media,
+					nombreCodigo=@nombreCodigo,
+					categorias=@categorias,
+					etiquetas=@etiquetas,
+					fechaSteamAPIComprobacion=@fechaSteamAPIComprobacion,
+					idiomas=@idiomas,
+					deck=@deck,
+					steamOS=@steamOS
+					{columnasAnalisis}
+				WHERE id=@id;";
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					if (string.IsNullOrEmpty(nuevoJuego.Analisis.Porcentaje) == false && string.IsNullOrEmpty(nuevoJuego.Analisis.Cantidad) == false)
+					await sentencia.Connection.ExecuteAsync(sql, new
 					{
-						añadirReseñas = ", analisis=@analisis";
-					}
-				}
-
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
-
-				using (conexion)
-				{
-					string sqlActualizar = "UPDATE juegos " +
-										"SET nombre=@nombre, imagenes=@imagenes, caracteristicas=@caracteristicas, media=@media, nombreCodigo=@nombreCodigo, categorias=@categorias, etiquetas=@etiquetas, fechaSteamAPIComprobacion=@fechaSteamAPIComprobacion, idiomas=@idiomas, deck=@deck, steamOS=@steamOS" + añadirReseñas + " WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", juego.Id);
-						comando.Parameters.AddWithValue("@nombre", juego.Nombre);
-						comando.Parameters.AddWithValue("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
-						comando.Parameters.AddWithValue("@caracteristicas", JsonSerializer.Serialize(juego.Caracteristicas));
-						comando.Parameters.AddWithValue("@media", JsonSerializer.Serialize(juego.Media));
-						comando.Parameters.AddWithValue("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre));
-						comando.Parameters.AddWithValue("@categorias", JsonSerializer.Serialize(juego.Categorias));
-						comando.Parameters.AddWithValue("@etiquetas", JsonSerializer.Serialize(juego.Etiquetas));
-						comando.Parameters.AddWithValue("@fechaSteamAPIComprobacion", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"));
-						comando.Parameters.AddWithValue("@idiomas", JsonSerializer.Serialize(juego.Idiomas));
-						comando.Parameters.AddWithValue("@deck", juego.Deck);
-						comando.Parameters.AddWithValue("@steamOS", juego.SteamOS);
-
-						if (string.IsNullOrEmpty(añadirReseñas) == false)
-						{
-							comando.Parameters.AddWithValue("@analisis", JsonSerializer.Serialize(nuevoJuego.Analisis));
-						}
-						
-						try
-						{
-							comando.ExecuteNonQuery();
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Actualizar Steam API", ex);
-						}
-					}
-				}
-			}		
+						id = juego.Id,
+						nombre = juego.Nombre,
+						imagenes = JsonSerializer.Serialize(juego.Imagenes),
+						caracteristicas = JsonSerializer.Serialize(juego.Caracteristicas),
+						media = JsonSerializer.Serialize(juego.Media),
+						nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre),
+						categorias = JsonSerializer.Serialize(juego.Categorias),
+						etiquetas = JsonSerializer.Serialize(juego.Etiquetas),
+						fechaSteamAPIComprobacion = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffff"),
+						idiomas = JsonSerializer.Serialize(juego.Idiomas),
+						deck = juego.Deck,
+						steamOS = juego.SteamOS,
+						analisis = paramReseñas
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Steam API", ex);
+			}
 		}
 
-		public static void Tipo(Juego juego, SqlConnection conexion)
+		private static string ProcesarImagen(string vieja, string nueva, long idSteam, string patron)
+		{
+			if (string.IsNullOrEmpty(vieja) == false)
+			{
+				bool cambiar = true;
+
+				if (vieja.Contains("i.imgur.com") == true)
+				{
+					cambiar = false;
+				}
+				else if (!Regex.IsMatch(vieja, $"{Regex.Escape(patron)}.*?/{idSteam}/"))
+				{
+					cambiar = false;
+				}
+
+				if (cambiar == true)
+				{ 
+					vieja = nueva; 
+				}
+			}
+			else
+			{
+				vieja = nueva;
+			}
+
+			return vieja;
+		}
+
+		public static async Task Tipo(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET tipo=@tipo WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@tipo", juego.Tipo);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						tipo = juego.Tipo
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Tipo " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void IdSteam(Juego juego, SqlConnection conexion)
+		public static async Task IdSteam(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET idSteam=@idSteam WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@idSteam", juego.IdSteam);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						idSteam = juego.IdSteam
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Id Steam " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void IdGOG(Juego juego, SqlConnection conexion)
+		public static async Task IdGOG(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET idGOG=@idGOG WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@idGOG", juego.IdGog);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						idGOG = juego.IdGog
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Id GOG " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void SlugGOG(Juego juego, SqlConnection conexion = null)
+		public static async Task SlugGOG(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
 			string sqlActualizar = "UPDATE juegos " +
 					"SET slugGOG=@slugGOG WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@slugGOG", juego.SlugGOG);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						slugGOG = juego.SlugGOG
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Slug GOG " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void SlugEpic(Juego juego, SqlConnection conexion = null)
+		public static async Task SlugEpic(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
 			string sqlActualizar = "UPDATE juegos " +
 					"SET slugEpic=@slugEpic WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@slugEpic", juego.SlugEpic);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						slugEpic = juego.SlugEpic
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Slug Epic " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void ExeEpic(Juego juego, SqlConnection conexion = null)
+		public static async Task ExeEpic(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
 			string sqlActualizar = "UPDATE juegos " +
 					"SET exeEpic=@exeEpic WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@exeEpic", juego.ExeEpic);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						exeEpic = juego.ExeEpic
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Exe Epic " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void IdXbox(int idJuego, string idXbox, SqlConnection conexion = null)
+		public static async Task IdXbox(int idJuego, string idXbox)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
 			string sqlActualizar = "UPDATE juegos " +
 					"SET idXbox=@idXbox WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", idJuego);
-				comando.Parameters.AddWithValue("@idXbox", idXbox);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = idJuego,
+						exeUbisoft = idXbox
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Id Xbox " + idJuego.ToString(), ex);
 			}
 		}
 
-		public static void ExeUbisoft(Juego juego, SqlConnection conexion = null)
+		public static async Task ExeUbisoft(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
 			string sqlActualizar = "UPDATE juegos " +
 					"SET exeUbisoft=@exeUbisoft WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@exeUbisoft", juego.ExeUbisoft);
-
-				comando.ExecuteNonQuery();
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						exeUbisoft = juego.ExeUbisoft
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Exe Ubisoft " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void Deck(Juego juego, SqlConnection conexion = null)
+		public static async Task Deck(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET deck=@deck, deckTokens=@deckTokens, deckComprobacion=@deckComprobacion, steamOS=@steamOS, steamOSTokens=@steamOSTokens WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@deck", juego.Deck);
-					comando.Parameters.AddWithValue("@deckTokens", JsonSerializer.Serialize(juego.DeckTokens));
-					comando.Parameters.AddWithValue("@deckComprobacion", juego.DeckComprobacion);
-					comando.Parameters.AddWithValue("@steamOS", juego.SteamOS);
-					comando.Parameters.AddWithValue("@steamOSTokens", JsonSerializer.Serialize(juego.SteamOSTokens));
-
-					comando.ExecuteNonQuery();
-					try
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
 					{
-
-					}
-					catch
-					{
-
-					}
-				}
+						id = juego.Id,
+						deck = juego.Deck,
+						deckTokens = JsonSerializer.Serialize(juego.DeckTokens),
+						deckComprobacion = juego.DeckComprobacion,
+						steamOS = juego.SteamOS,
+						steamOSTokens = JsonSerializer.Serialize(juego.SteamOSTokens)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Deck " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void DeckVacio(Juego juego, SqlConnection conexion = null)
+		public static async Task DeckVacio(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET deckComprobacion=@deckComprobacion WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			var parametros = new
+			{
+				id = juego.Id,
+				deckComprobacion = juego.DeckComprobacion
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@deckComprobacion", juego.DeckComprobacion);
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Deck Comprobacion " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void Historicos(Juego juego, SqlConnection conexion = null)
+		public static async Task Historicos(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET historicos=@historicos WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			var parametros = new
+			{
+				id = juego.Id,
+				historicos = JsonSerializer.Serialize(juego.Historicos)
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@historicos", JsonSerializer.Serialize(juego.Historicos));
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Historicos " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void GalaxyGOG(Juego juego, SqlConnection conexion = null)
+		public static async Task GalaxyGOG(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET galaxyGOG=@galaxyGOG, idiomas=@idiomas WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			var parametros = new
+			{
+				id = juego.Id,
+				galaxyGOG = JsonSerializer.Serialize(juego.GalaxyGOG),
+				idiomas = JsonSerializer.Serialize(juego.Idiomas)
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@galaxyGOG", JsonSerializer.Serialize(juego.GalaxyGOG));
-					comando.Parameters.AddWithValue("@idiomas", JsonSerializer.Serialize(juego.Idiomas));
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar GOG Galaxy " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void EpicGames(Juego juego, SqlConnection conexion = null)
+		public static async Task EpicGames(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET epicGames=@epicGames, idiomas=@idiomas WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			var parametros = new
+			{
+				id = juego.Id,
+				epicGames = JsonSerializer.Serialize(juego.EpicGames),
+				idiomas = JsonSerializer.Serialize(juego.Idiomas)
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@epicGames", JsonSerializer.Serialize(juego.EpicGames));
-					comando.Parameters.AddWithValue("@idiomas", JsonSerializer.Serialize(juego.Idiomas));
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void Xbox(Juego juego, SqlConnection conexion = null)
+		public static async Task Xbox(Juego juego)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			using (conexion)
-			{
-				string sqlActualizar = "UPDATE juegos " +
+			string sqlActualizar = "UPDATE juegos " +
 					"SET xbox=@xbox, idiomas=@idiomas WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			var parametros = new
+			{
+				id = juego.Id,
+				xbox = JsonSerializer.Serialize(juego.Xbox),
+				idiomas = JsonSerializer.Serialize(juego.Idiomas)
+			};
+
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", juego.Id);
-					comando.Parameters.AddWithValue("@xbox", JsonSerializer.Serialize(juego.Xbox));
-					comando.Parameters.AddWithValue("@idiomas", JsonSerializer.Serialize(juego.Idiomas));
-
-					comando.ExecuteNonQuery();
-					try
-					{
-
-					}
-					catch
-					{
-
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Xbox " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void CantidadJugadoresSteam(Juego juego)
+		public static async Task CantidadJugadoresSteam(Juego juego)
 		{
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
+					await sentencia.Connection.ExecuteAsync("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
 					{
 						id = juego.Id,
 						cantidadJugadoresSteam = JsonSerializer.Serialize(juego.CantidadJugadores)
@@ -1155,64 +970,45 @@ namespace BaseDatos.Juegos
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Cantidad Jugadores " + juego.Id.ToString(), ex);
 			}
 		}
-		public static void UltimasActualizacioneseInteligenciaArticial(int idJuego, DateTime? fechaSteam, DateTime? fechaGOG, bool inteligenciaArtificial = false, SqlConnection conexion = null)
-		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 
-			string añadirFechaSteam = null;
+		public static async void UltimasActualizacioneseInteligenciaArticial(int idJuego, DateTime? fechaSteam, DateTime? fechaGOG, bool inteligenciaArtificial = false, SqlConnection conexion = null)
+		{
+			var sql = new StringBuilder();
+			sql.Append("UPDATE juegos SET ");
+			sql.Append("inteligenciaArtificial = @inteligenciaArtificial, ");
+			sql.Append("ultimaActualizacion = @ultimaActualizacion ");
 
 			if (fechaSteam != null)
 			{
-				añadirFechaSteam = ", ultimaActualizacionSteam=@ultimaActualizacionSteam";
+				sql.Append(", ultimaActualizacionSteam = @ultimaActualizacionSteam ");
 			}
-
-			string añadirFechaGOG = null;
 
 			if (fechaGOG != null)
 			{
-				añadirFechaGOG = ", ultimaActualizacionGOG=@ultimaActualizacionGOG";
+				sql.Append(", ultimaActualizacionGOG = @ultimaActualizacionGOG ");
 			}
 
-			using (conexion)
+			sql.Append("WHERE id = @id;");
+
+			var parametros = new
 			{
-				string sqlActualizar = "UPDATE juegos " +
-					"SET inteligenciaArtificial=@inteligenciaArtificial, ultimaActualizacion=@ultimaActualizacion" + añadirFechaSteam + añadirFechaGOG + " WHERE id=@id";
+				id = idJuego,
+				inteligenciaArtificial,
+				ultimaActualizacion = DateTime.Now,
+				ultimaActualizacionSteam = fechaSteam,
+				ultimaActualizacionGOG = fechaGOG
+			};
 
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@id", idJuego);
-					comando.Parameters.AddWithValue("@inteligenciaArtificial", inteligenciaArtificial);
-					comando.Parameters.AddWithValue("@ultimaActualizacion", DateTime.Now);
-
-					if (fechaSteam != null)
-					{
-						comando.Parameters.AddWithValue("@ultimaActualizacionSteam", fechaSteam);
-					}
-
-					if (fechaGOG != null)
-					{
-						comando.Parameters.AddWithValue("@ultimaActualizacionGOG", fechaGOG);
-					}
-
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch (Exception ex)
-					{
-						BaseDatos.Errores.Insertar.Mensaje("Actualizar SteamCMD " + idJuego.ToString(), ex);
-					}
-				}
+					await sentencia.Connection.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar SteamCMD " + idJuego.ToString(), ex);
 			}
 		}
 	}

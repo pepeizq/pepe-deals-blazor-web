@@ -2,7 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -59,9 +58,9 @@ namespace APIs.GreenManGaming
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertas()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://api.greenmangaming.com/api/productfeed/prices/current?cc=es&cur=eur&lang=en");
 
@@ -115,22 +114,22 @@ namespace APIs.GreenManGaming
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 
 										juegos2 += 1;
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 										}
 									}
 								}
@@ -141,9 +140,9 @@ namespace APIs.GreenManGaming
 			}
 		}
 
-		public static async Task BuscarOfertasGold(SqlConnection conexion, IDecompiladores decompilador)
+		public static async Task BuscarOfertasGold()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -220,22 +219,22 @@ namespace APIs.GreenManGaming
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta, conexion);
+											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
 										}
 
 										juegos2 += 1;
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex, conexion);
+											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
 										}
 									}
 								}					

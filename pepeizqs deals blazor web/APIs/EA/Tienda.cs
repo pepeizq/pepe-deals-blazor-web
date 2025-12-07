@@ -184,9 +184,9 @@ namespace APIs.EA
 			"zumas-revenge"
 		};
 
-		public static async Task BuscarOfertas(IDecompiladores decompilador, SqlConnection conexion = null)
+		public static async Task BuscarOfertas()
         {
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -251,7 +251,7 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(oferta);
+											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
 										}
 										catch (Exception ex)
 										{
@@ -262,7 +262,7 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
@@ -317,7 +317,7 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Tiendas.Comprobar.Resto(ofertaDLC);
+											await BaseDatos.Tiendas.Comprobar.Resto(ofertaDLC);
 										}
 										catch (Exception ex)
 										{
@@ -328,7 +328,7 @@ namespace APIs.EA
 
 										try
 										{
-											BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
@@ -352,69 +352,72 @@ namespace APIs.EA
 									return await sentencia.Connection.QueryFirstOrDefaultAsync<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion }, transaction: sentencia);
 								});
 
-								string idJuegosTexto = fila.IdJuegos;
-								string descartado = fila.Descartado;
-								bool encontrado = false;
-
-								if (string.IsNullOrEmpty(idJuegosTexto) == false && idJuegosTexto != "0" && descartado == "no")
+								if (fila != null)
 								{
-									encontrado = true;
+									string idJuegosTexto = fila.IdJuegos;
+									string descartado = fila.Descartado;
+									bool encontrado = false;
 
-									List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
-
-									foreach (var id in idJuegos)
+									if (string.IsNullOrEmpty(idJuegosTexto) == false && idJuegosTexto != "0" && descartado == "no")
 									{
-										bool insertar = true;
-										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+										encontrado = true;
 
-										if (suscripciones?.Count > 0)
+										List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
+
+										foreach (var id in idJuegos)
 										{
-											foreach (var suscripcion in suscripciones)
+											bool insertar = true;
+											var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+
+											if (suscripciones?.Count > 0)
 											{
-												if (suscripcion.Tipo == tipo)
+												foreach (var suscripcion in suscripciones)
 												{
-													insertar = false;
+													if (suscripcion.Tipo == tipo)
+													{
+														insertar = false;
 
-													suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(1);
+														suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(1);
 
-													BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+														BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+													}
 												}
 											}
-										}
 
-										if (insertar == true)
-										{
-											DateTime nuevaFecha = DateTime.Now;
-											nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
-
-											JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
+											if (insertar == true)
 											{
-												DRM = JuegoDRM.EA,
-												Nombre = juegoEA.Nombre,
-												FechaEmpieza = DateTime.Now,
-												FechaTermina = nuevaFecha,
-												JuegoId = int.Parse(id),
-												Imagen = juegoEA.Imagenes.Ar1X1,
-												ImagenNoticia = juegoEA.Imagenes.Ar1X1,
-												Enlace = enlaceSuscripcion,
-												Tipo = tipo
-											};
+												DateTime nuevaFecha = DateTime.Now;
+												nuevaFecha = nuevaFecha + TimeSpan.FromDays(1);
 
-											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+												JuegoSuscripcion nuevaSuscripcion = new JuegoSuscripcion
+												{
+													DRM = JuegoDRM.EA,
+													Nombre = juegoEA.Nombre,
+													FechaEmpieza = DateTime.Now,
+													FechaTermina = nuevaFecha,
+													JuegoId = int.Parse(id),
+													Imagen = juegoEA.Imagenes.Ar1X1,
+													ImagenNoticia = juegoEA.Imagenes.Ar1X1,
+													Enlace = enlaceSuscripcion,
+													Tipo = tipo
+												};
+
+												BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+											}
 										}
 									}
-								}
 
-								if (descartado == "si")
-								{
-									encontrado = true;
-								}
+									if (descartado == "si")
+									{
+										encontrado = true;
+									}
 
-								if (encontrado == false)
-								{
-									var generar = tipo == Suscripciones2.SuscripcionTipo.EAPlay ? Suscripcion.Generar() : Suscripcion.GenerarPro();
-									
-									BaseDatos.Suscripciones.Insertar.Temporal(generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
+									if (encontrado == false)
+									{
+										var generar = tipo == Suscripciones2.SuscripcionTipo.EAPlay ? Suscripcion.Generar() : Suscripcion.GenerarPro();
+
+										BaseDatos.Suscripciones.Insertar.Temporal(generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
+									}
 								}
 							}
                         }
