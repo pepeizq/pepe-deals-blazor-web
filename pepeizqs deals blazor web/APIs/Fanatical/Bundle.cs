@@ -144,7 +144,7 @@ namespace APIs.Fanatical
             return bundle;
 		}
 	
-		private static void ComprobarTierBundle(Bundles2.Bundle bundle, FanaticalJuegoBundleTier tier)
+		private static async void ComprobarTierBundle(Bundles2.Bundle bundle, FanaticalJuegoBundleTier tier)
 		{
 			if (tier != null)
 			{
@@ -156,7 +156,7 @@ namespace APIs.Fanatical
 						{
 							if (juegob.SteamId > 0)
 							{
-								Juegos.Juego juegoc = BaseDatos.Juegos.Buscar.UnJuego(null, juegob.SteamId?.ToString());
+								Juegos.Juego juegoc = await BaseDatos.Juegos.Buscar.UnJuego(null, juegob.SteamId?.ToString());
 
 								if (juegoc != null)
 								{

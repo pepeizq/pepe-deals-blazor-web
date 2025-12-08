@@ -11,12 +11,12 @@ namespace BaseDatos.Juegos
 {
 	public static class Buscar
 	{
-		public static Juego UnJuego(int id)
+		public static async Task<Juego> UnJuego(int id)
 		{
-			return UnJuego(id.ToString());
+			return await UnJuego(id.ToString());
 		}
 
-		public static Juego UnJuego(string id = null, string idSteam = null, string idGog = null, string idEpic = null)
+		public static async Task<Juego> UnJuego(string id = null, string idSteam = null, string idGog = null, string idEpic = null)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -29,9 +29,9 @@ namespace BaseDatos.Juegos
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -45,9 +45,9 @@ namespace BaseDatos.Juegos
 				{
 					try
 					{
-						return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -61,9 +61,9 @@ namespace BaseDatos.Juegos
 					{
 						try
 						{
-							return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+							return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 							{
-								return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
+								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
 							});
 						}
 						catch (Exception ex)
@@ -77,9 +77,9 @@ namespace BaseDatos.Juegos
 						{
 							try
 							{
-								return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+								return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 								{
-									return sentencia.Connection.QueryFirstOrDefault<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
+									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
 								});
 							}
 							catch (Exception ex)
@@ -94,7 +94,7 @@ namespace BaseDatos.Juegos
 			return null;
 		}
 
-		public static Juego UnJuegoReducido(int id)
+		public static async Task<Juego> UnJuegoReducido(int id)
 		{
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
@@ -134,9 +134,9 @@ WHERE id=@id";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<Juego>(busqueda, new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -147,7 +147,7 @@ WHERE id=@id";
 			return null;
 		}
 
-		public static Juego UnJuegoComparador(int id)
+		public static async Task<Juego> UnJuegoComparador(int id)
 		{
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
@@ -188,9 +188,9 @@ WHERE id=@id";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<Juego>(busqueda, new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -201,7 +201,7 @@ WHERE id=@id";
 			return null;
 		}
 
-		public static List<Juego> MultiplesJuegos(List<string> ids)
+		public static async Task<List<Juego>> MultiplesJuegos(List<string> ids)
         {
             string sqlBuscar = string.Empty;
 
@@ -235,9 +235,9 @@ WHERE id=@id";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -249,7 +249,7 @@ WHERE id=@id";
 			return new List<Juego>();
         }
 
-        public static List<Juego> MultiplesJuegos(List<JuegoDeseado> ids)
+        public static async Task<List<Juego>> MultiplesJuegos(List<JuegoDeseado> ids)
         {
             List<Juego> juegos = new List<Juego>();
             string sqlBuscar = string.Empty;
@@ -284,9 +284,9 @@ WHERE id=@id";
             {
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -298,7 +298,7 @@ WHERE id=@id";
             return juegos;
         }
 
-		public static List<Juego> MultiplesJuegosSteam2(List<int> ids)
+		public static async Task<List<Juego>> MultiplesJuegosSteam2(List<int> ids)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -350,9 +350,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -364,7 +364,7 @@ WHERE idSteam IN (";
 			return new List<Juego>();
 		}
 
-		public static List<int> MultiplesJuegosSteamOrdenado(List<int> ids)
+		public static async Task<List<int>> MultiplesJuegosSteamOrdenado(List<int> ids)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -395,9 +395,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<int>(sqlBuscar, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<int>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -409,7 +409,7 @@ WHERE idSteam IN (";
 			return new List<int>();
 		}
 
-		public static List<Juego> MultiplesJuegosGOG(List<string> ids)
+		public static async Task<List<Juego>> MultiplesJuegosGOG(List<string> ids)
 		{
 			string sqlBuscar = string.Empty;
 
@@ -442,9 +442,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(sqlBuscar, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -456,7 +456,7 @@ WHERE idSteam IN (";
 			return new List<Juego>();
 		}
 
-		public static List<JuegoUsuario> MultiplesJuegosUsuario(List<JuegoUsuario> juegos, JuegoDRM drm, List<string> ids)
+		public static async Task<List<JuegoUsuario>> MultiplesJuegosUsuario(List<JuegoUsuario> juegos, JuegoDRM drm, List<string> ids)
 		{
 			bool cogerNumero = false;
 			string campo = string.Empty;
@@ -520,9 +520,9 @@ WHERE idSteam IN (";
 					{
 						try
 						{
-							var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+							var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 							{
-								return sentencia.Connection.Query<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar, transaction: sentencia).ToList();
+								return await sentencia.Connection.QueryAsync<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 							});
 
 							foreach (var fila in resultados)
@@ -576,7 +576,7 @@ WHERE idSteam IN (";
 			return juegos;
 		}
 
-		public static List<Juego> Nombre2(string nombre, int cantidadResultados = 10)
+		public static async Task<List<Juego>> Nombre2(string nombre, int cantidadResultados = 10)
 		{
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
@@ -622,9 +622,9 @@ END DESC";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -635,7 +635,7 @@ END DESC";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> NombreComparador(string nombre, int cantidadResultados = 10)
+		public static async Task<List<Juego>> NombreComparador(string nombre, int cantidadResultados = 10)
 		{
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
@@ -695,9 +695,9 @@ END DESC";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -708,7 +708,7 @@ END DESC";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Nombre(string nombre, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)
+		public static async Task<List<Juego>> Nombre(string nombre, int cantidad = 30, bool todo = true, int tipo = -1, bool logeado = false, bool prioridad = true)
 		{
 			if (string.IsNullOrEmpty(nombre) == false)
 			{
@@ -797,9 +797,9 @@ END DESC";
 
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -811,7 +811,7 @@ END DESC";
 			return null;
 		}
 
-		public static List<Juego> Minimos(int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
+		public static async Task<List<Juego>> Minimos(int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
 		{
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
@@ -1066,9 +1066,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -1080,13 +1080,13 @@ FROM seccionMinimos j";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Ultimos(string tabla, int cantidad)
+		public static async Task<List<Juego>> Ultimos(string tabla, int cantidad)
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC", transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC", transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -1097,7 +1097,7 @@ FROM seccionMinimos j";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> DLCs(string idMaestro = null, JuegoTipo tipo = JuegoTipo.DLC)
+		public static async Task<List<Juego>> DLCs(string idMaestro = null, JuegoTipo tipo = JuegoTipo.DLC)
 		{
 			string busqueda = null;
 
@@ -1119,9 +1119,9 @@ FROM seccionMinimos j";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -1132,13 +1132,13 @@ FROM seccionMinimos j";
 			return new List<Juego>();
 		}
 
-		public static int DLCsCantidad()
+		public static async Task<int> DLCsCantidad()
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QuerySingle<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", transaction: sentencia);
+					return await sentencia.Connection.QuerySingleAsync<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -1149,7 +1149,7 @@ FROM seccionMinimos j";
 			return 0;
 		}
 
-		public static List<Juego> Filtro(List<string> ids, int cantidad, SqlConnection conexion = null)
+		public static async Task<List<Juego>> Filtro(List<string> ids, int cantidad)
 		{
 			List<string> etiquetas = new List<string>();
 			List<string> categorias = new List<string>();
@@ -1158,48 +1158,45 @@ FROM seccionMinimos j";
 			List<string> sistemas = new List<string>();
 			List<string> tipos = new List<string>();
 
-			if (ids != null)
+			if (ids?.Count > 0)
 			{
-				if (ids.Count > 0)
+				foreach (var id in ids)
 				{
-					foreach (var id in ids)
+					if (id.Contains("t") == true)
 					{
-						if (id.Contains("t") == true)
-						{
-							etiquetas.Add(id);
-						}
+						etiquetas.Add(id);
+					}
 
-						if (id.Contains("c") == true || id.Contains("a") == true)
-						{
-							categorias.Add(id);
-						}
+					if (id.Contains("c") == true || id.Contains("a") == true)
+					{
+						categorias.Add(id);
+					}
 
-						if (id.Contains("g") == true)
-						{
-							generos.Add(id);
-						}
+					if (id.Contains("g") == true)
+					{
+						generos.Add(id);
+					}
 
-						if (id.Contains("d") == true)
-						{
-							decks.Add(id);
-						}
+					if (id.Contains("d") == true)
+					{
+						decks.Add(id);
+					}
 
-						if (id.Contains("s") == true)
-						{
-							sistemas.Add(id);
-						}
+					if (id.Contains("s") == true)
+					{
+						sistemas.Add(id);
+					}
 
-						if (id.Contains("i") == true)
-						{
-							tipos.Add(id);
-						}
+					if (id.Contains("i") == true)
+					{
+						tipos.Add(id);
 					}
 				}
 			}
 
 			string etiquetasTexto = string.Empty;
 
-			if (etiquetas.Count > 0)
+			if (etiquetas?.Count > 0)
 			{
 				int i = 0;
 
@@ -1402,9 +1399,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -1416,7 +1413,7 @@ FROM seccionMinimos j";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Duplicados()
+		public static async Task<List<Juego>> Duplicados()
 		{
 			string busqueda = @"SELECT * FROM juegos
  WHERE idSteam > 0 AND idSteam IN
@@ -1427,9 +1424,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(busqueda, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -1474,7 +1471,7 @@ FROM seccionMinimos j";
 			return new List<int>();
 		}
 
-        public static List<Juego> Aleatorios(bool fechaAPISteam = false)
+        public static async Task<List<Juego>> Aleatorios(bool fechaAPISteam = false)
         {
 			string sqlBase = @"SELECT TOP 300 id, nombre FROM juegos ORDER BY NEWID()";
 
@@ -1493,9 +1490,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Query<Juego>(sqlBase, transaction: sentencia).ToList();
+						return await sentencia.Connection.QueryAsync<Juego>(sqlBase, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -1506,9 +1503,9 @@ FROM seccionMinimos j";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(sqlFecha, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(sqlFecha, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<Juego> juegos = new List<Juego>();

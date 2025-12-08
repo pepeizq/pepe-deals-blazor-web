@@ -601,7 +601,7 @@ else
 
 	[PersistentState] public List<Juegos.Juego> resultadosGestor { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		cargado = false;
 
@@ -665,7 +665,7 @@ else
             }
 		}
 
-		resultadosGestor ??= BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
+		resultadosGestor ??= await BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
 
 		cargado = true;
 	}
@@ -676,7 +676,7 @@ else
 		public string Contenido { get; set; }
 	}
 
-	private async void CambiarIDs(MouseEventArgs e, string nuevaId, string letra)
+	private async Task CambiarIDs(MouseEventArgs e, string nuevaId, string letra)
 	{
 		nuevaId = letra + nuevaId;
 
@@ -723,7 +723,7 @@ else
 			ids = ids.Remove(0, 1);
 		}
 
-		resultadosGestor = BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
+		resultadosGestor = await BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
 
 		if (string.IsNullOrEmpty(ids) == false)
 		{

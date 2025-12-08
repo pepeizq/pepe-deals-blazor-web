@@ -142,7 +142,7 @@
 
 				foreach (var deseado in listaDeseados)
 				{
-					List<Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(deseado);
+					List<Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(deseado);
 
 					if (resultados != null)
 					{

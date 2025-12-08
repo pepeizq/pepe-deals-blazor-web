@@ -9,11 +9,11 @@ namespace Noticias
 {
     public static class Plantillas
     {
-        public static Plantilla Bundles(int bundleId)
+        public static async Task<Plantilla> Bundles(int bundleId)
         {
             Plantilla plantilla = new Plantilla();
 
-            Bundles2.Bundle bundle = BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+            Bundles2.Bundle bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
 
             if (bundle != null)
             {
@@ -169,7 +169,7 @@ namespace Noticias
 
 				if (juegoGratis1.Juego == null)
 				{
-					juegoGratis1.Juego = BaseDatos.Juegos.Buscar.UnJuego(juegoGratis1.JuegoId);
+					juegoGratis1.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoGratis1.JuegoId);
 				}
 
 				if (lista.Count == 1)
@@ -197,7 +197,7 @@ namespace Noticias
 
 					if (juegoGratis2.Juego == null)
 					{
-						juegoGratis2.Juego = BaseDatos.Juegos.Buscar.UnJuego(juegoGratis2.JuegoId);
+						juegoGratis2.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoGratis2.JuegoId);
 					}
 
 					if (lista.Count == 2)
@@ -214,7 +214,7 @@ namespace Noticias
 
 						if (juegoGratis3.Juego == null)
 						{
-							juegoGratis3.Juego = BaseDatos.Juegos.Buscar.UnJuego(juegoGratis3.JuegoId);
+							juegoGratis3.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoGratis3.JuegoId);
 						}
 
 						Random azarTitulo = new Random();
@@ -308,7 +308,7 @@ namespace Noticias
 			return plantilla;
         }
 
-        public static Plantilla Suscripciones(Plantilla plantilla, int juegoId, int id, SuscripcionTipo tipoSeleccionado)
+        public static async Task<Plantilla> Suscripciones(Plantilla plantilla, int juegoId, int id, SuscripcionTipo tipoSeleccionado)
         {
             if (string.IsNullOrEmpty(plantilla.Juegos) == true)
             {
@@ -443,7 +443,7 @@ namespace Noticias
                 }
                 else
                 {
-                    Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).JuegoId.ToString());
+                    Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).JuegoId.ToString());
                     plantilla.Imagen = juego.Imagenes.Library_1920x620;
                 }
 
@@ -463,11 +463,11 @@ namespace Noticias
             return plantilla;
         }
 
-		public static Plantilla Despedidas(string enlace, DateTime fecha, int juegoId, string dominio)
+		public static async Task<Plantilla> Despedidas(string enlace, DateTime fecha, int juegoId, string dominio)
 		{
 			Plantilla plantilla = new Plantilla();
 
-			Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(juegoId.ToString());
+			Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoId.ToString());
 
 			if (juego != null)
 			{

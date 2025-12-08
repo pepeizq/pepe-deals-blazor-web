@@ -12,7 +12,7 @@
 
 <div style="display: flex; flex-direction: column; gap: 30px;">
     <div class="caja-admin-dlcs" style="display: flex; align-items: center; gap: 30px;">
-        <button @onclick="(async () => await BuscarDlcMaestro())" class="boton-pequeño" style="padding: 10px 30px; width: fit-content;">
+        <button @onclick="BuscarDlcMaestro" class="boton-pequeño" style="padding: 10px 30px; width: fit-content;">
             Buscar Maestro
         </button>
 
@@ -51,21 +51,20 @@
     private List<global::Juegos.Juego> dlcsPendientes = new List<global::Juegos.Juego>();
     private global::Juegos.Juego dlcMostrar = new global::Juegos.Juego();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        dlcsPendientes = BaseDatos.Juegos.Buscar.DLCs(null, global::Juegos.JuegoTipo.DLC);
+        dlcsPendientes = await BaseDatos.Juegos.Buscar.DLCs(null, global::Juegos.JuegoTipo.DLC);
 		dlcMostrar = dlcsPendientes.FirstOrDefault();
     }
 
     private bool noEncontrado = false;
 
-    private async Task BuscarDlcMaestro()
+    private async void BuscarDlcMaestro()
     {
         noEncontrado = false;
 
         foreach (var dlcPendiente in dlcsPendientes)
         {
-            await Task.Yield();
 			dlcMostrar = dlcPendiente;
 
             global::Juegos.Juego nuevoJuego = await APIs.Steam.Juego.CargarDatosJuego(dlcPendiente.IdSteam.ToString());
@@ -75,7 +74,7 @@
                 if (string.IsNullOrEmpty(nuevoJuego.Maestro) == false)
                 {
                     dlcPendiente.Maestro = nuevoJuego.Maestro;
-                    BaseDatos.Juegos.Actualizar.DlcMaestro(dlcPendiente);
+                    await BaseDatos.Juegos.Actualizar.DlcMaestro(dlcPendiente);
                 }
                 else
                 {
@@ -88,12 +87,12 @@
 		}
     }
 
-    private void DescartarDlcMaestro()
+    private async void DescartarDlcMaestro()
     {
         noEncontrado = false;
 
         dlcMostrar.Maestro = "descartado";
-        BaseDatos.Juegos.Actualizar.DlcMaestro(dlcMostrar);
+        await BaseDatos.Juegos.Actualizar.DlcMaestro(dlcMostrar);
 
         dlcsPendientes.Remove(dlcMostrar);
         dlcMostrar = dlcsPendientes.FirstOrDefault();

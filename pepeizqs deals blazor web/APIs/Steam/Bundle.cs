@@ -41,7 +41,7 @@ namespace APIs.Steam
                             {
                                 if (idApp > 0)
                                 {
-                                    Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(null, idApp.ToString());
+                                    Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(null, idApp.ToString());
 
                                     if (juego != null)
                                     {
@@ -58,8 +58,8 @@ namespace APIs.Steam
 
                                         if (nuevoJuego != null)
                                         {
-                                            BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego);
-                                            Juegos.Juego nuevoJuego2 = BaseDatos.Juegos.Buscar.UnJuego(null, idApp.ToString());
+                                            await BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego);
+                                            Juegos.Juego nuevoJuego2 = await BaseDatos.Juegos.Buscar.UnJuego(null, idApp.ToString());
 
                                             if (idsBuscar.Length > 0)
                                             {

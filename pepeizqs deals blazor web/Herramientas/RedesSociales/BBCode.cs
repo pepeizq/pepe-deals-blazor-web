@@ -6,7 +6,7 @@ namespace Herramientas.RedesSociales
 {
 	public static class BBCode
 	{
-		public static string Bundle(string idioma, Bundles2.Bundle bundle, bool elotrolado)
+		public static async Task<string> Bundle(string idioma, Bundles2.Bundle bundle, bool elotrolado)
 		{
 			string texto = null;
 
@@ -120,7 +120,7 @@ namespace Herramientas.RedesSociales
                             {
                                 if (juego.Juego == null)
                                 {
-                                    juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
                                 }
 
                                 if (juego.Juego?.PrecioMinimosHistoricos != null)
@@ -155,7 +155,7 @@ namespace Herramientas.RedesSociales
                             {
                                 if (juego.Juego == null)
                                 {
-                                    juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
                                 }
 
                                 if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
@@ -268,7 +268,7 @@ namespace Herramientas.RedesSociales
                                             {
                                                 foreach (var dlc in juego.DLCs)
                                                 {
-                                                    Juegos.Juego juegoDLC = global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
+                                                    Juegos.Juego juegoDLC = await global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
 
                                                     if (juegoDLC?.PrecioMinimosHistoricos != null)
                                                     {

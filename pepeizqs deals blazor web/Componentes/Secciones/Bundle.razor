@@ -112,7 +112,7 @@
 			{
 				if (juego.Juego == null)
 				{
-					juego.Juego = BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+					juego.Juego = juegosBundlePrecargados.TryGetValue(int.Parse(juego.JuegoId), out var juegoPrecargado) ? juegoPrecargado : null;
 				}
 
 				if (juego.Juego != null)
@@ -525,7 +525,7 @@
 
 	[PersistentState] public Bundles2.Bundle bundle { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -542,7 +542,29 @@
 			usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}
 
-		bundle ??= BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+		bundle ??= await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+	}
+
+	private Dictionary<int, Juegos.Juego> juegosBundlePrecargados = new();
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (bundle?.Juegos != null)
+		{
+			juegosBundlePrecargados.Clear();
+
+			foreach (var item in bundle.Juegos)
+			{
+				if (item != null)
+				{
+					if (!juegosBundlePrecargados.ContainsKey(int.Parse(item.JuegoId)))
+					{
+						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
+						juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
+					}
+				}
+			}
+		}
 	}
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)
@@ -562,7 +584,7 @@
 					{
 						if (string.IsNullOrEmpty(juego.JuegoId) == false)
 						{
-							juego.Juego = BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+							juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
 							juego.Imagen = juego.Juego.Imagenes.Header_460x215;
 						}
 					}

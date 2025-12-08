@@ -54,7 +54,7 @@ namespace BaseDatos.Bundles
 
 				foreach (var juego in bundle.Juegos)
 				{
-					var juego2 = Juegos.Buscar.UnJuego(juego.JuegoId);
+					var juego2 = await Juegos.Buscar.UnJuego(juego.JuegoId);
 
 					if (juego2 == null)
 					{

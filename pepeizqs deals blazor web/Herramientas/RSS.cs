@@ -182,7 +182,7 @@ namespace Herramientas
 
         [ResponseCache(Duration = 3000)]
         [HttpGet("rss/{drm}/{cantidadReseñas}")]
-        public IActionResult GenerarUltimasOfertas(string drm, int cantidadReseñas)
+        public async Task<IActionResult> GenerarUltimasOfertas(string drm, int cantidadReseñas)
         {
 			string dominio = "https://" + HttpContext.Request.Host.Value;
 
@@ -220,7 +220,7 @@ namespace Herramientas
 
 				List<SyndicationItem> items = new List<SyndicationItem>();
 
-				List<Juegos.Juego> juegos = global::BaseDatos.Portada.Buscar.Minimos(0, 50, null, drmsUsar, cantidadReseñas);
+				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(0, 50, null, drmsUsar, cantidadReseñas);
 
 				if (juegos.Count > 0)
 				{

@@ -10,8 +10,6 @@ namespace Herramientas
 	{
 		public static async Task<List<JuegoDeseadoMostrar>> LeerJuegos(string usuarioId)
 		{
-			await Task.Yield();
-
 			Usuario deseadosUsuario = global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
 			List<JuegoDeseadoMostrar> deseadosGestor = new List<JuegoDeseadoMostrar>();
@@ -29,7 +27,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosSteamJuegos = new List<Juego>();
 
-				deseadosSteamJuegos = global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(deseadosSteam.Select(int.Parse).ToList());
+				deseadosSteamJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(deseadosSteam.Select(int.Parse).ToList());
 
 				if (deseadosSteamJuegos != null)
 				{
@@ -62,7 +60,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosWebJuegos = new List<Juego>();
 
-				deseadosWebJuegos = global::BaseDatos.Juegos.Buscar.MultiplesJuegos(deseadosWeb);
+				deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(deseadosWeb);
 
 				int i = 0;
 
@@ -100,7 +98,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosGogJuegos = new List<Juego>();
 
-				deseadosGogJuegos = global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(deseadosGog);
+				deseadosGogJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(deseadosGog);
 
 				if (deseadosGogJuegos != null)
 				{

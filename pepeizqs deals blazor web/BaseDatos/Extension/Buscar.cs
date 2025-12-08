@@ -195,7 +195,7 @@ namespace BaseDatos.Extension
 
 						foreach (var bundle in lista)
 						{
-							var datosBundle = BaseDatos.Bundles.Buscar.UnBundle(bundle.BundleId);
+							var datosBundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle.BundleId);
 							if (datosBundle != null)
 							{
 								bundle.Enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, false, false);

@@ -43,9 +43,9 @@ namespace Tareas
 						{
 							BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
 
-							List<Juegos.Juego> duplicados = BaseDatos.Juegos.Buscar.Duplicados();
+							List<Juegos.Juego> duplicados = await BaseDatos.Juegos.Buscar.Duplicados();
 
-							BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
+							await BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
 						}
 					}
 					catch (Exception ex)

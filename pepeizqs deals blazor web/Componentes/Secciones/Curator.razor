@@ -277,7 +277,7 @@
 	private List<Juegos.Juego> juegosCuratorBandasSonoras = new List<Juegos.Juego>();
 	private List<Juegos.Juego> juegosCuratorSoftware = new List<Juegos.Juego>();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -295,12 +295,9 @@
 
 		if (string.IsNullOrEmpty(slug) == false)
 		{
-			curator ??= BaseDatos.Curators.Buscar.Uno(slug);
+			curator ??= await BaseDatos.Curators.Buscar.Uno(slug);
 		}
-	}
 
-	protected override async Task OnInitializedAsync()
-	{
 		if (curator?.IdSteam > 0)
 		{
 			if (string.IsNullOrEmpty(curator.ImagenFondo) == true)
@@ -329,7 +326,7 @@
 				}
 			}
 
-			juegosCurator ??= global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(curator.SteamIds);
+			juegosCurator ??= await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(curator.SteamIds);
 
 			if (juegosCurator.Count > 0)
 			{

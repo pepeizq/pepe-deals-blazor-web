@@ -15,7 +15,7 @@
 @{
 	string keywords = "last, added";
 
-	if (juegosMostrar.Count > 0)
+	if (juegosMostrar?.Count > 0)
 	{
 		int i = 0;
 		foreach (var juego in juegosMostrar)
@@ -54,7 +54,7 @@
 	</div>
 </div>
 
-@if (juegosMostrar.Count > 0)
+@if (juegosMostrar?.Count > 0)
 {
 	<div style="max-width: 1000px; margin: 20px auto 40px auto; display: flex; flex-direction: column; gap: 30px;">
 		<Virtualize Context="juego" Items="juegosMostrar" ItemSize="107">
@@ -79,7 +79,7 @@
 
 	[PersistentState] public List<Juegos.Juego> juegosMostrar { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -94,6 +94,6 @@
 			deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 		}
 
-		juegosMostrar ??= Buscar.Ultimos("juegos", 500);
+		juegosMostrar ??= await Buscar.Ultimos("juegos", 500);
 	}
 }

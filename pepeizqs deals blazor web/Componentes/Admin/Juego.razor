@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
 @using System.Text.Json
+@using System.Threading.Tasks
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
@@ -826,7 +827,7 @@
         }
     }
 
-    private void TextoCambiaImagenOrigen(ChangeEventArgs texto)
+    private async void TextoCambiaImagenOrigen(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -855,12 +856,7 @@
                 juego.Imagenes.Logo = nuevoTexto;
             }
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                BaseDatos.Juegos.Actualizar.Imagenes(juego, conexion);
-            }
+            await BaseDatos.Juegos.Actualizar.Imagenes(juego);
         }		
     }
 
@@ -891,7 +887,7 @@
         }
     }
 
-    private void TextoCambiaPrecios(ChangeEventArgs texto)
+    private async void TextoCambiaPrecios(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -899,20 +895,15 @@
 
             textoPrecios = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
+            if (pestañaMostrarPrecios == 1)
             {
-                if (pestañaMostrarPrecios == 1)
-                {
-                    juego.PrecioActualesTiendas = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
-                    BaseDatos.Juegos.Actualizar.PreciosActuales(juego, conexion);
-                }
-                else if (pestañaMostrarPrecios == 2)
-                {
-                    juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
-                    BaseDatos.Juegos.Actualizar.PreciosHistoricos(juego, conexion);
-                }				
+                juego.PrecioActualesTiendas = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
+                await BaseDatos.Juegos.Actualizar.PreciosActuales(juego);
+            }
+            else if (pestañaMostrarPrecios == 2)
+            {
+                juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
+                await BaseDatos.Juegos.Actualizar.PreciosHistoricos(juego);
             }
         }
     }
@@ -923,7 +914,7 @@
 
     private string textoBundles = string.Empty;
 
-    private void TextoCambiaBundles(ChangeEventArgs texto)
+    private async void TextoCambiaBundles(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -931,23 +922,13 @@
 
             textoBundles = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Bundles = JsonSerializer.Deserialize<List<global::Juegos.JuegoBundle>>(textoBundles);
-                BaseDatos.Juegos.Actualizar.Bundles(juego, conexion);
-            }
+            juego.Bundles = JsonSerializer.Deserialize<List<global::Juegos.JuegoBundle>>(textoBundles);
+            await BaseDatos.Juegos.Actualizar.Bundles(juego);
         }
         else
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Bundles = null;
-                BaseDatos.Juegos.Actualizar.Bundles(juego, conexion);
-            }
+            juego.Bundles = null;
+            await BaseDatos.Juegos.Actualizar.Bundles(juego);
         }
     }
 
@@ -957,7 +938,7 @@
 
     private string textoGratis = string.Empty;
 
-    private void TextoCambiaGratis(ChangeEventArgs texto)
+    private async void TextoCambiaGratis(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -965,23 +946,13 @@
 
             textoGratis = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Gratis = JsonSerializer.Deserialize<List<global::Juegos.JuegoGratis>>(textoGratis);
-                BaseDatos.Juegos.Actualizar.Gratis(juego, conexion);
-            }
+            juego.Gratis = JsonSerializer.Deserialize<List<global::Juegos.JuegoGratis>>(textoGratis);
+            await BaseDatos.Juegos.Actualizar.Gratis(juego);
         }
         else
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Gratis = null;
-                BaseDatos.Juegos.Actualizar.Gratis(juego, conexion);
-            }
+            juego.Gratis = null;
+            await BaseDatos.Juegos.Actualizar.Gratis(juego);
         }
     }
 
@@ -991,7 +962,7 @@
 
     private string textoSuscripciones = string.Empty;
 
-    private void TextoCambiaSuscripciones(ChangeEventArgs texto)
+    private async void TextoCambiaSuscripciones(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -999,23 +970,13 @@
 
             textoSuscripciones = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Suscripciones = JsonSerializer.Deserialize<List<global::Juegos.JuegoSuscripcion>>(textoSuscripciones);
-                BaseDatos.Juegos.Actualizar.Suscripciones(juego, conexion);
-            }
+            juego.Suscripciones = JsonSerializer.Deserialize<List<global::Juegos.JuegoSuscripcion>>(textoSuscripciones);
+            await BaseDatos.Juegos.Actualizar.Suscripciones(juego);
         }
         else
         {
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Suscripciones = null;
-                BaseDatos.Juegos.Actualizar.Suscripciones(juego, conexion);
-            }
+            juego.Suscripciones = null;
+            await BaseDatos.Juegos.Actualizar.Suscripciones(juego);
         }
     }
 
@@ -1025,7 +986,7 @@
 
     private string textoDlcMaestro = string.Empty;
 
-    private async Task BuscarDlcMaestro()
+    private async void BuscarDlcMaestro()
     {
         global::Juegos.Juego nuevoJuego = await APIs.Steam.Juego.CargarDatosJuego(juego.IdSteam.ToString());
 
@@ -1035,18 +996,13 @@
 
             if (string.IsNullOrEmpty(textoDlcMaestro) == false)
             {
-                SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-                using (conexion)
-                {
-                    juego.Maestro = textoDlcMaestro;
-                    BaseDatos.Juegos.Actualizar.DlcMaestro(juego, conexion);
-                }
+                juego.Maestro = textoDlcMaestro;
+                await BaseDatos.Juegos.Actualizar.DlcMaestro(juego);
             }
         }
     }
 
-    private void TextoCambiaDlcMaestro(ChangeEventArgs texto)
+    private async void TextoCambiaDlcMaestro(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -1054,19 +1010,14 @@
 
             textoDlcMaestro = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.Maestro = textoDlcMaestro;
-                BaseDatos.Juegos.Actualizar.DlcMaestro(juego, conexion);
-            }
+            juego.Maestro = textoDlcMaestro;
+            await BaseDatos.Juegos.Actualizar.DlcMaestro(juego);
         }
     }
 
     private bool textoF2P = false;
 
-    private void TextoCambiaF2P(ChangeEventArgs texto)
+    private async void TextoCambiaF2P(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -1074,19 +1025,14 @@
 
             textoF2P = Convert.ToBoolean(nuevoTexto);
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.FreeToPlay = textoF2P.ToString();
-                BaseDatos.Juegos.Actualizar.FreeToPlay(juego, conexion);
-            }
+            juego.FreeToPlay = textoF2P.ToString();
+            await BaseDatos.Juegos.Actualizar.FreeToPlay(juego);
         }
     }
 
     private bool textoEdad = false;
 
-    private void TextoCambiaEdad(ChangeEventArgs texto)
+    private async void TextoCambiaEdad(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -1094,19 +1040,14 @@
 
             textoEdad = Convert.ToBoolean(nuevoTexto);
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.MayorEdad = textoEdad.ToString();
-                BaseDatos.Juegos.Actualizar.MayorEdad(juego, conexion);
-            }
+            juego.MayorEdad = textoEdad.ToString();
+            await BaseDatos.Juegos.Actualizar.MayorEdad(juego);
         }
     }
 
     private bool textoOcultarPortada = false;
 
-    private void TextoCambiaOcultarPortada(ChangeEventArgs texto)
+    private async void TextoCambiaOcultarPortada(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
         {
@@ -1114,13 +1055,8 @@
 
             textoOcultarPortada = Convert.ToBoolean(nuevoTexto);
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.OcultarPortada = textoOcultarPortada;
-                BaseDatos.Juegos.Actualizar.OcultarPortada(juego, conexion);
-            }
+            juego.OcultarPortada = textoOcultarPortada;
+            await BaseDatos.Juegos.Actualizar.OcultarPortada(juego);
         }
     }
 

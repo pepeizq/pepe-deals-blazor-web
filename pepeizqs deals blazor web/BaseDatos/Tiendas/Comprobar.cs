@@ -114,7 +114,7 @@ namespace BaseDatos.Tiendas
 										juego.PrecioMinimosHistoricos.Add(oferta);
 									}
 
-									Juegos.Insertar.Ejecutar(juego);
+									await Juegos.Insertar.Ejecutar(juego);
 								}
 							}
 						}

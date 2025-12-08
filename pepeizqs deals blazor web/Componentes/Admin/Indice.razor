@@ -222,7 +222,7 @@
                 subpagina = subpaginaPendientes;
             }
 
-            nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad();
+            nuevosDLCsCantidad = await BaseDatos.Juegos.Buscar.DLCsCantidad();
 
             if (nuevosDLCsCantidad > 0)
             {
@@ -269,7 +269,7 @@
                 }
                 else if (subpagina == subpaginaDLCs)
                 {
-                    MostrarDLCs();
+                    await MostrarDLCs();
                 }
                 else if (subpagina == subpaginaPendientes)
                 {
@@ -450,13 +450,13 @@
     private string subpaginaDLCs = "dlcs";
     private int nuevosDLCsCantidad = 0;
 
-    private async void MostrarDLCs()
+    private async Task MostrarDLCs()
     {
         CerrarPestañas();
         mostrarDLCs = true;
         estiloDLCs = fondo;
 
-        nuevosDLCsCantidad = BaseDatos.Juegos.Buscar.DLCsCantidad();
+        nuevosDLCsCantidad = await BaseDatos.Juegos.Buscar.DLCsCantidad();
         await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaDLCs + "/");
     }
 

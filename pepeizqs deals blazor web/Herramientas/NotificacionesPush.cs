@@ -44,12 +44,6 @@ namespace Herramientas
 			return true;
 		}
 
-		public static void EnviarMinimo(string usuarioId, int idJuego, JuegoPrecio minimo, JuegoDRM drm)
-		{
-			Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(idJuego);
-			EnviarMinimo(usuarioId, juego, minimo, drm);
-		}
-
 		public static void EnviarMinimo(string usuarioId, Juego juego, JuegoPrecio minimo, JuegoDRM drm)
 		{
 			if (juego != null)

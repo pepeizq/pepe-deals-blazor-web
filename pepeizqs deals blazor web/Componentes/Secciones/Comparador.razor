@@ -1929,9 +1929,7 @@ else
 
 	private Usuario usuario = new Usuario();
 
-	private SqlConnection conexion = new SqlConnection();
-
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -2008,7 +2006,7 @@ else
 
 			if (id1 > 0)
 			{
-				juego1 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
+				juego1 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
 
 				ActualizarCantidadJugadores(juego1);
 				ActualizarPreciosHistoricos(juego1);
@@ -2023,7 +2021,7 @@ else
 
 			if (id2 > 0)
 			{
-				juego2 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
+				juego2 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
 
 				ActualizarCantidadJugadores(juego2);
 				ActualizarPreciosHistoricos(juego2);
@@ -2038,7 +2036,7 @@ else
 
 			if (id3 > 0)
 			{
-				juego3 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
+				juego3 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
 
 				ActualizarCantidadJugadores(juego3);
 				ActualizarPreciosHistoricos(juego3);
@@ -2053,7 +2051,7 @@ else
 
 			if (id4 > 0)
 			{
-				juego4 ??= BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
+				juego4 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
 
 				ActualizarCantidadJugadores(juego4);
 				ActualizarPreciosHistoricos(juego4);
@@ -2390,11 +2388,11 @@ else
 
 	private string textoBuscador { get; set; }
 
-	private void TextoCambiaBuscador()
+	private async Task TextoCambiaBuscador()
 	{
 		if (string.IsNullOrEmpty(textoBuscador) == false)
 		{
-			resultadosBuscador = BaseDatos.Juegos.Buscar.NombreComparador(textoBuscador);
+			resultadosBuscador = await BaseDatos.Juegos.Buscar.NombreComparador(textoBuscador);
 
 			if (resultadosBuscador.Count > 0)
 			{
@@ -2406,7 +2404,7 @@ else
 		}
 	}
 
-	private async void ClickearIdJuego(MouseEventArgs e, string id, int posicion)
+	private async Task ClickearIdJuego(MouseEventArgs e, string id, int posicion)
 	{
 		resultadosBuscador.Clear();
 		textoBuscador = string.Empty;
@@ -2414,7 +2412,7 @@ else
 		if (posicion == 1)
 		{
 			id1 = int.Parse(id);
-			juego1 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
+			juego1 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
 
 			ActualizarCantidadJugadores(juego1);
 			ActualizarPreciosHistoricos(juego1);
@@ -2429,7 +2427,7 @@ else
 		else if (posicion == 2)
 		{
 			id2 = int.Parse(id);
-			juego2 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
+			juego2 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
 
 			ActualizarCantidadJugadores(juego2);
 			ActualizarPreciosHistoricos(juego2);
@@ -2444,7 +2442,7 @@ else
 		else if (posicion == 3)
 		{
 			id3 = int.Parse(id);
-			juego3 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
+			juego3 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
 
 			ActualizarCantidadJugadores(juego3);
 			ActualizarPreciosHistoricos(juego3);
@@ -2459,7 +2457,7 @@ else
 		else if (posicion == 4)
 		{
 			id4 = int.Parse(id);
-			juego4 = BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
+			juego4 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
 
 			ActualizarCantidadJugadores(juego4);
 			ActualizarPreciosHistoricos(juego4);

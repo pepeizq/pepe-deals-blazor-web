@@ -679,7 +679,7 @@ namespace APIs.Steam
 
 								if (idMaestro > 0)
 								{
-									Juegos.Juego maestro = BaseDatos.Juegos.Buscar.UnJuego(null, idMaestro.ToString());
+									Juegos.Juego maestro = await BaseDatos.Juegos.Buscar.UnJuego(null, idMaestro.ToString());
 
                                     if (maestro?.IdSteam > 0)
                                     {

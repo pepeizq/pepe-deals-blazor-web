@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Crypto;
 
 namespace Herramientas.Redireccionador
 {
@@ -13,9 +14,9 @@ namespace Herramientas.Redireccionador
 		}
 
 		[HttpGet("/game/steam/{id}/")]
-		public IActionResult Steam(string id)
+		public async Task<IActionResult> Steam(string id)
 		{
-			Juegos.Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(null, id);
+			Juegos.Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(null, id);
 
 			if (juego == null)
 			{
@@ -26,9 +27,9 @@ namespace Herramientas.Redireccionador
 		}
 
 		[HttpGet("/game/gog/{id}/")]
-		public IActionResult Gog(string id)
+		public async Task<IActionResult> Gog(string id)
 		{
-			Juegos.Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(null, null, id);
+			Juegos.Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(null, null, id);
 
 			if (juego == null)
 			{
@@ -39,9 +40,9 @@ namespace Herramientas.Redireccionador
 		}
 
 		[HttpGet("/game/epic/{id}/")]
-		public IActionResult Epic(string id)
+		public async Task<IActionResult> Epic(string id)
 		{
-			Juegos.Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(null, null, null, id);
+			Juegos.Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(null, null, null, id);
 
 			if (juego == null)
 			{

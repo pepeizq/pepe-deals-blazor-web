@@ -242,7 +242,7 @@
     private string textoBuscador = null;
     private List<global::Juegos.Juego> juegosBuscador = new List<global::Juegos.Juego>();
 
-    private void TextoCambiaEnlace()
+    private async void TextoCambiaEnlace()
     {
         if (string.IsNullOrEmpty(bundle.Enlace) == false)
         {
@@ -252,27 +252,19 @@
             enlace = enlace.Replace("%3A", ":");
             enlace = enlace.Replace("%2F", "/");
 
-            Task<Bundles2.Bundle> tarea = Task.Run(() =>
-            {
-                return BundlesCargar.SeleccionarBundle(enlace);
-            });
+            bundle = await BundlesCargar.SeleccionarBundle(enlace);
 
-            bundle = tarea.Result;
-
-            if (bundle.Juegos != null)
+            if (bundle.Juegos?.Count > 0)
             {
-                if (bundle.Juegos.Count > 0)
+                foreach (var juego in bundle.Juegos)
                 {
-                    foreach (var juego in bundle.Juegos)
+                    if (juegosIds == null)
                     {
-                        if (juegosIds == null)
-                        {
-                            juegosIds = juego.JuegoId;
-                        }
-                        else
-                        {
-                            juegosIds = juegosIds + "," + juego.JuegoId;
-                        }
+                        juegosIds = juego.JuegoId;
+                    }
+                    else
+                    {
+                        juegosIds = juegosIds + "," + juego.JuegoId;
                     }
                 }
             }
@@ -421,7 +413,7 @@
         bundle.Tiers.Add(tier);
     }
 
-    private void TextoCambiaIDs(ChangeEventArgs texto)
+    private async void TextoCambiaIDs(ChangeEventArgs texto)
     {
         bundle.Juegos = new List<BundleJuego>();
 
@@ -433,7 +425,7 @@
 
             foreach (var id in ids)
             {
-                global::Juegos.Juego juegoBuscado = BaseDatos.Juegos.Buscar.UnJuego(id);
+                global::Juegos.Juego juegoBuscado = await BaseDatos.Juegos.Buscar.UnJuego(id);
 
                 if (juegoBuscado != null)
                 {
@@ -465,11 +457,11 @@
         }
     }
 
-    private void TextoCambiaBuscador()
+    private async Task TextoCambiaBuscador()
     {
         if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {
-            List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
+            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
 
             if (resultados.Count > 0)
             {

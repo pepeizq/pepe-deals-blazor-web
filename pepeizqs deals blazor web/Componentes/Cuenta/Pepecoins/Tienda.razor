@@ -111,58 +111,54 @@
 	<div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 30px; justify-items: center;">
 		@if (juegos?.Count > 0)
 		{
-			foreach (var recompensaJuego in juegos)
+			@foreach (var item in juegosConDatos)
 			{
-				if (string.IsNullOrEmpty(recompensaJuego.UsuarioId) == true)
+				var recompensaJuego = item.recompensa;
+				var juego = item.juego;
+
+				if (juego != null)
 				{
-					global::Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(recompensaJuego.JuegoId);
+					bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, recompensaJuego.DRM);
+					bool usuarioTieneDeseado = false;
 
-					if (juego != null)
+					string fondoColor = "background-color: var(--fondoBotonPequeño)";
+
+					if (usuarioTieneJuego)
 					{
-						bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, recompensaJuego.DRM);
-						bool usuarioTieneDeseado = false;
+						fondoColor = "background-color: var(--fondoBien);";
+					}
+					else
+					{
+						usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEsta(usuario?.SteamWishlist, usuario?.Wishlist, usuario?.GogWishlist, juego, recompensaJuego.DRM);
 
-						string fondoColor = "background-color: var(--fondoBotonPequeño)";
-
-						if (usuarioTieneJuego == true)
+						if (usuarioTieneDeseado)
 						{
-							fondoColor = "background-color: var(--fondoBien);";
+							fondoColor = "background-color: var(--fondoAlerta);";
 						}
-						else
-						{
-							usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEsta(usuario?.SteamWishlist, usuario?.Wishlist, usuario?.GogWishlist, juego, recompensaJuego.DRM);
+					}
 
-							if (usuarioTieneDeseado == true)
-							{
-								fondoColor = "background-color: var(--fondoAlerta);";
-							}
-						}
+					bool enseñar = ocultarJuegos != "checked" || !usuarioTieneJuego;
 
-						bool enseñar = true;
+					if (enseñar == true)
+					{
+						<button @onclick="@(e => MostrarJuego(e, recompensaJuego, juego))"
+								class="recompensa-expandir"
+								title="@juego.Nombre"
+								style="text-align: left; border: 0; width: 100%; font-size: 15px;">
 
-						if (ocultarJuegos == "checked" && usuarioTieneJuego == true)
-						{
-							enseñar = false;
-						}
+							<div style="@fondoColor; display: flex; flex-direction: column;">
+								<img src="@juego.Imagenes.Library_600x900" style="width: 100%; height: 100%;" />
 
-						if (enseñar == true)
-						{
-							<button @onclick="@(e => MostrarJuego(e, recompensaJuego, juego))" class="recompensa-expandir" style="text-align: left; border: 0; width: 100%; font-size: 15px; padding: 0px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);" title="@juego.Nombre">
-								<div style="@fondoColor; display: flex; flex-direction: column;">
-									<img src="@juego.Imagenes.Library_600x900" style="width: 100%; height: 100%;" />
+								<div style="display: flex; align-items: center; padding: 10px;">
+                                    @{
+                                        string imagenDRM = global::Juegos.JuegoDRM2.SacarImagen(recompensaJuego.DRM);
+                                    }
 
-									<div style="display: flex; align-items: center; padding: 10px; color: var(--colorTexto);">
-										@{
-											string imagen = global::Juegos.JuegoDRM2.SacarImagen(recompensaJuego.DRM);
-										}
-
-										<img src="@imagen" style="width: 20px; height: 20px;" alt="@juego.Nombre" />
-
-										<div style="width: 100%; text-align: right;">@recompensaJuego.Coins.ToString() Coins</div>
-									</div>
+									<img src="@imagenDRM" style="width: 20px; height: 20px;" />
+									<div style="width: 100%; text-align: right;">@recompensaJuego.Coins Coins</div>
 								</div>
-							</button>
-						}
+							</div>
+						</button>
 					}
 				}
 			}
@@ -391,6 +387,23 @@
 			else
 			{
 				ocultarJuegos = null;
+			}
+		}
+	}
+
+	private List<(RecompensaJuego recompensa, global::Juegos.Juego juego)> juegosConDatos;
+
+	protected override async Task OnParametersSetAsync()
+	{
+		juegosConDatos = new List<(RecompensaJuego, global::Juegos.Juego)>();
+
+		foreach (var recompensaJuego in juegos)
+		{
+			if (string.IsNullOrEmpty(recompensaJuego.UsuarioId))
+			{
+				var juego = await BaseDatos.Juegos.Buscar.UnJuego(recompensaJuego.JuegoId);
+
+				juegosConDatos.Add((recompensaJuego, juego));
 			}
 		}
 	}

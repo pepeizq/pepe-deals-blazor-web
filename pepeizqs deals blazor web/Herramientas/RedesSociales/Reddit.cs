@@ -27,7 +27,9 @@ namespace Herramientas.RedesSociales
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
                 {
                     titulo = "[Bundle] " + noticia.TituloEn;
-                    texto = Bundle(global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId));
+
+                    var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
+					texto = await Bundle(bundle);
                 }
 
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
@@ -50,7 +52,7 @@ namespace Herramientas.RedesSociales
                         }
                     }
 
-                    texto = Gratis(juegosGratis);
+                    texto = await Gratis(juegosGratis);
                 }
 
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
@@ -73,7 +75,7 @@ namespace Herramientas.RedesSociales
                         }
                     }
 
-                    texto = Suscripciones(juegosSuscripciones);
+                    texto = await Suscripciones(juegosSuscripciones);
                 }
                
                 if (string.IsNullOrEmpty(texto) == false)
@@ -97,7 +99,7 @@ namespace Herramientas.RedesSociales
 			return false;
 		}
 
-        public static string Bundle(Bundles2.Bundle bundle)
+        public static async Task<string> Bundle(Bundles2.Bundle bundle)
         {
             string texto = null;
 
@@ -209,7 +211,7 @@ namespace Herramientas.RedesSociales
                             {
                                 if (juego.Juego == null)
                                 {
-                                    juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
                                 }
 
                                 if (juego.Juego?.PrecioMinimosHistoricos != null)
@@ -242,7 +244,7 @@ namespace Herramientas.RedesSociales
                             {
                                 if (juego.Juego == null)
                                 {
-                                    juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
                                 }
 
                                 if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
@@ -355,7 +357,7 @@ namespace Herramientas.RedesSociales
                                             {
                                                 foreach (var dlc in juego.DLCs)
                                                 {
-                                                    Juegos.Juego juegoDLC = global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
+                                                    Juegos.Juego juegoDLC = await global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
 
                                                     if (juegoDLC?.PrecioMinimosHistoricos != null)
                                                     {
@@ -430,7 +432,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static string Gratis(List<JuegoGratis> gratis)
+        public static async Task<string> Gratis(List<JuegoGratis> gratis)
         {
             string texto = null;
 
@@ -444,7 +446,7 @@ namespace Herramientas.RedesSociales
                     {
                         texto = texto + "You can claim it for free until " + gratis2.FechaTermina.ToString("m") + ", also other data:" + Environment.NewLine + Environment.NewLine;
 
-                        Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(gratis2.JuegoId);
+                        Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(gratis2.JuegoId);
 
                         if (juego != null)
                         {
@@ -475,7 +477,7 @@ namespace Herramientas.RedesSociales
                             {
                                 foreach (var bundle in bundlesActivos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
@@ -488,7 +490,7 @@ namespace Herramientas.RedesSociales
                             {
                                 foreach (var bundle in bundlesViejunos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
@@ -521,7 +523,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static string Suscripciones(List<JuegoSuscripcion> suscripciones)
+        public static async Task<string> Suscripciones(List<JuegoSuscripcion> suscripciones)
         {
             string texto = null;
 
@@ -533,7 +535,7 @@ namespace Herramientas.RedesSociales
 
                     if (suscripcion2.FechaTermina >= DateTime.Now)
                     {
-                        Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion2.JuegoId);
+                        Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion2.JuegoId);
 
                         if (juego != null)
                         {
@@ -564,7 +566,7 @@ namespace Herramientas.RedesSociales
                             {
                                 foreach (var bundle in bundlesActivos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
@@ -577,7 +579,7 @@ namespace Herramientas.RedesSociales
                             {
                                 foreach (var bundle in bundlesViejunos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
@@ -632,7 +634,7 @@ namespace Herramientas.RedesSociales
                 }
             }
 
-            Juego juego2 = global::BaseDatos.Juegos.Buscar.UnJuego(id);
+            Juego juego2 = await global::BaseDatos.Juegos.Buscar.UnJuego(id);
 
             if (juego2 != null)
             {
@@ -706,7 +708,7 @@ namespace Herramientas.RedesSociales
 
                                 foreach (var bundle in bundlesActivos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
@@ -721,7 +723,7 @@ namespace Herramientas.RedesSociales
 
                                 foreach (var bundle in bundlesViejunos)
                                 {
-                                    Bundles2.Bundle bundle2 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
+                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {

@@ -121,9 +121,9 @@
 
 	public Bundles2.Bundle bundle = new Bundles2.Bundle();
 
-	protected override void OnParametersSet()
+	protected override async Task OnParametersSetAsync()
 	{
-		bundle = BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+		bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
 
 		if (bundle != null)
 		{
@@ -199,11 +199,11 @@
 
 	private string textoJuegos = string.Empty;
 
-	private void TextoCambiaJuegos(ChangeEventArgs texto)
+	private async Task TextoCambiaJuegos(ChangeEventArgs texto)
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 
-		BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), nuevoTexto);
+		await BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), nuevoTexto);
 	}
 
 	private string textoAñadirJuegoID = string.Empty;
@@ -225,11 +225,11 @@
 		}
 	}
 
-	private void ClickAñadirJuego(MouseEventArgs e)
+	private async Task ClickAñadirJuego(MouseEventArgs e)
 	{
 		if (string.IsNullOrEmpty(textoAñadirJuegoID) == false && string.IsNullOrEmpty(textoAñadirJuegoTier) == false)
 		{
-			global::Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(textoAñadirJuegoID);
+			global::Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(textoAñadirJuegoID);
 
 			if (juego != null)
 			{
@@ -253,43 +253,38 @@
 
 				bundle.Juegos.Add(bundleJuego);
 
-				SqlConnection conexion = Herramientas.BaseDatos.Conectar();
+				await BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), Newtonsoft.Json.JsonConvert.SerializeObject(bundle.Juegos));
 
-				using (conexion)
+				global::Juegos.JuegoBundle bundleJuego2 = new global::Juegos.JuegoBundle()
 				{
-					BaseDatos.Bundles.Actualizar.Juegos(bundleId.ToString(), Newtonsoft.Json.JsonConvert.SerializeObject(bundle.Juegos));
+					BundleId = bundleId,
+					JuegoId = juego.Id,
+					Tier = tier,
+					DRM = global::Juegos.JuegoDRM.Steam,
+					Enlace = bundle.Enlace,
+					Nombre = bundle.Nombre,
+					Imagen = bundle.Imagen,
+					FechaEmpieza = bundle.FechaEmpieza,
+					FechaTermina = bundle.FechaTermina,
+					Tipo = bundle.BundleTipo
+				};
 
-					global::Juegos.JuegoBundle bundleJuego2 = new global::Juegos.JuegoBundle()
-					{
-						BundleId = bundleId,
-						JuegoId = juego.Id,
-						Tier = tier,
-						DRM = global::Juegos.JuegoDRM.Steam,
-						Enlace = bundle.Enlace,
-						Nombre = bundle.Nombre,
-						Imagen = bundle.Imagen,
-						FechaEmpieza = bundle.FechaEmpieza,
-						FechaTermina = bundle.FechaTermina,
-						Tipo = bundle.BundleTipo
-					};
+				juego.Bundles.Add(bundleJuego2);
 
-                    juego.Bundles.Add(bundleJuego2);
-
-					BaseDatos.Juegos.Actualizar.Bundles(juego, conexion);
-				}
+				await BaseDatos.Juegos.Actualizar.Bundles(juego);
 			}
 		}
 	}
 
 	private string textoTiers = string.Empty;
 
-	private void TextoCambiaTiers(ChangeEventArgs texto)
+	private async Task TextoCambiaTiers(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 
-			BaseDatos.Bundles.Actualizar.Tiers(bundleId.ToString(), nuevoTexto);
+			await BaseDatos.Bundles.Actualizar.Tiers(bundleId.ToString(), nuevoTexto);
 		}
 	}
 }

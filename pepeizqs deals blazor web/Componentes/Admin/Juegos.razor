@@ -856,7 +856,7 @@ else
 
     #endregion
 
-    private void ClickearAñadir(MouseEventArgs e)
+    private async Task ClickearAñadir(MouseEventArgs e)
     {
         if (juegoAñadir == null)
         {
@@ -871,7 +871,7 @@ else
             juegoAñadir.Imagenes.Library_1920x620 = vacioLibrary_1920x620;
         }
 
-        BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir);
+        await BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir);
 
         juegoAñadir = null;
     }

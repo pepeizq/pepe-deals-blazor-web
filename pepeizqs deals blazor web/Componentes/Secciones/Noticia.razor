@@ -197,7 +197,7 @@
 			{
 				if (noticia.BundleId > 0)
 				{
-					Bundles2.Bundle bundle = BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
+					Bundles2.Bundle bundle = bundleCache;
 
 					if (bundle != null)
 					{
@@ -211,19 +211,19 @@
 							</div>
 
 							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, false)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<button @onclick="(e => CopiarAlClipboard(e, bundle, idioma, false))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
 									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
 										BBCode
 									</div>
 								</button>
 
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, true)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<button @onclick="(e => CopiarAlClipboard(e, bundle, idioma, true))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
 									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
 										ElOtroLado
 									</div>
 								</button>
 
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.Reddit.Bundle(bundle)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<button @onclick="(e => CopiarAlClipboard(e, bundle))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
 									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
 										Reddit
 									</div>
@@ -262,60 +262,58 @@
 
 				@if (string.IsNullOrEmpty(noticia.GratisIds) == false)
 				{
-					List<string> ids = Herramientas.Listados.Generar(noticia.GratisIds);
-					List<Juegos.JuegoGratis> juegosGratis = new List<Juegos.JuegoGratis>();
+					@if (juegosGratisCache?.Count > 0)
+{
+    <div class="caja-noticia-contenido">
+        <div>@texto</div>
 
-					<div class="caja-noticia-contenido">
-						<div>
-							@texto
-						</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
+            @foreach (var gratis in juegosGratisCache)
+            {
+                string imagen = gratis.Imagen;
 
-						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
-							@if (ids?.Count > 0)
-							{
-								foreach (var id in ids)
-								{
-									var gratis = BaseDatos.Gratis.Buscar.UnGratis(id);
+                if (gratis.JuegoId > 0)
+                {
+                    var juego = juegosCache1.TryGetValue(gratis.JuegoId, out var j) ? j : null;
 
-									if (gratis != null)
-									{
-										juegosGratis.Add(gratis);
+                    if (juego != null)
+                    {
+                        string enlaceJuego = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, usuarioPatreon, false);
 
-										string imagen = gratis.Imagen;
+                        <CajaJuego drmNoticia="@gratis.DRM"
+                                  enlaceNoticia="@enlaceJuego"
+                                  idioma="@idioma"
+                                  juego="@juego"
+                                  juegosUsuario="@juegosUsuario"
+                                  usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
+                                  usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
+                                  usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+                                  tipo="CajaJuego.Tipo.Noticia"
+                                  userAgent="@userAgent" />
+                    }
+                }
+            }
+        </div>
+    </div>
 
-										if (gratis.JuegoId > 0)
-										{
-											var juego = BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
+    <div class="caja-noticia-contenido" style="padding: 0px;">
+        <div class="caja-noticia-titulo">
+            @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
+        </div>
 
-											if (juego != null)
-											{
-												string enlaceJuego = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, usuarioPatreon, false);
+        <div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
+            <button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))"
+                    class="boton-pequeño"
+                    style="width: fit-content; padding: 10px 30px;">
+                <div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+                    Reddit
+                </div>
+            </button>
+        </div>
+    </div>
+}
 
-												<CajaJuego drmNoticia="@gratis.DRM" enlaceNoticia="@enlaceJuego" idioma="@idioma" juego="@juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Noticia" userAgent="@userAgent"/>
-											}
-										}
-									}
-								}
-							}
-						</div>
-					</div>
 
-					@if (juegosGratis?.Count > 0)
-					{
-						<div class="caja-noticia-contenido" style="padding: 0px;">
-							<div class="caja-noticia-titulo">
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-							</div>
-
-							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.Reddit.Gratis(juegosGratis)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										Reddit
-									</div>
-								</button>
-							</div>
-						</div>
-					}
 				}
 			}
 			else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
@@ -347,54 +345,54 @@
 
 				@if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
 				{
-					List<string> ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
-					List<Juegos.JuegoSuscripcion> juegosSuscripciones = new List<Juegos.JuegoSuscripcion>();
+					@if (juegosSuscripcionesCache?.Count > 0)
+					{
+						<div class="caja-noticia-contenido">
+							<div>@texto</div>
 
-					<div class="caja-noticia-contenido">
-						<div>
-							@texto
-						</div>
-
-						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
-							@if (ids?.Count > 0)
-							{
-								foreach (var id in ids)
+							<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
+								@foreach (var suscripcion in juegosSuscripcionesCache)
 								{
-									var suscripcion = BaseDatos.Suscripciones.Buscar.Id(int.Parse(id), null);
+									var juego = juegosCache2.TryGetValue(suscripcion.JuegoId, out var j) ? j : null;
 
-									if (suscripcion != null)
+									if (juego != null)
 									{
-										juegosSuscripciones.Add(suscripcion);
+										string enlaceJuego = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, usuarioPatreon, false);
 
-										var juego = BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
-
-										if (juego != null)
-										{
-											string enlaceJuego = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, usuarioPatreon, false);
-
-											<CajaJuego drmNoticia="@suscripcion.DRM" enlaceNoticia="@enlaceJuego" idioma="@idioma" juego="@juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Noticia" userAgent="@userAgent" idSuscripcion="@suscripcion.Id" />
-										}
+										<CajaJuego drmNoticia="@suscripcion.DRM"
+												   enlaceNoticia="@enlaceJuego"
+												   idioma="@idioma"
+												   juego="@juego"
+												   juegosUsuario="@juegosUsuario"
+												   usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
+												   usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
+												   usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+												   tipo="CajaJuego.Tipo.Noticia"
+												   userAgent="@userAgent"
+												   idSuscripcion="@suscripcion.Id" />
 									}
 								}
-							}
-						</div>
-					</div>
-
-					@if (juegosSuscripciones?.Count > 0)
-					{
-						<div class="caja-noticia-contenido" style="margin: 0px; padding: 0px;">
-							<div class="caja-noticia-titulo">
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-							</div>
-
-							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, Herramientas.RedesSociales.Reddit.Suscripciones(juegosSuscripciones)))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										Reddit
-									</div>
-								</button>
 							</div>
 						</div>
+
+						@if (juegosSuscripcionesCache?.Count > 0)
+						{
+							<div class="caja-noticia-contenido" style="margin: 0px; padding: 0px;">
+								<div class="caja-noticia-titulo">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
+								</div>
+
+								<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
+									<button @onclick="(e => CopiarAlClipboard(e, juegosSuscripcionesCache))"
+											class="boton-pequeño"
+											style="width: fit-content; padding: 10px 30px;">
+										<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+											Reddit
+										</div>
+									</button>
+								</div>
+							</div>
+						}
 					}
 				}
 			}
@@ -489,7 +487,7 @@
 
 	[PersistentState] public List<Juegos.Juego> juegos { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -521,7 +519,7 @@
 				enlaceIngles = "https://" + dominio + "/news/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEn) + "/";
 				enlaceEspañol = "https://" + dominio + "/news/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEs) + "/";
 
-				juegos ??= BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
+				juegos ??= await BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
 
 				if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
@@ -575,6 +573,73 @@
 		}
 	}
 
+	private Bundles2.Bundle bundleCache;
+
+	private List<Juegos.JuegoGratis> juegosGratisCache = new();
+    private Dictionary<int, Juegos.Juego> juegosCache1 = new();
+
+	private List<Juegos.JuegoSuscripcion> juegosSuscripcionesCache = new();
+	private Dictionary<int, Juegos.Juego> juegosCache2 = new();
+
+	protected override async Task OnParametersSetAsync()
+	{
+		bundleCache = null;
+
+		if (noticia.BundleId > 0)
+		{
+			bundleCache = await BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
+		}
+
+		juegosGratisCache.Clear();
+		juegosCache1.Clear();
+
+		if (!string.IsNullOrEmpty(noticia.GratisIds))
+		{
+			var ids = Herramientas.Listados.Generar(noticia.GratisIds);
+
+			foreach (var id in ids)
+			{
+				var gratis = BaseDatos.Gratis.Buscar.UnGratis(id);
+				if (gratis != null)
+				{
+					juegosGratisCache.Add(gratis);
+
+					if (gratis.JuegoId > 0 && !juegosCache1.ContainsKey(gratis.JuegoId))
+					{
+						var juego = await BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
+						juegosCache1[gratis.JuegoId] = juego;
+					}
+				}
+			}
+		}
+
+		juegosSuscripcionesCache.Clear();
+		juegosCache2.Clear();
+
+		if (!string.IsNullOrEmpty(noticia.SuscripcionesIds))
+		{
+			var ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
+
+			foreach (var idStr in ids)
+			{
+				if (int.TryParse(idStr, out var id))
+				{
+					var suscripcion = BaseDatos.Suscripciones.Buscar.Id(id, null);
+					if (suscripcion != null)
+					{
+						juegosSuscripcionesCache.Add(suscripcion);
+
+						if (!juegosCache2.ContainsKey(suscripcion.JuegoId))
+						{
+							var juego = await BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
+							juegosCache2[suscripcion.JuegoId] = juego;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
 		if (primerRender == true)
@@ -587,10 +652,10 @@
 
 					if (idioma == "es")
 					{
-                        cambiarEnlace = enlaceEspañol;
+						cambiarEnlace = enlaceEspañol;
 					}
 
-                    cambiarEnlace = cambiarEnlace.Replace("https://" + dominio, null);
+					cambiarEnlace = cambiarEnlace.Replace("https://" + dominio, null);
 
 					await JavaScript.InvokeVoidAsync("ChangeUrl", cambiarEnlace);
 				}				
@@ -620,6 +685,26 @@
 	private PeriodicTimer cronometro = null;
 	private int cronometroContador = 0;
 	private int cronometroLimite = 10;
+
+	private async void CopiarAlClipboard(MouseEventArgs e, Bundles2.Bundle bundle, string idioma, bool eol)
+	{
+		CopiarAlClipboard(e, await Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, eol));
+	}
+
+	private async void CopiarAlClipboard(MouseEventArgs e, Bundles2.Bundle bundle)
+	{
+		CopiarAlClipboard(e, await Herramientas.RedesSociales.Reddit.Bundle(bundle));
+	}
+
+	private async void CopiarAlClipboard(MouseEventArgs e, List<Juegos.JuegoGratis> juegosGratis)
+	{
+		CopiarAlClipboard(e, await Herramientas.RedesSociales.Reddit.Gratis(juegosGratis));
+	}
+
+	private async void CopiarAlClipboard(MouseEventArgs e, List<Juegos.JuegoSuscripcion> juegosSuscripciones)
+	{
+		CopiarAlClipboard(e, await Herramientas.RedesSociales.Reddit.Suscripciones(juegosSuscripciones));
+	}
 
 	private async void CopiarAlClipboard(MouseEventArgs e, string texto)
 	{

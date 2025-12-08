@@ -649,15 +649,9 @@
             return;
         }
 
-        resultadosMostrar = BuscarAsync(texto);
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private List<Juegos.Juego> BuscarAsync(string texto)
-    {
         bool usuarioLogeado = string.IsNullOrEmpty(usuarioId) == false;
-
-        return BaseDatos.Juegos.Buscar.Nombre2(texto, 10).ToList();
+        resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(texto, 10);
+        await InvokeAsync(StateHasChanged);
     }
 
     private void LimpiarBusqueda(MouseEventArgs e)

@@ -232,17 +232,10 @@ else
 
 	private bool cargado = false;
 
-	protected override void OnInitialized()
-	{
-
-	}
-
 	protected override async Task OnInitializedAsync()
 	{
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await Task.Yield();
-
 			juegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
 
 			if (juegos != null)
@@ -251,7 +244,7 @@ else
 				{
 					List<string> idsSteam = juegos.Steam.Select(juego => juego.Id.ToString()).ToList();
 
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Steam, idsSteam);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Steam, idsSteam);
 
 					foreach (var juegoSteam in juegos.Steam)
 					{
@@ -276,7 +269,7 @@ else
 				{
 					List<string> idsGog = juegos.Gog.Select(juego => juego.Id.ToString()).ToList();
 
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.GOG, idsGog);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.GOG, idsGog);
 
 					foreach (var juegoGog in juegos.Gog)
 					{
@@ -299,22 +292,22 @@ else
 
 				if (juegos.Amazon != null && juegos.Amazon.Count > 0)
 				{
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Amazon, juegos.Amazon);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Amazon, juegos.Amazon);
 				}
 
 				if (juegos.Epic != null && juegos.Epic.Count > 0)
 				{
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Epic, juegos.Epic);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Epic, juegos.Epic);
 				}
 
 				if (juegos.Ubisoft != null && juegos.Ubisoft.Count > 0)
 				{
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Ubisoft, juegos.Ubisoft);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Ubisoft, juegos.Ubisoft);
 				}
 
 				if (juegos.Ea != null && juegos.Ea.Count > 0)
 				{
-					listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.EA, juegos.Ea);
+					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.EA, juegos.Ea);
 				}
 
 				if (listaGestor.Count > 0)

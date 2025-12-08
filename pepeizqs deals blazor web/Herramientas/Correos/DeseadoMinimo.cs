@@ -19,9 +19,9 @@ namespace Herramientas.Correos
 
 	public static class DeseadoMinimo
 	{
-		public static void Nuevo(string usuarioId, int idJuego, JuegoPrecio precio, string correoHacia)
+		public static async void Nuevo(string usuarioId, int idJuego, JuegoPrecio precio, string correoHacia)
 		{
-			Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(idJuego);
+			Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(idJuego);
 			Nuevo(usuarioId, juego, precio, correoHacia);
 		}
 

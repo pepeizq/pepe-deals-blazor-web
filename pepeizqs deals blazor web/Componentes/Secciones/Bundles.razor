@@ -12,7 +12,8 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-@{
+@if (cargadoBundles == true)
+{
 	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
 	string keywords = "bundles";
 
@@ -158,40 +159,43 @@
 				}
 
 				<div style="margin-left: auto; display: flex; justify-content: right;">
-					<div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 10px;">
-						<div class="menu-dropdown" style="width: auto; margin: 0px 20px;">
-							<button class="boton-pequeño" style="background-color: var(--buscadorSubcabecera); display: flex; align-items: center; width: 100%; padding: 8px 15px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
-								<div style="font-size: 14px; padding-right: 5px;">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Bundle"):
-								</div>
+					@if (mostrarArchivo == false)
+					{
+						<div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 10px;">
+							<div class="menu-dropdown" style="width: auto; margin: 0px 20px;">
+								<button class="boton-pequeño" style="background-color: var(--buscadorSubcabecera); display: flex; align-items: center; width: 100%; padding: 8px 15px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
+									<div style="font-size: 14px; padding-right: 5px;">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Bundle"):
+									</div>
 
-								<div style="font-size: 14px; color: var(--colorEnlace); padding-right: 15px;">
-									@ordenamientoElegido
-								</div>
+									<div style="font-size: 14px; color: var(--colorEnlace); padding-right: 15px;">
+										@ordenamientoElegido
+									</div>
 
-								<div style="max-width: 9px;">
-									<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-										<path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-									</svg>
-								</div>
-							</button>
+									<div style="max-width: 9px;">
+										<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+											<path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+										</svg>
+									</div>
+								</button>
 
-							<div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--buscadorSubcabecera);">
-								<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 0))">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String30", "Bundle")
-								</button>
-								<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 1))">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Bundle")
-								</button>
-								<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 2))">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Bundle")
-								</button>
-								<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 3))">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Bundle")
-								</button>
+								<div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--buscadorSubcabecera);">
+									<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 0))">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String30", "Bundle")
+									</button>
+									<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 1))">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Bundle")
+									</button>
+									<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 2))">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Bundle")
+									</button>
+									<button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="@(e => ElegirOrdenamiento(e, 3))">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Bundle")
+									</button>
+								</div>
 							</div>
 						</div>
-					</div>
+					}
 
 					<button class="boton-pequeño" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, true) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, true))">
 						<div style="font-size: 16px;">
@@ -435,6 +439,7 @@ else
 
 	private List<string> años = new List<string>();
 	private string añoSeleccionado = string.Empty;
+	private bool cargadoBundles = false;
 
 	protected override void OnInitialized()
 	{
@@ -478,20 +483,22 @@ else
 			ordenamientoUsuario = BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
 		}
 
-		CargarBundles(ordenamientoUsuario);
+		await CargarBundles(ordenamientoUsuario);
 	}
 
 	[PersistentState] public string ordenamientoElegido { get; set; } 
 	[PersistentState] public int ordenamientoNumero2 { get; set; }
 
-	private void ElegirOrdenamiento(MouseEventArgs e, int nuevoNumero)
+	private async void ElegirOrdenamiento(MouseEventArgs e, int nuevoNumero)
 	{
-		CargarBundles(nuevoNumero);
+		await CargarBundles(nuevoNumero);
 	}
 
-	private void CargarBundles(int ordenamientoNumero)
+	private async Task CargarBundles(int ordenamientoNumero)
 	{
-		bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
+		bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero, tipoSeleccionado);
+
+		cargadoBundles = true;
 
 		if (bundlesActuales?.Count > 0)
 		{
@@ -553,14 +560,14 @@ else
 	private List<Bundles2.BundleTipo> tiposActuales = new List<Bundles2.BundleTipo>();
 	private bool mostrarArchivo = false;
 
-	private async void CambiarTipo(MouseEventArgs e, Bundles2.BundleTipo nuevoTipo, bool esArchivo)
+	private async Task CambiarTipo(MouseEventArgs e, Bundles2.BundleTipo nuevoTipo, bool esArchivo)
 	{
 		mostrarArchivo = esArchivo;
 
 		if (esArchivo == false)
 		{
 			tipoSeleccionado = nuevoTipo;
-			bundlesActuales = BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
+			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
 		}
 		else
 		{
@@ -599,7 +606,7 @@ else
 
 	#region Archivo
 
-	private async void CambiarAño(MouseEventArgs e, string nuevoAño)
+	private async Task CambiarAño(MouseEventArgs e, string nuevoAño)
 	{
 		añoSeleccionado = nuevoAño;
 
@@ -631,7 +638,7 @@ else
 
 	#endregion
 
-	private async void SeleccionarBundle(MouseEventArgs e, Bundles2.Bundle nuevoBundle)
+	private async Task SeleccionarBundle(MouseEventArgs e, Bundles2.Bundle nuevoBundle)
 	{
 		bundleSeleccionado = nuevoBundle;
 
@@ -639,7 +646,7 @@ else
 		{
 			if (string.IsNullOrEmpty(juego.JuegoId) == false)
 			{
-				juego.Juego = BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+				juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
 			}		
 		}
 

@@ -41,17 +41,17 @@
 
     private List<global::Juegos.Juego> duplicados = new List<global::Juegos.Juego>();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        duplicados = BaseDatos.Juegos.Buscar.Duplicados();
+        duplicados = await BaseDatos.Juegos.Buscar.Duplicados();
     }
 
-    private void ClickearBorrarDuplicado(MouseEventArgs e, string id)
+    private async Task ClickearBorrarDuplicado(MouseEventArgs e, string id)
     {
-        BaseDatos.Juegos.Borrar.Ejecutar(id);
+        await BaseDatos.Juegos.Borrar.Ejecutar(id);
 
-        duplicados = BaseDatos.Juegos.Buscar.Duplicados();
+        duplicados = await BaseDatos.Juegos.Buscar.Duplicados();
 
-        BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
+        await BaseDatos.Admin.Actualizar.Dato("duplicados", duplicados.Count);
     }
 }

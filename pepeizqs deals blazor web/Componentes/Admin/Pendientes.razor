@@ -172,30 +172,28 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
                         @if (string.IsNullOrEmpty(idsPendiente) == false)
                         {
-                            foreach (var id in idsPendiente.Split(','))
+                            @if (resultados != null)
                             {
-                                if (id.Contains("no encontrado") == true)
+                                foreach (var r in resultados)
                                 {
-                                    <div>
-                                        <a href="https://store.steampowered.com/app/@id.Replace("no encontrado", null).Trim()">id steam no encontrada: @id.Replace("no encontrado", null).Trim()</a>
-                                    </div>
-                                }
-                                else
-                                {
-                                    if (int.Parse(id) > 0)
+                                    if (r.NoEncontradoSteam)
                                     {
-                                        global::Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(id);
-
-                                        if (juego != null)
-                                        {
-                                            <a href="/game/@id" target="_blank" style="text-decoration: none;"><img src="@juego.Imagenes.Header_460x215" style="width: 100%; height: 100%; object-fit: cover;"/></a>
-                                        }
-                                        else
-                                        {
-                                            <div>
-                                                id base datos no encontrada
-                                            </div>
-                                        }
+                                        <div>
+                                            <a href="https://store.steampowered.com/app/@r.Id.Replace("no encontrado", null).Trim()">
+                                                id steam no encontrada: @r.Id.Replace("no encontrado", null).Trim()
+                                            </a>
+                                        </div>
+                                    }
+                                    else if (r.Juego != null)
+                                    {
+                                        <a href="/game/@r.Id" target="_blank" style="text-decoration: none;">
+                                            <img src="@r.Juego.Imagenes.Header_460x215"
+                                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div>id base datos no encontrada</div>
                                     }
                                 }
                             }
@@ -928,11 +926,11 @@
 
     private string textoBuscador = string.Empty;
 
-    private void TextoCambiaBuscador()
+    private async Task TextoCambiaBuscador()
     {
         if (textoBuscador.Trim().Length > 2)
         {
-            List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
+            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
 
             if (resultados.Count > 0)
             {
@@ -1066,11 +1064,11 @@
         }
     }
 
-    private void ClickearBorrarPendientes(MouseEventArgs e, string id)
+    private async Task ClickearBorrarPendientes(MouseEventArgs e, string id)
     {
-        BaseDatos.Juegos.Borrar.Ejecutar(id);
+        await BaseDatos.Juegos.Borrar.Ejecutar(id);
 
-        List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
+        List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
 
         if (resultados.Count > 0)
         {
@@ -1087,4 +1085,29 @@
     }
 
     #endregion
+
+    private List<(string Id, global::Juegos.Juego Juego, bool NoEncontradoSteam)> resultados;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        resultados = new List<(string, global::Juegos.Juego, bool)>();
+
+        if (string.IsNullOrEmpty(idsPendiente) == false)
+        {
+            foreach (var rawId in idsPendiente.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (rawId.Contains("no encontrado"))
+                {
+                    resultados.Add((rawId, null, true));
+                    continue;
+                }
+
+                if (int.TryParse(rawId, out int idParsed) && idParsed > 0)
+                {
+                    var juego = await BaseDatos.Juegos.Buscar.UnJuego(rawId);
+                    resultados.Add((rawId, juego, false));
+                }
+            }
+        }
+    }
 }

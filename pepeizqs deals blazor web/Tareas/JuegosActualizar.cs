@@ -40,7 +40,7 @@ namespace Tareas
 
 							#region Buscar 
 
-							List<Juegos.Juego> juegosAleatorios = BaseDatos.Juegos.Buscar.Aleatorios(true);
+							List<Juegos.Juego> juegosAleatorios = await BaseDatos.Juegos.Buscar.Aleatorios(true);
 
 							if (juegosAleatorios?.Count > 0)
 							{
@@ -102,7 +102,7 @@ namespace Tareas
 									if (ficha.Metodo == "SteamAPI")
 									{
 										Juegos.Juego nuevoJuego = await APIs.Steam.Juego.CargarDatosJuego(ficha.IdPlataforma.ToString());
-										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
 
 										if (nuevoJuego != null && juego != null)
 										{
@@ -114,7 +114,7 @@ namespace Tareas
 
 									if (ficha.Metodo == "GOGAPI")
 									{
-										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
 
 										if (juego != null)
 										{
@@ -134,7 +134,7 @@ namespace Tareas
 
 									if (ficha.Metodo == "EpicAPI")
 									{
-										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
 
 										if (juego != null)
 										{
@@ -152,7 +152,7 @@ namespace Tareas
 
 									if (ficha.Metodo == "XboxAPI")
 									{
-										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
 
 										if (juego != null)
 										{
@@ -170,7 +170,7 @@ namespace Tareas
 
 									if (ficha.Metodo == "SteamCMD")
 									{
-										Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
+										Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(ficha.IdJuego);
 
 										bool inteligenciaArtificial = false;
 										DateTime? fechaSteam = null;

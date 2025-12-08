@@ -166,11 +166,11 @@ else
 		entradas = BaseDatos.Recompensas.Historial.Leer();
 	}
 
-	private void TextoCambiaBuscador()
+	private async Task TextoCambiaBuscador()
 	{
 		if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
 		{
-			List<global::Juegos.Juego> resultados = BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
+			List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
 
 			if (resultados.Count > 0)
 			{

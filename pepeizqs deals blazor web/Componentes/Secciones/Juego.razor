@@ -581,7 +581,7 @@
                         {
                             if (juego.Maestro != "no")
                             {
-                                Juegos.Juego juegoMaestro = global::BaseDatos.Juegos.Buscar.UnJuego(juego.Maestro);
+                                Juegos.Juego juegoMaestro = juegosMaestroCache.TryGetValue(juego.Maestro, out var jm) ? jm : null;
 
                                 if (juegoMaestro != null)
                                 {
@@ -1012,7 +1012,7 @@
                                                 <div style="display: flex; flex-direction: column; gap: 10px;">
                                                     @if (BundlesComprobar(juego.Bundles, drm.Id) != null)
                                                     {
-                                                        <button onclick="moverScroll('bundles')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@BundlesPreparar(drm.Id, idioma)</button>
+                                                        <button onclick="moverScroll('bundles')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@bundlesPreparados.GetValueOrDefault(drm.Id.ToString())</button>
                                                     }
 
                                                     @if (GratisComprobar(juego.Gratis, drm.Id) != null)
@@ -1665,6 +1665,7 @@
                                     List<JuegoPrecio> preciosMostrar = new List<JuegoPrecio>();
                                     List<JuegoPrecio> preciosBajos = new List<JuegoPrecio>();
                                     int descuentoMaximo = 0;
+                                    Dictionary<string, int> juegosPoseidosPorBundle = new();
 
                                     foreach (JuegoPrecio precio in preciosActualesDRM)
                                     {
@@ -1749,7 +1750,7 @@
                                                     </div>
                                                 }
 
-                                                    <a class="boton-pequeño" title="@precio.Tienda" href="@enlace" target="_blank" style="width: 100%;">
+                                                <a class="boton-pequeño" title="@precio.Tienda" href="@enlace" target="_blank" style="width: 100%;">
                                                     <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
                                                         <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda"  />
 
@@ -2007,7 +2008,7 @@
                                 {
                                     if (bundle2.BundleId > 0)
                                     {
-                                        var bundle3 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
+                                        var bundle3 = bundlesCache1.TryGetValue(bundle2.BundleId, out var b) ? b : null;
 
                                         if (bundle3 != null)
                                         {
@@ -2058,9 +2059,7 @@
                             <div style="padding: 30px;">
                                 @foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
                                 {
-                                    var bundle3 = global::BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
-
-                                    if (bundle3 != null)
+                                    if (bundlesCache2.TryGetValue(bundle2.BundleId, out var bundle3) && bundle3 != null)
                                     {
                                         <button @onclick="(e => BundleAbrir(e, bundle2.BundleId))" class="boton-pequeño" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px;">
                                             <div style="display: flex; align-items: center; flex-wrap: wrap;">
@@ -2925,57 +2924,60 @@
     <div class="opciones-panel">
         <div style="max-width: 1320px; margin: 20px auto; overflow-y: scroll; padding: 10px; scrollbar-color: var(--fondoCodigo) var(--fondoBotonPequeño);">
             @{
-                Bundles2.Bundle bundleSeleccionado = global::BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+                Bundles2.Bundle bundleSeleccionado = bundleSeleccionadoCache;
 
-                string enlaceBundleSeleccionado = "/bundle/" + bundleSeleccionado.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/";
-            }
+                if (bundleSeleccionado != null)
+                {
+                    string enlaceBundleSeleccionado = "/bundle/" + bundleSeleccionado.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/";
+                
+                    <div style="margin-bottom: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24); padding: 20px 30px; display: flex; align-items: center; flex-direction: row;">
+                            <button @onclick="@(e => BundleCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
+                                <div style="max-width: 24px; max-height: 24px;">
+                                    <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                                    </svg>
+                                </div>
+                            </button>
 
-            <div style="margin-bottom: 20px;">
-                <div style="background-color: var(--fondoSubsubcabecera); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24); padding: 20px 30px; display: flex; align-items: center; flex-direction: row;">
-                    <button @onclick="@(e => BundleCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
-                        <div style="max-width: 24px; max-height: 24px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-                            </svg>
-                        </div>
-                    </button>
-
-                    <div style="display: flex; align-items: center; flex-direction: row;">
-                        <a href="@enlaceBundleSeleccionado" style="width: auto;" target="_blank">
-                            <div style="height: 60px; padding-left: 40px; padding-right: 20px;">
-                                <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda" style="height: 100%;" alt="@bundleSeleccionado.Nombre"  />
-                            </div>
-                        </a>
-
-                        <div style="padding-left: 20px; padding-right: 20px;">
-                            <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="background-color: transparent; padding: 0px; font-size: 20px; margin-bottom: 10px; box-shadow: none;" target="_blank">
-                                @bundleSeleccionado.Nombre
-                            </a>
-
-                            <div style="display: flex; align-items: center; gap: 20px; flex-direction: row; font-size: 14px;">
-                                <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="padding: 0px; width: fit-content; background-color: transparent; box-shadow: none;">
-                                    <div style="max-width: 20px; max-height: 20px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
-                                            <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z" />
-                                        </svg>
+                            <div style="display: flex; align-items: center; flex-direction: row;">
+                                <a href="@enlaceBundleSeleccionado" style="width: auto;" target="_blank">
+                                    <div style="height: 60px; padding-left: 40px; padding-right: 20px;">
+                                        <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda" style="height: 100%;" alt="@bundleSeleccionado.Nombre"  />
                                     </div>
                                 </a>
 
-                                @bundleSeleccionado.FechaEmpieza.Day.ToString()/@bundleSeleccionado.FechaEmpieza.Month.ToString()/@bundleSeleccionado.FechaEmpieza.Year.ToString() • @bundleSeleccionado.FechaTermina.Day.ToString()/@bundleSeleccionado.FechaTermina.Month.ToString()/@bundleSeleccionado.FechaTermina.Year.ToString()
+                                <div style="padding-left: 20px; padding-right: 20px;">
+                                    <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="background-color: transparent; padding: 0px; font-size: 20px; margin-bottom: 10px; box-shadow: none;" target="_blank">
+                                        @bundleSeleccionado.Nombre
+                                    </a>
+
+                                    <div style="display: flex; align-items: center; gap: 20px; flex-direction: row; font-size: 14px;">
+                                        <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="padding: 0px; width: fit-content; background-color: transparent; box-shadow: none;">
+                                            <div style="max-width: 20px; max-height: 20px;">
+                                                <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                                    <path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z" />
+                                                </svg>
+                                            </div>
+                                        </a>
+
+                                        @bundleSeleccionado.FechaEmpieza.Day.ToString()/@bundleSeleccionado.FechaEmpieza.Month.ToString()/@bundleSeleccionado.FechaEmpieza.Year.ToString() • @bundleSeleccionado.FechaTermina.Day.ToString()/@bundleSeleccionado.FechaTermina.Month.ToString()/@bundleSeleccionado.FechaTermina.Year.ToString()
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
+                        @if (DateTime.Today < bundleSeleccionado.FechaTermina)
+                        {
+                            <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="text-align: center; padding: 10px 15px;" target="_blank">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Bundle")
+                            </a>
+                        }
                     </div>
-                </div>
 
-                @if (DateTime.Today < bundleSeleccionado.FechaTermina)
-                {
-                    <a href="@enlaceBundleSeleccionado" class="boton-pequeño" style="text-align: center; padding: 10px 15px;" target="_blank">
-                        @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Bundle")
-                    </a>
+                    <Bundle bundleId="@bundleId" tipo="@Bundle.Tipo.Juego"/>
                 }
-            </div>
-
-            <Bundle bundleId="@bundleId" tipo="@Bundle.Tipo.Juego"/>
+            }
         </div>		
     </div>
 }
@@ -3479,7 +3481,7 @@
 
     private bool cargarComponentes = false;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
@@ -3505,7 +3507,7 @@
             }
         } 
 
-        juego ??= BaseDatos.Juegos.Buscar.UnJuego(juegoId);
+        juego ??= await BaseDatos.Juegos.Buscar.UnJuego(juegoId);
 
         if (juego != null)
         {
@@ -3535,6 +3537,88 @@
         }
     }
 
+    private Dictionary<string, string> bundlesPreparados = new();
+    private Dictionary<string, string> gratisPreparados = new();
+    private Dictionary<string, string> suscripcionesPreparados = new();
+
+    private Dictionary<string, Juegos.Juego> juegosMaestroCache = new();
+    private Dictionary<int, Bundles2.Bundle> bundlesCache1 = new();
+    private Bundles2.Bundle bundleSeleccionadoCache;
+    private Dictionary<int, Bundles2.Bundle> bundlesCache2 = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        bundlesPreparados.Clear();
+        gratisPreparados.Clear();
+        suscripcionesPreparados.Clear();
+
+        #region Maestro
+
+        juegosMaestroCache.Clear();
+
+        if (juego != null && (juego.Tipo == JuegoTipo.DLC || juego.Tipo == JuegoTipo.Music) && string.IsNullOrEmpty(juego.Maestro) == false &&
+            juego.Maestro != "no")
+        {
+            var maestro = await BaseDatos.Juegos.Buscar.UnJuego(juego.Maestro);
+            juegosMaestroCache[juego.Maestro] = maestro;
+        }
+
+        #endregion
+
+        #region Bundle Actual
+
+        bundlesCache1.Clear();
+
+        var ids = BundlesDisponibles(juego.Bundles).Where(b => b.BundleId > 0).Select(b => b.BundleId).Distinct().ToList();
+
+        foreach (var id in ids)
+        {
+            var bundle = await BaseDatos.Bundles.Buscar.UnBundle(id);
+            bundlesCache1[id] = bundle;
+        }
+
+        #endregion
+
+        #region Bundle Seleccionado
+
+        if (bundleId > 0)
+        {
+            bundleSeleccionadoCache = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+        }
+
+        #endregion
+
+        #region Bundles Antiguos
+
+        bundlesCache2.Clear();
+
+        foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
+        {
+            if (bundle2.BundleId > 0 && !bundlesCache2.ContainsKey(bundle2.BundleId))
+            {
+                var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
+                bundlesCache2[bundle2.BundleId] = bundle;
+            }
+        }
+
+        #endregion
+
+        #region Bundles Cargar
+
+        foreach (DRM drm in JuegoDRM2.GenerarListado())
+        {
+            if (drm.Id != JuegoDRM.NoEspecificado)
+            {
+                if (BundlesComprobar(juego.Bundles, drm.Id) != null)
+                {
+                    bundlesPreparados[drm.Id.ToString()] = await BundlesPreparar(drm.Id, idioma);
+                }
+            }
+        }
+
+        #endregion
+    }
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
@@ -3551,8 +3635,8 @@
 
             if (juego != null)
             {
-                dlcs ??= global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.DLC);
-                bandasSonoras ??= global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.Music);
+                dlcs ??= await global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.DLC);
+                bandasSonoras ??= await global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.Music);
 
                 if (juego.IdSteam > 0)
                 {
@@ -4159,7 +4243,7 @@
                         if (juegosSteam?.Count > 0)
                         {
                             juegosSteam.ForEach(x => {if (x.Id == juego.IdSteam) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.Steam;
                                     nuevoJuegoUsuario.Tiene = true;
                                     nuevoJuegoUsuario.JugadoTiempo = x.TiempoJugadoEnMinutos;
@@ -4178,7 +4262,7 @@
                         if (juegosGog?.Count > 0)
                         {
                             juegosGog.ForEach(x => {if (x.Id == juego.IdGog) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.GOG;
                                     nuevoJuegoUsuario.Tiene = true;
                                     nuevoJuegoUsuario.JugadoTiempo = x.TiempoJugadoEnMinutos;
@@ -4197,7 +4281,7 @@
                         if (juegosAmazon?.Count > 0)
                         {
                             juegosAmazon.ForEach(x => {if (x == juego.IdAmazon.ToString()) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.Amazon;
                                     nuevoJuegoUsuario.Tiene = true;
 
@@ -4214,7 +4298,7 @@
                         if (juegosEpic?.Count > 0)
                         {
                             juegosEpic.ForEach(x => {if (x == juego.ExeEpic) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.Epic;
                                     nuevoJuegoUsuario.Tiene = true;
 
@@ -4231,7 +4315,7 @@
                         if (juegosUbisoft?.Count > 0)
                         {
                             juegosUbisoft.ForEach(x => {if (x == juego.ExeUbisoft) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.Ubisoft;
                                     nuevoJuegoUsuario.Tiene = true;
 
@@ -4248,7 +4332,7 @@
                         if (juegosEa?.Count > 0)
                         {
                             juegosEa.ForEach(x => {if (x == juego.ExeEA) {
-                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
                                     nuevoJuegoUsuario.DRM = JuegoDRM.EA;
                                     nuevoJuegoUsuario.Tiene = true;
 
@@ -4271,13 +4355,13 @@
                                 if (deseadosSteam?.Count > 0)
                                 {
                                     deseadosSteam.ForEach(x => {if (juego.IdSteam > 0 && juego.IdSteam == int.Parse(x) && drm.Id == Juegos.JuegoDRM.Steam) {
-                                        JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
-                                        nuevoDeseadoUsuario.DRM = JuegoDRM.Steam;
-                                        nuevoDeseadoUsuario.Desea = true;
-                                        nuevoDeseadoUsuario.ImportadoDesea = true;
+                                            JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
+                                            nuevoDeseadoUsuario.DRM = JuegoDRM.Steam;
+                                            nuevoDeseadoUsuario.Desea = true;
+                                            nuevoDeseadoUsuario.ImportadoDesea = true;
 
-                                        usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
-                                    }});
+                                            usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
+                                        }});
                                 }
                             }
                         }
@@ -4291,13 +4375,13 @@
                                 if (deseadosGog?.Count > 0)
                                 {
                                     deseadosGog.ForEach(x => {if (juego.IdGog > 0 && juego.IdGog == int.Parse(x) && drm.Id == Juegos.JuegoDRM.GOG) {
-                                        JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
-                                        nuevoDeseadoUsuario.DRM = JuegoDRM.GOG;
-                                        nuevoDeseadoUsuario.Desea = true;
-                                        nuevoDeseadoUsuario.ImportadoDesea = true;
+                                            JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
+                                            nuevoDeseadoUsuario.DRM = JuegoDRM.GOG;
+                                            nuevoDeseadoUsuario.Desea = true;
+                                            nuevoDeseadoUsuario.ImportadoDesea = true;
 
-                                        usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
-                                    }});
+                                            usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
+                                        }});
                                 }
                             }
                         }
@@ -4342,7 +4426,7 @@
         return null;
     }
 
-    public string BundlesPreparar(JuegoDRM drm, string idioma)
+    public async Task<string> BundlesPreparar(JuegoDRM drm, string idioma)
     {
         if (BundlesDisponibles(juego.Bundles, drm) != null)
         {
@@ -4352,7 +4436,9 @@
             {
                 if (bundlesDisponibles.Count == 1)
                 {
-                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String53", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesDisponibles[0].BundleId).Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesDisponibles[0].Tipo).Tienda);
+                    var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(bundlesDisponibles[0].BundleId);
+
+                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String53", "Game"), bundle.Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesDisponibles[0].Tipo).Tienda);
                 }
                 else if (bundlesDisponibles.Count > 1)
                 {
@@ -4369,7 +4455,9 @@
             {
                 if (bundlesAntiguos.Count == 1)
                 {
-                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String57", "Game"), global::BaseDatos.Bundles.Buscar.UnBundle(bundlesAntiguos[0].BundleId).Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesAntiguos[0].Tipo).Tienda);
+                    var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(bundlesAntiguos[0].BundleId);
+
+                    return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String57", "Game"), bundle.Nombre, Bundles2.BundlesCargar.DevolverBundle(bundlesAntiguos[0].Tipo).Tienda);
                 }
                 else if (bundlesAntiguos.Count > 1)
                 {
@@ -4850,7 +4938,7 @@
 
     private bool enseñarDeck = false;
 
-    private async Task DeckEnseñar(MouseEventArgs e)
+    private async void DeckEnseñar(MouseEventArgs e)
     {
         if (enseñarDeck == false)
         {
@@ -4900,13 +4988,13 @@
                     }
 
                     vacio = false;
-                    global::BaseDatos.Juegos.Actualizar.Deck(juego);
+                    await global::BaseDatos.Juegos.Actualizar.Deck(juego);
                 }
 
                 if (vacio == true)
                 {
                     juego.DeckComprobacion = DateTime.Now;
-                    global::BaseDatos.Juegos.Actualizar.DeckVacio(juego);
+                    await global::BaseDatos.Juegos.Actualizar.DeckVacio(juego);
                 }
             }
         }

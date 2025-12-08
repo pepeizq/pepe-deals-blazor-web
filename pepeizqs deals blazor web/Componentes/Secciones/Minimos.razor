@@ -1246,7 +1246,7 @@ else
 
 			if (opcionesMinimos == null)
 			{
-				OrdenarReseñasCantidad(true);
+				await OrdenarReseñasCantidad(true);
 			}
 			else
 			{
@@ -1257,31 +1257,31 @@ else
 
 				if (opcionesMinimos.HistoricalLowsSort == 0)
 				{
-					OrdenarReseñasPorcentaje(true);
+					await OrdenarReseñasPorcentaje(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 1)
 				{
-					OrdenarReseñasCantidad(true);
+					await OrdenarReseñasCantidad(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 2)
 				{
-					OrdenarNombreAZ(true);
+					await OrdenarNombreAZ(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 3)
 				{
-					OrdenarNombreZA(true);
+					await OrdenarNombreZA(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 4)
 				{
-					OrdenarPrecio(true);
+					await OrdenarPrecio(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 5)
 				{
-					OrdenarDescuento(true);
+					await OrdenarDescuento(true);
 				}
 				else if (opcionesMinimos.HistoricalLowsSort == 6)
 				{
-					OrdenarFechaDetectado(true);
+					await OrdenarFechaDetectado(true);
 				}
 			}
 
@@ -1292,13 +1292,13 @@ else
 
 	#region Ordenar
 
-	private void OrdenarReseñasPorcentaje(bool buscar = true)
+	private async Task OrdenarReseñasPorcentaje(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String3", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1321,13 +1321,13 @@ else
 		}
 	}
 
-	private void OrdenarReseñasCantidad(bool buscar = true)
+	private async Task OrdenarReseñasCantidad(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1350,13 +1350,13 @@ else
 		}
 	}
 
-	private void OrdenarNombreAZ(bool buscar = true)
+	private async Task OrdenarNombreAZ(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String5", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1379,13 +1379,13 @@ else
 		}
 	}
 
-	private void OrdenarNombreZA(bool buscar = true)
+	private async Task OrdenarNombreZA(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1408,13 +1408,13 @@ else
 		}
 	}
 
-	private void OrdenarPrecio(bool buscar = true)
+	private async Task OrdenarPrecio(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String7", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1437,13 +1437,13 @@ else
 		}
 	}
 
-	private void OrdenarDescuento(bool buscar = true)
+	private async Task OrdenarDescuento(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String8", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1466,13 +1466,13 @@ else
 		}
 	}
 
-	private void OrdenarFechaDetectado(bool buscar = true)
+	private async Task OrdenarFechaDetectado(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String34", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos( 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosGestor.Count > 0)
 			{
@@ -1495,17 +1495,20 @@ else
 		}
 	}
 
-	private void OrdenarFechaLanzamiento(bool buscar = true)
+	private async Task OrdenarFechaLanzamiento(bool buscar = true)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String35", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = BaseDatos.Juegos.Buscar.Minimos(7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas).Except(juegosMostrar.Select(jM => jM.Juego)).ToList();
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosMostrar.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				var juegosMostradosIds = juegosMostrar.Select(j => j.Juego).ToList();
+				var juegosRestantes = juegosGestor.Except(juegosMostradosIds).ToList();
+
+				juegosMostrar = Filtros(juegosRestantes);
 			}
 		}
 		else
@@ -1590,46 +1593,46 @@ else
 		return listaMostrar;
 	}
 
-	private async void ElegirOrdenamiento(bool buscar)
+	private async Task ElegirOrdenamiento(bool buscar)
 	{
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String3", "HistoricalLows"))
 		{
-			OrdenarReseñasPorcentaje(buscar);
+			await OrdenarReseñasPorcentaje(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String4", "HistoricalLows"))
 		{
-			OrdenarReseñasCantidad(buscar);
+			await OrdenarReseñasCantidad(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String5", "HistoricalLows"))
 		{
-			OrdenarNombreAZ(buscar);
+			await OrdenarNombreAZ(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String6", "HistoricalLows"))
 		{
-			OrdenarNombreZA(buscar);
+			await OrdenarNombreZA(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String7", "HistoricalLows"))
 		{
-			OrdenarPrecio(buscar);
+			await OrdenarPrecio(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String8", "HistoricalLows"))
 		{
-			OrdenarDescuento(buscar);
+			await OrdenarDescuento(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String34", "HistoricalLows"))
 		{
-			OrdenarFechaDetectado(buscar);
+			await OrdenarFechaDetectado(buscar);
 		}
 
 		if (ordenamientoElegido == Herramientas.Idiomas.BuscarTexto(idioma, "String35", "HistoricalLows"))
 		{
-			OrdenarFechaLanzamiento(buscar);
+			await OrdenarFechaLanzamiento(buscar);
 		}
 
 		await CambiarEnlace();
@@ -1735,9 +1738,9 @@ else
 		await JavaScript.InvokeVoidAsync("ChangeUrl", "/historical-lows?" + drmsTexto + tiendasTexto + categoriasTexto + minimoDescuentoTexto + maximoPrecioTexto + minimoReseñasTexto + deckTexto + lanzamientoTexto + inteligenciaArtificialTexto);
 	}
 
-	private void TextoCambiaBuscador()
+	private async Task TextoCambiaBuscador()
 	{
-		ElegirOrdenamiento(false);
+		await ElegirOrdenamiento(false);
 	}
 
 	private string ocultarJuegosUsuarioSteam = null;
@@ -1746,7 +1749,7 @@ else
 
 	#region Opciones Usuario
 
-	private void OcultarJuegosUsuarioSteam()
+	private async Task OcultarJuegosUsuarioSteam()
 	{
 		if (opcionesMinimos != null)
 		{
@@ -1766,13 +1769,13 @@ else
 				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption1", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
 			}
 
-			ElegirOrdenamiento(false);
+			await ElegirOrdenamiento(false);
 		}
 	}
 
 	private string ocultarJuegosUsuarioGog = null;
 
-	private void OcultarJuegosUsuarioGog()
+	private async Task OcultarJuegosUsuarioGog()
 	{
 		if (opcionesMinimos != null)
 		{
@@ -1792,13 +1795,13 @@ else
 				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption4", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
 			}
 
-			ElegirOrdenamiento(false);
+			await ElegirOrdenamiento(false);
 		}
 	}
 
 	private int? minimoDescuento = 1;
 
-	private void CambiarMinimoDescuento(ChangeEventArgs e)
+	private async Task CambiarMinimoDescuento(ChangeEventArgs e)
 	{
 		minimoDescuento = int.Parse(e.Value.ToString());
 
@@ -1817,12 +1820,12 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private decimal? maximoPrecio = 90;
 
-	private void CambiarMaximoPrecio(ChangeEventArgs e)
+	private async Task CambiarMaximoPrecio(ChangeEventArgs e)
 	{
 		maximoPrecio = decimal.Parse(e.Value.ToString());
 
@@ -1836,10 +1839,10 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
-	private void EnseñarJuegosDRM(ChangeEventArgs e, JuegoDRM drmElegido)
+	private async Task EnseñarJuegosDRM(ChangeEventArgs e, JuegoDRM drmElegido)
 	{
 		foreach (var drm in drmsListado)
 		{
@@ -1868,7 +1871,7 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private List<MostrarJuegoDRM> drmsListado = CrearListaDRMs();
@@ -1903,7 +1906,7 @@ else
 		return nuevaLista;
 	}
 
-	private void EnseñarJuegosTienda(ChangeEventArgs e, string tiendaElegida)
+	private async Task EnseñarJuegosTienda(ChangeEventArgs e, string tiendaElegida)
 	{
 		foreach (var tienda in tiendas)
 		{
@@ -1932,7 +1935,7 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private List<MostrarJuegoTienda> tiendas = GenerarListaTiendas();
@@ -1981,7 +1984,7 @@ else
 
 	private int? minimoReseñas = 0;
 
-	private void CambiarMinimoReseñas(ChangeEventArgs e)
+	private async Task CambiarMinimoReseñas(ChangeEventArgs e)
 	{
 		minimoReseñas = int.Parse(e.Value.ToString());
 
@@ -1995,10 +1998,10 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
-	private void EnseñarJuegosCategoria(ChangeEventArgs e, JuegoTipo categoriaElegida)
+	private async Task EnseñarJuegosCategoria(ChangeEventArgs e, JuegoTipo categoriaElegida)
 	{
 		foreach (var categoria in categorias)
 		{
@@ -2027,7 +2030,7 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private List<MostrarJuegoCategoria> categorias = CrearListaCategorias();
@@ -2059,7 +2062,7 @@ else
 		return nuevaLista;
 	}
 
-	private void EnseñarJuegosSteamDeck(ChangeEventArgs e, JuegoDeck tipoElegido)
+	private async Task EnseñarJuegosSteamDeck(ChangeEventArgs e, JuegoDeck tipoElegido)
 	{
 		foreach (var steamdeck in deckListado)
 		{
@@ -2088,7 +2091,7 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private List<MostrarJuegoSteamDeck> deckListado = CrearListaSteamDeck();
@@ -2141,7 +2144,7 @@ else
 	private string lanzamientoChecked2 = null;
 	private string lanzamientoChecked3 = null;
 
-	private void CambiarLanzamiento(ChangeEventArgs e, int nuevoLanzamiento)
+	private async Task CambiarLanzamiento(ChangeEventArgs e, int nuevoLanzamiento)
 	{
 		lanzamientoElegido = nuevoLanzamiento;
 
@@ -2177,7 +2180,7 @@ else
 			}		
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	private int inteligenciaArtificialElegida = 0;
@@ -2185,7 +2188,7 @@ else
 	private string inteligenciaArtificialChecked1 = null;
 	private string inteligenciaArtificialChecked2 = null;
 
-	private void CambiarInteligenciaArtificial(ChangeEventArgs e, int nuevaInteligenciaArtificial)
+	private async Task CambiarInteligenciaArtificial(ChangeEventArgs e, int nuevaInteligenciaArtificial)
 	{
 		inteligenciaArtificialElegida = nuevaInteligenciaArtificial;
 
@@ -2217,7 +2220,7 @@ else
 			}
 		}
 
-		ElegirOrdenamiento(true);
+		await ElegirOrdenamiento(true);
 	}
 
 	#endregion

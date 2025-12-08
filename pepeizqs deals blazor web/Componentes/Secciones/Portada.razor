@@ -410,7 +410,7 @@
 		@{
 			string marginAbajo = string.Empty;
 
-			if (noticias.Count > 0)
+			if (noticias?.Count > 0)
 			{
 				marginAbajo = "margin-bottom: 20px;";
 
@@ -744,7 +744,7 @@
 
 	private string videoDestacado = string.Empty;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -804,7 +804,7 @@
 
 		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
-			List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados();
+			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados();
 
 			foreach (var juego in juegosDestacadosMostrar2)
 			{
@@ -902,7 +902,7 @@
 
 		#region Minimos
 
-		Filtros(true);
+		await Filtros(true);
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -1010,7 +1010,7 @@
 				{
 					juegosDestacadosMostrar.Clear();
 
-					List<Juegos.Juego> juegosDestacadosMostrar2 = BaseDatos.Portada.Buscar.Destacados();
+					List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados();
 
 					if (juegosDestacadosMostrar2?.Count > 0)
 					{
@@ -1062,7 +1062,7 @@
 
 	private int cantidadJuegosMinimos = 100;
 
-	private void GenerarListaMinimos(bool cargaInicial = false)
+	private async Task GenerarListaMinimos(bool cargaInicial = false)
 	{
 		try
 		{
@@ -1096,24 +1096,24 @@
 			{
 				if (cargaInicial == false)
 				{
-					juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 				}
 				else
 				{
-					juegosMinimosGestor ??= BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor ??= await BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 				}				
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Populares)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(1, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(1, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Lanzamientos)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Minimos(2, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 49);
+				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(2, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 49);
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
 			{
-				juegosMinimosGestor = BaseDatos.Portada.Buscar.Proximamente(cantidadJuegosMinimos, categoriasNumeros, drmsNumeros);
+				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Proximamente(cantidadJuegosMinimos, categoriasNumeros, drmsNumeros);
 			}
 		}
 		catch (Exception ex)
@@ -1122,11 +1122,11 @@
 		}
 	}
 
-	private void CargarMasMinimos()
+	private async Task CargarMasMinimos()
 	{
 		cantidadJuegosMinimos += 50;
 
-		Filtros();
+		await Filtros();
 	}
 
 	private PeriodicTimer cronometroMinimos = null;
@@ -1134,7 +1134,7 @@
 
 	private async void CronometroMinimos(int limite)
 	{
-		cronometroMinimos = new PeriodicTimer(TimeSpan.FromSeconds(1));
+		cronometroMinimos = new PeriodicTimer(TimeSpan.FromSeconds(10));
 
 		while (await cronometroMinimos.WaitForNextTickAsync())
 		{
@@ -1142,7 +1142,7 @@
 
 			if (cronometroMinimosContador >= limite)
 			{
-				Filtros();
+				await Filtros();
 
 				cronometroMinimosContador = 0;
 			}
@@ -1151,11 +1151,11 @@
 		}
 	}
 
-	private void CambiarTipo(MouseEventArgs e, MinimosTipo nuevoTipo)
+	private async Task CambiarTipo(MouseEventArgs e, MinimosTipo nuevoTipo)
 	{
 		tipoSeleccionadoMinimos = nuevoTipo;
 
-		Filtros();
+		await Filtros();
 	}
 
 	private string CambiarEstilo(MinimosTipo nuevoTipo)
@@ -1198,9 +1198,9 @@
 		Proximamente
 	}
 
-	private async void Filtros(bool cargaInicial = false)
+	private async Task Filtros(bool cargaInicial = false)
 	{
-		GenerarListaMinimos(cargaInicial);
+		await GenerarListaMinimos(cargaInicial);
 
 		if (juegosMinimosGestor?.Count > 0)
 		{
@@ -1305,7 +1305,7 @@
 	private string ocultarJuegosUsuarioSteam = null;
 	private string ocultarJuegosUsuarioGog = null;
 
-	private void OcultarJuegosUsuarioSteam()
+	private async Task OcultarJuegosUsuarioSteam()
 	{
 		bool valor = false;
 
@@ -1332,10 +1332,10 @@
 			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption1", valor, usuarioId);
 		}
 
-		Filtros();
+		await Filtros();
 	}
 
-	private void OcultarJuegosUsuarioGog()
+	private async Task OcultarJuegosUsuarioGog()
 	{
 		bool valor = false;
 
@@ -1362,10 +1362,10 @@
 			BaseDatos.Usuarios.Actualizar.Opcion("IndexOption2", valor, usuarioId);
 		}	
 
-		Filtros();
+		await Filtros();
 	}
 
-	private void EnseñarJuegosDRM(ChangeEventArgs e, JuegoDRM drmElegido)
+	private async Task EnseñarJuegosDRM(ChangeEventArgs e, JuegoDRM drmElegido)
 	{
 		foreach (var drm in drms)
 		{
@@ -1389,7 +1389,7 @@
 			BaseDatos.Usuarios.Actualizar.Opcion("IndexDRMs", JsonSerializer.Serialize(drms), usuarioId);
 		}
 
-		Filtros();
+		await Filtros();
 	}
 
 	private List<MostrarJuegoDRM> drms = CrearListaDRMs();
@@ -1424,7 +1424,7 @@
 		return nuevaLista;
 	}
 
-	private void EnseñarJuegosCategoria(ChangeEventArgs e, JuegoTipo categoriaElegida)
+	private async Task EnseñarJuegosCategoria(ChangeEventArgs e, JuegoTipo categoriaElegida)
 	{
 		foreach (var categoria in categorias)
 		{
@@ -1448,7 +1448,7 @@
 			BaseDatos.Usuarios.Actualizar.Opcion("IndexCategories", JsonSerializer.Serialize(categorias), usuarioId);
 		}
 
-		Filtros();
+		await Filtros();
 	}
 
 	private List<MostrarJuegoCategoria> categorias = CrearListaCategorias();

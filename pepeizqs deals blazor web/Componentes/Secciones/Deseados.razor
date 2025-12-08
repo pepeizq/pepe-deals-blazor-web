@@ -448,107 +448,102 @@
 						<div>
 							<Virtualize Context="juego" Items="deseadosBundles" ItemSize="alturaFila">
 								<ItemContent>
-									@if (juego.IdBundle > 0)
+									@if (juego.IdBundle > 0 && bundlesCache.TryGetValue(juego.IdBundle, out var bundle) && bundle != null)
 									{
-										Bundles2.Bundle bundle = BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
+										string enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
 
-										if (bundle != null)
-										{
-											string enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
+										<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
+											<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;">
+												<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
+													<div class="deseado-imagen">
+														@{
+															string imagen = juego.Imagen;
 
-											<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
-												<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;">
-													<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
-														<div class="deseado-imagen">
-															@{
-																string imagen = juego.Imagen;
-
-																if (imagen.Contains(APIs.GOG.Juego.dominioImagenes) == true)
-																{
-																	imagen = imagen.Replace("_glx_logo", null);
-																	imagen = imagen.Replace(".png", ".webp");
-																}
+															if (imagen.Contains(APIs.GOG.Juego.dominioImagenes) == true)
+															{
+																imagen = imagen.Replace("_glx_logo", null);
+																imagen = imagen.Replace(".png", ".webp");
 															}
+														}
 
-															<img src="@imagen" style="height: 100%; width: 100%;" />
-														</div>
+														<img src="@imagen" style="height: 100%; width: 100%;" />
+													</div>
 
-														<div style="width: 100%; padding: 5px 20px;">
-															<div style="margin-top: 5px;">@juego.Nombre</div>
+													<div style="width: 100%; padding: 5px 20px;">
+														<div style="margin-top: 5px;">@juego.Nombre</div>
 
-															<div style="display: flex; align-items: center; margin-top: 5px;">
-																<div style="width: 20px; height: 20px;">
-																	<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
-																</div>
+														<div style="display: flex; align-items: center; margin-top: 5px;">
+															<div style="width: 20px; height: 20px;">
+																<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
+															</div>
 
-																<div style="width: 20px; height: 20px; margin-left: 10px;">
-																	<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenIcono" style="width: 100%; height: 100%;" />
-																</div>
+															<div style="width: 20px; height: 20px; margin-left: 10px;">
+																<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenIcono" style="width: 100%; height: 100%;" />
 															</div>
 														</div>
+													</div>
 
-														<div style="display: flex; align-items: center; justify-content: center; min-width: 175px; font-size: 18px;">
-															<div style="padding: 5px 15px; text-align: center; font-size: 18px;">
-																@if (bundle.Pick == true)
-																{
-																	<div>
-																		@Herramientas.Precios.Euro(decimal.Parse(bundle.Tiers[0].Precio))
-																	</div>
+													<div style="display: flex; align-items: center; justify-content: center; min-width: 175px; font-size: 18px;">
+														<div style="padding: 5px 15px; text-align: center; font-size: 18px;">
+															@if (bundle.Pick == true)
+															{
+																<div>
+																	@Herramientas.Precios.Euro(decimal.Parse(bundle.Tiers[0].Precio))
+																</div>
 
-																	<div style="font-size: 14px; margin-top: 5px;">
-																		@if (bundle.Tiers[0].CantidadJuegos == 1)
-																		{
-																			@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Wishlist"), bundle.Tiers[0].CantidadJuegos)
-																		}
-																		else if (bundle.Tiers[0].CantidadJuegos > 1)
-																		{
-																			@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Wishlist"), bundle.Tiers[0].CantidadJuegos)
-																		}
-																	</div>
-																}
-																else
-																{
-																	foreach (var juegoBundle in bundle.Juegos)
+																<div style="font-size: 14px; margin-top: 5px;">
+																	@if (bundle.Tiers[0].CantidadJuegos == 1)
 																	{
-																		if (juegoBundle.JuegoId == juego.Id.ToString())
+																		@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Wishlist"), bundle.Tiers[0].CantidadJuegos)
+																	}
+																	else if (bundle.Tiers[0].CantidadJuegos > 1)
+																	{
+																		@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Wishlist"), bundle.Tiers[0].CantidadJuegos)
+																	}
+																</div>
+															}
+															else
+															{
+																foreach (var juegoBundle in bundle.Juegos)
+																{
+																	if (juegoBundle.JuegoId == juego.Id.ToString())
+																	{
+																		foreach (var tier in bundle.Tiers)
 																		{
-																			foreach (var tier in bundle.Tiers)
+																			if (tier.Posicion == juegoBundle.Tier.Posicion)
 																			{
-																				if (tier.Posicion == juegoBundle.Tier.Posicion)
-																				{
-																					<div>
-																						@Herramientas.Precios.Euro(decimal.Parse(tier.Precio))
-																					</div>
+																				<div>
+																					@Herramientas.Precios.Euro(decimal.Parse(tier.Precio))
+																				</div>
 
-																					<div style="font-size: 14px; margin-top: 5px;">
-																						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Wishlist"), tier.Posicion)
-																					</div>
+																				<div style="font-size: 14px; margin-top: 5px;">
+																					@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Wishlist"), tier.Posicion)
+																				</div>
 
-																					break;
-																				}
+																				break;
 																			}
 																		}
 																	}
 																}
-															</div>
+															}
 														</div>
 													</div>
-												</a>
+												</div>
+											</a>
 
-												<AuthorizeView>
-													<Authorized>
-														@if (string.IsNullOrEmpty(perfilUsuarioId) == true && juego.Importado == false)
-														{
-															<div style="background-color: transparent; padding: 5px 10px; display: flex; align-items: center; gap: 10px; right: -100px; position: absolute;">
-																<button @onclick="@(e => QuitarJuego(e, juego.Id, juego.DRM, juego))" style="width: fit-content; font-size: 14px; color: var(--colorEnlace); background: transparent; border: 0px; text-decoration: none; margin-left: auto;">
-																	@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Wishlist")
-																</button>
-															</div>
-														}
-													</Authorized>
-												</AuthorizeView>		
-											</div>
-										}
+											<AuthorizeView>
+												<Authorized>
+													@if (string.IsNullOrEmpty(perfilUsuarioId) == true && juego.Importado == false)
+													{
+														<div style="background-color: transparent; padding: 5px 10px; display: flex; align-items: center; gap: 10px; right: -100px; position: absolute;">
+															<button @onclick="@(e => QuitarJuego(e, juego.Id, juego.DRM, juego))" style="width: fit-content; font-size: 14px; color: var(--colorEnlace); background: transparent; border: 0px; text-decoration: none; margin-left: auto;">
+																@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Wishlist")
+															</button>
+														</div>
+													}
+												</Authorized>
+											</AuthorizeView>
+										</div>
 									}
 								</ItemContent>
 							</Virtualize>
@@ -669,6 +664,8 @@
 
 	private bool cargado = false;
 
+	private Dictionary<int, Bundles2.Bundle> bundlesCache = new();
+
 	protected override void OnInitialized()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -781,7 +778,7 @@
 
 				#region Bundles
 
-				bundlesActuales ??= BaseDatos.Bundles.Buscar.Actuales();
+				bundlesActuales ??= await BaseDatos.Bundles.Buscar.Actuales();
 
 				if (bundlesActuales.Count > 0)
 				{
@@ -826,6 +823,18 @@
 									}
 								}
 							}
+						}
+					}
+				}
+
+				if (deseadosBundles?.Count > 0)
+				{
+					foreach (var juego in deseadosBundles)
+					{
+						if (juego.IdBundle > 0 && bundlesCache.ContainsKey(juego.IdBundle) == false)
+						{
+							var bundle = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
+							bundlesCache[juego.IdBundle] = bundle;
 						}
 					}
 				}
@@ -947,7 +956,7 @@
 
 	private async void QuitarJuego(MouseEventArgs e, int juegoId, Juegos.JuegoDRM drm, JuegoDeseadoMostrar juegoMostrar)
 	{
-		Juegos.Juego juego = BaseDatos.Juegos.Buscar.UnJuego(juegoId);
+		Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoId);
 
 		if (juego != null)
 		{

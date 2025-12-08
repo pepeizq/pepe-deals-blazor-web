@@ -665,7 +665,7 @@ else
 
             foreach (var juegoActual in componente.Juegos)
             {
-                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
+                Juegos.Juego juego2 = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
 
                 if (juego2 != null)
                 {

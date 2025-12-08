@@ -9,7 +9,7 @@ namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static List<JuegoMinimoTarea> BuscarMinimos()
+		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos()
 		{
 			string busqueda = @"SELECT j.*,
        pmh.DRM as DRMElegido
@@ -53,9 +53,9 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<JuegoMinimoTarea>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<JuegoMinimoTarea>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -66,7 +66,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 			return new List<JuegoMinimoTarea>();
 		}
 
-		public static List<Juego> Destacados()
+		public static async Task<List<Juego>> Destacados()
 		{
 			string busqueda = @"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM seccionMinimos
 WHERE tipo = 0 AND 
@@ -83,9 +83,11 @@ ORDER BY NEWID()";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(busqueda, transaction: sentencia).Select(fila =>
+					var filas = await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia);
+
+					var juegos = filas.Select(fila =>
 					{
 						Juego juego = new Juego
 						{
@@ -105,21 +107,29 @@ ORDER BY NEWID()";
 							};
 						}
 
-						if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
+						if (!string.IsNullOrEmpty(fila.precioMinimosHistoricos))
 						{
-							juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+							juego.PrecioMinimosHistoricos =
+								JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
 						}
 
-						if (string.IsNullOrEmpty(fila.video) == false)
+						if (!string.IsNullOrEmpty(fila.video))
 						{
 							juego.Media = new JuegoMedia
 							{
-								Videos = new List<JuegoMediaVideo> { new JuegoMediaVideo { Micro = fila.video } }
+								Videos = new List<JuegoMediaVideo>
+								{
+									new JuegoMediaVideo { Micro = fila.video }
+								}
 							};
 						}
+
 						return juego;
 					}).ToList();
-				});
+
+					return juegos;
+
+				}).ContinueWith(t => t.Result.ToList());
 			}
 			catch (Exception ex)
 			{
@@ -129,7 +139,7 @@ ORDER BY NEWID()";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
+		public static async Task<List<Juego>> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
 		{
 			string categoria = null;
 
@@ -234,9 +244,9 @@ ORDER BY NEWID()";
 
 			try
 			{
-				var filas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<Juego> resultados = new List<Juego>();
@@ -314,7 +324,7 @@ ORDER BY NEWID()";
 			return new List<Juego>();
 		}
 
-		public static List<Juego> Proximamente(int cantidadJuegos, List<string> categorias = null, List<string> drms = null)
+		public static async Task<List<Juego>> Proximamente(int cantidadJuegos, List<string> categorias = null, List<string> drms = null)
 		{
 			string busqueda = @"SELECT TOP @cantidadJuegos id, nombre, imagenes, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam, idGog, CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM juegos 
                                     WHERE ISJSON(caracteristicas) > 0 AND DATEDIFF(DAY, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam'), GETDATE()) < 0
@@ -324,9 +334,9 @@ ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam
 
 			try
 			{
-				var filas = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<Juego> resultados = new List<Juego>();

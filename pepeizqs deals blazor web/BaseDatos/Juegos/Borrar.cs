@@ -4,7 +4,7 @@ namespace BaseDatos.Juegos
 {
 	public static class Borrar
 	{
-		public static async void Ejecutar(string id)
+		public static async Task Ejecutar(string id)
 		{
 			try
 			{

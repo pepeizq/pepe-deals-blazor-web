@@ -11,9 +11,9 @@ namespace Herramientas.Redireccionador
 	{
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/game/{id}")]
-		public IActionResult Juego(int id)
+		public async Task<IActionResult> Juego(int id)
 		{
-			Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(id.ToString());
+			Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(id.ToString());
 
 			if (juego != null)
 			{
@@ -25,9 +25,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/steam/{id}")]
-		public IActionResult JuegoSteam(int id)
+		public async Task<IActionResult> JuegoSteam(int id)
 		{
-			Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(null, id.ToString());
+			Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(null, id.ToString());
 
 			if (juego != null)
 			{
@@ -39,9 +39,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/gog/{id}")]
-		public IActionResult JuegoGog(string id)
+		public async Task<IActionResult> JuegoGog(string id)
 		{
-			Juego juego = global::BaseDatos.Juegos.Buscar.UnJuego(null, null, id);
+			Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(null, null, id);
 
 			if (juego != null)
 			{
@@ -53,9 +53,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/bundle/{id}/")]
-		public IActionResult Bundle(int id)
+		public async Task<IActionResult> Bundle(int id)
 		{
-			Bundle bundle = global::BaseDatos.Bundles.Buscar.UnBundle(id);
+			Bundle bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(id);
 
 			if (bundle != null)
 			{
@@ -67,9 +67,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/bundle/{id}/{juegos}")]
-		public IActionResult Bundle(int id, string juegos)
+		public async Task<IActionResult> Bundle(int id, string juegos)
 		{
-			Bundle bundle = global::BaseDatos.Bundles.Buscar.UnBundle(id);
+			Bundle bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(id);
 
 			if (bundle != null)
 			{
@@ -79,7 +79,7 @@ namespace Herramientas.Redireccionador
 					{
 						foreach (var juego in bundle.Juegos)
 						{
-							juego.Juego = global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+							juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
 						}
 					}
 				}

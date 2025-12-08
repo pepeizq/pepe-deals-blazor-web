@@ -3,6 +3,7 @@
 using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Text.Json;
 
 namespace APIs.AmazonLuna
@@ -90,33 +91,22 @@ namespace APIs.AmazonLuna
 			return enlace;
 		}
 
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task Buscar()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static async Task Buscar(SqlConnection conexion = null)
-		{
-			await Task.Yield();
-
-			conexion = CogerConexion(conexion);
-
 			int cantidad = 0;
 
 			#region Standard
 
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			List<AmazonLunaJuego> juegosStandard = null;
 
 			try 
-			{ 
-				var filas = conexion.Query<AmazonLunaFila>("SELECT contenido FROM temporallunastandardjson");
+			{
+				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<AmazonLunaFila>("SELECT contenido FROM temporallunastandardjson", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 
 				foreach (var fila in filas)
 				{
@@ -136,9 +126,10 @@ namespace APIs.AmazonLuna
 					{
 						bool encontrado = false;
 
-						conexion = CogerConexion(conexion);
-
-						string idJuegosTexto = conexion.QueryFirstOrDefault<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id });
+						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id }, transaction: sentencia);
+						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
 						{
@@ -153,7 +144,7 @@ namespace APIs.AmazonLuna
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
@@ -203,11 +194,12 @@ namespace APIs.AmazonLuna
 					}
 				}
 
-				conexion = CogerConexion(conexion);
-
 				try 
-				{ 
-					conexion.Execute("DELETE FROM temporallunastandardjson WHERE enlace='1'"); 
+				{
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.ExecuteAsync("DELETE FROM temporallunastandardjson WHERE enlace='1'", transaction: sentencia);
+					});
 				} 
 				catch (Exception ex) 
 				{ 
@@ -219,7 +211,7 @@ namespace APIs.AmazonLuna
 
 			#region Premium
 
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			cantidad = 0;
 
@@ -227,7 +219,10 @@ namespace APIs.AmazonLuna
 
 			try
 			{
-				var filas = conexion.Query<AmazonLunaFila>("SELECT contenido FROM temporallunapremiumjson");
+				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<AmazonLunaFila>("SELECT contenido FROM temporallunapremiumjson", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 
 				foreach (var fila in filas)
 				{
@@ -247,9 +242,10 @@ namespace APIs.AmazonLuna
 					{
 						bool encontrado = false;
 
-						conexion = CogerConexion(conexion);
-
-						string idJuegosTexto = conexion.QueryFirstOrDefault<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id });
+						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id }, transaction: sentencia);
+						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
 						{
@@ -264,7 +260,7 @@ namespace APIs.AmazonLuna
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
@@ -314,11 +310,12 @@ namespace APIs.AmazonLuna
 					}
 				}
 
-				conexion = CogerConexion(conexion);
-
 				try
 				{
-					conexion.Execute("DELETE FROM temporallunapremiumjson WHERE enlace='1'");
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.ExecuteAsync("DELETE FROM temporallunapremiumjson WHERE enlace='1'", transaction: sentencia);
+					});
 				}
 				catch (Exception ex)
 				{

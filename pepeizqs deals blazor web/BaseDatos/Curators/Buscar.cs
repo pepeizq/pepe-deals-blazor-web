@@ -11,13 +11,13 @@ namespace BaseDatos.Curators
 {
 	public static class Buscar
 	{
-		public static Curator Uno(int idSteam)
+		public static async Task<Curator> Uno(int idSteam)
 		{
 			try
 			{
-				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
 				});
 
 				if (fila == null)
@@ -54,13 +54,13 @@ namespace BaseDatos.Curators
 			return null;
 		}
 
-		public static Curator Uno(string slug)
+		public static async Task<Curator> Uno(string slug)
 		{
 			try
 			{
-				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault("SELECT * FROM curators WHERE slug=@slug", new { slug }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WHERE slug=@slug", new { slug }, transaction: sentencia);
 				});
 
 				if (fila == null)

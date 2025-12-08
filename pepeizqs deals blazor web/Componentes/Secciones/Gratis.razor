@@ -375,7 +375,7 @@ else
     private List<string> años = new List<string>();
     private string añoSeleccionado = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
@@ -417,7 +417,7 @@ else
         {
             foreach (var juegoActual in juegosActuales)
             {
-                Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
+                Juegos.Juego juego2 = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
                 juegoActual.Imagen = juego2.Imagenes.Header_460x215;
                 juegoActual.Juego = juego2;
 
@@ -451,7 +451,7 @@ else
     private List<Gratis2.GratisTipo> tiposActuales = new List<Gratis2.GratisTipo>();
     private bool mostrarArchivo = false;
 
-    private void CambiarTipo(MouseEventArgs e, Gratis2.GratisTipo nuevoTipo, bool esArchivo)
+    private async void CambiarTipo(MouseEventArgs e, Gratis2.GratisTipo nuevoTipo, bool esArchivo)
     {
         mostrarArchivo = esArchivo;
 
@@ -464,7 +464,7 @@ else
             {
                 foreach (var juegoActual in juegosActuales)
                 {
-                    Juegos.Juego juego2 = BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
+                    Juegos.Juego juego2 = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
                     juegoActual.Imagen = juego2.Imagenes.Header_460x215;
                     juegoActual.Juego = juego2;
                 }

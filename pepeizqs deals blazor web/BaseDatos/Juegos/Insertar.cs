@@ -8,7 +8,7 @@ namespace BaseDatos.Juegos
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(Juego juego, string tabla = "juegos", bool noExiste = false)
+		public static async Task Ejecutar(Juego juego, string tabla = "juegos", bool noExiste = false)
 		{
 			if (string.IsNullOrEmpty(juego.Nombre) == true)
 			{
@@ -133,9 +133,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Execute(sqlInsertar, parametros, transaction: sentencia);
+					return await sentencia.Connection.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

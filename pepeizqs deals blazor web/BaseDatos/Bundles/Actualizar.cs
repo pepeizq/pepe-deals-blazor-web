@@ -101,7 +101,7 @@ namespace BaseDatos.Bundles
 			}
         }
 
-        public static async void Juegos(string id, string juegos)
+        public static async Task Juegos(string id, string juegos)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET juegos=@juegos " +
@@ -120,7 +120,7 @@ namespace BaseDatos.Bundles
 			}
 		}
 
-		public static async void Tiers(string id, string tiers)
+		public static async Task Tiers(string id, string tiers)
 		{
 			string sqlActualizar = "UPDATE bundles " +
 					"SET tiers=@tiers " +

@@ -196,8 +196,6 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
-		await Task.Yield();
-
 		perfil = BaseDatos.Usuarios.Buscar.PerfilCargar(usuarioNombre);
 
 		if (perfil != null)
@@ -227,7 +225,7 @@ else
 					{
 						List<string> idsSteam = ultimoJugado.Steam.OrderByDescending(j => j.TiempoJugadoUltimaVez).Take(5).Select(juego => juego.Id.ToString()).ToList();
 
-						listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, Juegos.JuegoDRM.Steam, idsSteam);
+						listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, Juegos.JuegoDRM.Steam, idsSteam);
 
 						foreach (var juegoSteam in ultimoJugado.Steam)
 						{
@@ -252,7 +250,7 @@ else
 					{
 						List<string> idsGog = ultimoJugado.Gog.OrderByDescending(j => j.TiempoJugadoUltimaVez).Take(5).Select(juego => juego.Id.ToString()).ToList();
 
-						listaGestor = global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, Juegos.JuegoDRM.GOG, idsGog);
+						listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, Juegos.JuegoDRM.GOG, idsGog);
 
 						foreach (var juegoGog in ultimoJugado.Gog)
 						{

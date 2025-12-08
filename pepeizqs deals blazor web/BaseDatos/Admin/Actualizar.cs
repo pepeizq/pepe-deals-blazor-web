@@ -51,7 +51,7 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static async void Dato(string id, int contenido)
+		public static async Task Dato(string id, int contenido)
 		{
 			try
 			{

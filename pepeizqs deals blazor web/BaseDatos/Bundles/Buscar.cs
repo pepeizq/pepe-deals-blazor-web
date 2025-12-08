@@ -7,7 +7,7 @@ namespace BaseDatos.Bundles
 {
 	public static class Buscar
 	{
-		public static List<Bundle> Actuales(int ordenamiento = 0, BundleTipo tipo = BundleTipo.Desconocido)
+		public static async Task<List<Bundle>> Actuales(int ordenamiento = 0, BundleTipo tipo = BundleTipo.Desconocido)
 		{
 			string busqueda = "SELECT * FROM bundles WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";
 
@@ -35,9 +35,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<Bundle>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -67,15 +67,15 @@ namespace BaseDatos.Bundles
 			return new List<Bundle>();
 		}
 
-		public static Bundle UnBundle(int bundleId)
+		public static async Task<Bundle> UnBundle(int bundleId)
 		{
 			string busqueda = "SELECT * FROM bundles WHERE id=@id";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<Bundle>(busqueda, new { id = bundleId }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Bundle>(busqueda, new { id = bundleId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -83,7 +83,7 @@ namespace BaseDatos.Bundles
 				BaseDatos.Errores.Insertar.Mensaje("Bundle Uno", ex);
 			}
 
-			return new Bundle();
+			return null;
 		}
 
         public static async Task<List<Bundle>> Ultimos(int cantidad)

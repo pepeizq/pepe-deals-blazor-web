@@ -31,12 +31,12 @@ namespace BaseDatos.Pendientes
             }
 		}
 
-        public static void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos)
+        public static async void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos)
         {
 			foreach (var idJuego in idJuegos)
 			{
 				string descartado = "no";
-				var juego = BaseDatos.Juegos.Buscar.UnJuego(idJuego);
+				var juego = await BaseDatos.Juegos.Buscar.UnJuego(idJuego);
 
 				if (idJuego != "0")
 				{

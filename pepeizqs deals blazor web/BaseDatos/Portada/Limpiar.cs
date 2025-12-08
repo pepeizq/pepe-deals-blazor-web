@@ -6,7 +6,7 @@ namespace BaseDatos.Portada
 {
 	public static class Limpiar
 	{
-		public static void Total()
+		public static async Task Total()
 		{
 			string limpiar = @"DELETE sm
 FROM seccionMinimos sm
@@ -25,9 +25,9 @@ WHERE
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Execute(limpiar, transaction: sentencia);
+					return await sentencia.Connection.ExecuteAsync(limpiar, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

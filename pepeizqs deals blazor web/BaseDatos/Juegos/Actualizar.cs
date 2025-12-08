@@ -79,408 +79,362 @@ namespace BaseDatos.Juegos
 			}
 		}
 
-		public static void Imagenes(Juego juego, SqlConnection conexion)
+		public static async Task Imagenes(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET imagenes=@imagenes WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						imagenes = JsonSerializer.Serialize(juego.Imagenes)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Imagenes 1 " + juego.Id.ToString(), ex);
 			}
 
 			string sqlActualizar2 = "UPDATE seccionMinimos " +
 					"SET imagenes=@imagenes WHERE idMaestra=@id";
 
-			using (SqlCommand comando2 = new SqlCommand(sqlActualizar2, conexion))
+			try
 			{
-				comando2.Parameters.AddWithValue("@id", juego.Id);
-				comando2.Parameters.AddWithValue("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando2.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					{
+						id = juego.Id,
+						imagenes = JsonSerializer.Serialize(juego.Imagenes)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Imagenes 2 " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void PreciosActuales(Juego juego, SqlConnection conexion)
+		public static async Task PreciosActuales(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET precioActualesTiendas=@precioActualesTiendas WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@precioActualesTiendas", JsonSerializer.Serialize(juego.PrecioActualesTiendas));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						precioActualesTiendas = JsonSerializer.Serialize(juego.PrecioActualesTiendas)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Precios Actuales " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void PreciosHistoricos(Juego juego, SqlConnection conexion)
+		public static async Task PreciosHistoricos(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET precioMinimosHistoricos=@precioMinimosHistoricos WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@precioMinimosHistoricos", JsonSerializer.Serialize(juego.PrecioMinimosHistoricos));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						precioMinimosHistoricos = JsonSerializer.Serialize(juego.PrecioMinimosHistoricos)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Precios Historicos " + juego.Id.ToString(), ex);
 			}
 		}
 
-        public static void PreciosHistoricos(int id, List<JuegoPrecio> historicos, SqlConnection conexion = null)
-        {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
-            string sqlActualizar = "UPDATE juegos " +
-                    "SET precioMinimosHistoricos=@precioMinimosHistoricos WHERE id=@id";
-
-            using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-            {
-                comando.Parameters.AddWithValue("@id", id);
-                comando.Parameters.AddWithValue("@precioMinimosHistoricos", JsonSerializer.Serialize(historicos));
-
-                try
-                {
-                    comando.ExecuteNonQuery();
-                }
-                catch
-                {
-
-                }
-            }
-        }
-
-        public static void Bundles(Juego juego, SqlConnection conexion)
+        public static async Task Bundles(Juego juego)
 		{
+			var valorBundles = juego.Bundles != null ? JsonSerializer.Serialize(juego.Bundles) : "null";
+
 			string sqlActualizar = "UPDATE juegos " +
 					"SET bundles=@bundles WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-
-				if (juego.Bundles != null)
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.Parameters.AddWithValue("@bundles", JsonSerializer.Serialize(juego.Bundles));
-				}
-				else
-				{
-					comando.Parameters.AddWithValue("@bundles", "null");
-				}
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						bundles = valorBundles
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundles " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void Gratis(Juego juego, SqlConnection conexion)
+		public static async Task Gratis(Juego juego)
 		{
+			var valorGratis = juego.Gratis != null ? JsonSerializer.Serialize(juego.Gratis) : "null";
+
 			string sqlActualizar = "UPDATE juegos " +
 					"SET gratis=@gratis WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						gratis = valorGratis
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis 1 " + juego.Id.ToString(), ex);
+			}
 
-				if (juego.Gratis != null)
-				{
-					comando.Parameters.AddWithValue("@gratis", JsonSerializer.Serialize(juego.Gratis));
-				}
-				else
-				{
-					comando.Parameters.AddWithValue("@gratis", "null");
-				}
+			string sqlActualizar2 = "UPDATE seccionMinimos " +
+					"SET gratis=@gratis WHERE idMaestra=@id";
 
-				try
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					{
+						id = juego.Id,
+						gratis = valorGratis
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Gratis 2 " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void Suscripciones(Juego juego, SqlConnection conexion)
+		public static async Task Suscripciones(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET suscripciones=@suscripciones WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@suscripciones", JsonSerializer.Serialize(juego.Suscripciones));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						suscripciones = JsonSerializer.Serialize(juego.Suscripciones)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Suscripciones 1 " + juego.Id.ToString(), ex);
 			}
 
 			string sqlActualizar2 = "UPDATE seccionMinimos " +
 					"SET suscripciones=@suscripciones WHERE idMaestra=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar2, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@idMaestra", juego.Id);
-				comando.Parameters.AddWithValue("@suscripciones", JsonSerializer.Serialize(juego.Suscripciones));
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-				
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					{
+						id = juego.Id,
+						suscripciones = JsonSerializer.Serialize(juego.Suscripciones)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Suscripciones 2 " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void DlcMaestro(Juego juego, SqlConnection conexion = null)
+		public static async Task DlcMaestro(Juego juego)
 		{
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
             string sqlActualizar = "UPDATE juegos " +
 					"SET maestro=@maestro WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@maestro", juego.Maestro);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						maestro = juego.Maestro
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Maestro " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void FreeToPlay(Juego juego, SqlConnection conexion)
+		public static async Task FreeToPlay(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
 					"SET freeToPlay=@freeToPlay WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@freeToPlay", juego.FreeToPlay);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						id = juego.Id,
+						freeToPlay = juego.FreeToPlay
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("F2P " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void MayorEdad(Juego juego, SqlConnection conexion = null)
+		public static async Task MayorEdad(Juego juego)
 		{
-			if (conexion == null)
+			string sqlActualizar = @"
+				UPDATE juegos
+				SET mayorEdad=@mayorEdad
+				WHERE id = @Id";
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE juegos " +
-					"SET mayorEdad=@mayorEdad WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@mayorEdad", juego.MayorEdad);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
-			}
-
-			bool actualizar = false;
-			string buscarMinimos = "SELECT * FROM seccionMinimos WHERE idMaestra=@idMaestra";
-
-			using (SqlCommand comando2 = new SqlCommand(buscarMinimos, conexion))
-			{
-				comando2.Parameters.AddWithValue("@idMaestra", juego.Id);
-
-				using (SqlDataReader lector = comando2.ExecuteReader())
-				{
-					if (lector.Read() == true)
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
 					{
-						actualizar = true;
-					}
-				}
+						id = juego.Id,
+						mayorEdad = juego.MayorEdad
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Mayor Edad 1 " + juego.Id.ToString(), ex);
 			}
 
-			if (actualizar == true)
+			string buscarMinimos = @"
+				SELECT COUNT(1)
+				FROM seccionMinimos
+				WHERE idMaestra = @IdMaestra";
+
+			try
 			{
-				string actualizarMinimos = "UPDATE seccionMinimos " +
-					"SET mayorEdad=@mayorEdad WHERE idMaestra=@idMaestra";
-
-				using (SqlCommand comando3 = new SqlCommand(actualizarMinimos, conexion))
+				bool actualizar = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando3.Parameters.AddWithValue("@idMaestra", juego.Id);
-					comando3.Parameters.AddWithValue("@mayorEdad", juego.MayorEdad);
-
-					try
+					int resultado = await sentencia.Connection.ExecuteScalarAsync<int>(buscarMinimos, new
 					{
-						comando3.ExecuteNonQuery();
-					}
-					catch
-					{
+						IdMaestra = juego.Id
+					}, transaction: sentencia);
 
-					}
+					return resultado > 0;
+				});
+
+				if (actualizar == true)
+				{
+					string actualizarMinimos = "UPDATE seccionMinimos " +
+						"SET mayorEdad=@mayorEdad WHERE idMaestra=@idMaestra";
+
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(actualizarMinimos, new
+						{
+							id = juego.Id,
+							mayorEdad = juego.MayorEdad
+						}, transaction: sentencia);
+					});
 				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Mayor Edad 2 " + juego.Id.ToString(), ex);
 			}
 		}
 
-		public static void OcultarPortada(Juego juego, SqlConnection conexion = null)
+		public static async Task OcultarPortada(Juego juego)
 		{
-			if (conexion == null)
+			string sqlActualizar = @"
+				UPDATE juegos
+				SET ocultarPortada=@ocultarPortada
+				WHERE id = @Id";
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			string sqlActualizar = "UPDATE juegos " +
-					"SET ocultarPortada=@ocultarPortada WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", juego.Id);
-				comando.Parameters.AddWithValue("@ocultarPortada", juego.OcultarPortada);
-
-				try
-				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
-			}
-
-			bool actualizar = false;
-			string buscarMinimos = "SELECT * FROM seccionMinimos WHERE idMaestra=@idMaestra";
-
-			using (SqlCommand comando2 = new SqlCommand(buscarMinimos, conexion))
-			{
-				comando2.Parameters.AddWithValue("@idMaestra", juego.Id);
-
-				using (SqlDataReader lector = comando2.ExecuteReader())
-				{
-					if (lector.Read() == true)
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
 					{
-						actualizar = true;
-					}
-				}
+						id = juego.Id,
+						ocultarPortada = juego.OcultarPortada
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Ocultar Portada 1 " + juego.Id.ToString(), ex);
 			}
 
-			if (actualizar == true)
+			string buscarMinimos = @"
+				SELECT COUNT(1)
+				FROM seccionMinimos
+				WHERE idMaestra = @IdMaestra";
+
+			try
 			{
-				string actualizarMinimos = "UPDATE seccionMinimos " +
-					"SET ocultarPortada=@ocultarPortada WHERE idMaestra=@idMaestra";
-
-				using (SqlCommand comando3 = new SqlCommand(actualizarMinimos, conexion))
+				bool actualizar = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando3.Parameters.AddWithValue("@idMaestra", juego.Id);
-					comando3.Parameters.AddWithValue("@ocultarPortada", juego.OcultarPortada);
-
-					try
+				    int resultado = await sentencia.Connection.ExecuteScalarAsync<int>(buscarMinimos, new
 					{
-						comando3.ExecuteNonQuery();
-					}
-					catch
-					{
+						IdMaestra = juego.Id
+					}, transaction: sentencia);
 
-					}
+					return resultado > 0;
+				});
+
+				if (actualizar == true)
+				{
+					string actualizarMinimos = "UPDATE seccionMinimos " +
+						"SET ocultarPortada=@ocultarPortada WHERE idMaestra=@idMaestra";
+
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(actualizarMinimos, new
+						{
+							id = juego.Id,
+							ocultarPortada = juego.OcultarPortada
+						}, transaction: sentencia);
+					});
 				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Ocultar Portada 2 " + juego.Id.ToString(), ex);
 			}
 		}
 
@@ -595,7 +549,7 @@ namespace BaseDatos.Juegos
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Steam API", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Steam API " + juego.Id.ToString(), ex);
 			}
 		}
 

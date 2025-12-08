@@ -654,8 +654,6 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
     private string dominio = null;
 
-    private SqlConnection conexion = new SqlConnection();
-
     private NoticiaTipo noticiaTipoSeleccionada = NoticiaTipo.Bundles;
 
     private BundleTipo bundleTipoSeleccionado = BundleTipo.Desconocido;
@@ -689,43 +687,35 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     {
         plantillaCargada = false;
 
-        if (conexion.State != System.Data.ConnectionState.Open)
+        noticia = new Plantilla();
+        noticia.Fecha = DateTime.Now;
+
+        noticiaTipoSeleccionada = Enum.Parse<NoticiaTipo>(texto.Value.ToString());
+
+        //-------------------------------------------------------
+
+        if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
+            gratisSeleccionadoNoticias = GratisCargar.GenerarListado()[0].Tipo;
         }
-
-        using (conexion)
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
         {
-            noticia = new Plantilla();
+            suscripcionSeleccionadaNoticias = SuscripcionesCargar.GenerarListado()[0].Id;
+        }
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Web)
+        {
+            noticia.Imagen = "https://" + dominio + "/logo/logoentrada.webp";
+            noticia.Fecha = DateTime.Now.AddDays(7);
+        }
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Patreon)
+        {
+            noticia.Imagen = "https://" + dominio + "/logo/logoentradapatreon.webp";
+            noticia.Fecha = DateTime.Now.AddDays(7);
+        }
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
+        {
+            noticia.Imagen = "https://" + dominio + "/logo/logoentrada.webp";
             noticia.Fecha = DateTime.Now;
-
-            noticiaTipoSeleccionada = Enum.Parse<NoticiaTipo>(texto.Value.ToString());
-
-            //-------------------------------------------------------
-
-            if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
-            {
-                gratisSeleccionadoNoticias = GratisCargar.GenerarListado()[0].Tipo;
-            }
-            else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
-            {
-                suscripcionSeleccionadaNoticias = SuscripcionesCargar.GenerarListado()[0].Id;
-            }
-            else if (noticiaTipoSeleccionada == NoticiaTipo.Web)
-            {
-                noticia.Imagen = "https://" + dominio + "/logo/logoentrada.webp";
-                noticia.Fecha = DateTime.Now.AddDays(7);
-            }
-            else if (noticiaTipoSeleccionada == NoticiaTipo.Patreon)
-            {
-                noticia.Imagen = "https://" + dominio + "/logo/logoentradapatreon.webp";
-                noticia.Fecha = DateTime.Now.AddDays(7);
-            }
-            else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
-            {
-                noticia.Imagen = "https://" + dominio + "/logo/logoentrada.webp";
-                noticia.Fecha = DateTime.Now;
-            }
         }
     }
 
@@ -738,206 +728,201 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     {
         enviandoNoticia = true;
 
-        if (conexion.State != System.Data.ConnectionState.Open)
+        global::Noticias.Noticia noticiaAñadir = new global::Noticias.Noticia();
+
+        noticiaAñadir.TituloEn = noticia.TituloEn;
+        noticiaAñadir.TituloEs = noticia.TituloEs;
+        noticiaAñadir.Imagen = noticia.Imagen;
+        noticiaAñadir.ContenidoEn = noticia.ContenidoEn;
+        noticiaAñadir.ContenidoEs = noticia.ContenidoEs;
+        noticiaAñadir.Juegos = noticia.Juegos;
+        noticiaAñadir.FechaEmpieza = DateTime.Now;
+        noticiaAñadir.FechaTermina = noticia.Fecha;
+        noticiaAñadir.Enlace = noticia.Enlace;
+        noticiaAñadir.NoticiaTipo = noticiaTipoSeleccionada;
+
+        if (noticiaTipoSeleccionada == NoticiaTipo.Bundles)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
+            noticiaAñadir.BundleTipo = BundlesCargar.DevolverBundle(bundleTipoSeleccionado).BundleTipo;
+            noticiaAñadir.BundleId = int.Parse(noticia.BundleId);
+        }
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
+        {
+            noticiaAñadir.GratisTipo = GratisCargar.DevolverGratis(gratisSeleccionadoNoticias).Tipo;
+            noticiaAñadir.GratisIds = noticia.GratisIds;
+
+        }
+        else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
+        {
+            noticiaAñadir.SuscripcionTipo = SuscripcionesCargar.DevolverSuscripcion(suscripcionSeleccionadaNoticias).Id;
+            noticiaAñadir.SuscripcionesIds = noticia.SuscripcionesIds;
         }
 
-        if (conexion.State == System.Data.ConnectionState.Open)
+        int id = BaseDatos.Noticias.Insertar.Ejecutar(noticiaAñadir);
+        noticiaAñadir.Id = id;
+
+        idNoticiaEnviada = id;
+
+        List<Usuario> usuariosNotificar = BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();
+
+        if (usuariosNotificar?.Count > 0)
         {
-            using (conexion)
+            foreach (var usuario in usuariosNotificar)
             {
-                global::Noticias.Noticia noticiaAñadir = new global::Noticias.Noticia();
-
-                noticiaAñadir.TituloEn = noticia.TituloEn;
-                noticiaAñadir.TituloEs = noticia.TituloEs;
-                noticiaAñadir.Imagen = noticia.Imagen;
-                noticiaAñadir.ContenidoEn = noticia.ContenidoEn;
-                noticiaAñadir.ContenidoEs = noticia.ContenidoEs;
-                noticiaAñadir.Juegos = noticia.Juegos;
-                noticiaAñadir.FechaEmpieza = DateTime.Now;
-                noticiaAñadir.FechaTermina = noticia.Fecha;
-                noticiaAñadir.Enlace = noticia.Enlace;
-                noticiaAñadir.NoticiaTipo = noticiaTipoSeleccionada;
-
-                if (noticiaTipoSeleccionada == NoticiaTipo.Bundles)
+                try
                 {
-                    noticiaAñadir.BundleTipo = BundlesCargar.DevolverBundle(bundleTipoSeleccionado).BundleTipo;
-                    noticiaAñadir.BundleId = int.Parse(noticia.BundleId);
-                }
-                else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
-                {
-                    noticiaAñadir.GratisTipo = GratisCargar.DevolverGratis(gratisSeleccionadoNoticias).Tipo;
-                    noticiaAñadir.GratisIds = noticia.GratisIds;
-
-                }
-                else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
-                {
-                    noticiaAñadir.SuscripcionTipo = SuscripcionesCargar.DevolverSuscripcion(suscripcionSeleccionadaNoticias).Id;
-                    noticiaAñadir.SuscripcionesIds = noticia.SuscripcionesIds;
-                }
-
-                int id = BaseDatos.Noticias.Insertar.Ejecutar(noticiaAñadir);
-                noticiaAñadir.Id = id;
-
-                idNoticiaEnviada = id;
-
-                List<Usuario> usuariosNotificar = BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();
-
-                if (usuariosNotificar?.Count > 0)
-                {
-                    foreach (var usuario in usuariosNotificar)
+                    if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
                     {
-                        try
-                        {
-                            if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                    }
 
-                            if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
+                    if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
+                    {
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                    }
 
-                            if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
+                    if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
+                    {
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                    }
 
-                            if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
+                    if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
+                    {
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                    }
 
-                            if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
+                    if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
+                    {
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                    }
 
-                            if (usuario.NotificationOthers == true && 
-                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Bundles && noticiaAñadir.NoticiaTipo != NoticiaTipo.Gratis && 
-                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
-                                noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
-                            {
-                                Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Noticia", ex);
-                        }
+                    if (usuario.NotificationOthers == true &&
+                        noticiaAñadir.NoticiaTipo != NoticiaTipo.Bundles && noticiaAñadir.NoticiaTipo != NoticiaTipo.Gratis &&
+                        noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
+                        noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
+                    {
+                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
                 }
-
-                enviandoTwitter = true;
-
-                try
-                {
-                    enviadoTwitter = await Herramientas.RedesSociales.Twitter.Twitear(noticiaAñadir, dominio);
-                }
                 catch (Exception ex)
                 {
-                    BaseDatos.Errores.Insertar.Mensaje("Enviar Twitter Noticia", ex);
+                    BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Noticia", ex);
                 }
-
-                enviandoTwitter = false;
-
-                await InvokeAsync(StateHasChanged);
-
-                enviandoBluesky = true;
-
-                try
-                {
-                    enviadoBluesky = await Herramientas.RedesSociales.Bluesky.Postear(noticiaAñadir, dominio);
-                }
-                catch (Exception ex)
-                {
-                    BaseDatos.Errores.Insertar.Mensaje("Enviar BlueSky Noticia", ex);
-                }
-
-                enviandoBluesky = false;
-
-                await InvokeAsync(StateHasChanged);
-
-                enviandoTelegram = true;
-
-                try
-                {
-                    enviadoTelegram = await Herramientas.RedesSociales.Telegram.Postear(noticiaAñadir, dominio);
-                }
-                catch (Exception ex)
-                {
-                    BaseDatos.Errores.Insertar.Mensaje("Enviar Telegram Noticia", ex);
-                }
-
-                enviandoTelegram = false;
-
-                await InvokeAsync(StateHasChanged);
-
-                enviandoDiscord = true;
-
-                try
-                {
-                    enviadoDiscord = await Herramientas.RedesSociales.Discord.Postear(noticiaAñadir, dominio);
-                }
-                catch (Exception ex)
-                {
-                    BaseDatos.Errores.Insertar.Mensaje("Enviar Discord Noticia", ex);
-                }
-
-                enviandoDiscord = false;
-
-                await InvokeAsync(StateHasChanged);
-
-                await Herramientas.NotificacionesPush.EnviarNoticia(ServicioNotificaciones, noticiaAñadir);
-
-                enviandoReddit = true;
-
-                try
-                {
-                    enviadoReddit = await Herramientas.RedesSociales.Reddit.Postear(noticiaAñadir, dominio);
-                }
-                catch (Exception ex)
-                {
-                    BaseDatos.Errores.Insertar.Mensaje("Enviar Reddit Noticia", ex);
-                }
-
-                enviandoReddit = false;
-
-                #region Limpieza
-
-                noticia = new Plantilla();
-                plantillaCargada = false;
-
-                bundleTipoSeleccionado = BundleTipo.Desconocido;
-                gratisSeleccionadoNoticias = GratisTipo.Desconocido;
-                suscripcionSeleccionadaNoticias = SuscripcionTipo.Desconocido;
-
-                enlaceDespedidas = string.Empty;
-                fechaDespedidas = DateTime.Now;
-
-                #endregion
             }
         }
+
+        enviandoTwitter = true;
+
+        try
+        {
+            enviadoTwitter = await Herramientas.RedesSociales.Twitter.Twitear(noticiaAñadir, dominio);
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Enviar Twitter Noticia", ex);
+        }
+
+        enviandoTwitter = false;
+
+        await InvokeAsync(StateHasChanged);
+
+        enviandoBluesky = true;
+
+        try
+        {
+            enviadoBluesky = await Herramientas.RedesSociales.Bluesky.Postear(noticiaAñadir, dominio);
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Enviar BlueSky Noticia", ex);
+        }
+
+        enviandoBluesky = false;
+
+        await InvokeAsync(StateHasChanged);
+
+        enviandoTelegram = true;
+
+        try
+        {
+            enviadoTelegram = await Herramientas.RedesSociales.Telegram.Postear(noticiaAñadir, dominio);
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Enviar Telegram Noticia", ex);
+        }
+
+        enviandoTelegram = false;
+
+        await InvokeAsync(StateHasChanged);
+
+        enviandoDiscord = true;
+
+        try
+        {
+            enviadoDiscord = await Herramientas.RedesSociales.Discord.Postear(noticiaAñadir, dominio);
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Enviar Discord Noticia", ex);
+        }
+
+        enviandoDiscord = false;
+
+        await InvokeAsync(StateHasChanged);
+
+        await Herramientas.NotificacionesPush.EnviarNoticia(ServicioNotificaciones, noticiaAñadir);
+
+        enviandoReddit = true;
+
+        try
+        {
+            enviadoReddit = await Herramientas.RedesSociales.Reddit.Postear(noticiaAñadir, dominio);
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Enviar Reddit Noticia", ex);
+        }
+
+        enviandoReddit = false;
+
+        #region Limpieza
+
+        noticia = new Plantilla();
+        plantillaCargada = false;
+
+        bundleTipoSeleccionado = BundleTipo.Desconocido;
+        gratisSeleccionadoNoticias = GratisTipo.Desconocido;
+        suscripcionSeleccionadaNoticias = SuscripcionTipo.Desconocido;
+
+        enlaceDespedidas = string.Empty;
+        fechaDespedidas = DateTime.Now;
+
+        #endregion
 
         enviandoNoticia = false;
     }
 
     private List<Bundles2.Bundle> bundles { get; set; }
 
-    private void CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
+    private async Task CambiarBundleNoticias(MouseEventArgs e, BundleTipo nuevoTipo)
     {
         bundleTipoSeleccionado = nuevoTipo;
-        bundles = BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado).OrderBy(b => b.FechaEmpieza).ToList();
+        bundles = await BaseDatos.Bundles.Buscar.Actuales(0, bundleTipoSeleccionado);
+
+        if (bundles?.Count > 0)
+        {
+            bundles = bundles.OrderBy(b => b.FechaEmpieza).ToList();
+        }
     }
 
-    private void ClickearBundleNoticias(MouseEventArgs e, int bundleId)
+    private async Task ClickearBundleNoticias(MouseEventArgs e, int bundleId)
     {
-        noticia = Plantillas.Bundles(bundleId);
+        noticia = await Plantillas.Bundles(bundleId);
         plantillaCargada = true;
 
-        noticia.Enlace = BaseDatos.Bundles.Buscar.UnBundle(bundleId).Enlace;
+        var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+        noticia.Enlace = bundle.Enlace;
     }
 
     private void CambiarGratisNoticias(MouseEventArgs e, GratisTipo nuevoTipo)
@@ -945,7 +930,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         gratisSeleccionadoNoticias = nuevoTipo;
     }
 
-    private async void ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
+    private async Task ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
     {
         noticia = await Plantillas.Gratis(noticia, juegoId, id, gratisSeleccionadoNoticias);
         plantillaCargada = true;
@@ -972,9 +957,9 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         suscripcionSeleccionadaNoticias = nuevoTipo;
     }
 
-    private void ClickearSuscripcionJuego(MouseEventArgs e, int juegoId, int id)
+    private async Task ClickearSuscripcionJuego(MouseEventArgs e, int juegoId, int id)
     {
-        noticia = Plantillas.Suscripciones(noticia, juegoId, id, suscripcionSeleccionadaNoticias);
+        noticia = await Plantillas.Suscripciones(noticia, juegoId, id, suscripcionSeleccionadaNoticias);
         plantillaCargada = true;
 
         if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
@@ -1085,11 +1070,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
     private List<global::Juegos.Juego> juegosBuscadorEnlace = new List<global::Juegos.Juego>();
 
-    private void TextoCambiaBuscadorJuegoEnlace(ChangeEventArgs texto)
+    private async Task TextoCambiaBuscadorJuegoEnlace(ChangeEventArgs texto)
     {
         if (texto.Value.ToString().Trim().Length > 1)
         {
-            juegosBuscadorEnlace = BaseDatos.Juegos.Buscar.Nombre(texto.Value.ToString().Trim());
+            juegosBuscadorEnlace = await BaseDatos.Juegos.Buscar.Nombre(texto.Value.ToString().Trim());
         }
         else
         {
@@ -1141,7 +1126,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     private List<global::Juegos.Juego> resultadosMostrar = new List<global::Juegos.Juego>();
     private string cadenaBusqueda = string.Empty;
 
-    private async void TextoCambiaBuscador()
+    private async Task TextoCambiaBuscador()
     {
         cadenaBusqueda = cadenaBusqueda.Replace("'", null);
 
@@ -1149,7 +1134,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         {
             resultadosMostrar.Clear();
 
-            resultadosMostrar = BaseDatos.Juegos.Buscar.Nombre(cadenaBusqueda, 250, true, -1, true);
+            resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre(cadenaBusqueda, 250, true, -1, true);
 
             if (resultadosMostrar.Count > 0)
             {
@@ -1158,14 +1143,14 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         }
     }
 
-    private void SeleccionarJuegoBuscador(MouseEventArgs e, int id, string imagen, string nombre)
+    private async Task SeleccionarJuegoBuscador(MouseEventArgs e, int id, string imagen, string nombre)
     {
         resultadosMostrar.Clear();
         cadenaBusqueda = string.Empty;
 
         if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         {
-            noticia = Plantillas.Despedidas(enlaceDespedidas, fechaDespedidas, id, dominio);
+            noticia = await Plantillas.Despedidas(enlaceDespedidas, fechaDespedidas, id, dominio);
             plantillaCargada = true;
         }
     }

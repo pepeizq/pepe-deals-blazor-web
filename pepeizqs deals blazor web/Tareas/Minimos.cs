@@ -2,7 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
@@ -38,11 +37,11 @@ namespace Tareas
 				{
 					try
 					{
-						List<JuegoMinimoTarea> juegos = BaseDatos.Portada.Buscar.BuscarMinimos();
+						List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos();
 
 						if (juegos?.Count > 0)
 						{
-							BaseDatos.Portada.Limpiar.Total();
+							await BaseDatos.Portada.Limpiar.Total();
 
 							foreach (var juego in juegos)
 							{
@@ -51,7 +50,7 @@ namespace Tareas
 
 								if (juego.PrecioMinimosHistoricos?.Count > 0)
 								{
-									BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", false);
+									await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", false);
 								}
 							}
 						}
