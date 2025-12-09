@@ -9,12 +9,13 @@
 
 @inject IHttpContextAccessor Contexto
 
-@{
+@if (cargadoGratis == true)
+{
     string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Free");
 
     string keywords = "free";
 
-    if (juegosActuales.Count > 0)
+    if (juegosActuales?.Count > 0)
     {
         int juegos = 0;
         int dlcs = 0;
@@ -114,30 +115,33 @@
         ""itemListOrder"": ""Descending"",
 		""itemListElement"": [";
 
-    contenidoJson = contenidoJson.Replace("@cantidad", juegosActuales.Count.ToString());
+    contenidoJson = contenidoJson.Replace("@cantidad", juegosActuales?.Count.ToString());
 
-    int j = 0;
-    while (j < juegosActuales.Count)
+    if (juegosActuales?.Count > 0)
     {
-        if (j != 0)
+        int j = 0;
+        while (j < juegosActuales.Count)
         {
-            contenidoJson = contenidoJson + ",";
+            if (j != 0)
+            {
+                contenidoJson = contenidoJson + ",";
+            }
+
+            contenidoJson = contenidoJson + @"{
+                ""@type"": ""ListItem"",
+                ""position"": ""@posicion"",
+                ""name"": ""@nombre"",
+                ""url"": ""@enlace"",
+                ""image"": ""@imagen""
+            }";
+
+            contenidoJson = contenidoJson.Replace("@posicion", (j + 1).ToString());
+            contenidoJson = contenidoJson.Replace("@nombre", juegosActuales[j].Nombre);
+            contenidoJson = contenidoJson.Replace("@enlace", "https://" + dominio + "/game/" + juegosActuales[j].JuegoId.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juegosActuales[j].Nombre) + "/");
+            contenidoJson = contenidoJson.Replace("@imagen", juegosActuales[j].Imagen);
+
+            j += 1;
         }
-
-        contenidoJson = contenidoJson + @"{
-            ""@type"": ""ListItem"",
-            ""position"": ""@posicion"",
-            ""name"": ""@nombre"",
-            ""url"": ""@enlace"",
-            ""image"": ""@imagen""
-        }";
-
-        contenidoJson = contenidoJson.Replace("@posicion", (j + 1).ToString());
-        contenidoJson = contenidoJson.Replace("@nombre", juegosActuales[j].Nombre);
-        contenidoJson = contenidoJson.Replace("@enlace", "https://" + dominio + "/game/" + juegosActuales[j].JuegoId.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juegosActuales[j].Nombre) + "/");
-        contenidoJson = contenidoJson.Replace("@imagen", juegosActuales[j].Imagen);
-
-        j += 1;
     }
 
     contenidoJson = contenidoJson + "] }";
@@ -211,16 +215,19 @@
 @if (mostrarArchivo == false)
 {
     <div class="caja-archivo-contenido cuerpo-ancho" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); justify-items: center; gap: 30px; padding: 30px; margin-top: 40px; margin-bottom: 40px;">
-        @foreach (var juego in juegosActuales)
+        @if (juegosActuales?.Count > 0)
         {
-            string enlaceGratis = juego.Enlace;
-
-            if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+            foreach (var juego in juegosActuales)
             {
-                enlaceGratis = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
-            }
+                string enlaceGratis = juego.Enlace;
 
-            <CajaJuego enlaceGratis="@enlaceGratis" drmGratis="@juego.DRM" tipoGratis="@juego.Tipo" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Gratis" userAgent="@userAgent" />
+                if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+                {
+                    enlaceGratis = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
+                }
+
+                <CajaJuego enlaceGratis="@enlaceGratis" drmGratis="@juego.DRM" tipoGratis="@juego.Tipo" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Gratis" userAgent="@userAgent" />
+            }
         }
     </div>
 }
@@ -375,6 +382,8 @@ else
     private List<string> años = new List<string>();
     private string añoSeleccionado = string.Empty;
 
+    private bool cargadoGratis = false;
+
     protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -411,7 +420,8 @@ else
 
         //--------------------------------------------------------------------
 
-        juegosActuales ??= BaseDatos.Gratis.Buscar.Actuales();
+        juegosActuales ??= await BaseDatos.Gratis.Buscar.Actuales();
+        cargadoGratis = true;
 
         if (juegosActuales?.Count > 0)
         {
@@ -458,7 +468,7 @@ else
         if (esArchivo == false)
         {
             tipoSeleccionado = nuevoTipo;
-            juegosActuales = BaseDatos.Gratis.Buscar.Actuales(nuevoTipo);
+            juegosActuales = await BaseDatos.Gratis.Buscar.Actuales(nuevoTipo);
 
             if (juegosActuales.Count > 0)
             {

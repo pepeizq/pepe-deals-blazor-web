@@ -36,7 +36,7 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("fichasActualizar", siguienteComprobacion) == true && await BaseDatos.Admin.Buscar.TiendasLibre() == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("fichasActualizar", DateTime.Now);
 
 							#region Buscar 
 
@@ -84,7 +84,7 @@ namespace Tareas
 
 									if (actualizarDatosAPI == true)
 									{
-										BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+										await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
 									}
 								}
 							}
@@ -93,7 +93,7 @@ namespace Tareas
 
 							#region Actualizar
 
-							List<BaseDatos.JuegosActualizar.JuegoActualizar> fichas = BaseDatos.JuegosActualizar.Buscar.Todos();
+							List<BaseDatos.JuegosActualizar.JuegoActualizar> fichas = await BaseDatos.JuegosActualizar.Buscar.Todos();
 
 							if (fichas?.Count > 0)
 							{
@@ -108,7 +108,7 @@ namespace Tareas
 										{
 											await BaseDatos.Juegos.Actualizar.Media(nuevoJuego, juego);
 
-											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+											await BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
 										}
 									}
 
@@ -128,7 +128,7 @@ namespace Tareas
 												await BaseDatos.Juegos.Actualizar.GalaxyGOG(juego);
 											}
 
-											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+											await BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
 										}
 									}
 
@@ -146,7 +146,7 @@ namespace Tareas
 												await BaseDatos.Juegos.Actualizar.EpicGames(juego);
 											}
 
-											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+											await BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
 										}
 									}
 
@@ -164,7 +164,7 @@ namespace Tareas
 												await BaseDatos.Juegos.Actualizar.Xbox(juego);
 											}
 
-											BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
+											await BaseDatos.JuegosActualizar.Limpiar.Una(ficha);
 										}
 									}
 

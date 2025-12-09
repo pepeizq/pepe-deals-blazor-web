@@ -31,7 +31,7 @@ namespace BaseDatos.Juegos
 				{
 					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE id=@id", new { id }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -47,7 +47,7 @@ namespace BaseDatos.Juegos
 					{
 						return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -63,7 +63,7 @@ namespace BaseDatos.Juegos
 						{
 							return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 							{
-								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
+								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
 							});
 						}
 						catch (Exception ex)
@@ -79,7 +79,7 @@ namespace BaseDatos.Juegos
 							{
 								return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 								{
-									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
+									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
 								});
 							}
 							catch (Exception ex)
@@ -130,7 +130,7 @@ namespace BaseDatos.Juegos
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM juegos j
-WHERE id=@id";
+WITH (NOLOCK) WHERE id=@id";
 
 			try
 			{

@@ -53,14 +53,17 @@
         @if (bundleTipoSeleccionado != BundleTipo.Desconocido)
         {
             <div>
-                @foreach (var bundle in bundles)
+                @if (bundles?.Count > 0)
                 {
-                    <button @onclick="@(e => ClickearBundleNoticias(e, bundle.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
-                        <div style="display: flex; align-items: center;">
-                            <img src="@BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenTienda" style="width: 12%; margin: 10px;" />
-                            <div style="margin-left: 20px;">@bundle.Nombre</div>
-                        </div>
-                    </button>
+                    foreach (var bundle in bundles)
+                    {
+                        <button @onclick="@(e => ClickearBundleNoticias(e, bundle.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="@BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenTienda" style="width: 12%; margin: 10px;" />
+                                <div style="margin-left: 20px;">@bundle.Nombre</div>
+                            </div>
+                        </button>
+                    }
                 }
             </div>
         }
@@ -98,13 +101,13 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
         @if (gratisSeleccionadoNoticias != GratisTipo.Desconocido)
         {
             <div>
-                @foreach (var gratis in BaseDatos.Gratis.Buscar.Actuales(gratisSeleccionadoNoticias).OrderBy(g => g.FechaEmpieza).ToList())
+                @foreach (var gratis2 in gratis)
                 {
-                    <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis.JuegoId, gratis.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
+                    <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis2.JuegoId, gratis2.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
                             @if (noticia.Juegos != null)
                             {
-                                @if (noticia.Juegos.Contains(gratis.JuegoId.ToString()) == true)
+                                @if (noticia.Juegos.Contains(gratis2.JuegoId.ToString()) == true)
                                 {
                                     <div style="margin-left: 10px; margin-right: 20px;">
                                         <div style="max-width: 20px; max-height: 20px;">
@@ -116,8 +119,8 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
                                 }
                             }
 
-                            <img src="@GratisCargar.DevolverGratis(gratis.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
-                            <div>@gratis.Nombre</div>
+                            <img src="@GratisCargar.DevolverGratis(gratis2.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
+                            <div>@gratis2.Nombre</div>
                         </div>
                     </button>
                 }
@@ -160,7 +163,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
         @if (suscripcionSeleccionadaNoticias != SuscripcionTipo.Desconocido)
         {
             <div>
-                @foreach (var suscripcion in BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias).OrderBy(s => s.FechaEmpieza).ToList())
+                @foreach (var suscripcion in suscripciones)
                 {
                     <button @onclick="@(e => ClickearSuscripcionJuego(e, suscripcion.JuegoId, suscripcion.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
                         <div style="display: flex; align-items: center;">
@@ -758,7 +761,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
             noticiaAñadir.SuscripcionesIds = noticia.SuscripcionesIds;
         }
 
-        int id = BaseDatos.Noticias.Insertar.Ejecutar(noticiaAñadir);
+        int id = await BaseDatos.Noticias.Insertar.Ejecutar(noticiaAñadir);
         noticiaAñadir.Id = id;
 
         idNoticiaEnviada = id;
@@ -925,9 +928,17 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         noticia.Enlace = bundle.Enlace;
     }
 
-    private void CambiarGratisNoticias(MouseEventArgs e, GratisTipo nuevoTipo)
+    private List<global::Juegos.JuegoGratis> gratis { get; set; }
+
+    private async Task CambiarGratisNoticias(MouseEventArgs e, GratisTipo nuevoTipo)
     {
         gratisSeleccionadoNoticias = nuevoTipo;
+        gratis = await BaseDatos.Gratis.Buscar.Actuales(gratisSeleccionadoNoticias);
+
+        if (gratis?.Count > 0)
+        {
+            gratis = gratis.OrderBy(g => g.FechaEmpieza).ToList();
+        }
     }
 
     private async Task ClickearGratisJuegoNoticias(MouseEventArgs e, int juegoId, int id)
@@ -943,7 +954,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
             if (cantidadIds.Count == 1)
             {
-                noticia.Enlace = BaseDatos.Gratis.Buscar.UnGratis(cantidadIds[0]).Enlace;
+                noticia.Enlace = (await BaseDatos.Gratis.Buscar.UnGratis(cantidadIds[0])).Enlace;
             }
             else if (cantidadIds.Count > 0)
             {
@@ -952,9 +963,17 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         }
     }
 
-    private void CambiarSuscripcionNoticias(MouseEventArgs e, SuscripcionTipo nuevoTipo)
+    private List<global::Juegos.JuegoSuscripcion> suscripciones { get; set; }
+
+    private async Task CambiarSuscripcionNoticias(MouseEventArgs e, SuscripcionTipo nuevoTipo)
     {
         suscripcionSeleccionadaNoticias = nuevoTipo;
+        suscripciones = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias);
+
+        if (suscripciones?.Count > 0)
+        {
+            suscripciones = suscripciones.OrderBy(s => s.FechaEmpieza).ToList();
+        }
     }
 
     private async Task ClickearSuscripcionJuego(MouseEventArgs e, int juegoId, int id)
@@ -970,11 +989,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
             if (cantidadIds.Count > 0)
             {
-                string enlace = BaseDatos.Suscripciones.Buscar.Id(int.Parse(cantidadIds[0])).Enlace;
+                string enlace = (await BaseDatos.Suscripciones.Buscar.Id(int.Parse(cantidadIds[0]))).Enlace;
 
                 foreach (var id2 in cantidadIds)
                 {
-                    if (BaseDatos.Suscripciones.Buscar.Id(int.Parse(id2)).Enlace != enlace)
+                    if ((await BaseDatos.Suscripciones.Buscar.Id(int.Parse(id2))).Enlace != enlace)
                     {
                         enlace = string.Empty;
                         break;

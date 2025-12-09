@@ -34,7 +34,7 @@ namespace BaseDatos.RedesSociales
                 }
                 catch (Exception ex)
                 {
-                    Errores.Insertar.Mensaje("Actualizar Redes Sociales Posteador", ex, conexion, false, comando);
+                    Errores.Insertar.Mensaje("Actualizar Redes Sociales Posteador", ex, false);
                 }
             }
         }

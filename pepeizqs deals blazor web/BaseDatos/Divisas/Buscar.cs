@@ -23,7 +23,7 @@ namespace BaseDatos.Divisas
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Cupones Activos", ex, null, false);
+					BaseDatos.Errores.Insertar.Mensaje("Cupones Activos", ex, false);
 				}
 			}
 

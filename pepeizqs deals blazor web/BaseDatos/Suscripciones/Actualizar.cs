@@ -2,40 +2,30 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Suscripciones
 {
 	public static class Actualizar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task FechaTermina(JuegoSuscripcion suscripcion)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void FechaTermina(JuegoSuscripcion suscripcion, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string sqlActualizar = "UPDATE suscripciones " +
 					"SET fechaTermina=@fechaTermina WHERE enlace=@enlace";
 
 			try
 			{
-				conexion.Execute(sqlActualizar, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					Enlace = suscripcion.Enlace,
-					FechaTermina = suscripcion.FechaTermina
+					return await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						Enlace = suscripcion.Enlace,
+						FechaTermina = suscripcion.FechaTermina
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Suscripcion FechaTermina", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Suscripcion Actualizar FechaTermina", ex);
 			}
 		}
 	}

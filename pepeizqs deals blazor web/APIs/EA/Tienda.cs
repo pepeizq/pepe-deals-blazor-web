@@ -367,7 +367,7 @@ namespace APIs.EA
 										foreach (var id in idJuegos)
 										{
 											bool insertar = true;
-											var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+											var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
 
 											if (suscripciones?.Count > 0)
 											{
@@ -379,7 +379,7 @@ namespace APIs.EA
 
 														suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(1);
 
-														BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+														await BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
 													}
 												}
 											}

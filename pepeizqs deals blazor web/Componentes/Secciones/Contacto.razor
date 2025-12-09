@@ -151,9 +151,9 @@
 		}
 	}
 
-	private void EnviarmeCorreo()
+	private async Task EnviarmeCorreo()
 	{
-		formularioEnviado = Herramientas.Correos.Enviar.Ejecutar(formularioContenido, formularioTitulo, formularioCorreo, "admin@pepe.deals");
+		formularioEnviado = await Herramientas.Correos.Enviar.Ejecutar(formularioContenido, formularioTitulo, formularioCorreo, "admin@pepe.deals");
 
 		if (formularioEnviado == true)
 		{

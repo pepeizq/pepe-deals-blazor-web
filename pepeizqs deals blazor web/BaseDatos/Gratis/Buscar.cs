@@ -8,7 +8,7 @@ namespace BaseDatos.Gratis
 {
 	public static class Buscar
 	{
-		public static List<JuegoGratis> Actuales(GratisTipo tipo = GratisTipo.Desconocido)
+		public static async Task<List<JuegoGratis>> Actuales(GratisTipo tipo = GratisTipo.Desconocido)
 		{
 			string busqueda = @"SELECT sub.*
 FROM(
@@ -28,9 +28,9 @@ FROM(
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<JuegoGratis>(busqueda, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)
@@ -93,7 +93,7 @@ ORDER BY sub.ID DESC;";
 			return new JuegoGratis();
 		}
 
-		public static JuegoGratis UnGratis(string id)
+		public static async Task<JuegoGratis> UnGratis(string id)
 		{
 			string busqueda = @"SELECT sub.*
 FROM (
@@ -104,9 +104,9 @@ FROM (
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<JuegoGratis>(busqueda, new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

@@ -37,7 +37,7 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("correosEnviar", siguienteComprobacion) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", DateTime.Now);
 
 							List<BaseDatos.CorreosEnviar.CorreoPendienteEnviar> pendientes = await BaseDatos.CorreosEnviar.Buscar.PendientesEnviar();
 
@@ -130,7 +130,7 @@ namespace Tareas
 									}
 									else
 									{
-										bool enviado = Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{
@@ -167,7 +167,7 @@ namespace Tareas
 								{
 									if (pendiente.Fecha.AddMinutes(15) < DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
 									{
-										bool enviado = Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{
@@ -206,7 +206,7 @@ namespace Tareas
 								{
 									if (pendiente.Fecha.AddMinutes(5) < DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle))
 									{
-										bool enviado = Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{

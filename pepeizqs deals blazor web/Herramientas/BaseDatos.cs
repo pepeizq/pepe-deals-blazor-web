@@ -59,37 +59,6 @@ namespace Herramientas
 			}
 		}
 
-		public static void EjecutarConConexion(Action<SqlTransaction> sentencia, SqlConnection conexion = null)
-		{
-			bool cerrar = conexion == null;
-
-			if (conexion == null || conexion.State != ConnectionState.Open)
-			{
-				conexion = Conectar();
-			}
-
-			using (SqlTransaction transaccion = conexion.BeginTransaction())
-			{
-				try
-				{
-					sentencia(transaccion);
-					transaccion.Commit();
-				}
-				catch
-				{
-					try { transaccion.Rollback(); } catch { }
-					throw;
-				}
-				finally
-				{
-					if (cerrar == true)
-					{
-						conexion.Close();
-					}
-				}
-			}
-		}
-
 		public static async Task<T> EjecutarConConexionAsync<T>(Func<SqlTransaction, Task<T>> sentencia, SqlConnection conexion = null)
 		{
 			bool cerrar = conexion == null;
@@ -104,7 +73,7 @@ namespace Herramientas
 				await conexion.OpenAsync();
 			}
 
-			await using (SqlTransaction transaccion = (SqlTransaction)await conexion.BeginTransactionAsync())
+			await using (SqlTransaction transaccion = (SqlTransaction)await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted))
 			{
 				try
 				{

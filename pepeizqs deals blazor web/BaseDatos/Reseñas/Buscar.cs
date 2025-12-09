@@ -1,33 +1,21 @@
 ﻿#nullable disable
 
 using APIs.Steam;
-using BaseDatos.Pendientes;
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Reseñas
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static JuegoAnalisisAmpliado Cargar(int id, string idioma)
+		public static async Task<JuegoAnalisisAmpliado> Cargar(int id, string idioma)
 		{
 			try
 			{
-				var fila = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
 				});
 
 				JuegoAnalisisAmpliado reseñas = new JuegoAnalisisAmpliado();
@@ -53,13 +41,13 @@ namespace BaseDatos.Reseñas
 			return null;
 		}
 
-		public static bool DebeModificarse(int id, string idioma)
+		public static async Task<bool> DebeModificarse(int id, string idioma)
 		{
 			try
 			{
-				DateTime? fechaRegistrada = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				DateTime? fechaRegistrada = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.ExecuteScalar<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+					return await sentencia.Connection.ExecuteScalarAsync<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
 				});
 
 				if (fechaRegistrada.HasValue == false)

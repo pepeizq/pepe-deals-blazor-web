@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using pepeizqs_deals_web.Data;
 
@@ -49,25 +48,11 @@ namespace Herramientas.Ficheros
 
 			if (listadoIds.Count > 0)
 			{
-				SqlConnection conexion = new SqlConnection();
-
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
-
 				string textoIds = string.Empty;
 
 				foreach (string id in listadoIds)
 				{
-					global::BaseDatos.Plataformas.Buscar.Amazon(id, null, conexion);
+					await global::BaseDatos.Plataformas.Buscar.Amazon(id, null);
 
 					if (string.IsNullOrEmpty(textoIds) == true)
 					{

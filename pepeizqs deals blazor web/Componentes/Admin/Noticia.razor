@@ -200,9 +200,9 @@
 
 	public global::Noticias.Noticia noticia = new global::Noticias.Noticia();
 
-	protected override void OnParametersSet()
+	protected override async Task OnParametersSetAsync()
 	{
-		noticia = BaseDatos.Noticias.Buscar.UnaNoticia(noticiaId);
+		noticia = await BaseDatos.Noticias.Buscar.UnaNoticia(noticiaId);
 
 		if (noticia != null)
 		{

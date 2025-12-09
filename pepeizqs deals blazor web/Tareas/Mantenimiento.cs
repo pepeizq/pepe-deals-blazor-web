@@ -40,11 +40,11 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now);
 
-							BaseDatos.Reseñas.Limpiar.Ejecutar();
-							BaseDatos.Juegos.Limpiar.Minimos();
-							BaseDatos.Portapapeles.Borrar.Limpieza();
+							await BaseDatos.Reseñas.Limpiar.Ejecutar();
+							await BaseDatos.Juegos.Limpiar.Minimos();
+							await BaseDatos.Portapapeles.Borrar.Limpieza();
 							await Divisas.ActualizarDatos();
 
 							BaseDatos.Mantenimiento.Encoger.Ejecutar();

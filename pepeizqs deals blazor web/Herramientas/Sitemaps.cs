@@ -9,13 +9,13 @@ namespace Herramientas
 	public class Sitemaps : Controller
 	{
 		[HttpGet("sitemap.xml")]
-		public IActionResult Maestro()
+		public async Task<IActionResult> Maestro()
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
 			List<string> sitemaps = ["https://" + dominio + "/sitemap-main.xml"];
 
-			int cantidadJuegos = global::BaseDatos.Sitemaps.Buscar.Cantidad("juegos");
+			int cantidadJuegos = await global::BaseDatos.Sitemaps.Buscar.Cantidad("juegos");
 
 			if (cantidadJuegos > 0)
 			{
@@ -30,7 +30,7 @@ namespace Herramientas
 				}
 			}
 
-			int cantidadBundles = global::BaseDatos.Sitemaps.Buscar.Cantidad("bundles");
+			int cantidadBundles = await global::BaseDatos.Sitemaps.Buscar.Cantidad("bundles");
 
 			if (cantidadBundles > 0)
 			{
@@ -45,7 +45,7 @@ namespace Herramientas
 				}
 			}
 
-			int cantidadGratis = global::BaseDatos.Sitemaps.Buscar.Cantidad("gratis");
+			int cantidadGratis = await global::BaseDatos.Sitemaps.Buscar.Cantidad("gratis");
 
 			if (cantidadGratis > 0)
 			{
@@ -60,7 +60,7 @@ namespace Herramientas
 				}
 			}
 
-			int cantidadSuscripciones = global::BaseDatos.Sitemaps.Buscar.Cantidad("suscripciones");
+			int cantidadSuscripciones = await global::BaseDatos.Sitemaps.Buscar.Cantidad("suscripciones");
 
 			if (cantidadSuscripciones > 0)
 			{
@@ -75,7 +75,7 @@ namespace Herramientas
 				}
 			}
 
-			int cantidadNoticias = global::BaseDatos.Sitemaps.Buscar.Cantidad("noticias");
+			int cantidadNoticias = await global::BaseDatos.Sitemaps.Buscar.Cantidad("noticias");
 
 			if (cantidadNoticias > 0)
 			{
@@ -98,7 +98,7 @@ namespace Herramientas
 				//}
 			}
 
-			int cantidadCurators = global::BaseDatos.Sitemaps.Buscar.Cantidad("curators");
+			int cantidadCurators = await global::BaseDatos.Sitemaps.Buscar.Cantidad("curators");
 
 			if (cantidadCurators > 0)
 			{
@@ -135,7 +135,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-main.xml")]
-		public IActionResult Principal()
+		public async Task<IActionResult> Principal()
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -229,7 +229,7 @@ namespace Herramientas
 
 			sb.Append(textoApi);
 
-			List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Ultimas(20);
+			List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(20);
 
 			if (noticias.Count > 0)
 			{
@@ -271,7 +271,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-games-{i:int}.xml")]
-		public IActionResult Juegos(int i)
+		public async Task<IActionResult> Juegos(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -289,7 +289,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.Juegos(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.Juegos(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -310,7 +310,7 @@ namespace Herramientas
 		}
 
         [HttpGet("sitemap-bundles-{i:int}.xml")]
-		public IActionResult Bundles(int i)
+		public async Task<IActionResult> Bundles(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -328,7 +328,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.Bundles(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.Bundles(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -349,7 +349,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-free-{i:int}.xml")]
-		public IActionResult Gratis(int i)
+		public async Task<IActionResult> Gratis(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -367,7 +367,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.Gratis(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.Gratis(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -388,7 +388,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-subscriptions-{i:int}.xml")]
-		public IActionResult Suscripciones(int i)
+		public async Task<IActionResult> Suscripciones(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -406,7 +406,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.Suscripciones(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.Suscripciones(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -427,7 +427,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-news-en-{i:int}.xml")]
-		public IActionResult NoticiasIngles(int i)
+		public async Task<IActionResult> NoticiasIngles(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -445,7 +445,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.NoticiasIngles(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.NoticiasIngles(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -466,7 +466,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-news-es-{i:int}.xml")]
-		public IActionResult NoticiasEspañol(int i)
+		public async Task<IActionResult> NoticiasEspañol(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -484,7 +484,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.NoticiasEspañol(dominio, minimo - 1, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.NoticiasEspañol(dominio, minimo - 1, maximo);
 
 			if (lineas.Count > 0)
 			{
@@ -505,7 +505,7 @@ namespace Herramientas
 		}
 
 		[HttpGet("sitemap-curators-{i:int}.xml")]
-		public IActionResult Curators(int i)
+		public async Task<IActionResult> Curators(int i)
 		{
 			string dominio = HttpContext.Request.Host.Value;
 
@@ -523,7 +523,7 @@ namespace Herramientas
 				minimo = 0;
 			}
 
-			List<string> lineas = global::BaseDatos.Sitemaps.Buscar.Curators(dominio, minimo, maximo);
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.Curators(dominio, minimo, maximo);
 
 			if (lineas.Count > 0)
 			{

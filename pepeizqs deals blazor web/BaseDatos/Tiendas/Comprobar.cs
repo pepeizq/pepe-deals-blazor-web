@@ -47,9 +47,9 @@ namespace BaseDatos.Tiendas
 
 					try
 					{
-						var datos = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						var datos = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							return sentencia.Connection.QueryFirstOrDefault<dynamic>(buscarJuego, new { idSteam }, transaction: sentencia);
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<dynamic>(buscarJuego, new { idSteam }, transaction: sentencia);
 						});
 
 						if (datos != null)
@@ -64,7 +64,7 @@ namespace BaseDatos.Tiendas
 
 								if (actualizarAPI == true)
 								{
-									BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+									await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
 								}
 								else
 								{

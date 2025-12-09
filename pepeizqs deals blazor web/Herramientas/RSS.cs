@@ -16,7 +16,7 @@ namespace Herramientas
 
         [ResponseCache(Duration = 3000)]
         [HttpGet("rss-en.xml")]
-        public IActionResult GenerarEnRSS()
+        public async Task<IActionResult> GenerarEnRSS()
         {
 			string dominio = "https://" + HttpContext.Request.Host.Value;
 
@@ -26,9 +26,9 @@ namespace Herramientas
             };
 
             List<SyndicationItem> items = new List<SyndicationItem>();
-            List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Actuales();
+            List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Actuales();
 
-            if (noticias.Count > 0)
+            if (noticias?.Count > 0)
             {
                 noticias = noticias.OrderBy(x => x.FechaEmpieza).Reverse().ToList();
 
@@ -83,7 +83,7 @@ namespace Herramientas
 
         [ResponseCache(Duration = 3000)]
         [HttpGet("rss-es.xml")]
-        public IActionResult GenerarEsRSS()
+        public async Task<IActionResult> GenerarEsRSS()
         {
 			string dominio = "https://" + HttpContext.Request.Host.Value;
 
@@ -93,9 +93,9 @@ namespace Herramientas
             };
 
             List<SyndicationItem> items = new List<SyndicationItem>();
-            List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Actuales();
+            List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Actuales();
 
-            if (noticias.Count > 0)
+            if (noticias?.Count > 0)
             {
                 noticias = noticias.OrderBy(x => x.FechaEmpieza).Reverse().ToList();
 
@@ -150,7 +150,7 @@ namespace Herramientas
 
         [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
         [HttpGet("news-rss")]
-        public IActionResult CogerNoticiasRSS()
+        public async Task<IActionResult> CogerNoticiasRSS()
         {
 			string dominio = "https://" + HttpContext.Request.Host.Value;
 
@@ -158,7 +158,7 @@ namespace Herramientas
             {
                 if (global::BaseDatos.Usuarios.Buscar.RolDios(User.FindFirst(ClaimTypes.NameIdentifier).Value) == true)
                 {
-                    List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Ultimas(10);
+                    List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(10);
 
                     if (noticias.Count > 0)
                     {

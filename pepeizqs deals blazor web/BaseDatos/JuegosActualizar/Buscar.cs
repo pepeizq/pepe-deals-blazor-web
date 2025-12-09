@@ -7,16 +7,16 @@ namespace BaseDatos.JuegosActualizar
 
 	public static class Buscar
 	{
-		public static bool Existe(int idJuego, int idPlataforma, string metodo)
+		public static async Task<bool> Existe(int idJuego, int idPlataforma, string metodo)
 		{
 			string sql = "SELECT COUNT(*) FROM fichasActualizar " +
 				   "WHERE idJuego=@idJuego AND idPlataforma=@idPlataforma AND metodo=@metodo";
 
 			try
 			{
-				int valor = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				int valor = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.ExecuteScalar<int>(sql, new
+					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, new
 					{
 						idJuego,
 						idPlataforma,
@@ -34,13 +34,13 @@ namespace BaseDatos.JuegosActualizar
 			return false;
 		}
 
-		public static List<JuegoActualizar> Todos()
+		public static async Task<List<JuegoActualizar>> Todos()
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query<JuegoActualizar>("SELECT * FROM fichasActualizar", transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync<JuegoActualizar>("SELECT * FROM fichasActualizar", transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 			}
 			catch (Exception ex)

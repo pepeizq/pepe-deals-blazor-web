@@ -8,13 +8,13 @@ namespace BaseDatos.Sitemaps
 {
 	public static class Buscar
 	{
-		public static int Cantidad(string tabla)
+		public static async Task<int> Cantidad(string tabla)
 		{
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM {tabla}", transaction: sentencia);
+					return await sentencia.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {tabla}", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -25,15 +25,15 @@ namespace BaseDatos.Sitemaps
 			return 0;
 		}
 
-		public static List<string> Juegos(string dominio, int id1, int id2)
+		public static async Task<List<string>> Juegos(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT id, nombre, ultimaModificacion FROM juegos WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -70,15 +70,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
-		public static List<string> Bundles(string dominio, int id1, int id2)
+		public static async Task<List<string>> Bundles(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT id, nombre, fechaEmpieza FROM bundles WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -115,15 +115,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
-		public static List<string> Gratis(string dominio, int id1, int id2)
+		public static async Task<List<string>> Gratis(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM gratis WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -160,15 +160,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();		
 		}
 
-		public static List<string> Suscripciones(string dominio, int id1, int id2)
+		public static async Task<List<string>> Suscripciones(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT juegoId, nombre, fechaEmpieza FROM suscripciones WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -205,15 +205,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
-		public static List<string> NoticiasIngles(string dominio, int id1, int id2)
+		public static async Task<List<string>> NoticiasIngles(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT id, tituloEn, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -259,15 +259,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
-		public static List<string> NoticiasEspañol(string dominio, int id1, int id2)
+		public static async Task<List<string>> NoticiasEspañol(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT id, tituloEs, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();
@@ -313,15 +313,15 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
-		public static List<string> Curators(string dominio, int id1, int id2)
+		public static async Task<List<string>> Curators(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT slug, fecha FROM curators WHERE id > @id1 AND id < @id2";
 
 			try
 			{
-				var resultados = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Query(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ToList();
+					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
 				});
 
 				List<string> lineas = new List<string>();

@@ -1,8 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Errores
 {
@@ -51,15 +49,13 @@ namespace BaseDatos.Errores
 			}
 		}
 
-		public static async void Mensaje(string seccion, Exception ex, SqlConnection conexion = null, bool reiniciar = true, SqlCommand comandoUsado = null)
+		public static async void Mensaje(string seccion, Exception ex, bool reiniciar = true)
 		{
 			string sql = @"
                 INSERT INTO errores
-                (seccion, mensaje, stacktrace, fecha, sentenciaSQL)
-                VALUES (@seccion, @mensaje, @stacktrace, @fecha, @sentenciaSQL)
+                (seccion, mensaje, stacktrace, fecha)
+                VALUES (@seccion, @mensaje, @stacktrace, @fecha)
             ";
-
-			string sentencia = comandoUsado != null ? GenerarSentencia(comandoUsado) : null;
 
 			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 			{
@@ -68,8 +64,7 @@ namespace BaseDatos.Errores
 					seccion,
 					mensaje = ex.Message,
 					stacktrace = ex.StackTrace,
-					fecha = DateTime.Now,
-					sentenciaSQL = sentencia
+					fecha = DateTime.Now
 				}, transaction: sentencia);
 			});
 
@@ -86,12 +81,12 @@ namespace BaseDatos.Errores
 			}  
         }
 
-        public static async void Mensaje(string seccion, string mensaje, string enlace = null, SqlCommand comandoUsado = null, SqlConnection conexion = null)
+        public static async void Mensaje(string seccion, string mensaje, string enlace = null)
         {
 			string sql = @"
 				INSERT INTO errores
-				(seccion, mensaje, stacktrace, fecha, enlace, sentenciaSQL)
-				VALUES (@seccion, @mensaje, @stacktrace, @fecha, @enlace, @sentenciaSQL);
+				(seccion, mensaje, stacktrace, fecha, enlace)
+				VALUES (@seccion, @mensaje, @stacktrace, @fecha, @enlace);
 			";
 
 			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
@@ -102,44 +97,9 @@ namespace BaseDatos.Errores
 					mensaje,
 					stacktrace = "",
 					fecha = DateTime.Now,
-					enlace = (object)enlace ?? DBNull.Value,
-					sentenciaSQL = comandoUsado != null ? GenerarSentencia(comandoUsado) : null
+					enlace = (object)enlace ?? DBNull.Value
 				}, transaction: sentencia);
 			});
 		}
-
-        public static string GenerarSentencia(SqlCommand comandoUsado)
-        {
-            string comandoSQL = comandoUsado.CommandText;
-
-            foreach (SqlParameter parametro in comandoUsado.Parameters)
-            {
-                string valorParametro = parametro.Value.ToString();
-
-                if (parametro.DbType == System.Data.DbType.String || parametro.DbType == System.Data.DbType.DateTime)
-                {
-                    valorParametro = "'" + valorParametro.Replace("'", "''") + "'";
-                }
-                else if (parametro.DbType == System.Data.DbType.Boolean)
-                {
-                    if (valorParametro == "True")
-                    {
-                        valorParametro = "1";
-                    }
-                    else
-                    {
-                        valorParametro = "0";
-                    }
-                }
-                else if (parametro.Value == null)
-                {
-                    valorParametro = "NULL";
-                }
-
-                comandoSQL = comandoSQL.Replace(parametro.ParameterName, valorParametro);
-            }
-
-            return comandoSQL;
-        }
     }
 }

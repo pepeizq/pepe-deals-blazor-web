@@ -7,7 +7,7 @@ namespace BaseDatos.Bundles
 {
 	public static class Insertar
 	{
-		public static async void Ejecutar(Bundles2.Bundle bundle) 
+		public static async Task Ejecutar(Bundles2.Bundle bundle) 
 		{
 			string sqlInsertar = "INSERT INTO bundles " +
 					"(bundleTipo, nombre, tienda, imagen, enlace, fechaEmpieza, fechaTermina, juegos, tiers, pick, imagenNoticia) VALUES " +

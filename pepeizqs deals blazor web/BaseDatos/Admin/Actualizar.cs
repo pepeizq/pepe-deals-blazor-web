@@ -36,7 +36,7 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static async void TareaUso(string id, DateTime fecha)
+		public static async Task TareaUso(string id, DateTime fecha)
 		{
 			try
 			{

@@ -7,7 +7,7 @@ namespace BaseDatos.Pendientes
 {
 	public static class Actualizar
 	{
-		public static void Tienda(string idTienda, string enlace, string idJuegos)
+		public static async Task Tienda(string idTienda, string enlace, string idJuegos)
 		{
             if (string.IsNullOrEmpty(idJuegos) == false)
             {
@@ -18,9 +18,9 @@ namespace BaseDatos.Pendientes
 
 					try
 					{
-						Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							sentencia.Connection.Execute(sqlActualizar, new { idJuegos, enlace }, transaction: sentencia);
+							await sentencia.Connection.ExecuteAsync(sqlActualizar, new { idJuegos, enlace }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -31,7 +31,7 @@ namespace BaseDatos.Pendientes
             }
 		}
 
-        public static async void Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos)
+        public static async Task Suscripcion(string tablaInsertar, string tablaBorrar, string enlace, string nombreJuego, string imagen, List<string> idJuegos)
         {
 			foreach (var idJuego in idJuegos)
 			{
@@ -67,9 +67,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						sentencia.Connection.Execute(sqlInsertar, new
+						await sentencia.Connection.ExecuteAsync(sqlInsertar, new
 						{
 							enlace,
 							nombre = nombreJuego,
@@ -91,9 +91,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						sentencia.Connection.Execute(sqlBorrar, new { enlace }, transaction: sentencia);
+						await sentencia.Connection.ExecuteAsync(sqlBorrar, new { enlace }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -418,7 +418,7 @@ namespace BaseDatos.Pendientes
 			}
 		}
 
-		public static void DescartarSuscripcion(string idSuscripcion, string enlace)
+		public static async Task DescartarSuscripcion(string idSuscripcion, string enlace)
 		{
 			string sqlInsertar = @$"
 				INSERT INTO suscripcion{idSuscripcion}
@@ -429,9 +429,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute(sqlInsertar, new
+					await sentencia.Connection.ExecuteAsync(sqlInsertar, new
 					{
 						Enlace = enlace,
 						IdJuegos = "0",
@@ -448,9 +448,9 @@ namespace BaseDatos.Pendientes
 			{
 				string sqlBorrar = $"DELETE FROM temporal{idSuscripcion} WHERE enlace = @enlace";
 
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute(sqlBorrar, new
+					await sentencia.Connection.ExecuteAsync(sqlBorrar, new
 					{
 						enlace
 					}, transaction: sentencia);

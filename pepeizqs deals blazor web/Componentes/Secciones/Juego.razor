@@ -1062,7 +1062,7 @@
 
                                                 if (drm.Id == JuegoDRM.GOG && juego.Tipo == JuegoTipo.Game)
                                                 {
-                                                    amazonLuna = global::BaseDatos.Streaming.Buscar.AmazonLuna(juego.Id);
+                                                    amazonLuna = amazonLunaGOG;
 
                                                     if (amazonLuna == true)
                                                     {
@@ -3522,12 +3522,12 @@
                 drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });                 
             }
 
-            juego.Suscripciones = global::BaseDatos.Suscripciones.Buscar.JuegoId(juego.Id);
+            juego.Suscripciones = await global::BaseDatos.Suscripciones.Buscar.JuegoId(juego.Id);
 
             if (juego.Tipo == JuegoTipo.Game)
             {
-                drmsGeforceNOW ??= global::BaseDatos.Streaming.Buscar.DRMs("geforcenow", juego.Id);
-                drmsBoosteroid ??= global::BaseDatos.Streaming.Buscar.DRMs("boosteroid", juego.Id);
+                drmsGeforceNOW ??= await global::BaseDatos.Streaming.Buscar.DRMs("geforcenow", juego.Id);
+                drmsBoosteroid ??= await global::BaseDatos.Streaming.Buscar.DRMs("boosteroid", juego.Id);
             }
 
             if (string.IsNullOrEmpty(usuarioId) == false && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
@@ -3545,6 +3545,8 @@
     private Dictionary<int, Bundles2.Bundle> bundlesCache1 = new();
     private Bundles2.Bundle bundleSeleccionadoCache;
     private Dictionary<int, Bundles2.Bundle> bundlesCache2 = new();
+
+    private bool amazonLunaGOG = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -3613,6 +3615,11 @@
                 {
                     bundlesPreparados[drm.Id.ToString()] = await BundlesPreparar(drm.Id, idioma);
                 }
+            }
+
+            if (drm.Id == JuegoDRM.GOG && juego.Tipo == JuegoTipo.Game)
+            {
+                amazonLunaGOG = await global::BaseDatos.Streaming.Buscar.AmazonLuna(juego.Id);
             }
         }
 
@@ -3695,7 +3702,7 @@
 
                     if (actualizarDatosAPI == true)
                     {
-                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
+                        await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
                     }
 
                     #endregion
@@ -3705,13 +3712,13 @@
                 {
                     if (juego.GalaxyGOG == null)
                     {
-                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdGog, "GOGAPI");
+                        await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdGog, "GOGAPI");
                     }
                     else
                     {
                         if (juego.GalaxyGOG.Fecha + TimeSpan.FromDays(120) < DateTime.Now)
                         {
-                            BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdGog, "GOGAPI");
+                            await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdGog, "GOGAPI");
                         }
                     }
                 }
@@ -3720,13 +3727,13 @@
                 {
                     if (juego.EpicGames == null)
                     {
-                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "EpicAPI");
+                        await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "EpicAPI");
                     }
                     else
                     {
                         if (juego.EpicGames.Fecha + TimeSpan.FromDays(240) < DateTime.Now)
                         {
-                            BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "EpicAPI");
+                            await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "EpicAPI");
                         }
                     }
                 }
@@ -3735,13 +3742,13 @@
                 {
                     if (juego.Xbox == null)
                     {
-                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
+                        await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
                     }
                     else
                     {
                         if (juego.Xbox.Fecha + TimeSpan.FromDays(120) < DateTime.Now)
                         {
-                            BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
+                            await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
                         }
                     }
                 }
@@ -3766,7 +3773,7 @@
 
                     if (actualizarUltimaActualizacion == true)
                     {
-                        BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "SteamCMD");
+                        await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "SteamCMD");
                     }
                 }
 

@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 using Microsoft.Data.SqlClient;
 using System.Text.Json;
@@ -22,9 +23,9 @@ namespace APIs.Boosteroid
 			return boosteroid;
 		}
 
-		public static async Task Buscar(SqlConnection conexion)
+		public static async Task Buscar()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -80,63 +81,38 @@ namespace APIs.Boosteroid
 
 										bool encontrado = false;
 
-										string sqlBuscar = "SELECT * FROM streamingboosteroid WHERE id=@id";
+										string sqlBuscar = "SELECT 1 FROM streamingboosteroid WHERE id=@id";
 
-										if (conexion == null)
+										try
 										{
-											conexion = Herramientas.BaseDatos.Conectar();
-										}
-										else
-										{
-											if (conexion.State != System.Data.ConnectionState.Open)
+											encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 											{
-												conexion = Herramientas.BaseDatos.Conectar();
-											}
+												return await sentencia.Connection.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { id = juego.Id }, transaction: sentencia);
+											});
 										}
-
-										using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
+										catch (Exception ex)
 										{
-											comando.Parameters.AddWithValue("@id", juego.Id);
-
-											using (SqlDataReader lector = comando.ExecuteReader())
-											{
-												encontrado = lector.Read();
-
-												cantidad += 1;
-												BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad);
-											}
+											BaseDatos.Errores.Insertar.Mensaje("Boosteroid 1", ex);
 										}
 
 										if (encontrado == true)
 										{
+											cantidad += 1;
+											await BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad);
+
 											string sqlActualizar = "UPDATE streamingboosteroid " +
 																"SET fecha=@fecha WHERE id=@id";
 
-											if (conexion == null)
+											try
 											{
-												conexion = Herramientas.BaseDatos.Conectar();
+												await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+												{
+													return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id = juego.Id, fecha }, transaction: sentencia);
+												});
 											}
-											else
+											catch (Exception ex)
 											{
-												if (conexion.State != System.Data.ConnectionState.Open)
-												{
-													conexion = Herramientas.BaseDatos.Conectar();
-												}
-											}
-
-											using (SqlCommand comandoActualizar = new SqlCommand(sqlActualizar, conexion))
-											{
-												comandoActualizar.Parameters.AddWithValue("@id", juego.Id);
-												comandoActualizar.Parameters.AddWithValue("@fecha", fecha);
-
-												try
-												{
-													comandoActualizar.ExecuteNonQuery();
-												}
-												catch
-												{
-
-												}
+												BaseDatos.Errores.Insertar.Mensaje("Boosteroid 2", ex);
 											}
 										}
 										else 
@@ -145,33 +121,22 @@ namespace APIs.Boosteroid
 															"(id, nombre, drms, fecha) VALUES " +
 															"(@id, @nombre, @drms, @fecha) ";
 
-											if (conexion == null)
+											try
 											{
-												conexion = Herramientas.BaseDatos.Conectar();
+												await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+												{
+													return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+													{
+														id = juego.Id,
+														nombre = juego.Nombre,
+														drms = JsonSerializer.Serialize(drms),
+														fecha
+													}, transaction: sentencia);
+												});
 											}
-											else
+											catch (Exception ex)
 											{
-												if (conexion.State != System.Data.ConnectionState.Open)
-												{
-													conexion = Herramientas.BaseDatos.Conectar();
-												}
-											}
-
-											using (SqlCommand comandoInsertar = new SqlCommand(sqlInsertar, conexion))
-											{
-												comandoInsertar.Parameters.AddWithValue("@id", juego.Id);
-												comandoInsertar.Parameters.AddWithValue("@nombre", juego.Nombre);
-												comandoInsertar.Parameters.AddWithValue("@drms", JsonSerializer.Serialize(drms));
-												comandoInsertar.Parameters.AddWithValue("@fecha", fecha);
-
-												try
-												{
-													comandoInsertar.ExecuteNonQuery();
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje("Insertar Boosteroid " + juego.Nombre, ex);
-												}
+												BaseDatos.Errores.Insertar.Mensaje("Boosteroid 3", ex);
 											}
 										}
 									}

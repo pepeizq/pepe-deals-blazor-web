@@ -42,11 +42,11 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("indexNow", tiempoSiguiente) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("indexNow", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("indexNow", DateTime.Now);
 
 							List<Juego> juegos = await BaseDatos.Juegos.Buscar.Aleatorios();
 							List<Bundle> bundles = await BaseDatos.Bundles.Buscar.Aleatorios();
-							List<Noticia> noticias = BaseDatos.Noticias.Buscar.Aleatorias();
+							List<Noticia> noticias = await BaseDatos.Noticias.Buscar.Aleatorias();
 
 							var handler = new HttpClientHandler()
 							{
@@ -142,7 +142,7 @@ namespace Tareas
 					}
 					catch (Exception ex)
 					{
-						BaseDatos.Errores.Insertar.Mensaje("IndexNow", ex, null, false);
+						BaseDatos.Errores.Insertar.Mensaje("IndexNow", ex, false);
 					}
 				}
             }

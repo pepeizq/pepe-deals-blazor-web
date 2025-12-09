@@ -1,396 +1,116 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Plataformas
 {
 	public static class Buscar
 	{
-		public static void Amazon(string id, string nombre = null, SqlConnection conexion = null)
+		public static async Task InsertarPlataforma(string id, string nombre, string campoJuego, string tablaTemporal, string tablaDescartes)
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				string sqlExisteJuego = $"SELECT 1 FROM juegos WHERE {campoJuego} = @id";
+
+				bool yaPuesto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteJuego, new { id }, transaction: sentencia) != null;
+				});
+
+				if (yaPuesto == true)
+				{
+					return;
+				}
+
+				string sqlExisteTemporal = $"SELECT 1 FROM {tablaTemporal} WHERE id = @id";
+
+				bool yaTemporal = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteTemporal, new { id }, transaction: sentencia) != null;
+				});
+
+				if (yaTemporal == true)
+				{
+					return;
+				}
+
+				string sqlExisteDescartado = $"SELECT 1 FROM {tablaDescartes} WHERE id = @id";
+
+				bool yaDescartado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteDescartado, new { id }, transaction: sentencia) != null;
+				});
+
+				if (yaDescartado == true)
+				{
+					return;
+				}
+
+				string sqlInsertar = null;
+
+				if (string.IsNullOrEmpty(nombre) == true)
+				{
+					sqlInsertar = $"INSERT INTO {tablaTemporal} (id) VALUES (@id)";
+				}
+				else
+				{
+					sqlInsertar = $"INSERT INTO {tablaTemporal} (id, nombre) VALUES (@id, @nombre)";
+				}
+
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteAsync(sqlInsertar, new { id, nombre }, transaction: sentencia);
+				});
 			}
-			else
+			catch (Exception ex)
 			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			bool yaPuesto = false;
-
-			string busqueda = "SELECT nombre FROM juegos WHERE idAmazon=@idAmazon";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@idAmazon", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						yaPuesto = true;
-					}
-				}
-			}
-
-			if (yaPuesto == false)
-			{
-				bool yaTemporal = false;
-
-				string busqueda2 = "SELECT * FROM temporalamazonjuegos WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(busqueda2, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						if (lector.Read() == true)
-						{
-							yaTemporal = true;
-						}
-					}
-				}
-
-				if (yaTemporal == false)
-				{
-					bool yaDescartado = false;
-
-					string busqueda3 = "SELECT * FROM amazonDescartes WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(busqueda3, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", id);
-
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							if (lector.Read() == true)
-							{
-								yaDescartado = true;
-							}
-						}
-					}
-
-					if (yaDescartado == false)
-					{
-						string sqlInsertar = "INSERT INTO temporalamazonjuegos " +
-							"(id) VALUES " +
-							"(@id) ";
-
-						if (string.IsNullOrEmpty(nombre) == false)
-						{
-							sqlInsertar = "INSERT INTO temporalamazonjuegos " +
-								"(id, nombre) VALUES " +
-								"(@id, @nombre) ";
-						}
-
-						using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-						{
-							comando.Parameters.AddWithValue("@id", id);
-
-							if (string.IsNullOrEmpty(nombre) == false)
-							{
-								comando.Parameters.AddWithValue("@nombre", nombre);
-							}
-
-							try
-							{
-								comando.ExecuteNonQuery();
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje("Amazon Plataforma", ex);
-							}
-						}
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Insertar Plataforma", ex);
 			}
 		}
 
-		public static void Epic(string id, string nombre, SqlConnection conexion = null)
+		public static async Task Amazon(string id, string nombre = null)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			bool yaPuesto = false;
-
-			string busqueda = "SELECT nombre FROM juegos WHERE exeEpic=@exeEpic";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@exeEpic", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						yaPuesto = true;
-					}
-				}
-			}
-
-			if (yaPuesto == false)
-			{
-				bool yaTemporal = false;
-
-				string busqueda2 = "SELECT * FROM temporalepicjuegos WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(busqueda2, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						if (lector.Read() == true)
-						{
-							yaTemporal = true;
-						}
-					}
-				}
-
-				if (yaTemporal == false)
-				{
-					bool yaDescartado = false;
-
-					string busqueda3 = "SELECT * FROM epicDescartes WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(busqueda3, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", id);
-
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							if (lector.Read() == true)
-							{
-								yaDescartado = true;
-							}
-						}
-					}
-
-					if (yaDescartado == false)
-					{
-						string sqlInsertar = "INSERT INTO temporalepicjuegos " +
-							"(id, nombre) VALUES " +
-							"(@id, @nombre) ";
-
-						using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-						{
-							comando.Parameters.AddWithValue("@id", id);
-							comando.Parameters.AddWithValue("@nombre", nombre);
-
-							try
-							{
-								comando.ExecuteNonQuery();
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje("Epic Plataforma", ex);
-							}
-						}
-					}
-				}
-			}
+			await InsertarPlataforma(
+				id,
+				nombre,
+				campoJuego: "idAmazon",
+				tablaTemporal: "temporalamazonjuegos",
+				tablaDescartes: "amazonDescartes"
+			);
 		}
 
-		public static void Ubisoft(string id, string nombre, SqlConnection conexion = null)
+		public static async Task Epic(string id, string nombre)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			bool yaPuesto = false;
-
-			string busqueda = "SELECT nombre FROM juegos WHERE exeUbisoft=@exeUbisoft";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@exeUbisoft", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						yaPuesto = true;
-					}
-				}
-			}
-
-			if (yaPuesto == false)
-			{
-				bool yaTemporal = false;
-
-				string busqueda2 = "SELECT * FROM temporalubisoftjuegos WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(busqueda2, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						if (lector.Read() == true)
-						{
-							yaTemporal = true;
-						}
-					}
-				}
-
-				if (yaTemporal == false)
-				{
-					bool yaDescartado = false;
-
-					string busqueda3 = "SELECT * FROM ubisoftDescartes WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(busqueda3, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", id);
-
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							if (lector.Read() == true)
-							{
-								yaDescartado = true;
-							}
-						}
-					}
-
-					if (yaDescartado == false)
-					{
-						string sqlInsertar = "INSERT INTO temporalubisoftjuegos " +
-							"(id, nombre) VALUES " +
-							"(@id, @nombre) ";
-
-						using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-						{
-							comando.Parameters.AddWithValue("@id", id);
-							comando.Parameters.AddWithValue("@nombre", nombre);
-
-							try
-							{
-								comando.ExecuteNonQuery();
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje("Ubisoft Plataforma", ex);
-							}
-						}
-					}
-				}
-			}
+			await InsertarPlataforma(
+				id,
+				nombre,
+				campoJuego: "exeEpic",
+				tablaTemporal: "temporalepicjuegos",
+				tablaDescartes: "epicDescartes"
+			);
 		}
 
-		public static void EA(string id, string nombre, SqlConnection conexion = null)
+		public static async Task Ubisoft(string id, string nombre)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
+			await InsertarPlataforma(
+				id,
+				nombre,
+				campoJuego: "exeUbisoft",
+				tablaTemporal: "temporalubisoftjuegos",
+				tablaDescartes: "ubisoftDescartes"
+			);
+		}
 
-			bool yaPuesto = false;
-
-			string busqueda = "SELECT nombre FROM juegos WHERE exeEA=@exeEA";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@exeEA", id);
-
-				using (SqlDataReader lector = comando.ExecuteReader())
-				{
-					if (lector.Read() == true)
-					{
-						yaPuesto = true;
-					}
-				}
-			}
-
-			if (yaPuesto == false)
-			{
-				bool yaTemporal = false;
-
-				string busqueda2 = "SELECT * FROM temporaleajuegos WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(busqueda2, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
-					{
-						if (lector.Read() == true)
-						{
-							yaTemporal = true;
-						}
-					}
-				}
-
-				if (yaTemporal == false)
-				{
-					bool yaDescartado = false;
-
-					string busqueda3 = "SELECT * FROM eaDescartes WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(busqueda3, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", id);
-
-						using (SqlDataReader lector = comando.ExecuteReader())
-						{
-							if (lector.Read() == true)
-							{
-								yaDescartado = true;
-							}
-						}
-					}
-
-					if (yaDescartado == false)
-					{
-						string sqlInsertar = "INSERT INTO temporaleajuegos " +
-							"(id, nombre) VALUES " +
-							"(@id, @nombre) ";
-
-						using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
-						{
-							comando.Parameters.AddWithValue("@id", id);
-							comando.Parameters.AddWithValue("@nombre", nombre);
-
-							try
-							{
-								comando.ExecuteNonQuery();
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje("EA Plataforma", ex);
-							}
-						}
-					}
-				}
-			}
+		public static async Task EA(string id, string nombre)
+		{
+			await InsertarPlataforma(
+				id,
+				nombre,
+				campoJuego: "exeEA",
+				tablaTemporal: "temporaleajuegos",
+				tablaDescartes: "eaDescartes"
+			);
 		}
 	}
 }

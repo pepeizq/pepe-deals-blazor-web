@@ -271,7 +271,7 @@ namespace APIs.GOG
 					}
 					catch (JsonException ex)
 					{
-						BaseDatos.Errores.Insertar.Mensaje("GOG Actualizar Datos " + id, ex, null, false);
+						BaseDatos.Errores.Insertar.Mensaje("GOG Actualizar Datos " + id, ex, false);
 						return null;
 					}
 

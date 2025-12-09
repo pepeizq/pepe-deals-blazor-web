@@ -215,24 +215,10 @@
 
     private string dominio = null;
 
-    private SqlConnection conexion = new SqlConnection();
-
     protected override void OnInitialized()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         dominio = datos.Dominio;
-
-        if (conexion == null)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-        else
-        {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
     }
 
     private string enlace = null;
@@ -242,7 +228,7 @@
     private string textoBuscador = null;
     private List<global::Juegos.Juego> juegosBuscador = new List<global::Juegos.Juego>();
 
-    private async void TextoCambiaEnlace()
+    private async Task TextoCambiaEnlace()
     {
         if (string.IsNullOrEmpty(bundle.Enlace) == false)
         {
@@ -561,12 +547,12 @@
         }
     }
 
-    private void AñadirBundle(MouseEventArgs e)
+    private async Task AñadirBundle(MouseEventArgs e)
     {
         if (bundle != null)
         {
-            BaseDatos.Bundles.Insertar.Ejecutar(bundle);
-            BaseDatos.Portapapeles.Borrar.Ejecutar(bundle.Enlace);
+            await BaseDatos.Bundles.Insertar.Ejecutar(bundle);
+            await BaseDatos.Portapapeles.Borrar.Ejecutar(bundle.Enlace);
 
             foreach (var juego in bundle.Juegos)
             {

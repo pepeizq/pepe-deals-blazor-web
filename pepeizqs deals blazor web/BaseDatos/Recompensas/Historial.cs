@@ -68,7 +68,7 @@ namespace BaseDatos.Recompensas
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer", ex, conexion);
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer", ex);
 			}
 			
             return new List<RecompensaHistorial>();

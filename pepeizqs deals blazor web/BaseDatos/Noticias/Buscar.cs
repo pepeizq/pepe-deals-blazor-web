@@ -1,48 +1,33 @@
 ﻿#nullable disable
 
-using Bundles2;
 using Dapper;
-using Gratis2;
-using Microsoft.Data.SqlClient;
 using Noticias;
-using Suscripciones2;
 
 namespace BaseDatos.Noticias
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task<Noticia> UnaNoticia(int id)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
+			string sql = "SELECT * FROM noticias WITH (NOLOCK) WHERE id = @id";
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Noticia>(sql, new { id }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticia Una", ex);
 			}
 
-			return conexion;
+			return null;
 		}
 
-		public static Noticia UnaNoticia(int id, SqlConnection conexion = null)
+		public static async Task<List<Noticia>> Actuales(NoticiaTipo tipo = NoticiaTipo.Desconocido, int ultimosDias = 0)
 		{
-			conexion = CogerConexion(conexion);
-
-			string sql = "SELECT * FROM noticias WHERE id = @id";
-
-			return conexion.QueryFirstOrDefault<Noticia>(sql, new { id });
-		}
-
-		public static Noticia Ultimo(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			string busqueda = "SELECT TOP 1 * FROM noticias ORDER BY id DESC";
-
-			return conexion.QueryFirstOrDefault<Noticia>(busqueda);
-		}
-
-		public static List<Noticia> Actuales(NoticiaTipo tipo = NoticiaTipo.Desconocido, int ultimosDias = 0, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT * FROM noticias WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";
 
 			if (ultimosDias > 0)
@@ -57,43 +42,95 @@ namespace BaseDatos.Noticias
 
 			busqueda = busqueda + " ORDER BY id DESC";
 
-			return conexion.Query<Noticia>(busqueda).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Actuales", ex);
+			}
+
+			return null;
 		}
 
-		public static List<Noticia> Año(string año, SqlConnection conexion = null)
+		public static async Task<List<Noticia>> Año(string año)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT * FROM noticias WHERE YEAR(fechaEmpieza) = " + año + " AND GETDATE() > fechaTermina ORDER BY id DESC";
 
-			return conexion.Query<Noticia>(busqueda).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Año", ex);
+			}
+
+			return null;
 		}
 
-		public static List<Noticia> Ultimas(int cantidad, SqlConnection conexion = null)
+		public static async Task<List<Noticia>> Ultimas(int cantidad)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM noticias ORDER BY id DESC";
 
-			return conexion.Query<Noticia>(busqueda).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Ultimas", ex);
+			}
+
+			return null;
 		}
 
-		public static List<Noticia> Ultimas(int cantidad, NoticiaTipo tipo, SqlConnection conexion = null)
+		public static async Task<List<Noticia>> Ultimas(int cantidad, NoticiaTipo tipo)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM noticias WHERE noticiaTipo=@noticiaTipo ORDER BY id DESC";
 
-			return conexion.Query<Noticia>(busqueda, new {noticiaTipo = tipo}).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, new { noticiaTipo = tipo }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Ultimas", ex);
+			}
+
+			return null;
 		}
 
-		public static List<Noticia> Aleatorias(SqlConnection conexion = null)
+		public static async Task<List<Noticia>> Aleatorias()
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = @"SELECT TOP 50 id, tituloEn FROM noticias ORDER BY NEWID()";
 
-			return conexion.Query<Noticia>(busqueda).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Aleatorias", ex);
+			}
+
+			return null;
 		}
 	}
 }

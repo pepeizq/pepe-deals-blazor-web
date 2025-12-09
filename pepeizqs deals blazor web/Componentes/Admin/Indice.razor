@@ -215,7 +215,7 @@
                 subpagina = subpaginaDuplicados;
             }
 
-            nuevosPendientesCantidad = BaseDatos.Pendientes.Buscar.TiendasCantidad() + BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + BaseDatos.Pendientes.Buscar.StreamingCantidad() + BaseDatos.Pendientes.Buscar.PlataformaCantidad();
+            nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.TiendasCantidad() + await BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + await BaseDatos.Pendientes.Buscar.StreamingCantidad() + await BaseDatos.Pendientes.Buscar.PlataformaCantidad();
 
             if (nuevosPendientesCantidad > 0)
             {
@@ -273,7 +273,7 @@
                 }
                 else if (subpagina == subpaginaPendientes)
                 {
-                    MostrarPendientes();
+                    await MostrarPendientes();
                 }
                 else if (subpagina == subpaginaJuegos)
                 {
@@ -469,13 +469,13 @@
     private string subpaginaPendientes = "pendientes";
     private int nuevosPendientesCantidad = 0;
 
-    private async void MostrarPendientes()
+    private async Task MostrarPendientes()
     {
         CerrarPestañas();
         mostrarPendientes = true;
         estiloPendientes = fondo;
 
-        nuevosPendientesCantidad = BaseDatos.Pendientes.Buscar.TiendasCantidad() + BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + BaseDatos.Pendientes.Buscar.StreamingCantidad() + BaseDatos.Pendientes.Buscar.PlataformaCantidad();
+        nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.TiendasCantidad() + await BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + await BaseDatos.Pendientes.Buscar.StreamingCantidad() + await BaseDatos.Pendientes.Buscar.PlataformaCantidad();
         await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaPendientes + "/");
     }
 

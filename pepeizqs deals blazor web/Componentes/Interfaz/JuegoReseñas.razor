@@ -385,20 +385,20 @@
 
             idiomaReseñas = idiomaSteam;
 
-            if (BaseDatos.Reseñas.Buscar.DebeModificarse(juego.Id, idiomaSteam) == true)
+            if (await BaseDatos.Reseñas.Buscar.DebeModificarse(juego.Id, idiomaSteam) == true)
             {
                 APIs.Steam.SteamAnalisisAPI reseñas = await APIs.Steam.Juego.CargarDatosReseñas(juego.IdSteam, idiomaSteam);
 
                 if (reseñas?.Reseñas != null)
                 {
-                    BaseDatos.Reseñas.Insertar.Ejecutar(juego.Id, reseñas.Sumario.TotalPositivas, reseñas.Sumario.TotalNegativas, idiomaSteam, JsonSerializer.Serialize(reseñas.Reseñas));
+                    await BaseDatos.Reseñas.Insertar.Ejecutar(juego.Id, reseñas.Sumario.TotalPositivas, reseñas.Sumario.TotalNegativas, idiomaSteam, JsonSerializer.Serialize(reseñas.Reseñas));
 
-                    reseñasAmpliadas = BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
+                    reseñasAmpliadas = await BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
                 }
             }
             else
             {
-                reseñasAmpliadas = BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
+                reseñasAmpliadas = await BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
             }
 
             cargado = true;
@@ -446,20 +446,20 @@
 
     private async Task<JuegoAnalisisAmpliado> ReseñasCargarIdioma(string idiomaSteam)
     {
-        if (BaseDatos.Reseñas.Buscar.DebeModificarse(juego.Id, idiomaSteam) == true)
+        if (await BaseDatos.Reseñas.Buscar.DebeModificarse(juego.Id, idiomaSteam) == true)
         {
             APIs.Steam.SteamAnalisisAPI reseñas = await APIs.Steam.Juego.CargarDatosReseñas(juego.IdSteam, idiomaSteam);
 
             if (reseñas?.Reseñas != null)
             {
-                BaseDatos.Reseñas.Insertar.Ejecutar(juego.Id, reseñas.Sumario.TotalPositivas, reseñas.Sumario.TotalNegativas, idiomaSteam, JsonSerializer.Serialize(reseñas.Reseñas));
+                await BaseDatos.Reseñas.Insertar.Ejecutar(juego.Id, reseñas.Sumario.TotalPositivas, reseñas.Sumario.TotalNegativas, idiomaSteam, JsonSerializer.Serialize(reseñas.Reseñas));
 
-                return BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
+                return await BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
             }
         }
         else
         {
-            return BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
+            return await BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
         }
 
         return null;

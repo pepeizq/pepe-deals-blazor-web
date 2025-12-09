@@ -2,6 +2,7 @@
 
 using Gratis2;
 using Herramientas;
+using Juegos;
 using Microsoft.VisualBasic;
 using Suscripciones2;
 
@@ -376,26 +377,32 @@ namespace Noticias
 
             if (lista != null)
             {
-                #region Titulo
+				#region Titulo
 
-                if (lista.Count == 1)
+				JuegoSuscripcion suscripcion1 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0]));
+
+				if (lista.Count == 1)
                 {
-                    plantilla.TituloEn = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.TituloEn = suscripcion1.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.TituloEs = suscripcion1.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
                 }
                 else if (lista.Count == 2)
                 {
-                    plantilla.TituloEn = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + " " + Idiomas.BuscarTexto("en", "Subscription2", "NewsTemplates") + " " +
-                        BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1])).Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + " " + Idiomas.BuscarTexto("es", "Subscription2", "NewsTemplates") + " " +
-                        BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1])).Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					JuegoSuscripcion suscripcion2 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1]));
+
+					plantilla.TituloEn = suscripcion1.Nombre + " " + Idiomas.BuscarTexto("en", "Subscription2", "NewsTemplates") + " " +
+						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.TituloEs = suscripcion1.Nombre + " " + Idiomas.BuscarTexto("es", "Subscription2", "NewsTemplates") + " " +
+						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
                 }
                 else if (lista.Count > 2)
                 {
-                    plantilla.TituloEn = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + ", " +
-                        BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1])).Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).Nombre + ", " +
-                        BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1])).Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					JuegoSuscripcion suscripcion2 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1]));
+
+					plantilla.TituloEn = suscripcion1.Nombre + ", " +
+						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.TituloEs = suscripcion1.Nombre + ", " +
+						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
                 }
 
                 #endregion
@@ -421,7 +428,7 @@ namespace Noticias
 
                 foreach (var juego in lista)
                 {
-                    Juegos.JuegoSuscripcion suscripcion = BaseDatos.Suscripciones.Buscar.Id(int.Parse(juego));
+                    Juegos.JuegoSuscripcion suscripcion = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(juego));
 
                     if (suscripcion != null)
                     {
@@ -437,13 +444,13 @@ namespace Noticias
 
                 #region Imagen
 
-                if (BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).ImagenNoticia != null)
+                if (suscripcion1.ImagenNoticia != null)
                 {
-                    plantilla.Imagen = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).ImagenNoticia;
+                    plantilla.Imagen = suscripcion1.ImagenNoticia;
                 }
                 else
                 {
-                    Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).JuegoId.ToString());
+                    Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(suscripcion1.JuegoId.ToString());
                     plantilla.Imagen = juego.Imagenes.Library_1920x620;
                 }
 
@@ -451,7 +458,7 @@ namespace Noticias
 
                 #region Fecha
 
-                plantilla.Fecha = BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[0])).FechaTermina;
+                plantilla.Fecha = suscripcion1.FechaTermina;
 
                 #endregion
             }

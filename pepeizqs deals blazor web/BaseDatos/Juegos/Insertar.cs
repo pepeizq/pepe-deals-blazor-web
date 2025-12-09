@@ -149,9 +149,9 @@ namespace BaseDatos.Juegos
 		{
 			try
 			{
-				int? idJuegoBD = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				int? idJuegoBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.QueryFirstOrDefault<int?>("SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia", new { idReferencia }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<int?>("SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia", new { idReferencia }, transaction: sentencia);
 				}); 
 
 				if (idJuegoBD.HasValue == true && idJuegoBD.Value > 0)
@@ -174,9 +174,9 @@ namespace BaseDatos.Juegos
 
 				try
 				{
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return sentencia.Connection.Execute(sqlInsert, new
+						return await sentencia.Connection.ExecuteAsync(sqlInsert, new
 						{
 							idReferencia,
 							idJuego

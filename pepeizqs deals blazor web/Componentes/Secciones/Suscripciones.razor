@@ -554,7 +554,7 @@ else
     [Parameter]
     public string suscripcionSeleccionadaTexto { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
@@ -590,7 +590,7 @@ else
 
         //--------------------------------------------------------------------
 
-        juegosActuales ??= BaseDatos.Suscripciones.Buscar.Actuales();
+        juegosActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
 
         if (juegosActuales?.Count > 0)
         {
@@ -619,7 +619,7 @@ else
 
         //--------------------------------------------------------------------
 
-        suscripcionesUltimas ??= BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
+        suscripcionesUltimas ??= await BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
     }
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
@@ -812,7 +812,7 @@ else
         else
         {
             añoSeleccionado = DateTime.Now.Year.ToString();
-            GenerarArchivo();
+            await GenerarArchivo();
         }
     }
 
@@ -856,15 +856,15 @@ else
     private List<string> años = new List<string>();
     private string añoSeleccionado = string.Empty;
 
-    private void CambiarAño(MouseEventArgs e, string nuevoAño)
+    private async Task CambiarAño(MouseEventArgs e, string nuevoAño)
     {
         añoSeleccionado = nuevoAño;
-        GenerarArchivo();
+        await GenerarArchivo();
     }
 
-    private void GenerarArchivo()
+    private async Task GenerarArchivo()
     {
-        List<Juegos.JuegoSuscripcion> juegosPasados = BaseDatos.Suscripciones.Buscar.Año(añoSeleccionado);
+        List<Juegos.JuegoSuscripcion> juegosPasados = await BaseDatos.Suscripciones.Buscar.Año(añoSeleccionado);
 
         if (juegosPasados.Count > 0)
         {

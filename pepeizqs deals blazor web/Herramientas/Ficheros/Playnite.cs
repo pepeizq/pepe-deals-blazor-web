@@ -4,7 +4,6 @@ using Juegos;
 using LiteDB;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using pepeizqs_deals_web.Data;
 
 namespace Herramientas.Ficheros
@@ -82,42 +81,28 @@ namespace Herramientas.Ficheros
 
 			if (listadoJuegos.Count > 0)
 			{
-				SqlConnection conexion = new SqlConnection();
-
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
-
 				string textoIds = string.Empty;
 
 				foreach (var juego in listadoJuegos)
 				{
 					if (drm == JuegoDRM.Amazon)
 					{
-						global::BaseDatos.Plataformas.Buscar.Amazon(juego.Id, juego.Nombre, conexion);
+						await global::BaseDatos.Plataformas.Buscar.Amazon(juego.Id, juego.Nombre);
 					}
 
 					if (drm == JuegoDRM.Epic)
 					{
-						global::BaseDatos.Plataformas.Buscar.Epic(juego.Id, juego.Nombre, conexion);
+						await global::BaseDatos.Plataformas.Buscar.Epic(juego.Id, juego.Nombre);
 					}
 
 					if (drm == JuegoDRM.Ubisoft)
 					{
-						global::BaseDatos.Plataformas.Buscar.Ubisoft(juego.Id, juego.Nombre, conexion);
+						await global::BaseDatos.Plataformas.Buscar.Ubisoft(juego.Id, juego.Nombre);
 					}
 
 					if (drm == JuegoDRM.EA)
 					{
-						global::BaseDatos.Plataformas.Buscar.EA(juego.Id, juego.Nombre, conexion);
+						await global::BaseDatos.Plataformas.Buscar.EA(juego.Id, juego.Nombre);
 					}
 
 					if (string.IsNullOrEmpty(textoIds) == true)

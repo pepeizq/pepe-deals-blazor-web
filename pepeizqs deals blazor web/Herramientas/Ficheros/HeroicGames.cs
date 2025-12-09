@@ -3,7 +3,6 @@
 using Juegos;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Data.SqlClient;
 using pepeizqs_deals_web.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -55,27 +54,13 @@ namespace Herramientas.Ficheros
 
 			if (listadoJuegos.Count > 0)
 			{
-				SqlConnection conexion = new SqlConnection();
-
-				if (conexion == null)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-				else
-				{
-					if (conexion.State != System.Data.ConnectionState.Open)
-					{
-						conexion = Herramientas.BaseDatos.Conectar();
-					}
-				}
-
 				string textoIds = string.Empty;
 
 				foreach (HeroicGamesJuego juego in listadoJuegos)
 				{
 					if (drm == JuegoDRM.Amazon)
 					{
-						global::BaseDatos.Plataformas.Buscar.Amazon(juego.Id, juego.Nombre, conexion);
+						await global::BaseDatos.Plataformas.Buscar.Amazon(juego.Id, juego.Nombre);
 					}
 
 					if (string.IsNullOrEmpty(textoIds) == true)

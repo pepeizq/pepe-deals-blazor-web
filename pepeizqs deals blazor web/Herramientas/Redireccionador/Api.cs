@@ -132,9 +132,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/news/{id}")]
-		public IActionResult Noticia(int id)
+		public async Task<IActionResult> Noticia(int id)
 		{
-			Noticia noticia = global::BaseDatos.Noticias.Buscar.UnaNoticia(id);
+			Noticia noticia = await global::BaseDatos.Noticias.Buscar.UnaNoticia(id);
 
 			if (noticia != null)
 			{
@@ -146,9 +146,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-news/")]
-		public IActionResult NoticiasUltimas()
+		public async Task<IActionResult> NoticiasUltimas()
 		{
-			List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Ultimas(5);
+			List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(5);
 
 			if (noticias != null)
 			{
@@ -160,7 +160,7 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-news/{cantidad}/")]
-		public IActionResult NoticiasUltimas(int cantidad)
+		public async Task<IActionResult> NoticiasUltimas(int cantidad)
 		{
 			int cantidadFinal = 5;
 
@@ -174,7 +174,7 @@ namespace Herramientas.Redireccionador
 				cantidadFinal = 25;
 			}
 
-			List<Noticia> noticias = global::BaseDatos.Noticias.Buscar.Ultimas(cantidadFinal);
+			List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(cantidadFinal);
 
 			if (noticias != null)
 			{
@@ -226,9 +226,9 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-subscriptions/")]
-		public IActionResult SuscripcionesUltimos()
+		public async Task<IActionResult> SuscripcionesUltimos()
 		{
-			List<JuegoSuscripcion> suscripciones = global::BaseDatos.Suscripciones.Buscar.Ultimos("5");
+			List<JuegoSuscripcion> suscripciones = await global::BaseDatos.Suscripciones.Buscar.Ultimos("5");
 
 			if (suscripciones != null)
 			{
@@ -240,7 +240,7 @@ namespace Herramientas.Redireccionador
 
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("api/last-subscriptions/{Cantidad}/")]
-		public IActionResult SuscripcionesUltimos(int Cantidad)
+		public async Task<IActionResult> SuscripcionesUltimos(int Cantidad)
 		{
 			int cantidadFinal = 5;
 
@@ -254,7 +254,7 @@ namespace Herramientas.Redireccionador
 				cantidadFinal = 25;
 			}
 
-			List<JuegoSuscripcion> suscripciones = global::BaseDatos.Suscripciones.Buscar.Ultimos(cantidadFinal.ToString());
+			List<JuegoSuscripcion> suscripciones = await global::BaseDatos.Suscripciones.Buscar.Ultimos(cantidadFinal.ToString());
 
 			if (suscripciones != null)
 			{

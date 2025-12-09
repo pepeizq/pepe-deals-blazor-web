@@ -300,7 +300,7 @@
 	private List<string> años = new List<string>();
 	private string añoSeleccionado = null;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -315,7 +315,7 @@
 
 		//--------------------------------------------------------------------
 
-		noticiasMostrar ??= BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionado);
+		noticiasMostrar ??= await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionado);
 
 		if (noticiasMostrar?.Count > 0)
 		{
@@ -364,19 +364,19 @@
 	private List<Noticias.NoticiaTipo> tiposActuales = new List<Noticias.NoticiaTipo>();
 	private bool mostrarArchivo = false;
 
-	private void CambiarTipo(MouseEventArgs e, Noticias.NoticiaTipo nuevoTipo, bool esArchivo)
+	private async Task CambiarTipo(MouseEventArgs e, Noticias.NoticiaTipo nuevoTipo, bool esArchivo)
 	{
 		mostrarArchivo = esArchivo;
 
 		if (esArchivo == false)
 		{
 			tipoSeleccionado = nuevoTipo;
-			noticiasMostrar = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionado);
+			noticiasMostrar = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionado);
 		}
 		else
 		{
 			añoSeleccionado = DateTime.Now.Year.ToString();
-			noticiasAntiguas = BaseDatos.Noticias.Buscar.Año(añoSeleccionado);
+			noticiasAntiguas = await BaseDatos.Noticias.Buscar.Año(añoSeleccionado);
 		}
 	}
 
@@ -406,10 +406,10 @@
 		}
 	}
 
-	private void CambiarAño(MouseEventArgs e, string nuevoAño)
+	private async Task CambiarAño(MouseEventArgs e, string nuevoAño)
 	{
 		añoSeleccionado = nuevoAño;
 
-		noticiasAntiguas = BaseDatos.Noticias.Buscar.Año(añoSeleccionado);
+		noticiasAntiguas = await BaseDatos.Noticias.Buscar.Año(añoSeleccionado);
 	}
 }

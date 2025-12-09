@@ -124,7 +124,7 @@
 
 	[PersistentState] public List<Noticias.Noticia> noticiasMostrar { get; set; }
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -134,6 +134,6 @@
 
 		//--------------------------------------------------------------------
 
-		noticiasMostrar ??= BaseDatos.Noticias.Buscar.Ultimas(50, Noticias.NoticiaTipo.Web);
+		noticiasMostrar ??= await BaseDatos.Noticias.Buscar.Ultimas(50, Noticias.NoticiaTipo.Web);
 	}
 }

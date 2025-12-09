@@ -35,7 +35,7 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("patreon", tiempoSiguiente) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
 
 							Herramientas.Patreon.Leer();
 						}

@@ -133,10 +133,10 @@ namespace APIs.Ubisoft
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
-										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
 
 										if (suscripciones?.Count > 0)
 										{
@@ -148,7 +148,7 @@ namespace APIs.Ubisoft
 
 													suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(2);
 
-													BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+													await BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
 												}
 											}
 										}
@@ -189,7 +189,7 @@ namespace APIs.Ubisoft
 		{
 			conexion = CogerConexion(conexion);
 
-			BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -240,10 +240,10 @@ namespace APIs.Ubisoft
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
-										var suscripciones = BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
+										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
 
 										if (suscripciones?.Count > 0)
 										{
@@ -255,7 +255,7 @@ namespace APIs.Ubisoft
 
 													suscripcion.FechaTermina = DateTime.Now + TimeSpan.FromDays(2);
 
-													BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
+													await BaseDatos.Suscripciones.Actualizar.FechaTermina(suscripcion);
 												}
 											}
 										}

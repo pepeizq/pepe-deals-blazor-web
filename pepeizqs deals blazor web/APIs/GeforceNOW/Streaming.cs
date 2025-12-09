@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using System.Net.Http.Headers;
@@ -24,9 +25,9 @@ namespace APIs.GeforceNOW
             return geforcenow;
         }
 
-        public static async Task Buscar(SqlConnection conexion)
+        public static async Task Buscar()
         {
-            BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, 0);
+            await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, 0);
 
             int cantidad = 0;
             string cadena = string.Empty;
@@ -94,64 +95,39 @@ namespace APIs.GeforceNOW
 
                                     bool encontrado = false;
 
-                                    string sqlBuscar = "SELECT * FROM streaminggeforcenow WHERE nombreCodigo=@nombreCodigo";
+									string sqlBuscar = "SELECT 1 FROM streaminggeforcenow WHERE nombreCodigo=@nombreCodigo";
 
-                                    if (conexion == null)
-                                    {
-                                        conexion = Herramientas.BaseDatos.Conectar();
-                                    }
-                                    else
-                                    {
-                                        if (conexion.State != System.Data.ConnectionState.Open)
-                                        {
-                                            conexion = Herramientas.BaseDatos.Conectar();
-                                        }
-                                    }
-
-                                    using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
-                                    {
-                                        comando.Parameters.AddWithValue("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre, true));
-
-                                        using (SqlDataReader lector = comando.ExecuteReader())
-                                        {
-                                            encontrado = lector.Read();
-
-                                            cantidad += 1;
-											BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
-                                        }
-                                    }
+									try
+									{
+										encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										{
+											return await sentencia.Connection.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true) }, transaction: sentencia);
+										});
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 1", ex);
+									}
 
                                     if (encontrado == true)
                                     {
-                                        string sqlActualizar = "UPDATE streaminggeforcenow " +
-																"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
+										cantidad += 1;
+										await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
 
-                                        if (conexion == null)
-                                        {
-                                            conexion = Herramientas.BaseDatos.Conectar();
-                                        }
-                                        else
-                                        {
-                                            if (conexion.State != System.Data.ConnectionState.Open)
-                                            {
-                                                conexion = Herramientas.BaseDatos.Conectar();
-                                            }
-                                        }
+										string sqlActualizar = "UPDATE streaminggeforcenow " +
+																"SET fecha=@fecha WHERE id=@id";
 
-                                        using (SqlCommand comandoActualizar = new SqlCommand(sqlActualizar, conexion))
-                                        {
-                                            comandoActualizar.Parameters.AddWithValue("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre, true));
-                                            comandoActualizar.Parameters.AddWithValue("@fecha", fecha);
-
-                                            try
-                                            {
-                                                comandoActualizar.ExecuteNonQuery();
-                                            }
-                                            catch
-                                            {
-
-                                            }
-                                        }
+										try
+										{
+											await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+											{
+												return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true), fecha }, transaction: sentencia);
+											});
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 2", ex);
+										}
                                     }
                                     else
                                     {
@@ -159,39 +135,27 @@ namespace APIs.GeforceNOW
                                                             "(nombreCodigo, nombre, drms, fecha) VALUES " +
                                                             "(@nombreCodigo, @nombre, @drms, @fecha) ";
 
-                                        if (conexion == null)
-                                        {
-                                            conexion = Herramientas.BaseDatos.Conectar();
-                                        }
-                                        else
-                                        {
-                                            if (conexion.State != System.Data.ConnectionState.Open)
-                                            {
-                                                conexion = Herramientas.BaseDatos.Conectar();
-                                            }
-                                        }
-
-                                        using (SqlCommand comandoInsertar = new SqlCommand(sqlInsertar, conexion))
-                                        {
-                                            comandoInsertar.Parameters.AddWithValue("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre, true));
-                                            comandoInsertar.Parameters.AddWithValue("@nombre", juego.Nombre);
-                                            comandoInsertar.Parameters.AddWithValue("@drms", JsonSerializer.Serialize(drms));
-                                            comandoInsertar.Parameters.AddWithValue("@fecha", fecha);
-
-                                            try
-                                            {
-                                                comandoInsertar.ExecuteNonQuery();
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                BaseDatos.Errores.Insertar.Mensaje("Insertar Geforce NOW " + juego.Nombre, ex);
-                                            }
-                                        }
+										try
+										{
+											await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+											{
+												return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+												{
+													nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true),
+													nombre = juego.Nombre,
+													drms = JsonSerializer.Serialize(drms),
+													fecha
+												}, transaction: sentencia);
+											});
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 3", ex);
+										}
                                     }
                                 }
                             }
                         }
-                        
                     }
                 }
 

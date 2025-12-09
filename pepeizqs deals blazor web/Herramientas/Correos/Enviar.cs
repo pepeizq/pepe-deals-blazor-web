@@ -4,7 +4,7 @@ namespace Herramientas.Correos
 {
 	public static class Enviar
 	{
-		public static bool Ejecutar(string html, string titulo, string correoDesde, string correoHacia)
+		public static async Task<bool> Ejecutar(string html, string titulo, string correoDesde, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(html) == false &&
 				string.IsNullOrEmpty(titulo) == false &&
@@ -42,7 +42,7 @@ namespace Herramientas.Correos
 						DateTime nuevaFecha = DateTime.Now;
 						nuevaFecha = nuevaFecha.AddMinutes(10);
 
-						global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
+						await global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
 
 						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar", ex);
 						return false;
@@ -64,7 +64,7 @@ namespace Herramientas.Correos
 						DateTime nuevaFecha = DateTime.Now;
 						nuevaFecha = nuevaFecha.AddMinutes(10);
 
-						global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
+						await global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
 
 						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar " + correoDesde + " - " + correoHacia, ex);
 

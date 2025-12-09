@@ -39,7 +39,7 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("usuariosActualizar", siguienteComprobacion) == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now);
 
 							List<BaseDatos.UsuariosActualizar.UsuarioActualizar> usuarios = BaseDatos.UsuariosActualizar.Buscar.Todos();
 

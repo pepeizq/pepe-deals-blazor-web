@@ -109,7 +109,7 @@ namespace BaseDatos.Usuarios
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Bool", ex, null, false);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Bool", ex, false);
 			}
 		}
 
@@ -123,7 +123,7 @@ namespace BaseDatos.Usuarios
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos String", ex, null, false);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos String", ex, false);
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace BaseDatos.Usuarios
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Int", ex, null, false);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Int", ex, false);
 			}
 		}
 
@@ -151,7 +151,7 @@ namespace BaseDatos.Usuarios
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Decimal", ex, null, false);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Decimal", ex, false);
 			}
 		}
 	}

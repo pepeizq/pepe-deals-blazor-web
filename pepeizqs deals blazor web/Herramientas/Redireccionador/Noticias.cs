@@ -9,9 +9,9 @@ namespace Herramientas.Redireccionador
 	{
 		[ResponseCache(Duration = 6000)]
 		[HttpGet("link/news/{id}/")]
-		public IActionResult AbrirNoticia(int id)
+		public async Task<IActionResult> AbrirNoticia(int id)
 		{
-			Noticia noticia = global::BaseDatos.Noticias.Buscar.UnaNoticia(id);
+			Noticia noticia = await global::BaseDatos.Noticias.Buscar.UnaNoticia(id);
 
 			if (string.IsNullOrEmpty(noticia.Enlace) == false)
 			{

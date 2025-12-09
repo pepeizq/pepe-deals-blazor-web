@@ -41,7 +41,7 @@ namespace Tareas
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("duplicados", tiempoSiguiente) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("duplicados", DateTime.Now);
 
 							List<Juegos.Juego> duplicados = await BaseDatos.Juegos.Buscar.Duplicados();
 

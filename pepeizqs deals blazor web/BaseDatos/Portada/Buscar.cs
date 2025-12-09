@@ -69,7 +69,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 		public static async Task<List<Juego>> Destacados()
 		{
 			string busqueda = @"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM seccionMinimos
-WHERE tipo = 0 AND 
+WITH (NOLOCK) WHERE tipo = 0 AND 
 year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 6 AND
 CONVERT(float, JSON_VALUE(precioMinimosHistoricos, '$[0].Precio')) > 1.99 AND 
 JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = 0 AND 

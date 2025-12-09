@@ -506,7 +506,7 @@
 
 		if (id > 0)
 		{
-			noticia ??= BaseDatos.Noticias.Buscar.UnaNoticia(id);
+			noticia ??= await BaseDatos.Noticias.Buscar.UnaNoticia(id);
 
 			if (noticia != null)
 			{
@@ -567,8 +567,8 @@
 					}
 				}
 
-				noticiaAnterior ??= BaseDatos.Noticias.Buscar.UnaNoticia(id - 1);
-				noticiaPosterior ??= BaseDatos.Noticias.Buscar.UnaNoticia(id + 1);
+				noticiaAnterior ??= await BaseDatos.Noticias.Buscar.UnaNoticia(id - 1);
+				noticiaPosterior ??= await BaseDatos.Noticias.Buscar.UnaNoticia(id + 1);
 			}
 		}
 	}
@@ -599,7 +599,7 @@
 
 			foreach (var id in ids)
 			{
-				var gratis = BaseDatos.Gratis.Buscar.UnGratis(id);
+				var gratis = await BaseDatos.Gratis.Buscar.UnGratis(id);
 				if (gratis != null)
 				{
 					juegosGratisCache.Add(gratis);
@@ -624,7 +624,7 @@
 			{
 				if (int.TryParse(idStr, out var id))
 				{
-					var suscripcion = BaseDatos.Suscripciones.Buscar.Id(id, null);
+					var suscripcion = await BaseDatos.Suscripciones.Buscar.Id(id);
 					if (suscripcion != null)
 					{
 						juegosSuscripcionesCache.Add(suscripcion);

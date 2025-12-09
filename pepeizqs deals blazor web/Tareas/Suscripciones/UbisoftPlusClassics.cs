@@ -56,7 +56,7 @@ namespace Tareas.Suscripciones
                             }
                             catch (Exception ex)
                             {
-                                BaseDatos.Errores.Insertar.Mensaje(id, ex, conexion);
+                                BaseDatos.Errores.Insertar.Mensaje(id, ex);
                             }
                         }
                     }

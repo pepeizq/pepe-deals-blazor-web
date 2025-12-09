@@ -67,7 +67,7 @@ namespace APIs.EpicGames
 					{
 						idsBorrar.Add(fila.id);
 
-						BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, null, false);
+						BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, false);
 					}
 
 					if (juegos2 > 6000)

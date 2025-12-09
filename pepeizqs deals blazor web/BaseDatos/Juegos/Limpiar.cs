@@ -5,13 +5,13 @@ namespace BaseDatos.Juegos
 {
 	public static class Limpiar
 	{
-		public static void Minimos()
+		public static async Task Minimos()
 		{
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.Execute("TRUNCATE TABLE seccionMinimos", transaction: sentencia);
+					return await sentencia.Connection.ExecuteAsync("TRUNCATE TABLE seccionMinimos", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

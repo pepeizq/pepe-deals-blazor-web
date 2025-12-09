@@ -1,7 +1,7 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace APIs.GOG
@@ -21,9 +21,9 @@ namespace APIs.GOG
 			return amazonluna;
 		}
 
-		public static async Task Buscar(SqlConnection conexion)
+		public static async Task Buscar()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -47,7 +47,7 @@ namespace APIs.GOG
 						BaseDatos.Errores.Insertar.Mensaje("Amazon Luna GOG", html, enlace);
                     }
 
-                    if (datos != null)
+                    if (datos?.Juegos?.Count > 0)
 					{
 						limite = datos.Paginas;
 
@@ -58,65 +58,46 @@ namespace APIs.GOG
 								DateTime fecha = DateTime.Now;
 								fecha = fecha + TimeSpan.FromDays(1);
 
-								bool encontrado = false;
+								bool? encontrado = false;
 
-								string sqlBuscar = "SELECT * FROM streamingamazonluna WHERE nombreCodigo=@nombreCodigo";
+								string sqlBuscar = "SELECT 1 FROM streamingamazonluna WHERE nombreCodigo=@nombreCodigo";
 
-								if (conexion == null)
+								try
 								{
-									conexion = Herramientas.BaseDatos.Conectar();
-								}
-								else
-								{
-									if (conexion.State != System.Data.ConnectionState.Open)
+									encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 									{
-										conexion = Herramientas.BaseDatos.Conectar();
-									}
+										var resultado = await sentencia.Connection.QueryFirstOrDefaultAsync<bool?>(
+											sqlBuscar,
+											new { nombreCodigo = juego.Id },
+											transaction: sentencia
+										);
+
+										return resultado ?? false;  
+									});
 								}
-
-								using (SqlCommand comando = new SqlCommand(sqlBuscar, conexion))
+								catch (Exception ex)
 								{
-									comando.Parameters.AddWithValue("@nombreCodigo", juego.Id);
-
-									using (SqlDataReader lector = comando.ExecuteReader())
-									{
-										encontrado = lector.Read();
-
-										cantidad += 1;
-										BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad);
-									}
+									BaseDatos.Errores.Insertar.Mensaje("Amazon Luna 1", ex);
 								}
 
 								if (encontrado == true)
 								{
+									cantidad += 1;
+									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad);
+
 									string sqlActualizar = "UPDATE streamingamazonluna " +
 															"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
 
-									if (conexion == null)
+									try
 									{
-										conexion = Herramientas.BaseDatos.Conectar();
+										await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										{
+											return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { nombreCodigo = juego.Id, fecha }, transaction: sentencia);
+										});
 									}
-									else
+									catch (Exception ex)
 									{
-										if (conexion.State != System.Data.ConnectionState.Open)
-										{
-											conexion = Herramientas.BaseDatos.Conectar();
-										}
-									}
-
-									using (SqlCommand comandoActualizar = new SqlCommand(sqlActualizar, conexion))
-									{
-										comandoActualizar.Parameters.AddWithValue("@nombreCodigo", juego.Id);
-										comandoActualizar.Parameters.AddWithValue("@fecha", fecha);
-
-										try
-										{
-											comandoActualizar.ExecuteNonQuery();
-										}
-										catch
-										{
-
-										}
+										BaseDatos.Errores.Insertar.Mensaje("Amazon Luna 2", ex);
 									}
 								}
 								else
@@ -125,33 +106,22 @@ namespace APIs.GOG
 														"(nombreCodigo, nombre, drms, fecha) VALUES " +
 														"(@nombreCodigo, @nombre, @drms, @fecha) ";
 
-									if (conexion == null)
+									try
 									{
-										conexion = Herramientas.BaseDatos.Conectar();
+										await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										{
+											return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+											{
+												nombreCodigo = juego.Id,
+												nombre = juego.Nombre,
+												drms = "gog",
+												fecha
+											}, transaction: sentencia);
+										});
 									}
-									else
+									catch (Exception ex)
 									{
-										if (conexion.State != System.Data.ConnectionState.Open)
-										{
-											conexion = Herramientas.BaseDatos.Conectar();
-										}
-									}
-
-									using (SqlCommand comandoInsertar = new SqlCommand(sqlInsertar, conexion))
-									{
-										comandoInsertar.Parameters.AddWithValue("@nombreCodigo", juego.Id);
-										comandoInsertar.Parameters.AddWithValue("@nombre", juego.Nombre);
-										comandoInsertar.Parameters.AddWithValue("@drms", "gog");
-										comandoInsertar.Parameters.AddWithValue("@fecha", fecha);
-
-										try
-										{
-											comandoInsertar.ExecuteNonQuery();
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje("Insertar Amazon Luna " + juego.Nombre, ex);
-										}
+										BaseDatos.Errores.Insertar.Mensaje("Amazon Luna 3", ex);
 									}
 								}
 							}

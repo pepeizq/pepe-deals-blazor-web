@@ -1,67 +1,45 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Portapapeles
 {
 	public static class Borrar
 	{
-		public static void Ejecutar(string id, SqlConnection conexion = null)
+		public static async Task Ejecutar(string id)
 		{
-			if (conexion == null)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
-				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
 			string borrar = "DELETE FROM portapapeles WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(borrar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch { }
+					return await sentencia.Connection.ExecuteAsync(borrar, new
+					{
+						id
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Portapapeles Delete", ex);
 			}
 		}
 
-		public static void Limpieza(SqlConnection conexion = null)
+		public static async Task Limpieza()
 		{
-			if (conexion == null)
+			string limpiar = "TRUNCATE TABLE portapapeles";
+
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					return await sentencia.Connection.QueryAsync(limpiar, transaction: sentencia);
+				});
 			}
-
-			using (conexion)
+			catch (Exception ex)
 			{
-				string sqlActualizar = "TRUNCATE TABLE portapapeles";
-
-				using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-				{
-					try
-					{
-						comando.ExecuteNonQuery();
-					}
-					catch
-					{
-
-					}
-				}
+				BaseDatos.Errores.Insertar.Mensaje("Portapapeles Truncate", ex);
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 using Noticias;
 using System.Net;
 
@@ -9,17 +8,7 @@ namespace BaseDatos.Noticias
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static int Ejecutar(Noticia noticia, SqlConnection conexion = null)
+		public static async Task<int> Ejecutar(Noticia noticia)
 		{
 			var campos = new List<string>();
 			var valores = new List<string>();
@@ -122,13 +111,14 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				conexion = CogerConexion(conexion);
-
-				return conexion.ExecuteScalar<int>(sql, p);
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, p, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
-				Errores.Insertar.Mensaje("Portada Noticias", ex);
+				Errores.Insertar.Mensaje("Noticias Insertar", ex);
 				return 0;
 			}
 		}

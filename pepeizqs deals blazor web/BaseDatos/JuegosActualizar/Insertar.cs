@@ -1,29 +1,16 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.JuegosActualizar
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(int idJuego, int idPlataforma, string metodo, SqlConnection conexion = null)
+		public static async Task Ejecutar(int idJuego, int idPlataforma, string metodo)
 		{
 			if (idJuego > 0 && idPlataforma > 0 && string.IsNullOrEmpty(metodo) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				if (Buscar.Existe(idJuego, idPlataforma, metodo) == false)
+				if (await Buscar.Existe(idJuego, idPlataforma, metodo) == false)
 				{
 					string sqlAñadir = "INSERT INTO fichasActualizar " +
 						 "(idJuego, idPlataforma, metodo) VALUES " +
@@ -31,11 +18,14 @@ namespace BaseDatos.JuegosActualizar
 
 					try
 					{
-						conexion.Execute(sqlAñadir, new
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							IdJuego = idJuego,
-							IdPlataforma = idPlataforma,
-							Metodo = metodo
+							return await sentencia.Connection.ExecuteAsync(sqlAñadir, new
+							{
+								IdJuego = idJuego,
+								IdPlataforma = idPlataforma,
+								Metodo = metodo
+							}, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)

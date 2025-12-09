@@ -9,6 +9,22 @@ namespace Herramientas.Redireccionador
 
 	public class MotoresBusqueda : Controller
 	{
+		[HttpGet("googlef1d60ee28dba5ba3.html")]
+		public IActionResult GoogleVerificacion()
+		{
+			string dominio = HttpContext.Request.Host.Value;
+
+			if (dominio == "pepe.deals")
+			{
+				return Content(
+					"google-site-verification: googlef1d60ee28dba5ba3.html",
+					"text/plain"
+				);
+			}
+
+			return null;
+		}
+
 		[HttpGet("BingSiteAuth.xml")]
 		public IActionResult BingVerificacion()
 		{

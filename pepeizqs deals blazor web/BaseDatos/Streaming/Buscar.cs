@@ -2,58 +2,74 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 
 namespace BaseDatos.Streaming
 {
     public static class Buscar
     {
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static List<JuegoDRM> DRMs(string tabla, int idJuego, SqlConnection conexion = null)
+		public static async Task<List<JuegoDRM>> DRMs(string tabla, int idJuego)
         {
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT drms FROM streaming" + tabla + " WHERE idJuego = " + idJuego.ToString() + " AND fecha > DATEADD(DAY, -7, CAST(GETDATE() as date))";
 
-			var resultados = conexion.Query<string>(busqueda, new { idJuego });
-
-			List<JuegoDRM> listaDRMs = new List<JuegoDRM>();
-
-			foreach (var drmsTexto in resultados)
+			try
 			{
-				if (!string.IsNullOrEmpty(drmsTexto))
+				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					var drms = JsonSerializer.Deserialize<List<string>>(drmsTexto);
+					return await sentencia.Connection.QueryAsync<string>(busqueda, new { idJuego }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 
-					foreach (var drm in drms)
+				List<JuegoDRM> listaDRMs = new List<JuegoDRM>();
+
+				foreach (var drmsTexto in resultados)
+				{
+					if (!string.IsNullOrEmpty(drmsTexto))
 					{
-						listaDRMs.Add(JuegoDRM2.Traducir(drm));
+						var drms = JsonSerializer.Deserialize<List<string>>(drmsTexto);
+
+						foreach (var drm in drms)
+						{
+							listaDRMs.Add(JuegoDRM2.Traducir(drm));
+						}
 					}
+				}
+
+				return listaDRMs;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Streaming DRMs", ex);
+			}
+
+			return null;
+        }
+
+        public static async Task<bool> AmazonLuna(int idJuego)
+        {
+			if (idJuego > 0)
+			{
+				string busqueda = "SELECT 1 FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString();
+
+				try
+				{
+					var existe = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						var resultado = await sentencia.Connection.ExecuteScalarAsync<int?>(
+							busqueda, transaction: sentencia
+						);
+
+						return resultado.HasValue;
+					});
+
+					return existe;
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Amazon Luna", ex);
 				}
 			}
 
-            return listaDRMs;
-        }
-
-        public static bool AmazonLuna(int idJuego, SqlConnection conexion = null)
-        {
-			conexion = CogerConexion(conexion);
-
-			string busqueda = "SELECT nombre FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString();
-
-			var existe = conexion.ExecuteScalar<string>(busqueda);
-
-			return existe != null;
+			return false;
 		}
     }
 }

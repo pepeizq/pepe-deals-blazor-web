@@ -6,13 +6,13 @@ namespace BaseDatos.Reseñas
 {
 	public static class Limpiar
 	{
-		public static void Ejecutar()
+		public static async Task Ejecutar()
 		{
 			try
 			{
-				Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					sentencia.Connection.Execute("TRUNCATE TABLE juegosAnalisis", transaction: sentencia);
+					await sentencia.Connection.ExecuteAsync("TRUNCATE TABLE juegosAnalisis", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

@@ -855,7 +855,7 @@
 
 		try
 		{
-			noticias ??= BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+			noticias ??= await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
 
 			if (noticias?.Count > 0)
 			{
@@ -1499,7 +1499,7 @@
 
 			if (cronometroNoticiasContador >= limite)
 			{
-				noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+				noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
 
 				cronometroNoticiasContador = 0;
 			}
@@ -1511,10 +1511,10 @@
 	private NoticiaTipo tipoSeleccionadoNoticias = NoticiaTipo.Desconocido;
 	private List<NoticiaTipo> tiposActualesNoticias = new List<NoticiaTipo>();
 
-	private void CambiarTipo(MouseEventArgs e, NoticiaTipo nuevoTipo)
+	private async Task CambiarTipo(MouseEventArgs e, NoticiaTipo nuevoTipo)
 	{
 		tipoSeleccionadoNoticias = nuevoTipo;
-		noticias = BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+		noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
 	}
 
 	private string CambiarEstilo(NoticiaTipo nuevoTipo)

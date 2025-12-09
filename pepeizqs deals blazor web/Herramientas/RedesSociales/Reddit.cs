@@ -43,7 +43,7 @@ namespace Herramientas.RedesSociales
                     {
                         foreach (var id in ids)
                         {
-                            var gratis = global::BaseDatos.Gratis.Buscar.UnGratis(id);
+                            var gratis = await global::BaseDatos.Gratis.Buscar.UnGratis(id);
 
                             if (gratis != null)
                             {
@@ -66,7 +66,7 @@ namespace Herramientas.RedesSociales
                     {
                         foreach (var id in ids)
                         {
-                            var suscripcion = global::BaseDatos.Suscripciones.Buscar.Id(int.Parse(id));
+                            var suscripcion = await global::BaseDatos.Suscripciones.Buscar.Id(int.Parse(id));
 
                             if (suscripcion != null)
                             {

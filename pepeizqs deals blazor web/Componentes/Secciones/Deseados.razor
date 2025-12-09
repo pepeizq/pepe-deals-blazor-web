@@ -557,67 +557,62 @@
 						<div>
 							<Virtualize Context="juego" Items="deseadosSuscripciones" ItemSize="alturaFila">
 								<ItemContent>
-									@if (juego.IdSuscripcion > 0)
+									@if (juego.IdSuscripcion > 0 && suscripcionesCache.TryGetValue(juego.IdSuscripcion, out var suscripcion) && suscripcion != null)
 									{
-										JuegoSuscripcion suscripcion = BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
+										string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, usuarioPatreon, false);
 
-										if (suscripcion != null)
-										{
-											string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, usuarioPatreon, false);
+										<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
+											<a href="@enlaceSuscripcion" target="_blank" class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;">
+												<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
+													<div class="deseado-imagen">
+														@{
+															string imagen = juego.Imagen;
 
-											<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
-												<a href="@enlaceSuscripcion" target="_blank" class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;">
-													<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
-														<div class="deseado-imagen">
-															@{
-																string imagen = juego.Imagen;
-
-																if (imagen.Contains(APIs.GOG.Juego.dominioImagenes) == true)
-																{
-																	imagen = imagen.Replace("_glx_logo", null);
-																	imagen = imagen.Replace(".png", ".webp");
-																}
+															if (imagen.Contains(APIs.GOG.Juego.dominioImagenes) == true)
+															{
+																imagen = imagen.Replace("_glx_logo", null);
+																imagen = imagen.Replace(".png", ".webp");
 															}
+														}
 
-															<img src="@imagen" style="height: 100%; width: 100%;" />
-														</div>
+														<img src="@imagen" style="height: 100%; width: 100%;" />
+													</div>
 
-														<div style="width: 100%; padding: 5px 20px;">
-															<div style="margin-top: 5px;">@juego.Nombre</div>
+													<div style="width: 100%; padding: 5px 20px;">
+														<div style="margin-top: 5px;">@juego.Nombre</div>
 
-															<div style="display: flex; align-items: center; margin-top: 5px;">
-																<div style="width: 20px; height: 20px;">
-																	<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
-																</div>
-
-																<div style="width: 20px; height: 20px; margin-left: 10px;">
-																	<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono" style="width: 100%; height: 100%;" />
-																</div>
+														<div style="display: flex; align-items: center; margin-top: 5px;">
+															<div style="width: 20px; height: 20px;">
+																<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
 															</div>
-														</div>
 
-														<div style="display: flex; align-items: center; justify-content: center; min-width: 175px; font-size: 18px;">
-															<div style="padding: 5px 15px; text-align: center; font-size: 18px;">
-																@Herramientas.Precios.Euro((decimal)Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Precio)
+															<div style="width: 20px; height: 20px; margin-left: 10px;">
+																<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono" style="width: 100%; height: 100%;" />
 															</div>
 														</div>
 													</div>
-												</a>
 
-												<AuthorizeView>
-													<Authorized>
-														@if (string.IsNullOrEmpty(perfilUsuarioId) == true && juego.Importado == false)
-														{
-															<div style="background-color: transparent; padding: 5px 10px; display: flex; align-items: center; gap: 10px; right: -100px; position: absolute;">
-																<button @onclick="@(e => QuitarJuego(e, juego.Id, juego.DRM, juego))" style="width: fit-content; font-size: 14px; color: var(--colorEnlace); background: transparent; border: 0px; text-decoration: none; margin-left: auto;">
-																	@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Wishlist")
-																</button>
-															</div>
-														}
-													</Authorized>
-												</AuthorizeView>												
-											</div>
-										}	
+													<div style="display: flex; align-items: center; justify-content: center; min-width: 175px; font-size: 18px;">
+														<div style="padding: 5px 15px; text-align: center; font-size: 18px;">
+															@Herramientas.Precios.Euro((decimal)Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Precio)
+														</div>
+													</div>
+												</div>
+											</a>
+
+											<AuthorizeView>
+												<Authorized>
+													@if (string.IsNullOrEmpty(perfilUsuarioId) == true && juego.Importado == false)
+													{
+														<div style="background-color: transparent; padding: 5px 10px; display: flex; align-items: center; gap: 10px; right: -100px; position: absolute;">
+															<button @onclick="@(e => QuitarJuego(e, juego.Id, juego.DRM, juego))" style="width: fit-content; font-size: 14px; color: var(--colorEnlace); background: transparent; border: 0px; text-decoration: none; margin-left: auto;">
+																@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Wishlist")
+															</button>
+														</div>
+													}
+												</Authorized>
+											</AuthorizeView>
+										</div>
 									}
 								</ItemContent>
 							</Virtualize>
@@ -665,6 +660,7 @@
 	private bool cargado = false;
 
 	private Dictionary<int, Bundles2.Bundle> bundlesCache = new();
+	private Dictionary<int, JuegoSuscripcion> suscripcionesCache = new();
 
 	protected override void OnInitialized()
 	{
@@ -833,8 +829,7 @@
 					{
 						if (juego.IdBundle > 0 && bundlesCache.ContainsKey(juego.IdBundle) == false)
 						{
-							var bundle = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
-							bundlesCache[juego.IdBundle] = bundle;
+							bundlesCache[juego.IdBundle] = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
 						}
 					}
 				}
@@ -843,9 +838,9 @@
 
 				#region Suscripciones
 
-				suscripcionesActuales ??= BaseDatos.Suscripciones.Buscar.Actuales();
+				suscripcionesActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
 
-				if (suscripcionesActuales.Count > 0)
+				if (suscripcionesActuales?.Count > 0)
 				{
 					foreach (var juegoSuscripcion in suscripcionesActuales)
 					{
@@ -889,13 +884,20 @@
 					}
 				}
 
+				if (deseadosSuscripciones?.Count > 0)
+				{
+					foreach (var juego in deseadosSuscripciones)
+					{
+						if (juego.IdSuscripcion > 0 && suscripcionesCache.ContainsKey(juego.Id) == false)
+						{
+							suscripcionesCache[juego.IdSuscripcion] = await BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
+						}
+					}
+				}
+
 				#endregion
 				cargado = true;
 			}
-
-			// deseadosSteam.Clear();
-			// deseadosWeb.Clear();
-			// deseadosGog.Clear();
 
 			await InvokeAsync(StateHasChanged);
 		}

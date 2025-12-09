@@ -6,13 +6,13 @@ namespace BaseDatos.Reseñas
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(int id, int positivos, int negativos, string idioma, string contenido)
+		public static async Task Ejecutar(int id, int positivos, int negativos, string idioma, string contenido)
 		{
 			try
 			{
-				bool existe = Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				bool existe = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return sentencia.Connection.ExecuteScalar<int>("SELECT COUNT(1) FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia) > 0;
+					return await sentencia.Connection.ExecuteScalarAsync<int>("SELECT COUNT(1) FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia) > 0;
 				});
 
 				string fechaCol = "fecha" + idioma;
@@ -24,18 +24,18 @@ namespace BaseDatos.Reseñas
 				{
 					string sqlInsertar = $@"INSERT INTO juegosAnalisis (id, {positivosCol}, {negativosCol}, {fechaCol}, {contenidoCol}) VALUES (@id, @positivos, @negativos, @fecha, @contenido)";
 
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						sentencia.Connection.Execute(sqlInsertar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
+						await sentencia.Connection.ExecuteAsync(sqlInsertar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
 					});
 				}
 				else
 				{
 					string sqlActualizar = $@"UPDATE juegosAnalisis SET {positivosCol}=@positivos, {negativosCol}=@negativos, {fechaCol}=@fecha, {contenidoCol}=@contenido WHERE id=@id";
 
-					Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						sentencia.Connection.Execute(sqlActualizar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
+						await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
 					});
 				}
 			}

@@ -34,7 +34,7 @@ namespace Tareas
 					{
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5)) == true)
 						{
-							BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
+							await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
 
 							try
 							{
