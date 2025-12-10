@@ -371,14 +371,14 @@
 		WebApplicationBuilder builder = WebApplication.CreateBuilder();
 		enlacePatreon = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
 
-		juegos = BaseDatos.Recompensas.Juegos.Disponibles();
+		juegos = await BaseDatos.Recompensas.Juegos.Disponibles();
 
 		usuario = await UserManager.FindByIdAsync(usuarioId);
 
 		if (usuario != null)
 		{
 			juegosUsuario = Herramientas.UsuarioJuegos.Cargar(usuario);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 
 			if (usuario.PatreonOption1 == true)
 			{
@@ -424,7 +424,7 @@
 
 	private string ocultarJuegos = null;
 
-	private async void OcultarJuegos()
+	private async Task OcultarJuegos()
 	{
 		bool valor = false;
 
@@ -448,7 +448,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("PatreonOption1", valor, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("PatreonOption1", valor, usuarioId);
 		}
 
 		await InvokeAsync(StateHasChanged);
@@ -474,10 +474,10 @@
 		mostrarJuego = false;
 	}
 
-	private async void ComprarJuego(MouseEventArgs e, RecompensaJuego juego)
+	private async Task ComprarJuego(MouseEventArgs e, RecompensaJuego juego)
 	{
-		BaseDatos.Recompensas.Juegos.Actualizar(recompensaMostrar.Id, usuario.Id);
-		BaseDatos.Recompensas.Historial.Insertar(usuario.Id, -recompensaMostrar.Coins, "Buy " + recompensaMostrar.JuegoNombre, DateTime.Now);
+		await BaseDatos.Recompensas.Juegos.Actualizar(recompensaMostrar.Id, usuario.Id);
+		await BaseDatos.Recompensas.Historial.Insertar(usuario.Id, -recompensaMostrar.Coins, "Buy " + recompensaMostrar.JuegoNombre, DateTime.Now);
 
 		usuario.PatreonCoins = usuario.PatreonCoins - recompensaMostrar.Coins;
 
@@ -511,6 +511,6 @@
 		catch { }
 
 		juegos.Clear();
-		juegos = BaseDatos.Recompensas.Juegos.Disponibles();
+		juegos = await BaseDatos.Recompensas.Juegos.Disponibles();
 	}
 }

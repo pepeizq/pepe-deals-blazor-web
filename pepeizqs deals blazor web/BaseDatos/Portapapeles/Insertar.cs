@@ -1,55 +1,43 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Portapapeles
 {
 	public static class Insertar
 	{
-		public static void Ejecutar(string id, string contenido, SqlConnection conexion = null)
+		public static async Task Ejecutar(string id, string contenido)
 		{
-			if (conexion == null)
+			if (await Buscar.YaExiste(id) == false)
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				string insertar = "INSERT INTO portapapeles (id, contenido) VALUES (@id, @contenido)";
+
+				try
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
-			}
-
-			if (Buscar.YaExiste(id, conexion) == false)
-			{
-				string insercion = "INSERT INTO portapapeles (id, contenido) VALUES (@id, @contenido)";
-
-				using (SqlCommand comando = new SqlCommand(insercion, conexion))
-				{
-					comando.Parameters.AddWithValue("@id", id);
-					comando.Parameters.AddWithValue("@contenido", contenido);
-
-					try
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						comando.ExecuteNonQuery();
-					}
-					catch { }
+						await sentencia.Connection.ExecuteAsync(insertar, new { id, contenido }, transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Portapapeles Insertar", ex);
 				}
 			}
 			else
 			{
 				string actualizar = "UPDATE portapapeles SET contenido=@contenido WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(actualizar, conexion))
+				try
 				{
-					comando.Parameters.AddWithValue("@id", id);
-					comando.Parameters.AddWithValue("@contenido", contenido);
-
-					try
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						comando.ExecuteNonQuery();
-					}
-					catch { }
+						await sentencia.Connection.ExecuteAsync(actualizar, new { id, contenido }, transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Portapapeles Actualizar", ex);
 				}
 			}
 		}

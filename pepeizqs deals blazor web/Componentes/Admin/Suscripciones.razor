@@ -112,23 +112,6 @@ else
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
-
-    protected override void OnInitialized()
-    {
-        if (conexion == null)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-        else
-        {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
-    }
-
     List<global::Juegos.Juego> juegosBuscadorSuscripciones = new List<global::Juegos.Juego>();
 
     private string idSeleccionadaSuscripciones = null;
@@ -237,7 +220,7 @@ else
         imagenNoticiaSuscripciones = texto.Value.ToString();
     }
 
-    private async void AñadirJuegoSuscripciones(MouseEventArgs e)
+    private async Task AñadirJuegoSuscripciones(MouseEventArgs e)
     {
         global::Juegos.Juego juegoSuscripciones = await BaseDatos.Juegos.Buscar.UnJuego(idSeleccionadaSuscripciones);
 
@@ -261,7 +244,7 @@ else
 
             juegoSuscripciones.Suscripciones.Add(suscripcion);
 
-            BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(idSeleccionadaSuscripciones), suscripcion);
+            await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(idSeleccionadaSuscripciones), suscripcion);
         }
 
         idSeleccionadaSuscripciones = null;

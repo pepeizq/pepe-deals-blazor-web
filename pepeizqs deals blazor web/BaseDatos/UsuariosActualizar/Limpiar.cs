@@ -1,39 +1,25 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.UsuariosActualizar
 {
 	public static class Limpiar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Una(UsuarioActualizar usuario, SqlConnection conexion = null)
+		public static async Task Una(UsuarioActualizar usuario)
 		{
 			if (usuario == null)
 			{
 				return;
 			}
 
-			conexion = CogerConexion(conexion);
-
-			string sqlEliminar = "DELETE FROM usuariosActualizar WHERE idUsuario=@idUsuario AND metodo=@metodo";
+			string eliminar = "DELETE FROM usuariosActualizar WHERE idUsuario=@idUsuario AND metodo=@metodo";
 
 			try
 			{
-				conexion.Execute(sqlEliminar, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					usuario.IdUsuario,
-					usuario.Metodo
+					await sentencia.Connection.ExecuteAsync(eliminar, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

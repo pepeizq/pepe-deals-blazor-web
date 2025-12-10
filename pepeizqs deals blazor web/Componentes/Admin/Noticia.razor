@@ -222,185 +222,133 @@
 
 	private string textoTituloEn = string.Empty;
 
-	private void TextoCambiaTituloEn(ChangeEventArgs texto)
+	private async Task TextoCambiaTituloEn(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoTituloEn = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.TituloEn(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.TituloEn(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoTituloEs = string.Empty;
 
-	private void TextoCambiaTituloEs(ChangeEventArgs texto)
+	private async Task TextoCambiaTituloEs(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoTituloEs = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.TituloEs(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.TituloEs(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoImagen = string.Empty;
 
-	private void TextoCambiaImagen(ChangeEventArgs texto)
+	private async Task TextoCambiaImagen(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoImagen = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.Imagen(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.Imagen(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private int textoTipo = 0;
 
-	private void TextoCambiaTipo(ChangeEventArgs texto)
+	private async Task TextoCambiaTipo(ChangeEventArgs texto)
 	{
-		string nuevoTexto = texto.Value.ToString().Trim();
-		textoTipo = int.Parse(nuevoTexto);
-
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
+		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
-			BaseDatos.Noticias.Actualizar.Tipo(noticiaId.ToString(), nuevoTexto, conexion);
+			string nuevoTexto = texto.Value.ToString().Trim();
+			textoTipo = int.Parse(nuevoTexto);
+
+			await BaseDatos.Noticias.Actualizar.Tipo(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoEnlace = string.Empty;
 
-	private void TextoCambiaEnlace(ChangeEventArgs texto)
+	private async Task TextoCambiaEnlace(ChangeEventArgs texto)
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 		textoEnlace = nuevoTexto;
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			BaseDatos.Noticias.Actualizar.Enlace(noticiaId.ToString(), nuevoTexto, conexion);
-		}
+		await BaseDatos.Noticias.Actualizar.Enlace(noticiaId.ToString(), nuevoTexto);
 	}
 
 	private string textoFechaTermina = string.Empty;
 
-	private void TextoCambiaFechaTermina(ChangeEventArgs texto)
+	private async Task TextoCambiaFechaTermina(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoFechaTermina = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.FechaTermina(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.FechaTermina(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoContenidoEn = string.Empty;
 
-	private void TextoCambiaContenidoEn(ChangeEventArgs texto)
+	private async Task TextoCambiaContenidoEn(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoContenidoEn = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.ContenidoEn(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.ContenidoEn(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoContenidoEs = string.Empty;
 
-	private void TextoCambiaContenidoEs(ChangeEventArgs texto)
+	private async Task TextoCambiaContenidoEs(ChangeEventArgs texto)
 	{
 		if (string.IsNullOrEmpty(texto.Value.ToString().Trim()) == false)
 		{
 			string nuevoTexto = texto.Value.ToString().Trim();
 			textoContenidoEs = nuevoTexto;
 
-			SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-			using (conexion)
-			{
-				BaseDatos.Noticias.Actualizar.ContenidoEs(noticiaId.ToString(), nuevoTexto, conexion);
-			}
+			await BaseDatos.Noticias.Actualizar.ContenidoEs(noticiaId.ToString(), nuevoTexto);
 		}
 	}
 
 	private string textoBundleId = string.Empty;
 
-	private void TextoCambiaBundleId(ChangeEventArgs texto)
+	private async Task TextoCambiaBundleId(ChangeEventArgs texto)
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 		textoBundleId = nuevoTexto;
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			BaseDatos.Noticias.Actualizar.BundleId(noticiaId.ToString(), nuevoTexto, conexion);
-		}
+		await BaseDatos.Noticias.Actualizar.BundleId(noticiaId.ToString(), nuevoTexto);
 	}
 
 	private string textoGratisIds = string.Empty;
 
-	private void TextoCambiaGratisIds(ChangeEventArgs texto)
+	private async Task TextoCambiaGratisIds(ChangeEventArgs texto)
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 		textoGratisIds = nuevoTexto;
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			BaseDatos.Noticias.Actualizar.GratisIds(noticiaId.ToString(), nuevoTexto, conexion);
-		}
+		await BaseDatos.Noticias.Actualizar.GratisIds(noticiaId.ToString(), nuevoTexto);
 	}
 
 	private string textoSuscripcionesIds = string.Empty;
 
-	private void TextoCambiaSuscripcionesIds(ChangeEventArgs texto)
+	private async Task TextoCambiaSuscripcionesIds(ChangeEventArgs texto)
 	{
 		string nuevoTexto = texto.Value.ToString().Trim();
 		textoSuscripcionesIds = nuevoTexto;
 
-		SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-		using (conexion)
-		{
-			BaseDatos.Noticias.Actualizar.SuscripcionesIds(noticiaId.ToString(), nuevoTexto, conexion);
-		}
+		await BaseDatos.Noticias.Actualizar.SuscripcionesIds(noticiaId.ToString(), nuevoTexto);
 	}
 
 	private void EnviarCorreoPruebaMsn(MouseEventArgs e)

@@ -1,111 +1,113 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Usuarios
 {
     public static class Actualizar
     {
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void PatreonComprobacion(string correoBuscar, DateTime fechaActualizar, int contribucion, SqlConnection conexion = null)
+		public static async Task PatreonComprobacion(string correoBuscar, DateTime fechaActualizar, int contribucion)
         {
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT Id FROM AspNetUsers WHERE Email = @Email OR PatreonMail = @PatreonMail";
 			string id = string.Empty;
 
 			try
 			{
-				id = conexion.QueryFirstOrDefault<string>(busqueda, new { 
-					Email = correoBuscar, 
-					PatreonMail = correoBuscar 
+				id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new
+					{
+						Email = correoBuscar,
+						PatreonMail = correoBuscar
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Comprobacion 1", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Comprobacion 1", ex, false);
 			}
 
 			if (string.IsNullOrEmpty(id) == false)
 			{
-				string sqlActualizar = @"UPDATE AspNetUsers 
+				string actualizar = @"UPDATE AspNetUsers 
                                  SET PatreonLastCheck = @PatreonLastCheck, 
                                      PatreonContribution = @PatreonContribution 
                                  WHERE Id = @Id";
 
 				try
 				{
-					conexion.Execute(sqlActualizar, new { 
-						Id = id, 
-						PatreonLastCheck = fechaActualizar, 
-						PatreonContribution = contribucion 
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(actualizar, new
+						{
+							Id = id,
+							PatreonLastCheck = fechaActualizar,
+							PatreonContribution = contribucion
+						}, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Comprobacion 2", ex);
+					BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Comprobacion 2", ex, false);
 				}
 			}
 		}
 
-		public static bool PatreonCorreo(string usuarioId, string correoNuevo, SqlConnection conexion = null)
+		public static async Task<bool> PatreonCorreo(string usuarioId, string correoNuevo)
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT Id FROM AspNetUsers WHERE Email = @Email OR PatreonMail = @PatreonMail";
 			string id = string.Empty;
 
 			try
 			{
-				id = conexion.QueryFirstOrDefault<string>(busqueda, new { 
-					Email = correoNuevo, 
-					PatreonMail = correoNuevo 
+				id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new
+					{
+						Email = correoNuevo,
+						PatreonMail = correoNuevo
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Correo 1", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Correo 1", ex, false);
 			}
 
 			if (string.IsNullOrEmpty(id))
 			{
-				string sqlActualizar = "UPDATE AspNetUsers SET PatreonMail = @PatreonMail WHERE Id = @Id";
+				string actualizar = "UPDATE AspNetUsers SET PatreonMail = @PatreonMail WHERE Id = @Id";
 
 				try
 				{
-					conexion.Execute(sqlActualizar, new { 
-						Id = usuarioId, 
-						PatreonMail = correoNuevo 
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(actualizar, new
+						{
+							Id = usuarioId,
+							PatreonMail = correoNuevo
+						}, transaction: sentencia);
 					});
-					
+
 					return false; 
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Correo 2", ex);
+					BaseDatos.Errores.Insertar.Mensaje("Usuario Patreon Correo 2", ex, false);
 				}
 			}
 
 			return true;
 		}
 
-		public static void Opcion(string variable, bool valor, string usuarioId, SqlConnection conexion = null)
+		public static async Task Opcion(string variable, bool valor, string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -113,13 +115,14 @@ namespace BaseDatos.Usuarios
 			}
 		}
 
-		public static void Opcion(string variable, string valor, string usuarioId, SqlConnection conexion = null)
+		public static async Task Opcion(string variable, string valor, string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -127,13 +130,14 @@ namespace BaseDatos.Usuarios
 			}
 		}
 
-		public static void Opcion(string variable, int valor, string usuarioId, SqlConnection conexion = null)
+		public static async Task Opcion(string variable, int valor, string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'");
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -141,13 +145,14 @@ namespace BaseDatos.Usuarios
 			}
 		}
 
-		public static void Opcion(string variable, decimal valor, string usuarioId, SqlConnection conexion = null)
+		public static async Task Opcion(string variable, decimal valor, string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				conexion.Execute("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id=" + usuarioId);
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -158,10 +163,10 @@ namespace BaseDatos.Usuarios
 
     public class Clave
     {
-        public string Nombre;
-        public string JuegoId;
-        public string Codigo;
-    }
+        public string Nombre { get; set; }
+		public string JuegoId { get; set; }
+		public string Codigo { get; set; }
+	}
 
 	public class DeseadosDatos
 	{

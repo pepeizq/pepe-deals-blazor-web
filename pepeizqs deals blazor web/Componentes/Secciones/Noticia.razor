@@ -497,11 +497,11 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			juegosUsuario ??= Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}
 
 		if (id > 0)

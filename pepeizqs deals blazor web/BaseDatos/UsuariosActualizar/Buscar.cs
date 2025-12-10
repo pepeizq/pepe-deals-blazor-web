@@ -1,29 +1,28 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.UsuariosActualizar
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task<List<UsuarioActualizar>> Todos()
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static List<UsuarioActualizar> Todos(SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT * FROM usuariosActualizar";
 
-			return conexion.Query<UsuarioActualizar>(busqueda).ToList();
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<UsuarioActualizar>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuarios Actualizar Insertar", ex);
+			}
+
+			return null;
 		}
 	}
 

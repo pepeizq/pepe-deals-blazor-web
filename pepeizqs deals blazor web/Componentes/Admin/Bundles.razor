@@ -256,7 +256,7 @@
             }
             else
             {
-                juegosIds = BaseDatos.Portapapeles.Buscar.Contenido(bundle.Enlace);
+                juegosIds = await BaseDatos.Portapapeles.Buscar.Contenido(bundle.Enlace);
             }
 
             if (bundle != null)
@@ -449,7 +449,7 @@
         {
             List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
 
-            if (resultados.Count > 0)
+            if (resultados?.Count > 0)
             {
                 juegosBuscador.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
 
@@ -462,7 +462,7 @@
         }
     }
 
-    private void SeleccionarJuegoBuscador(MouseEventArgs e, string id, string imagen, string nombre)
+    private async Task SeleccionarJuegoBuscador(MouseEventArgs e, string id, string imagen, string nombre)
     {
         textoBuscador = null;
         juegosBuscador = new List<global::Juegos.Juego>();
@@ -510,7 +510,7 @@
             }
         }
 
-        BaseDatos.Portapapeles.Insertar.Ejecutar(bundle.Enlace, juegosIds);
+        await BaseDatos.Portapapeles.Insertar.Ejecutar(bundle.Enlace, juegosIds);
     }
 
     private void CambiarTierJuego(ChangeEventArgs texto, BundleJuego juego)
@@ -556,21 +556,21 @@
 
             foreach (var juego in bundle.Juegos)
             {
-                List<string> usuariosInteresados = BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(int.Parse(juego.JuegoId), juego.DRM);
+                List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(int.Parse(juego.JuegoId), juego.DRM);
 
                 if (usuariosInteresados?.Count > 0)
                 {
                     foreach (var usuarioInteresado in usuariosInteresados)
                     {
-                        if (BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, int.Parse(juego.JuegoId), juego.DRM) == false)
+                        if (await BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, int.Parse(juego.JuegoId), juego.DRM) == false)
                         {
-                            string correo = BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationWishlistBundles");
+                            string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationWishlistBundles");
 
                             if (string.IsNullOrEmpty(correo) == false)
                             {
                                 try
                                 {
-                                    Herramientas.Correos.DeseadoBundle.Nuevo(usuarioInteresado, bundle, juego, correo);
+                                   await Herramientas.Correos.DeseadoBundle.Nuevo(usuarioInteresado, bundle, juego, correo);
                                 }
                                 catch (Exception ex)
                                 {

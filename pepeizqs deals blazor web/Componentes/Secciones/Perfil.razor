@@ -176,7 +176,10 @@ else
 
 	private List<JuegoUsuario> listaMostrar = new List<JuegoUsuario>();
 
-	protected override void OnInitialized()
+	private string perfilSteamCuenta = null;
+	private string perfilGogCuenta = null;
+
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -185,23 +188,17 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}
-	}
 
-	private string perfilSteamCuenta = null;
-	private string perfilGogCuenta = null;
-
-	protected override async Task OnInitializedAsync()
-	{
-		perfil = BaseDatos.Usuarios.Buscar.PerfilCargar(usuarioNombre);
+		perfil = await BaseDatos.Usuarios.Buscar.PerfilCargar(usuarioNombre);
 
 		if (perfil != null)
 		{
-			perfilSteamCuenta = BaseDatos.Usuarios.Buscar.PerfilSteamCuenta(perfil.Id);
-			perfilGogCuenta = BaseDatos.Usuarios.Buscar.PerfilGogCuenta(perfil.Id);
+			perfilSteamCuenta = await BaseDatos.Usuarios.Buscar.PerfilSteamCuenta(perfil.Id);
+			perfilGogCuenta = await BaseDatos.Usuarios.Buscar.PerfilGogCuenta(perfil.Id);
 
 			if (string.IsNullOrEmpty(perfilGogCuenta) == false)
 			{
@@ -215,7 +212,7 @@ else
 			{
 				enseñarUltimoJugado = true;
 
-				Herramientas.UsuarioListadosJuegos ultimoJugado = Herramientas.UsuarioJuegos.Cargar(perfil.Id);
+				Herramientas.UsuarioListadosJuegos ultimoJugado = await Herramientas.UsuarioJuegos.Cargar(perfil.Id);
 
 				if (ultimoJugado != null)
 				{

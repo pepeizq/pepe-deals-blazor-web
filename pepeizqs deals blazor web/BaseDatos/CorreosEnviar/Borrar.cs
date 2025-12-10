@@ -6,7 +6,7 @@ namespace BaseDatos.CorreosEnviar
 {
 	public static class Borrar
 	{
-		public static async void Ejecutar(int id)
+		public static async Task Ejecutar(int id)
 		{
 			try
 			{

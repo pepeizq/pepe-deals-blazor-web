@@ -1,72 +1,51 @@
 ﻿#nullable disable
 
-using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace BaseDatos.Portapapeles
 {
 	public static class Buscar
 	{
-		public static bool YaExiste(string id, SqlConnection conexion = null)
+		public static async Task<bool> YaExiste(string id)
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				string sql = "SELECT COUNT(*) FROM portapapeles WHERE id=@id";
+
+				int resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, new { id }, transaction: sentencia);
+				});
+
+				return resultado > 0;
+			}
+			catch (Exception ex) 
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Portapapeles Ya Existe", ex);				
 			}
 
-			string busqueda = "SELECT COUNT(*) FROM portapapeles WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				try
-				{
-					int resultado = (int)comando.ExecuteScalar();
-					return resultado > 0;
-				}
-				catch
-				{
-					return false;
-				}
-			}
+			return false;
 		}
 
-		public static string Contenido(string id, SqlConnection conexion = null)
+		public static async Task<string> Contenido(string id)
 		{
-			if (conexion == null)
+			try
 			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-			else
-			{
-				if (conexion.State != System.Data.ConnectionState.Open)
+				string sql = "SELECT contenido FROM portapapeles WHERE id=@id";
+
+				string contenido = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					conexion = Herramientas.BaseDatos.Conectar();
-				}
+					return await sentencia.Connection.ExecuteScalarAsync<string>(sql, new { id }, transaction: sentencia);
+				});
+
+				return contenido ?? string.Empty;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Portapapeles Buscar Contenido", ex);
 			}
 
-			string busqueda = "SELECT contenido FROM portapapeles WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-			{
-				comando.Parameters.AddWithValue("@id", id);
-
-				try
-				{
-					return comando.ExecuteScalar()?.ToString() ?? string.Empty;
-				}
-				catch
-				{
-					return string.Empty;
-				}
-			}
+			return null;
 		}
 	}
 }

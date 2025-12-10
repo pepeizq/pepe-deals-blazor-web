@@ -1938,7 +1938,7 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 		}
 
 		if (string.IsNullOrEmpty(ids) == false)

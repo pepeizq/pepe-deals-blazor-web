@@ -2,26 +2,13 @@
 
 using Dapper;
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Usuarios
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
+		public static async Task NotificacionesPush(NotificacionSuscripcion datos)
 		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void NotificacionesPush(NotificacionSuscripcion datos, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
 			string sql = @"
 			IF NOT EXISTS (SELECT 1 FROM usuariosNotificaciones WHERE usuarioId = @usuarioId)
 			BEGIN
@@ -33,14 +20,17 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				conexion.Execute(sql, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					usuarioId = datos.UserId,
-					notificacionId = datos.NotificationSubscriptionId,
-					enlace = datos.Url,
-					p256dh = datos.P256dh,
-					auth = datos.Auth,
-					userAgent = datos.UserAgent
+					await sentencia.Connection.ExecuteAsync(sql, new
+					{
+						usuarioId = datos.UserId,
+						notificacionId = datos.NotificationSubscriptionId,
+						enlace = datos.Url,
+						p256dh = datos.P256dh,
+						auth = datos.Auth,
+						userAgent = datos.UserAgent
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex) 

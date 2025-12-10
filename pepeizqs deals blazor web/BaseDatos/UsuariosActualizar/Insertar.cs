@@ -1,29 +1,16 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.UsuariosActualizar
 {
 	public static class Insertar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Ejecutar(string idUsuario, string metodo, SqlConnection conexion = null)
+		public static async Task Ejecutar(string idUsuario, string metodo)
 		{
 			if (string.IsNullOrEmpty(idUsuario) == false && string.IsNullOrEmpty(metodo) == false)
 			{
-				conexion = CogerConexion(conexion);
-
-				string sqlAñadir = @"
+				string añadir = @"
 					IF NOT EXISTS (
 						SELECT 1 FROM usuariosActualizar 
 						WHERE idUsuario = @idUsuario
@@ -36,15 +23,18 @@ namespace BaseDatos.UsuariosActualizar
 
 				try
 				{
-					conexion.Execute(sqlAñadir, new
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						idUsuario,
-						metodo
+						await sentencia.Connection.ExecuteAsync(añadir, new
+						{
+							idUsuario,
+							metodo
+						}, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Usuario Actualizar Insertar", ex);
+					BaseDatos.Errores.Insertar.Mensaje("Usuarios Actualizar Insertar", ex);
 				}
 			}
 		}

@@ -766,7 +766,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         idNoticiaEnviada = id;
 
-        List<Usuario> usuariosNotificar = BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();
+        List<Usuario> usuariosNotificar = await BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();
 
         if (usuariosNotificar?.Count > 0)
         {

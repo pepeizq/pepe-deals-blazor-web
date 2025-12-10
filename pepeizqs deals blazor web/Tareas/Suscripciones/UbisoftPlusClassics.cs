@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas.Suscripciones
 {
@@ -32,35 +31,24 @@ namespace Tareas.Suscripciones
 
                 if (piscinaTiendas == piscinaUsada)
                 {
-                    SqlConnection conexion = new SqlConnection();
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(4);
 
-                    try
-                    {
-                        conexion = Herramientas.BaseDatos.Conectar();
-                    }
-                    catch { }
+					bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
 
-                    if (conexion.State == System.Data.ConnectionState.Open)
-                    {
-                        TimeSpan siguienteComprobacion = TimeSpan.FromHours(4);
-
-						bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
-
-						if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
+					if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
+					{
+						try
 						{
-                            try
-                            {
-                                await APIs.Ubisoft.Suscripcion.Buscar(conexion);
+							await APIs.Ubisoft.Suscripcion.Buscar();
 
-                                Environment.Exit(1);
-                            }
-                            catch (Exception ex)
-                            {
-                                BaseDatos.Errores.Insertar.Mensaje(id, ex);
-                            }
-                        }
-                    }
-                }
+							Environment.Exit(1);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(id, ex);
+						}
+					}
+				}
             }
         }
     }

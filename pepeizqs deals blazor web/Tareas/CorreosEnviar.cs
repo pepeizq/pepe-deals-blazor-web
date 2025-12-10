@@ -134,7 +134,7 @@ namespace Tareas
 
 										if (enviado == true)
 										{
-											BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
+											await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 										}
 										else
 										{
@@ -155,7 +155,7 @@ namespace Tareas
 										{
 											if (pendiente2.CorreoHacia == correoMinimoFinal.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
 											{
-												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
+												await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
 											}
 										}
 									}
@@ -171,7 +171,7 @@ namespace Tareas
 
 										if (enviado == true)
 										{
-											BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
+											await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 										}
 										else
 										{
@@ -194,7 +194,7 @@ namespace Tareas
 										{
 											if (pendiente2.CorreoHacia == correoDeseadoBundle.CorreoHacia && (pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle || pendiente2.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle))
 											{
-												BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
+												await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente2.Id);
 											}
 										}
 									}
@@ -210,7 +210,7 @@ namespace Tareas
 
 										if (enviado == true)
 										{
-											BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
+											await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 										}
 										else
 										{

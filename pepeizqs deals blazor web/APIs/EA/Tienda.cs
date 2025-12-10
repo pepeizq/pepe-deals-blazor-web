@@ -402,7 +402,7 @@ namespace APIs.EA
 													Tipo = tipo
 												};
 
-												BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+												await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 											}
 										}
 									}
@@ -416,7 +416,7 @@ namespace APIs.EA
 									{
 										var generar = tipo == Suscripciones2.SuscripcionTipo.EAPlay ? Suscripcion.Generar() : Suscripcion.GenerarPro();
 
-										BaseDatos.Suscripciones.Insertar.Temporal(generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
+										await BaseDatos.Suscripciones.Insertar.Temporal(generar.Id.ToString().ToLower(), enlaceSuscripcion, nombre);
 									}
 								}
 							}

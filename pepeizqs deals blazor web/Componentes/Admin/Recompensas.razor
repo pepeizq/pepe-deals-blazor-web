@@ -161,9 +161,9 @@ else
 
 	private List<RecompensaHistorial> entradas = new List<RecompensaHistorial>();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		entradas = BaseDatos.Recompensas.Historial.Leer();
+		entradas = await BaseDatos.Recompensas.Historial.Leer();
 	}
 
 	private async Task TextoCambiaBuscador()
@@ -213,7 +213,7 @@ else
 		fechaCaduca = texto.Value.ToString();
 	}
 
-	private void AñadirRecompensa(MouseEventArgs e)
+	private async Task AñadirRecompensa(MouseEventArgs e)
 	{
 		RecompensaJuego recompensa = new RecompensaJuego();
 		recompensa.JuegoId = int.Parse(idSeleccionada);
@@ -228,7 +228,7 @@ else
 			recompensa.FechaCaduca = Convert.ToDateTime(fechaCaduca);
 		}
 
-		BaseDatos.Recompensas.Juegos.Insertar(recompensa);
+		await BaseDatos.Recompensas.Juegos.Insertar(recompensa);
 
 		idSeleccionada = null;
 		juegoSeleccionado = null;

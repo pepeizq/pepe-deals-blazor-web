@@ -288,7 +288,7 @@
 	private string usuarioId = null;
     private string dominio = null;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -297,7 +297,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace BaseDatos.Juegos
 {
 	public static class Precios
 	{
-		public static void Actualizar(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta,  
+		public static async Task Actualizar(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta,  
 			string slugGOG = null, string idGOG = null, string slugEpic = null, JuegoAnalisis reseñas = null)
 		{
 			bool cambioPrecio = true;
@@ -285,17 +285,17 @@ namespace BaseDatos.Juegos
 
                             if (notificar == true)
                             {
-                                List<string> usuariosInteresados = BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
+                                List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
 
 								if (usuariosInteresados?.Count > 0)
 								{
 									foreach (var usuarioInteresado in usuariosInteresados)
 									{
-										if (Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
+										if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
 										{
 											DeseadosDatos datosDeseados = null;
 
-											string datosDeseadosTexto = BaseDatos.Usuarios.Buscar.Opcion(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.Opcion(usuarioInteresado, "WishlistData");
 
 											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 											{
@@ -316,15 +316,15 @@ namespace BaseDatos.Juegos
 												datosDeseados.UltimoJuego = DateTime.Now;
 											}
 
-											BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
 
-											string correo = Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
+											string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
 
 											if (string.IsNullOrEmpty(correo) == false)
 											{
 												try
 												{
-													Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
+													await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
 												}
 												catch (Exception ex)
 												{

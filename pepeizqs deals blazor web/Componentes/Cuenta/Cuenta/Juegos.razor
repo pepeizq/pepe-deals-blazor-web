@@ -236,7 +236,7 @@ else
 	{
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			juegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegos = await Herramientas.UsuarioJuegos.Cargar(usuarioId);
 
 			if (juegos != null)
 			{

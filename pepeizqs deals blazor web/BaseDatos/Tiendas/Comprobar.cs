@@ -88,7 +88,7 @@ namespace BaseDatos.Tiendas
 
 										List<JuegoHistorico> historicos = string.IsNullOrEmpty((string)datos.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(datos.historicos);
 
-										Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis);
+										await Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis);
 									}
 								}
 							}
@@ -188,19 +188,14 @@ WHERE t.enlace = @Enlace
 						reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
 					}
 
-					if (ofertasHistoricas.Count == 0)
-					{
-						ofertasHistoricas.Add(oferta);
-					}
-
-					if (ofertasActuales.Count == 0)
+					if (ofertasActuales?.Count == 0)
 					{
 						ofertasActuales.Add(oferta);
 					}
 
 					if (id > 0)
 					{
-						Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, slugGOG, idGog, slugEpic, reseñas);
+						await Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, slugGOG, idGog, slugEpic, reseñas);
 					}
 				}
 			}
@@ -240,7 +235,7 @@ END;
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 2", ex);
+					BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 2 - " + sqlInsertar, ex);
 				}
 			}
 		}

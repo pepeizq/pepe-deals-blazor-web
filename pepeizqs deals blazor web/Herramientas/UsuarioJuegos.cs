@@ -10,9 +10,9 @@ namespace Herramientas
 {
 	public static class UsuarioJuegos
 	{
-		public static UsuarioListadosJuegos Cargar(string usuarioId)
+		public static async Task<UsuarioListadosJuegos> Cargar(string usuarioId)
 		{
-			Usuario usuario = global::BaseDatos.Usuarios.Buscar.JuegosTiene(usuarioId);
+			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.JuegosTiene(usuarioId);
 
 			UsuarioListadosJuegos listados = new UsuarioListadosJuegos();
 

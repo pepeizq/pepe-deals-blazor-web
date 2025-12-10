@@ -261,7 +261,7 @@
 
 				if (id64 != null)
 				{
-					bool cuentaUsada = BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64, usuario.Id);
+					bool cuentaUsada = await BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64, usuario.Id);
 
 					if (cuentaUsada == false)
 					{

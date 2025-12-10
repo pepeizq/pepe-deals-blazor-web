@@ -121,23 +121,6 @@ else
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
-
-    protected override void OnInitialized()
-    {
-        if (conexion == null)
-        {
-            conexion = Herramientas.BaseDatos.Conectar();
-        }
-        else
-        {
-            if (conexion.State != System.Data.ConnectionState.Open)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-        }
-    }
-
     List<global::Juegos.Juego> juegosBuscadorGratis = new List<global::Juegos.Juego>();
 
     private string idSeleccionadaGratis = null;

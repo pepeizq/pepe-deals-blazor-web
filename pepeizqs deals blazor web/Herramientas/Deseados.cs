@@ -10,7 +10,7 @@ namespace Herramientas
 	{
 		public static async Task<List<JuegoDeseadoMostrar>> LeerJuegos(string usuarioId)
 		{
-			Usuario deseadosUsuario = global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Usuario deseadosUsuario = await global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
 			List<JuegoDeseadoMostrar> deseadosGestor = new List<JuegoDeseadoMostrar>();
 
@@ -486,11 +486,11 @@ namespace Herramientas
 			return false;
 		}
 
-		public static void CambiarEstado(string usuarioId, Juego juego, bool estado, JuegoDRM drm, bool usarIdMaestra)
+		public static async Task CambiarEstado(string usuarioId, Juego juego, bool estado, JuegoDRM drm, bool usarIdMaestra)
 		{
 			List<JuegoDeseado> deseados = new List<JuegoDeseado>();
 
-			Usuario deseadosCargar = global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Usuario deseadosCargar = await global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
 			if (string.IsNullOrEmpty(deseadosCargar?.Wishlist) == false)
 			{
@@ -531,7 +531,7 @@ namespace Herramientas
 					deseados.Add(deseado);
 				}
 
-				global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
+				await global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
 			}
 			else
 			{
@@ -554,15 +554,15 @@ namespace Herramientas
 					}
 				}
 
-				global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
+				await global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
 			}
 		}
 
-		public static List<JuegoTieneDesea> CambiarEstado(List<JuegoTieneDesea> usuarioTieneDesea, string usuarioId, Juego juego, bool estado, JuegoDRM drm)
+		public static async Task<List<JuegoTieneDesea>> CambiarEstado(List<JuegoTieneDesea> usuarioTieneDesea, string usuarioId, Juego juego, bool estado, JuegoDRM drm)
 		{
 			List<JuegoDeseado> deseados = new List<JuegoDeseado>();
 
-			Usuario deseadosCargar = global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Usuario deseadosCargar = await global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
 			if (string.IsNullOrEmpty(deseadosCargar?.Wishlist) == false)
 			{
@@ -601,7 +601,7 @@ namespace Herramientas
 					}
 				}
 
-				global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
+				await global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
 			}
 			else
 			{
@@ -617,7 +617,7 @@ namespace Herramientas
 					}
 				}
 
-				global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
+				await global::BaseDatos.Usuarios.Actualizar.Opcion("Wishlist", JsonSerializer.Serialize(deseados), usuarioId);
 
 				if (usuarioTieneDesea != null)
 				{

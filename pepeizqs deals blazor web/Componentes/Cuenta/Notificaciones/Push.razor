@@ -24,7 +24,7 @@
 						@userAgentRegistrado
 					</div>
 
-					@if (BaseDatos.Usuarios.Buscar.RolDios(usuario.Id) == true)
+					@if (usuarioAdmin == true)
 					{
 						<div style="margin-top: 10px;">
 							@idSuscripcionRegistrada.ToString()
@@ -152,6 +152,7 @@
 	public string userAgent { get; set; }
 
 	private Usuario usuario = new Usuario();
+	private bool usuarioAdmin = false;
 
 	private string userAgentRegistrado = string.Empty;
 	private int idSuscripcionRegistrada = 0;
@@ -172,7 +173,9 @@
 
 		if (string.IsNullOrEmpty(usuario.Id) == false)
 		{
-			Herramientas.NotificacionSuscripcion suscripcion = BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
+			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuario.Id);
+
+			Herramientas.NotificacionSuscripcion suscripcion = await BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
 
 			if (suscripcion != null)
 			{
@@ -274,7 +277,7 @@
         }
     }
 
-	private async void AñadirUsuario(MouseEventArgs e)
+	private async Task AñadirUsuario(MouseEventArgs e)
 	{
 		Herramientas.NotificacionSuscripcion suscripcion = await JavaScript.InvokeAsync<Herramientas.NotificacionSuscripcion>("blazorPushNotifications.requestSubscription");
 
@@ -283,9 +286,9 @@
 			suscripcion.UserId = usuario.Id;
 			suscripcion.UserAgent = userAgent;
 
-			BaseDatos.Usuarios.Insertar.NotificacionesPush(suscripcion);
+			await BaseDatos.Usuarios.Insertar.NotificacionesPush(suscripcion);
 
-			Herramientas.NotificacionSuscripcion suscripcion2 = BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
+			Herramientas.NotificacionSuscripcion suscripcion2 = await BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
 
 			if (suscripcion2 != null)
 			{
@@ -299,9 +302,9 @@
 		}
 	}
 
-	private void QuitarUsuario(MouseEventArgs e)
+	private async Task QuitarUsuario(MouseEventArgs e)
 	{
-		BaseDatos.Usuarios.Borrar.NotificacionesPush(usuario.Id);
+		await BaseDatos.Usuarios.Borrar.NotificacionesPush(usuario.Id);
 		userAgentRegistrado = null;
 	}
 

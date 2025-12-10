@@ -128,7 +128,7 @@
         correoNuevo = texto.Value.ToString();
     }
 
-    private async void ClickearCambioCorreo()
+    private async Task ClickearCambioCorreo()
     {
         if (usuario != null)
         {
@@ -137,7 +137,7 @@
                 correoCambioEnviado = false;
                 correoYaUsado = false;
 
-                if (BaseDatos.Usuarios.Buscar.CorreoYaUsado(correoNuevo) == false)
+                if (await BaseDatos.Usuarios.Buscar.CorreoYaUsado(correoNuevo) == false)
                 {
                     string usuarioId = await UserManager.GetUserIdAsync(usuario);
                     string codigo = await UserManager.GenerateChangeEmailTokenAsync(usuario, correoNuevo);

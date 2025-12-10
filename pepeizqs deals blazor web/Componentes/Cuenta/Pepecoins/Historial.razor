@@ -13,54 +13,51 @@
 	}
 </style>
 
-@if (entradas != null)
+@if (entradas?.Count > 0)
 {
-	if (entradas.Count > 0)
-	{
-		<div class="caja-cuenta-contenido" style="display: flex; flex-direction: row; align-items: start; gap: 40px; padding: 20px 30px;">
-			<div style="display: flex; flex-direction: column; gap: 5px; width: 100%;">
-				<hr/>
-				@foreach (var entrada in entradas)
-				{
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div>
-							@if (entrada.Coins >= 0)
-							{
-								<label>+@entrada.Coins</label>
-							}
-							else
-							{
-								<label>@entrada.Coins</label>
-							}
+	<div class="caja-cuenta-contenido" style="display: flex; flex-direction: row; align-items: start; gap: 40px; padding: 20px 30px;">
+		<div style="display: flex; flex-direction: column; gap: 5px; width: 100%;">
+			<hr />
+			@foreach (var entrada in entradas)
+			{
+				<div style="display: flex; align-items: center; gap: 20px;">
+					<div>
+						@if (entrada.Coins >= 0)
+						{
+							<label>+@entrada.Coins</label>
+						}
+						else
+						{
+							<label>@entrada.Coins</label>
+						}
 
-						</div>
-
-						<div style="flex-grow: 1;">
-							@if (string.IsNullOrEmpty(entrada.Razon) == false)
-							{
-								string cadena = entrada.Razon;
-								string juego = string.Empty;
-
-								if (cadena.Contains("Buy") == true)
-								{
-									juego = cadena.Remove(0, 4);
-									cadena = "Buy2";
-								}
-
-								<label>@Herramientas.Idiomas.BuscarTexto(idioma, cadena, "PatreonStore") @juego</label>
-							}
-						</div>
-
-						<div style="text-align: right;">
-							@entrada.Fecha.Day/@entrada.Fecha.Month/@entrada.Fecha.Year
-						</div>
 					</div>
 
-					<hr />
-				}
-			</div>			
+					<div style="flex-grow: 1;">
+						@if (string.IsNullOrEmpty(entrada.Razon) == false)
+						{
+							string cadena = entrada.Razon;
+							string juego = string.Empty;
+
+							if (cadena.Contains("Buy") == true)
+							{
+								juego = cadena.Remove(0, 4);
+								cadena = "Buy2";
+							}
+
+							<label>@Herramientas.Idiomas.BuscarTexto(idioma, cadena, "PatreonStore") @juego</label>
+						}
+					</div>
+
+					<div style="text-align: right;">
+						@entrada.Fecha.Day/@entrada.Fecha.Month/@entrada.Fecha.Year
+					</div>
+				</div>
+
+				<hr />
+			}
 		</div>
-	}
+	</div>
 }
 
 @code {
@@ -83,7 +80,7 @@
 
 		if (usuario != null)
 		{
-			entradas = BaseDatos.Recompensas.Historial.Leer(usuario.Id);
+			entradas = await BaseDatos.Recompensas.Historial.Leer(usuario.Id);
 		}
 	}
 }

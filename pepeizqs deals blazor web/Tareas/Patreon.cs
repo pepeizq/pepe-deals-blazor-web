@@ -37,7 +37,7 @@ namespace Tareas
 						{
 							await BaseDatos.Admin.Actualizar.TareaUso("patreon", DateTime.Now);
 
-							Herramientas.Patreon.Leer();
+							await Herramientas.Patreon.Leer();
 						}
 					}
 					catch (Exception ex)

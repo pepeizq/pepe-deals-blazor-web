@@ -61,11 +61,11 @@
 
 	private List<RecompensaJuego> clavesRecompensas = null;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			clavesRecompensas = BaseDatos.Recompensas.Juegos.LeerJuegosUsuario(usuarioId);
+			clavesRecompensas = await BaseDatos.Recompensas.Juegos.LeerJuegosUsuario(usuarioId);
 		}
 	}
 }

@@ -115,7 +115,7 @@ namespace APIs.GeforceNOW
 										await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
 
 										string sqlActualizar = "UPDATE streaminggeforcenow " +
-																"SET fecha=@fecha WHERE id=@id";
+																"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
 
 										try
 										{

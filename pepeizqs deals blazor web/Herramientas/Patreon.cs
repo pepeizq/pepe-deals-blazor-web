@@ -2,13 +2,12 @@
 
 using Patreon.Net;
 using Patreon.Net.Models;
-using System.Text.Json;
 
 namespace Herramientas
 {
 	public static class Patreon
 	{
-		public static async void Leer()
+		public static async Task Leer()
 		{
 			WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
@@ -34,7 +33,7 @@ namespace Herramientas
 							{
 								if (string.IsNullOrEmpty(usuario.Email) == false)
 								{
-									global::BaseDatos.Usuarios.Actualizar.PatreonComprobacion(usuario.Email, DateTime.Now, usuario.CampaignLifetimeSupportCents);
+									await global::BaseDatos.Usuarios.Actualizar.PatreonComprobacion(usuario.Email, DateTime.Now, usuario.CampaignLifetimeSupportCents);
 								}
 							}	
 						}

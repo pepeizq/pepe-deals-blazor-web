@@ -1097,8 +1097,8 @@
 
                                                 if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                                 {
-                                                    cuantosLoTienen = BaseDatos.Usuarios.Buscar.CuantosUsuariosTienenJuego(juego.Id.ToString(), drm.Id);
-                                                    cuantosLoDesean = BaseDatos.Usuarios.Buscar.CuantosUsuariosTienenDeseado(juego.Id.ToString(), drm.Id);
+                                                    cuantosLoTienen = drmsCuantosTienen.TryGetValue(drm.Id.ToString(), out var t) ? t : 0;
+                                                    cuantosLoDesean = drmsCuantosDesean.TryGetValue(drm.Id.ToString(), out var d) ? d : 0;
                                                 }
 
                                                 if (cuantosLoTienen > 0 || cuantosLoDesean > 0)
@@ -3493,13 +3493,13 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            juegosUsuario ??= Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
-            string idiomaJuegoTemp = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
+            string idiomaJuegoTemp = await BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
 
             if (string.IsNullOrEmpty(idiomaJuegoTemp) == false)
             {
@@ -3541,6 +3541,8 @@
     private Dictionary<string, string> gratisPreparados = new();
     private Dictionary<string, string> suscripcionesPreparados = new();
 
+    private Dictionary<string, int> drmsCuantosTienen = new();
+    private Dictionary<string, int> drmsCuantosDesean = new();
     private Dictionary<string, Juegos.Juego> juegosMaestroCache = new();
     private Dictionary<int, Bundles2.Bundle> bundlesCache1 = new();
     private Bundles2.Bundle bundleSeleccionadoCache;
@@ -3605,15 +3607,21 @@
 
         #endregion
 
-        #region Bundles Cargar
+        #region Bundles Cargar, DRMs Cuantos Tienen Desean, Amazon Luna GOG
 
         foreach (DRM drm in JuegoDRM2.GenerarListado())
         {
             if (drm.Id != JuegoDRM.NoEspecificado)
             {
-                if (BundlesComprobar(juego.Bundles, drm.Id) != null)
+                if (VerificarMostrarDRM(idioma, drm.Id, juego, drmsEnseñar) == true)
                 {
-                    bundlesPreparados[drm.Id.ToString()] = await BundlesPreparar(drm.Id, idioma);
+                    if (BundlesComprobar(juego.Bundles, drm.Id) != null)
+                    {
+                        bundlesPreparados[drm.Id.ToString()] = await BundlesPreparar(drm.Id, idioma);
+                    }
+
+                    drmsCuantosTienen[drm.Id.ToString()] = await BaseDatos.Usuarios.Buscar.CuantosUsuariosTienenJuego(juego.Id.ToString(), drm.Id);
+                    drmsCuantosDesean[drm.Id.ToString()] = await BaseDatos.Usuarios.Buscar.CuantosUsuariosTienenDeseado(juego.Id.ToString(), drm.Id);
                 }
             }
 
@@ -4226,7 +4234,7 @@
 
     private async Task CambiarEstadoDeseado(MouseEventArgs e, bool estado, JuegoDRM drm)
     {
-        usuarioTieneDesea = Herramientas.Deseados.CambiarEstado(usuarioTieneDesea, usuarioId, juego, estado, drm);
+        usuarioTieneDesea = await Herramientas.Deseados.CambiarEstado(usuarioTieneDesea, usuarioId, juego, estado, drm);
 
         await InvokeAsync(StateHasChanged);
     }

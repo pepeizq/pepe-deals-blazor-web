@@ -180,7 +180,7 @@ namespace APIs.AmazonLuna
 												Tipo = Suscripciones2.SuscripcionTipo.LunaStandard
 											};
 
-											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+											await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 										}
 									}
 								}
@@ -189,7 +189,7 @@ namespace APIs.AmazonLuna
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(GenerarStandard().Id.ToString().ToLower(), juego.Id, juego.Nombre);
+							await BaseDatos.Suscripciones.Insertar.Temporal(GenerarStandard().Id.ToString().ToLower(), juego.Id, juego.Nombre);
 						}
 					}
 				}
@@ -296,7 +296,7 @@ namespace APIs.AmazonLuna
 												Tipo = Suscripciones2.SuscripcionTipo.LunaPremium
 											};
 
-											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+											await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 										}
 									}
 								}
@@ -305,7 +305,7 @@ namespace APIs.AmazonLuna
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString().ToLower(), juego.Id, juego.Nombre);
+							await BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString().ToLower(), juego.Id, juego.Nombre);
 						}
 					}
 				}

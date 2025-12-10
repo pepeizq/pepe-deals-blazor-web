@@ -590,7 +590,7 @@ else
     private string tituloOpcion = string.Empty;
     private string añadirMargin = string.Empty;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
@@ -600,10 +600,10 @@ else
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            opcionesCuenta = BaseDatos.Usuarios.Buscar.OpcionesCuenta(usuarioId);
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            opcionesCuenta = await BaseDatos.Usuarios.Buscar.OpcionesCuenta(usuarioId);
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
             if (string.IsNullOrEmpty(seccion) == false)
             {

@@ -840,7 +840,7 @@ else
 
 	private bool cargado = false;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -850,11 +850,11 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			juegosUsuario ??= Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			opcionesMinimos ??= BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			opcionesMinimos ??= await BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
 
 			if (opcionesMinimos != null)
 			{
@@ -1232,7 +1232,7 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			opcionesMinimos ??= BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
+			opcionesMinimos ??= await BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
 		}
 	}
 
@@ -1316,7 +1316,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 0, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 0, usuarioId);
 			}
 		}
 	}
@@ -1345,7 +1345,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 1, usuarioId);
 			}
 		}
 	}
@@ -1374,7 +1374,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 2, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 2, usuarioId);
 			}
 		}
 	}
@@ -1403,7 +1403,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 3, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 3, usuarioId);
 			}
 		}
 	}
@@ -1432,7 +1432,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 4, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 4, usuarioId);
 			}
 		}
 	}
@@ -1461,7 +1461,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 5, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 5, usuarioId);
 			}
 		}
 	}
@@ -1490,7 +1490,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 6, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 6, usuarioId);
 			}
 		}
 	}
@@ -1522,7 +1522,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 7, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSort", 7, usuarioId);
 			}
 		}
 	}
@@ -1766,7 +1766,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption1", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption1", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
 			}
 
 			await ElegirOrdenamiento(false);
@@ -1792,7 +1792,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption4", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption4", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
 			}
 
 			await ElegirOrdenamiento(false);
@@ -1816,7 +1816,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption2", (int)opcionesMinimos.HistoricalLowsOption2, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption2", (int)opcionesMinimos.HistoricalLowsOption2, usuarioId);
 			}
 		}
 
@@ -1835,7 +1835,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption3", (decimal)opcionesMinimos.HistoricalLowsOption3, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption3", (decimal)opcionesMinimos.HistoricalLowsOption3, usuarioId);
 			}
 		}
 
@@ -1867,7 +1867,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsDRMs", opcionesMinimos.HistoricalLowsDRMs, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsDRMs", opcionesMinimos.HistoricalLowsDRMs, usuarioId);
 			}
 		}
 
@@ -1931,7 +1931,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsStores", opcionesMinimos.HistoricalLowsStores, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsStores", opcionesMinimos.HistoricalLowsStores, usuarioId);
 			}
 		}
 
@@ -1994,7 +1994,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsReviews", (int)opcionesMinimos.HistoricalLowsReviews, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsReviews", (int)opcionesMinimos.HistoricalLowsReviews, usuarioId);
 			}
 		}
 
@@ -2026,7 +2026,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsCategories", opcionesMinimos.HistoricalLowsCategories, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsCategories", opcionesMinimos.HistoricalLowsCategories, usuarioId);
 			}
 		}
 
@@ -2087,7 +2087,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamDeck", opcionesMinimos.HistoricalLowsSteamDeck, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamDeck", opcionesMinimos.HistoricalLowsSteamDeck, usuarioId);
 			}
 		}
 
@@ -2176,7 +2176,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsRelease", opcionesMinimos.HistoricalLowsRelease.ToString(), usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsRelease", opcionesMinimos.HistoricalLowsRelease.ToString(), usuarioId);
 			}		
 		}
 
@@ -2215,7 +2215,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsAI", opcionesMinimos.HistoricalLowsAI.ToString(), usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsAI", opcionesMinimos.HistoricalLowsAI.ToString(), usuarioId);
 
 			}
 		}
@@ -2410,7 +2410,7 @@ else
 
 	#region Deseados
 
-	private async void CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, JuegoMostrar juego, JuegoDRM drm)
+	private async Task CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, JuegoMostrar juego, JuegoDRM drm)
 	{
 		bool estado = true;
 
@@ -2419,7 +2419,7 @@ else
 			estado = false;
 		}
 
-		Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, true);
+		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, true);
 
 		foreach (var juego2 in juegosMostrar)
 		{

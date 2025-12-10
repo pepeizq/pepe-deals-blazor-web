@@ -41,9 +41,9 @@ namespace Tareas
 						{
 							await BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now);
 
-							List<BaseDatos.UsuariosActualizar.UsuarioActualizar> usuarios = BaseDatos.UsuariosActualizar.Buscar.Todos();
+							List<BaseDatos.UsuariosActualizar.UsuarioActualizar> usuarios = await BaseDatos.UsuariosActualizar.Buscar.Todos();
 
-							if (usuarios.Count > 0)
+							if (usuarios?.Count > 0)
 							{
 								foreach (var usuario2 in usuarios)
 								{
@@ -64,7 +64,7 @@ namespace Tareas
 
 										await UserManager.UpdateAsync(usuario);
 
-										BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
+										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 									}
 
 									if (usuario2.Metodo == "GOG")
@@ -79,7 +79,7 @@ namespace Tareas
 
 										await UserManager.UpdateAsync(usuario);
 
-										BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
+										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 									}
 								}
 							}

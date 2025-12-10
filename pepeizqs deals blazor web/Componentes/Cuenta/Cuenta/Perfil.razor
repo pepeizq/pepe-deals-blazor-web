@@ -63,7 +63,7 @@
 			<hr />
 
 			<div style="display: flex; flex-direction: column; gap: 20px;">
-				@if (string.IsNullOrEmpty(BaseDatos.Usuarios.Buscar.PerfilSteamCuenta(usuario.Id)) == false)
+				@if (string.IsNullOrEmpty(steamCuentaId) == false)
 				{
 					<div style="display: flex; align-items: start; gap: 20px;">
 						<div class="checkbox-caja">
@@ -78,7 +78,7 @@
 					</div>
 				}
 
-				@if (string.IsNullOrEmpty(BaseDatos.Usuarios.Buscar.PerfilGogCuenta(usuario.Id)) == false)
+				@if (string.IsNullOrEmpty(gogCuentaId) == false)
 				{
 					<div style="display: flex; align-items: start; gap: 20px;">
 						<div class="checkbox-caja">
@@ -215,12 +215,18 @@
 
 	private Usuario usuario = new Usuario();
 
+	private string steamCuentaId = string.Empty;
+	private string gogCuentaId = string.Empty;
+
 	protected override async Task OnInitializedAsync()
 	{
 		usuario = await UserManager.GetUserAsync(Contexto.HttpContext.User);
 
 		if (usuario != null)
 		{
+			steamCuentaId = await BaseDatos.Usuarios.Buscar.PerfilSteamCuenta(usuario.Id);
+			gogCuentaId = await BaseDatos.Usuarios.Buscar.PerfilGogCuenta(usuario.Id);
+
 			if (usuario.ProfileShow == null)
 			{
 				estadoEnseñar = null;
@@ -407,7 +413,7 @@
 	{
 		if (string.IsNullOrEmpty(textoNombre) == false)
 		{
-			nombreYaUsado = BaseDatos.Usuarios.Buscar.PerfilYaUsado(textoNombre);
+			nombreYaUsado = await BaseDatos.Usuarios.Buscar.PerfilYaUsado(textoNombre);
 
 			if (nombreYaUsado == false)
 			{

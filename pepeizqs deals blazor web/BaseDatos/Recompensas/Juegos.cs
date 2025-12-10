@@ -3,6 +3,8 @@
 using Dapper;
 using Juegos;
 using Microsoft.Data.SqlClient;
+using pepeizqs_deals_web.Data;
+using System.Drawing;
 
 namespace BaseDatos.Recompensas
 {
@@ -21,59 +23,9 @@ namespace BaseDatos.Recompensas
 
 	public static class Juegos
 	{
-		public static RecompensaJuego Cargar(SqlDataReader lector)
+		public static async Task Insertar(RecompensaJuego recompensa)
 		{
-			RecompensaJuego juego = new RecompensaJuego
-			{
-				Id = lector.GetInt32(0),
-				JuegoId = lector.GetInt32(1),
-				Clave = lector.GetString(2),
-				Coins = lector.GetInt32(3),
-				FechaEmpieza = lector.GetDateTime(5)
-			};
-
-			if (lector.IsDBNull(4) == false)
-			{
-				juego.UsuarioId = lector.GetString(4);
-			}
-
-			if (lector.IsDBNull(6) == false)
-			{
-				juego.DRM = Enum.Parse<JuegoDRM>(lector.GetInt32(6).ToString());
-			}
-			else
-			{
-				juego.DRM = JuegoDRM.Steam;
-			}
-
-			if (lector.IsDBNull(7) == false)
-			{
-				juego.JuegoNombre = lector.GetString(7);
-			}
-
-			if (lector.IsDBNull(8) == false)
-			{
-				juego.FechaCaduca = lector.GetDateTime(8);
-			}
-
-			return juego;
-		}
-
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Insertar(RecompensaJuego recompensa, SqlConnection conexion = null)
-		{
-			conexion = CogerConexion(conexion);
-
-			string sqlInsertar = @"
+			string insertar = @"
 				INSERT INTO recompensasJuegos 
 				(juegoId, clave, coins, fecha, juegoNombre, drm" + (recompensa.FechaCaduca != null ? ", fechaCaduca" : "") + @")
 				VALUES 
@@ -81,15 +33,18 @@ namespace BaseDatos.Recompensas
 
 			try
 			{
-				conexion.Execute(sqlInsertar, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					juegoId = recompensa.JuegoId.ToString(),
-					clave = recompensa.Clave,
-					coins = recompensa.Coins,
-					fecha = recompensa.FechaEmpieza,
-					juegoNombre = recompensa.JuegoNombre,
-					drm = recompensa.DRM,
-					fechaCaduca = recompensa.FechaCaduca
+					await sentencia.Connection.ExecuteAsync(insertar, new
+					{
+						juegoId = recompensa.JuegoId.ToString(),
+						clave = recompensa.Clave,
+						coins = recompensa.Coins,
+						fecha = recompensa.FechaEmpieza,
+						juegoNombre = recompensa.JuegoNombre,
+						drm = recompensa.DRM,
+						fechaCaduca = recompensa.FechaCaduca
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -98,34 +53,36 @@ namespace BaseDatos.Recompensas
 			}
 		}
 
-		public static List<RecompensaJuego> Disponibles(SqlConnection conexion = null)
+		public static async Task<List<RecompensaJuego>> Disponibles()
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId IS NULL AND (fechaCaduca IS NULL OR fechaCaduca > GETDATE()) ORDER BY juegoNombre";
 
-				return conexion.Query<RecompensaJuego>(busqueda).ToList();
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<RecompensaJuego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 			}
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Recompensas Disponibles", ex);
 			}
 
-			return new List<RecompensaJuego>();
+			return null;
 		}
 
-		public static void Actualizar(int id, string usuarioId, SqlConnection conexion = null)
+		public static async Task Actualizar(int id, string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
-				string sqlActualizar = "UPDATE recompensasJuegos " +
+				string actualizar = "UPDATE recompensasJuegos " +
 					"SET usuarioId=@usuarioId WHERE id=@id";
 
-				conexion.Execute(sqlActualizar, new { id, usuarioId });
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(actualizar, new { id, usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -133,22 +90,23 @@ namespace BaseDatos.Recompensas
 			}			
 		}
 
-        public static List<RecompensaJuego> LeerJuegosUsuario(string usuarioId, SqlConnection conexion = null)
+        public static async Task<List<RecompensaJuego>> LeerJuegosUsuario(string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId=@usuarioId ORDER BY juegoNombre";
 
-				return conexion.Query<RecompensaJuego>(busqueda, new { usuarioId }).ToList();
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<RecompensaJuego>(busqueda, new { usuarioId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 			}
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer Juegos Usuario", ex);
 			}
 
-			return new List<RecompensaJuego>();
+			return null;
         }
     }
 }

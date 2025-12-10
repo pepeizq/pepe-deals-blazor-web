@@ -441,7 +441,7 @@ else
 	private string añoSeleccionado = string.Empty;
 	private bool cargadoBundles = false;
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -451,8 +451,8 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 		}
 
 		//--------------------------------------------------------------------
@@ -472,15 +472,14 @@ else
 
 		años.Add(DateTime.Now.Year.ToString());
 		años.Reverse();
-	}
 
-	protected override async Task OnInitializedAsync()
-	{
+		//--------------------------------------------------------------------
+
 		int ordenamientoUsuario = 0;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			ordenamientoUsuario = BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
+			ordenamientoUsuario = await BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
 		}
 
 		await CargarBundles(ordenamientoUsuario);
@@ -552,7 +551,7 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			BaseDatos.Usuarios.Actualizar.Opcion("BundlesSort", ordenamientoNumero, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("BundlesSort", ordenamientoNumero, usuarioId);
 		}
 	}
 

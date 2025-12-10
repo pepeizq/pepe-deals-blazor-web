@@ -66,22 +66,20 @@ namespace APIs.Xbox
 
 							try
 							{
-								var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+								string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 								{
-									return await sentencia.Connection.QueryAsync(sqlBuscar, new { Enlace = enlace }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+									return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sqlBuscar, new { enlace }, transaction: sentencia);
 								});
 
-								if (filas.Count > 0)
+								if (string.IsNullOrEmpty(idJuegosTexto) == false)
 								{
-									cantidad += 1;
-									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
-
 									encontrado = true;
 
-									string idJuegosTexto = filas.FirstOrDefault();
-
-									if (string.IsNullOrWhiteSpace(idJuegosTexto) == false && idJuegosTexto != "0")
+									if (idJuegosTexto != "0")
 									{
+										cantidad += 1;
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+
 										List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
 
 										if (idJuegos.Count > 0)
@@ -122,7 +120,7 @@ namespace APIs.Xbox
 														Tipo = Suscripciones2.SuscripcionTipo.PCGamePass
 													};
 
-													BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+													await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 												}
 											}
 										}
@@ -136,7 +134,7 @@ namespace APIs.Xbox
 
 							if (encontrado == false)
 							{
-								BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace);
+								await BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace);
 							}
                         }
                     }

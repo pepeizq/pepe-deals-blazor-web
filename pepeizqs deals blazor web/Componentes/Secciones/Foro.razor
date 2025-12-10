@@ -709,7 +709,7 @@ else if (categoriaId > 0 && postId > 0)
 
             if (usuario != null)
             {
-                if (usuario.ForumRank > 99 || BaseDatos.Usuarios.Buscar.RolDios(usuario.Id) == true)
+                if (usuario.ForumRank > 99 || await BaseDatos.Usuarios.Buscar.RolDios(usuario.Id) == true)
                 {
                     moderadorOAdmin = true;
                 }

@@ -126,7 +126,7 @@
         }
     }
 
-    private void CambiarCorreo(ChangeEventArgs texto)
+    private async Task CambiarCorreo(ChangeEventArgs texto)
     {
         correoAlternativo = texto.Value.ToString();
 
@@ -145,7 +145,7 @@
 
             if (correoValido == true)
             {
-                correoUsado = BaseDatos.Usuarios.Actualizar.PatreonCorreo(usuario.Id, correoAlternativo);
+                correoUsado = await BaseDatos.Usuarios.Actualizar.PatreonCorreo(usuario.Id, correoAlternativo);
             }
         }
     }

@@ -262,7 +262,7 @@
 
 				if (string.IsNullOrEmpty(idCuenta) == false)
 				{
-					bool cuentaUsada = BaseDatos.Usuarios.Buscar.CuentaGogUsada(idCuenta, usuario.Id);
+					bool cuentaUsada = await BaseDatos.Usuarios.Buscar.CuentaGogUsada(idCuenta, usuario.Id);
 
 					if (cuentaUsada == false)
 					{

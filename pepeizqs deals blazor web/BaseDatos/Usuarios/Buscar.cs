@@ -10,30 +10,21 @@ namespace BaseDatos.Usuarios
 {
 	public static class Buscar
 	{
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static bool RolDios(string id, SqlConnection conexion = null)
+		public static async Task<bool> RolDios(string id)
 		{
 			if (string.IsNullOrEmpty(id) == true)
 			{
 				return false;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string sql = "SELECT Role FROM AspNetUsers WHERE Id = @Id";
 
 			try
 			{
-				string rol = conexion.QueryFirstOrDefault<string>(sql, new { Id = id });
+				string rol = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = id }, transaction: sentencia);
+				});
 
 				if (string.IsNullOrEmpty(rol) == false)
 				{
@@ -51,7 +42,7 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static string IdiomaSobreescribir(string usuarioId, SqlConnection conexion = null)
+		public static async Task<string> IdiomaSobreescribir(string usuarioId)
 		{
 			string idioma = "en";
 
@@ -60,13 +51,14 @@ namespace BaseDatos.Usuarios
 				return idioma;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string sql = "SELECT LanguageOverride FROM AspNetUsers WHERE Id = @Id";
 
 			try
 			{
-				string idiomaBD = conexion.QueryFirstOrDefault<string>(sql, new { Id = usuarioId });
+				string idiomaBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId }, transaction: sentencia);
+				});
 
 				if (string.IsNullOrEmpty(idiomaBD) == false)
 				{
@@ -81,7 +73,7 @@ namespace BaseDatos.Usuarios
 			return idioma;
 		}
 
-		public static string IdiomaJuegos(string usuarioId, SqlConnection conexion = null)
+		public static async Task<string> IdiomaJuegos(string usuarioId)
 		{
 			string idioma = "en";
 
@@ -90,13 +82,14 @@ namespace BaseDatos.Usuarios
 				return idioma;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string sql = "SELECT LanguageGames FROM AspNetUsers WHERE Id = @Id";
 
 			try
 			{
-				string idiomaBD = conexion.QueryFirstOrDefault<string>(sql, new { Id = usuarioId });
+				string idiomaBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId }, transaction: sentencia);
+				});
 
 				if (string.IsNullOrEmpty(idiomaBD) == false)
 				{
@@ -111,14 +104,12 @@ namespace BaseDatos.Usuarios
 			return idioma;
 		}
 
-		public static Usuario JuegosTiene(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> JuegosTiene(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
-
-			conexion = CogerConexion(conexion);
 
 			string busqueda = @"
 				SELECT 
@@ -133,7 +124,10 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -143,20 +137,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static DateTime? FechaPatreon(string usuarioId, SqlConnection conexion = null)
+		public static async Task<DateTime?> FechaPatreon(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT PatreonLastCheck FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<DateTime?>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -166,14 +161,12 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static Usuario DeseadosTiene(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> DeseadosTiene(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{ 
 				return null;
 			}
-
-			conexion = CogerConexion(conexion);
 
 			string busqueda = @"
 				SELECT 
@@ -186,7 +179,10 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex) 
 			{
@@ -196,20 +192,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static Usuario OpcionesCabecera(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> OpcionesCabecera(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT Avatar, Email, Nickname, PatreonCoins FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -219,20 +216,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static Usuario OpcionesPortada(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> OpcionesPortada(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT IndexOption1, IndexOption2, IndexDRMs, IndexCategories, ForumIndex FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -242,20 +240,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static Usuario OpcionesDeseados(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> OpcionesDeseados(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
-
-			conexion = CogerConexion(conexion);
 
 			string busqueda = "SELECT WishlistSort, WishlistOption3, WishlistOption4, WishlistPosition, WishlistData FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -265,43 +264,45 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static Usuario OpcionesMinimos(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> OpcionesMinimos(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
-
-			conexion = CogerConexion(conexion);
 
 			string busqueda = "SELECT HistoricalLowsOption1, HistoricalLowsOption4, HistoricalLowsOption2, HistoricalLowsOption3, HistoricalLowsDRMs, HistoricalLowsStores, HistoricalLowsCategories, HistoricalLowsSteamDeck, HistoricalLowsSort, HistoricalLowsRelease, HistoricalLowsAI FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Deseados", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Minimos", ex);
 			}
 
 			return null;
 		}
 
-		public static Usuario OpcionesCuenta(string usuarioId, SqlConnection conexion = null)
+		public static async Task<Usuario> OpcionesCuenta(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT EmailConfirmed, PatreonCoins, SteamAccountLastCheck, GogAccountLastCheck, AmazonLastImport, EpicGamesLastImport, UbisoftLastImport, EaLastImport FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -311,15 +312,16 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static List<Usuario> UsuariosNotificacionesCorreo(SqlConnection conexion = null)
+		public static async Task<List<Usuario>> UsuariosNotificacionesCorreo()
 		{
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT Id, NotificationBundles, NotificationFree, NotificationSubscriptions, NotificationOthers, NotificationWeb, NotificationDelisted, Email, Language FROM AspNetUsers";
 
 			try
 			{
-				List<Usuario> usuarios = conexion.Query<Usuario>(busqueda).ToList();
+				List<Usuario> usuarios = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<Usuario>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 
 				return usuarios
 				   .Where(usuario =>
@@ -341,20 +343,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static bool CorreoYaUsado(string correo, SqlConnection conexion = null)
+		public static async Task<bool> CorreoYaUsado(string correo)
 		{
 			if (string.IsNullOrEmpty(correo) == true)
 			{
 				return false;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			string busqueda = "SELECT Id FROM AspNetUsers WHERE Email=@Email";
 
 			try
 			{
-				int resultados = conexion.ExecuteScalar<int>(busqueda, new { Email = correo });
+				int resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { Email = correo }, transaction: sentencia);
+				});
 
 				return resultados > 0;
 			}
@@ -366,7 +369,7 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static bool UsuarioTieneJuego(string usuarioId, int juegoId, JuegoDRM drm, SqlConnection conexion = null)
+		public static async Task<bool> UsuarioTieneJuego(string usuarioId, int juegoId, JuegoDRM drm)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
@@ -407,14 +410,12 @@ namespace BaseDatos.Usuarios
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				try
 				{
-					string resultado = conexion.QueryFirstOrDefault<string>(
-						busqueda,
-						new { id = usuarioId, juegoId }
-					);
+					string resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = usuarioId, juegoId }, transaction: sentencia);
+					});
 
 					return resultado != null;
 				}
@@ -427,20 +428,21 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static string UsuarioQuiereCorreos(string usuarioId, string seccion, SqlConnection conexion = null)
+		public static async Task<string> UsuarioQuiereCorreos(string usuarioId, string seccion)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT " + seccion + " AS Notificaciones, EmailConfirmed, Email FROM AspNetUsers WHERE Id=@Id";
 
-				var datos = conexion.QueryFirstOrDefault(busqueda, new { Id = usuarioId });
+				var datos = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync(busqueda, new { id = usuarioId }, transaction: sentencia);
+				});
 
 				if (datos == null)
 				{
@@ -463,15 +465,16 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static bool CuentaSteamUsada(string id64Steam, string idUsuario, SqlConnection conexion = null)
+		public static async Task<bool> CuentaSteamUsada(string id64Steam, string idUsuario)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE SteamId=@SteamId";
 
-				var ids = conexion.Query<string>(busqueda, new { SteamId = id64Steam });
+				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync(busqueda, new { SteamId = id64Steam }, transaction: sentencia);
+				});
 
 				foreach (var id in ids)
 				{
@@ -489,15 +492,16 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static bool CuentaGogUsada(string idGog, string idUsuario, SqlConnection conexion = null)
+		public static async Task<bool> CuentaGogUsada(string idGog, string idUsuario)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE GogId=@GogId";
 
-				var ids = conexion.Query<string>(busqueda, new { GogId = idGog });
+				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync(busqueda, new { GogId = idGog }, transaction: sentencia);
+				});
 
 				foreach (var id in ids)
 				{
@@ -515,16 +519,16 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static NotificacionSuscripcion UnUsuarioNotificacionesPush(string usuarioId, SqlConnection conexion = null)
+		public static async Task<NotificacionSuscripcion> UnUsuarioNotificacionesPush(string usuarioId)
 		{
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT * FROM usuariosNotificaciones WHERE usuarioId=@usuarioId";
 
-				return conexion.QueryFirstOrDefault<NotificacionSuscripcion>(busqueda, new { usuarioId });
-
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<NotificacionSuscripcion>(busqueda, new { usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -534,20 +538,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static bool UsuarioNombreRepetido(string nombre, SqlConnection conexion = null)
+		public static async Task<bool> UsuarioNombreRepetido(string nombre)
 		{
 			if (string.IsNullOrEmpty(nombre) == true)
 			{
 				return false;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE Nickname=@Nickname";
 
-				var id = conexion.QueryFirstOrDefault<string>(busqueda, new { Nickname = nombre });
+				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Nickname = nombre }, transaction: sentencia);
+				});
 
 				return id != null;
 			}
@@ -559,20 +564,21 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static bool PerfilYaUsado(string nombre, SqlConnection conexion = null)
+		public static async Task<bool> PerfilYaUsado(string nombre)
 		{
 			if (string.IsNullOrEmpty(nombre) == true)
 			{
 				return false;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE ProfileNickname=@ProfileNickname";
 
-				var id = conexion.QueryFirstOrDefault<string>(busqueda, new { ProfileNickname = nombre });
+				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { ProfileNickname = nombre }, transaction: sentencia);
+				});
 
 				return id != null;
 			}
@@ -584,20 +590,21 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static Usuario PerfilCargar(string nombre, SqlConnection conexion = null)
+		public static async Task<Usuario> PerfilCargar(string nombre)
 		{
 			if (string.IsNullOrEmpty(nombre) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT Id, ProfileNickname2, ProfileAvatar, ProfileSteamAccount, ProfileGogAccount, ProfileLastPlayed, ProfileGames, ProfileWishlist FROM AspNetUsers WHERE ProfileNickname=@ProfileNickname AND ProfileShow='true'";
 
-				return conexion.QueryFirstOrDefault<Usuario>(busqueda, new { ProfileNickname = nombre });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { ProfileNickname = nombre }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -607,20 +614,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static string PerfilSteamCuenta(string id, SqlConnection conexion = null)
+		public static async Task<string> PerfilSteamCuenta(string id)
 		{
 			if (string.IsNullOrEmpty(id) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT SteamAccount FROM AspNetUsers WHERE Id=@Id";
 
-				return conexion.QueryFirstOrDefault<string>(busqueda, new { Id = id });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -630,20 +638,21 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static string PerfilGogCuenta(string id, SqlConnection conexion = null)
+		public static async Task<string> PerfilGogCuenta(string id)
 		{
 			if (string.IsNullOrEmpty(id) == true)
 			{
 				return null;
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT GogAccount FROM AspNetUsers WHERE Id=@Id";
 
-				return conexion.QueryFirstOrDefault<string>(busqueda, new { Id = id });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{
@@ -653,7 +662,7 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static int CuantosUsuariosTienenJuego(string juegoId, JuegoDRM drm, SqlConnection conexion = null)
+		public static async Task<int> CuantosUsuariosTienenJuego(string juegoId, JuegoDRM drm)
 		{
 			string busqueda = string.Empty;
 
@@ -689,11 +698,12 @@ namespace BaseDatos.Usuarios
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				try
 				{
-					return conexion.ExecuteScalar<int>(busqueda, new { juegoId });
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { juegoId }, transaction: sentencia);
+					});
 				}
 				catch (Exception ex)
 				{
@@ -704,7 +714,7 @@ namespace BaseDatos.Usuarios
 			return 0;
 		}
 
-		public static int CuantosUsuariosTienenDeseado(string juegoId, JuegoDRM drm, SqlConnection conexion = null)
+		public static async Task<int> CuantosUsuariosTienenDeseado(string juegoId, JuegoDRM drm)
 		{
 			string busqueda = string.Empty;
 
@@ -740,11 +750,12 @@ namespace BaseDatos.Usuarios
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				try
 				{
-					return conexion.ExecuteScalar<int>(busqueda, new { juegoId });
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { juegoId }, transaction: sentencia);
+					});
 				}
 				catch (Exception ex)
 				{
@@ -755,7 +766,7 @@ namespace BaseDatos.Usuarios
 			return 0;
 		}
 
-		public static List<string> ListaUsuariosTienenDeseado(int juegoId, JuegoDRM drm, SqlConnection conexion = null)
+		public static async Task<List<string>> ListaUsuariosTienenDeseado(int juegoId, JuegoDRM drm)
 		{
 			string busqueda = string.Empty;
 
@@ -813,11 +824,12 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				try
 				{
-					return conexion.Query<string>(busqueda, new { juegoId }).ToList();
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.QueryAsync<string>(busqueda, new { juegoId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					});
 				}
 				catch (Exception ex)
 				{
@@ -828,7 +840,7 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			return new List<string>();
 		}
 
-		public static string Opcion(string usuarioId, string valor, SqlConnection conexion = null)
+		public static async Task<string> Opcion(string usuarioId, string valor)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true && string.IsNullOrEmpty(valor) == true)
 			{
@@ -837,13 +849,14 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 				
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(valor) == false)
 			{
-				conexion = CogerConexion(conexion);
-
 				try
 				{
 					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id";
 
-					return conexion.QueryFirstOrDefault<string>(busqueda, new { Id = usuarioId });
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					});
 				}
 				catch (Exception ex)
 				{
@@ -854,20 +867,21 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			return null;
 		}
 
-		public static int BundlesOrden(string usuarioId, SqlConnection conexion = null)
+		public static async Task<int> BundlesOrden(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
 				return 0; 
 			}
 
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT BundlesSort FROM AspNetUsers WHERE id=@Id";
 
-				return conexion.QueryFirstOrDefault<int>(busqueda, new { Id = usuarioId });
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
 			}
 			catch (Exception ex)
 			{

@@ -18,9 +18,9 @@ namespace Herramientas.Correos
 
 	public static class DeseadoBundle
 	{
-		public static void Nuevo(string usuarioId, Bundle bundle, BundleJuego juego, string correoHacia)
+		public static async Task Nuevo(string usuarioId, Bundle bundle, BundleJuego juego, string correoHacia)
 		{
-			string idioma = global::BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			string idioma = await global::BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 
 			if (string.IsNullOrEmpty(idioma) == true)
 			{

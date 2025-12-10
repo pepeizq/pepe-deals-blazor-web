@@ -1,7 +1,9 @@
 ﻿#nullable disable
 
 using Dapper;
+using Herramientas.Redireccionador;
 using Microsoft.Data.SqlClient;
+using Org.BouncyCastle.Crypto;
 
 namespace BaseDatos.Pendientes
 {
@@ -103,318 +105,238 @@ namespace BaseDatos.Pendientes
 			}
 		}
 
-        public static void Streaming(string idStreaming, string nombreCodigo, int idJuego, SqlConnection conexion)
+        public static async Task Streaming(string idStreaming, string nombreCodigo, int idJuego)
         {
             if (idJuego > 0)
             {
-                string sqlActualizar = "UPDATE streaming" + idStreaming + " " +
-                   "SET idJuego=@idJuego WHERE nombreCodigo=@nombreCodigo";
-
-                using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-                {
-                    comando.Parameters.AddWithValue("@idJuego", idJuego);
-                    comando.Parameters.AddWithValue("@nombreCodigo", nombreCodigo);
-
-                    try
-                    {
-                        comando.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
-				string sqlActualizar2 = "UPDATE streaming" + idStreaming + " " +
-				   "SET idJuego=@idJuego WHERE id=@id";
-
-				using (SqlCommand comando = new SqlCommand(sqlActualizar2, conexion))
+				if (idStreaming.ToLower() == "amazonluna" || idStreaming.ToLower() == "geforcenow")
 				{
-					comando.Parameters.AddWithValue("@idJuego", idJuego);
-					comando.Parameters.AddWithValue("@id", nombreCodigo);
+					string sqlActualizar = "UPDATE streaming" + idStreaming + " " +
+					   "SET idJuego=@idJuego WHERE nombreCodigo=@nombreCodigo";
 
 					try
 					{
-						comando.ExecuteNonQuery();
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync(sqlActualizar, new { idJuego, nombreCodigo }, transaction: sentencia);
+						});
 					}
-					catch
+					catch (Exception ex)
 					{
+						BaseDatos.Errores.Insertar.Mensaje("Pendientes Actualizar Streaming 1", ex);
+					}
+				}
+				else
+				{
+					string sqlActualizar2 = "UPDATE streaming" + idStreaming + " " +
+						"SET idJuego=@idJuego WHERE id=@id";
 
+					try
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync(sqlActualizar2, new { idJuego, id = nombreCodigo }, transaction: sentencia);
+						});
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Pendientes Actualizar Streaming 2", ex);
 					}
 				}
 			}         
         }
 
-        public static void PlataformaAmazon(string idAmazon, int idJuego, SqlConnection conexion)
+        public static async Task PlataformaAmazon(string idAmazon, int idJuego)
         {
             if (idJuego > 0)
             {
-				bool yaPuesto = false;
-
 				string busqueda = "SELECT idAmazon FROM juegos WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				try
 				{
-					comando.Parameters.AddWithValue("@id", idJuego);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
+					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						if (lector.Read() == true)
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+					});
+
+					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
+
+					if (yaPuesto == false)
+					{
+						string actualizar = "UPDATE juegos " +
+							"SET idAmazon=@idAmazon WHERE id=@id";
+
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							if (lector.IsDBNull(0) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-								{
-									yaPuesto = true;
-								}
-							}
-						}
+							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, idAmazon }, transaction: sentencia);
+						});
+
+						yaPuesto = true;
+					}
+					
+					if (yaPuesto == true)
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalAmazonJuegos WHERE id=@id", new { id = idAmazon }, transaction: sentencia);
+						});
 					}
 				}
-
-				if (yaPuesto == false)
+				catch (Exception ex)
 				{
-					string sqlActualizar = "UPDATE juegos " +
-						"SET idAmazon=@idAmazon WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idJuego);
-						comando.Parameters.AddWithValue("@idAmazon", idAmazon);
-
-						try
-						{
-							comando.ExecuteNonQuery();
-							yaPuesto = true;
-						}
-						catch
-						{
-
-						}
-					}
-				}
-
-				if (yaPuesto == true)
-				{
-					string sqlBorrar = "DELETE FROM temporalAmazonJuegos WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idAmazon);
-
-						comando.ExecuteNonQuery();
-					}
+					BaseDatos.Errores.Insertar.Mensaje("Plataforma Amazon", ex);
 				}
 			}
 		}
 
-		public static void PlataformaEpic(string idEpic, int idJuego, SqlConnection conexion)
+		public static async Task PlataformaEpic(string idEpic, int idJuego)
 		{
 			if (idJuego > 0)
 			{
-				bool yaPuesto = false;
-
 				string busqueda = "SELECT exeEpic FROM juegos WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				try
 				{
-					comando.Parameters.AddWithValue("@id", idJuego);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
+					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						if (lector.Read() == true)
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+					});
+
+					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
+
+					if (yaPuesto == false)
+					{
+						string actualizar = "UPDATE juegos " +
+							"SET exeEpic=@exeEpic WHERE id=@id";
+
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							if (lector.IsDBNull(0) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-								{
-									yaPuesto = true;
-								}
-							}
-						}
+							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeEpic = idEpic }, transaction: sentencia);
+						});
+
+						yaPuesto = true;
+					}
+
+					if (yaPuesto == true)
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalEpicJuegos WHERE id=@id", new { id = idEpic }, transaction: sentencia);
+						});
 					}
 				}
-
-				if (yaPuesto == false)
+				catch (Exception ex)
 				{
-					string sqlActualizar = "UPDATE juegos " +
-						"SET exeEpic=@exeEpic WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idJuego);
-						comando.Parameters.AddWithValue("@exeEpic", idEpic);
-
-						try
-						{
-							comando.ExecuteNonQuery();
-							yaPuesto = true;
-						}
-						catch
-						{
-
-						}
-					}
-				}
-
-				if (yaPuesto == true)
-				{
-					string sqlBorrar = "DELETE FROM temporalEpicJuegos WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idEpic);
-
-						comando.ExecuteNonQuery();
-					}
+					BaseDatos.Errores.Insertar.Mensaje("Plataforma Epic", ex);
 				}
 			}
 		}
 
-		public static void PlataformaUbisoft(string idUbisoft, int idJuego, SqlConnection conexion)
+		public static async Task PlataformaUbisoft(string idUbisoft, int idJuego)
 		{
 			if (idJuego > 0)
 			{
-				bool yaPuesto = false;
-
 				string busqueda = "SELECT exeUbisoft FROM juegos WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				try
 				{
-					comando.Parameters.AddWithValue("@id", idJuego);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
+					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						if (lector.Read() == true)
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+					});
+
+					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
+
+					if (yaPuesto == false)
+					{
+						string actualizar = "UPDATE juegos " +
+							"SET exeUbisoft=@exeUbisoft WHERE id=@id";
+
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							if (lector.IsDBNull(0) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-								{
-									yaPuesto = true;
-								}
-							}
-						}
+							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeUbisoft = idUbisoft }, transaction: sentencia);
+						});
+
+						yaPuesto = true;
+					}
+
+					if (yaPuesto == true)
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalUbisoftJuegos WHERE id=@id", new { id = idUbisoft }, transaction: sentencia);
+						});
 					}
 				}
-
-				if (yaPuesto == false)
+				catch (Exception ex)
 				{
-					string sqlActualizar = "UPDATE juegos " +
-						"SET exeUbisoft=@exeUbisoft WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idJuego);
-						comando.Parameters.AddWithValue("@exeEA", idUbisoft);
-
-						try
-						{
-							comando.ExecuteNonQuery();
-							yaPuesto = true;
-						}
-						catch
-						{
-
-						}
-					}
-				}
-
-				if (yaPuesto == true)
-				{
-					string sqlBorrar = "DELETE FROM temporalUbisoftJuegos WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idUbisoft);
-
-						comando.ExecuteNonQuery();
-					}
+					BaseDatos.Errores.Insertar.Mensaje("Plataforma Ubisoft", ex);
 				}
 			}
 		}
 
-		public static void PlataformaEA(string idEa, int idJuego, SqlConnection conexion)
+		public static async Task PlataformaEA(string idEa, int idJuego)
 		{
 			if (idJuego > 0)
 			{
-				bool yaPuesto = false;
-
 				string busqueda = "SELECT exeEA FROM juegos WHERE id=@id";
 
-				using (SqlCommand comando = new SqlCommand(busqueda, conexion))
+				try
 				{
-					comando.Parameters.AddWithValue("@id", idJuego);
-
-					using (SqlDataReader lector = comando.ExecuteReader())
+					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						if (lector.Read() == true)
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+					});
+
+					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
+
+					if (yaPuesto == false)
+					{
+						string actualizar = "UPDATE juegos " +
+							"SET exeEA=@exeEA WHERE id=@id";
+
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							if (lector.IsDBNull(0) == false)
-							{
-								if (string.IsNullOrEmpty(lector.GetString(0)) == false)
-								{
-									yaPuesto = true;
-								}
-							}
-						}
+							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeEA = idEa }, transaction: sentencia);
+						});
+
+						yaPuesto = true;
+					}
+
+					if (yaPuesto == true)
+					{
+						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalEaJuegos WHERE id=@id", new { id = idEa }, transaction: sentencia);
+						});
 					}
 				}
-
-				if (yaPuesto == false)
+				catch (Exception ex)
 				{
-					string sqlActualizar = "UPDATE juegos " +
-						"SET exeEA=@exeEA WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idJuego);
-						comando.Parameters.AddWithValue("@exeEA", idEa);
-
-						try
-						{
-							comando.ExecuteNonQuery();
-							yaPuesto = true;
-						}
-						catch
-						{
-
-						}
-					}
-				}
-				
-				if (yaPuesto == true)
-				{
-					string sqlBorrar = "DELETE FROM temporalEaJuegos WHERE id=@id";
-
-					using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
-					{
-						comando.Parameters.AddWithValue("@id", idEa);
-
-						comando.ExecuteNonQuery();
-					}
+					BaseDatos.Errores.Insertar.Mensaje("Plataforma EA", ex);
 				}
 			}
 		}
 
-		public static void DescartarTienda(string idTienda, string enlace, SqlConnection conexion)
+		public static async Task DescartarTienda(string idTienda, string enlace)
 		{
 			string sqlActualizar = "UPDATE tienda" + idTienda + " " +
 					"SET descartado=@descartado WHERE enlace=@enlace";
 
-			using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@descartado", "si");
-				comando.Parameters.AddWithValue("@enlace", enlace);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch
-				{
-
-				}
+					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					{
+						descartado = "si",
+						enlace
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Descartar Tienda", ex);
 			}
 		}
 
@@ -462,72 +384,88 @@ namespace BaseDatos.Pendientes
 			}
 		}
 
-        public static void DescartarStreaming(string idStreaming, string nombreCodigo, SqlConnection conexion)
+        public static async Task DescartarStreaming(string idStreaming, string nombreCodigo)
         {
-            string sqlActualizar = "UPDATE streaming" + idStreaming + " " +
-                    "SET descartado=@descartado WHERE nombreCodigo=@nombreCodigo";
-
-            using (SqlCommand comando = new SqlCommand(sqlActualizar, conexion))
-            {
-                comando.Parameters.AddWithValue("@descartado", 1);
-                comando.Parameters.AddWithValue("@nombreCodigo", nombreCodigo);
-
-                try
-                {
-                    comando.ExecuteNonQuery();
-                }
-                catch
-                {
-
-                }
-            }
-
-			string sqlActualizar2 = "UPDATE streaming" + idStreaming + " " +
-					"SET descartado=@descartado WHERE id=@id";
-
-			using (SqlCommand comando = new SqlCommand(sqlActualizar2, conexion))
+			if (idStreaming.ToLower() == "amazonluna" || idStreaming.ToLower() == "geforcenow")
 			{
-				comando.Parameters.AddWithValue("@descartado", 1);
-				comando.Parameters.AddWithValue("@id", nombreCodigo);
+				string sqlActualizar = "UPDATE streaming" + idStreaming + " " +
+					"SET descartado=@descartado WHERE nombreCodigo=@nombreCodigo";
 
 				try
 				{
-					comando.ExecuteNonQuery();
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+						{
+							descartado = 1,
+							nombreCodigo
+						}, transaction: sentencia);
+					});
 				}
-				catch
+				catch (Exception ex)
 				{
+					BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Streaming 1 " + idStreaming, ex);
+				}
+			}
+			else
+			{
+				string sqlActualizar2 = "UPDATE streaming" + idStreaming + " " +
+					"SET descartado=@descartado WHERE id=@id";
 
+				try
+				{
+					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+						{
+							descartado = 1,
+							id = nombreCodigo
+						}, transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Streaming 2 " + idStreaming, ex);
 				}
 			}
 		}
 
-        public static void DescartarPlataforma(string idPlataforma, string idJuego, SqlConnection conexion)
+        public static async Task DescartarPlataforma(string idPlataforma, string idJuego)
         {
 			string sqlBorrar = "DELETE FROM temporal" + idPlataforma + "Juegos WHERE id=@id";
 
-			using (SqlCommand comando = new SqlCommand(sqlBorrar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", idJuego);
-
-				comando.ExecuteNonQuery();
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(sqlBorrar, new
+					{
+						id = idJuego
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Plataforma 1 " + idPlataforma, ex);
 			}
 
 			string sqlInsertar = "INSERT INTO " + idPlataforma + "Descartes " +
 							"(id) VALUES " +
 							"(@id) ";
 
-			using (SqlCommand comando = new SqlCommand(sqlInsertar, conexion))
+			try
 			{
-				comando.Parameters.AddWithValue("@id", idJuego);
-
-				try
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					comando.ExecuteNonQuery();
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Descarte Plataforma", ex);
-				}
+					await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+					{
+						id = idJuego
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Plataforma 2 " + idPlataforma, ex);
 			}
 		}
     }

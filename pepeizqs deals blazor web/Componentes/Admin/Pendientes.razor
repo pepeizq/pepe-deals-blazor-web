@@ -373,8 +373,6 @@
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
-
     private List<PendientesTienda> pendientesTiendas = new List<PendientesTienda>();
     private List<PendientesSuscripcion> pendientesSuscripcion = new List<PendientesSuscripcion>();
     private List<PendientesStreaming> pendientesStreaming = new List<PendientesStreaming>();
@@ -669,72 +667,64 @@
 
     private async Task ClickearDescartarPendientes(MouseEventArgs e, string enlace)
     {
-        if (conexion.State != System.Data.ConnectionState.Open)
+        if (string.IsNullOrEmpty(idTiendaPendiente) == false)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
+            await BaseDatos.Pendientes.Actualizar.DescartarTienda(idTiendaPendiente, enlace);
+
+            foreach (var pendiente in pendientesTiendas)
+            {
+                if (pendiente.Tienda.Id == idTiendaPendiente)
+                {
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
+                }
+            }
+
+            await ClickearTiendaPendientes(idTiendaPendiente);
         }
 
-        using (conexion)
+        if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
         {
-            if (string.IsNullOrEmpty(idTiendaPendiente) == false)
-            {
-                BaseDatos.Pendientes.Actualizar.DescartarTienda(idTiendaPendiente, enlace, conexion);
+            await BaseDatos.Pendientes.Actualizar.DescartarSuscripcion(idSuscripcionPendiente, enlace);
 
-                foreach (var pendiente in pendientesTiendas)
+            foreach (var pendiente in pendientesSuscripcion)
+            {
+                if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
                 {
-                    if (pendiente.Tienda.Id == idTiendaPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
-                    }
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
                 }
-
-                await ClickearTiendaPendientes(idTiendaPendiente);
             }
+        }
 
-            if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
+        if (string.IsNullOrEmpty(idStreamingPendiente) == false)
+        {
+            await BaseDatos.Pendientes.Actualizar.DescartarStreaming(idStreamingPendiente, enlace);
+
+            foreach (var pendiente in pendientesStreaming)
             {
-                await BaseDatos.Pendientes.Actualizar.DescartarSuscripcion(idSuscripcionPendiente, enlace);
-
-                foreach (var pendiente in pendientesSuscripcion)
+                if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
                 {
-                    if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
-                    }
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
                 }
             }
 
-            if (string.IsNullOrEmpty(idStreamingPendiente) == false)
+            await ClickearStreamingPendientes(idStreamingPendiente);
+        }
+
+        if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
+        {
+            enlace = enlace.Replace("amazon-games://play/", null);
+
+            await BaseDatos.Pendientes.Actualizar.DescartarPlataforma(idPlataformaPendiente, enlace);
+
+            foreach (var pendiente in pendientesPlataforma)
             {
-                BaseDatos.Pendientes.Actualizar.DescartarStreaming(idStreamingPendiente, enlace, conexion);
-
-                foreach (var pendiente in pendientesStreaming)
+                if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
                 {
-                    if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
-                    }
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
                 }
-
-                await ClickearStreamingPendientes(idStreamingPendiente);
             }
 
-            if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
-            {
-                enlace = enlace.Replace("amazon-games://play/", null);
-
-                BaseDatos.Pendientes.Actualizar.DescartarPlataforma(idPlataformaPendiente, enlace, conexion);
-
-                foreach (var pendiente in pendientesPlataforma)
-                {
-                    if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
-                    }
-                }
-
-                await ClickearPlataformaPendientes(idPlataformaPendiente);
-            }
+            await ClickearPlataformaPendientes(idPlataformaPendiente);
         }
     }
 
@@ -742,104 +732,96 @@
     {
         resultados.Clear();
 
-        if (conexion.State != System.Data.ConnectionState.Open)
+        if (string.IsNullOrEmpty(idTiendaPendiente) == false)
         {
-            conexion = Herramientas.BaseDatos.Conectar();
+            await BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlace, idsPendiente);
+
+            if (idTiendaPendiente != APIs.Steam.Tienda.GenerarBundles().Id)
+            {
+                List<string> lista = new List<string>();
+                string[] datosPartidos = idsPendiente.Split(',');
+                lista.AddRange(datosPartidos);
+
+                if (lista.Count > 1)
+                {
+                    BaseDatos.Pendientes.Insertar.AñadirId(nombrePendiente, idsPendiente);
+                }
+            }
+
+            foreach (var pendiente in pendientesTiendas)
+            {
+                if (pendiente.Tienda.Id == idTiendaPendiente)
+                {
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
+                }
+            }
+
+            await ClickearTiendaPendientes(idTiendaPendiente);
         }
 
-        using (conexion)
+        if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
         {
-            if (string.IsNullOrEmpty(idTiendaPendiente) == false)
+            await BaseDatos.Pendientes.Actualizar.Suscripcion(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(idSuscripcionPendiente).TablaPendientes, "temporal" + idSuscripcionPendiente, enlace, nombrePendiente, imagenPendiente, Herramientas.Listados.Generar(idsPendiente));
+
+            foreach (var pendiente in pendientesSuscripcion)
             {
-                await BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlace, idsPendiente);
-
-                if (idTiendaPendiente != APIs.Steam.Tienda.GenerarBundles().Id)
+                if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
                 {
-                    List<string> lista = new List<string>();
-                    string[] datosPartidos = idsPendiente.Split(',');
-                    lista.AddRange(datosPartidos);
-
-                    if (lista.Count > 1)
-                    {
-                        BaseDatos.Pendientes.Insertar.AñadirId(nombrePendiente, idsPendiente);
-                    }
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
                 }
-
-                foreach (var pendiente in pendientesTiendas)
-                {
-                    if (pendiente.Tienda.Id == idTiendaPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
-                    }
-                }
-
-                await ClickearTiendaPendientes(idTiendaPendiente);
             }
 
-            if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
+            await ClickearSuscripcionPendientes(idSuscripcionPendiente);
+        }
+
+        if (string.IsNullOrEmpty(idStreamingPendiente) == false)
+        {
+            await BaseDatos.Pendientes.Actualizar.Streaming(idStreamingPendiente, enlace, int.Parse(idsPendiente));
+
+            foreach (var pendiente in pendientesStreaming)
             {
-                await BaseDatos.Pendientes.Actualizar.Suscripcion(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(idSuscripcionPendiente).TablaPendientes, "temporal" + idSuscripcionPendiente, enlace, nombrePendiente, imagenPendiente, Herramientas.Listados.Generar(idsPendiente));
-
-                foreach (var pendiente in pendientesSuscripcion)
+                if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
                 {
-                    if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
-                    }
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
                 }
-
-                await ClickearSuscripcionPendientes(idSuscripcionPendiente);
             }
 
-            if (string.IsNullOrEmpty(idStreamingPendiente) == false)
+            await ClickearStreamingPendientes(idStreamingPendiente);
+        }
+
+        if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
+        {
+            if (idPlataformaPendiente.ToLower() == "amazon")
             {
-                BaseDatos.Pendientes.Actualizar.Streaming(idStreamingPendiente, enlace, int.Parse(idsPendiente), conexion);
+                enlace = enlace.Replace("amazon-games://play/", null);
 
-                foreach (var pendiente in pendientesStreaming)
-                {
-                    if (pendiente.Streaming.Id.ToString() == idStreamingPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Streaming(pendiente.Streaming.Id);
-                    }
-                }
-
-                await ClickearStreamingPendientes(idStreamingPendiente);
+                await BaseDatos.Pendientes.Actualizar.PlataformaAmazon(enlace, int.Parse(idsPendiente));
             }
 
-            if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
+            if (idPlataformaPendiente.ToLower() == "epic")
             {
-                if (idPlataformaPendiente.ToLower() == "amazon")
-                {
-                    enlace = enlace.Replace("amazon-games://play/", null);
-
-                    BaseDatos.Pendientes.Actualizar.PlataformaAmazon(enlace, int.Parse(idsPendiente), conexion);
-                }
-
-                if (idPlataformaPendiente.ToLower() == "epic")
-                {
-                    BaseDatos.Pendientes.Actualizar.PlataformaEpic(enlace, int.Parse(idsPendiente), conexion);
-                }
-
-                if (idPlataformaPendiente.ToLower() == "ubisoft")
-                {
-                    BaseDatos.Pendientes.Actualizar.PlataformaUbisoft(enlace, int.Parse(idsPendiente), conexion);
-                }
-
-                if (idPlataformaPendiente.ToLower() == "ea")
-                {
-                    BaseDatos.Pendientes.Actualizar.PlataformaEA(enlace, int.Parse(idsPendiente), conexion);
-                }
-
-                foreach (var pendiente in pendientesPlataforma)
-                {
-                    if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
-                    {
-                        pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
-                    }
-                }
-
-                await ClickearPlataformaPendientes(idPlataformaPendiente);
+                await BaseDatos.Pendientes.Actualizar.PlataformaEpic(enlace, int.Parse(idsPendiente));
             }
+
+            if (idPlataformaPendiente.ToLower() == "ubisoft")
+            {
+                await BaseDatos.Pendientes.Actualizar.PlataformaUbisoft(enlace, int.Parse(idsPendiente));
+            }
+
+            if (idPlataformaPendiente.ToLower() == "ea")
+            {
+                await BaseDatos.Pendientes.Actualizar.PlataformaEA(enlace, int.Parse(idsPendiente));
+            }
+
+            foreach (var pendiente in pendientesPlataforma)
+            {
+                if (pendiente.Plataforma.Id.ToString() == idPlataformaPendiente)
+                {
+                    pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Plataforma(pendiente.Plataforma.Id);
+                }
+            }
+
+            await ClickearPlataformaPendientes(idPlataformaPendiente);
         }
     }
 

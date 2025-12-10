@@ -19,15 +19,15 @@ namespace Herramientas.Correos
 
 	public static class DeseadoMinimo
 	{
-		public static async void Nuevo(string usuarioId, int idJuego, JuegoPrecio precio, string correoHacia)
+		public static async Task Nuevo(string usuarioId, int idJuego, JuegoPrecio precio, string correoHacia)
 		{
 			Juego juego = await global::BaseDatos.Juegos.Buscar.UnJuego(idJuego);
-			Nuevo(usuarioId, juego, precio, correoHacia);
+			await Nuevo(usuarioId, juego, precio, correoHacia);
 		}
 
-		public static void Nuevo(string usuarioId, Juego juego, JuegoPrecio precio, string correoHacia)
+		public static async Task Nuevo(string usuarioId, Juego juego, JuegoPrecio precio, string correoHacia)
 		{
-			string idioma = global::BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			string idioma = await global::BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 
 			if (string.IsNullOrEmpty(idioma) == true)
 			{

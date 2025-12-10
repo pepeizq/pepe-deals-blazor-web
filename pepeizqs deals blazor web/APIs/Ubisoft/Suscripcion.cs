@@ -68,21 +68,9 @@ namespace APIs.Ubisoft
 			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + enlace;
 		}
 
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static async Task Buscar(SqlConnection conexion = null)
+		public static async Task Buscar()
         {
-			conexion = CogerConexion(conexion);
-
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
             int cantidad = 0;
 
@@ -116,11 +104,12 @@ namespace APIs.Ubisoft
 
                         bool encontrado = false;
 
-						conexion = CogerConexion(conexion);
+						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace }, transaction: sentencia);
+						});
 
-						string idJuegosTexto = await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
-
-                        if (string.IsNullOrEmpty(idJuegosTexto) == false)
+						if (string.IsNullOrEmpty(idJuegosTexto) == false)
                         {
 							encontrado = true;
 
@@ -169,7 +158,7 @@ namespace APIs.Ubisoft
 												Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics
 											};
 
-											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+											await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 										}
 									}
 								}
@@ -178,17 +167,15 @@ namespace APIs.Ubisoft
 
 						if (encontrado == false)
 						{
-							BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
+							await BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
 						}
 					}
 				}
             }
         }
 
-		public static async Task BuscarPremium(SqlConnection conexion = null)
+		public static async Task BuscarPremium()
 		{
-			conexion = CogerConexion(conexion);
-
 			await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int cantidad = 0;
@@ -223,9 +210,10 @@ namespace APIs.Ubisoft
 
 						bool encontrado = false;
 
-						conexion = CogerConexion(conexion);
-
-						string idJuegosTexto = await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
+						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						{
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace }, transaction: sentencia);
+						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
 						{
@@ -276,7 +264,7 @@ namespace APIs.Ubisoft
 												Tipo = Suscripciones2.SuscripcionTipo.UbisoftPlusPremium
 											};
 
-											BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
+											await BaseDatos.Suscripciones.Insertar.Ejecutar(int.Parse(id), nuevaSuscripcion);
 										}
 									}
 								}
@@ -285,7 +273,7 @@ namespace APIs.Ubisoft
 
 						if (encontrado == false)
 						{
-                            BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
+                            await BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
                         }
 					}
 				}

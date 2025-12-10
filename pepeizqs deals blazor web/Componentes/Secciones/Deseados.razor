@@ -662,7 +662,7 @@
 	private Dictionary<int, Bundles2.Bundle> bundlesCache = new();
 	private Dictionary<int, JuegoSuscripcion> suscripcionesCache = new();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
@@ -671,8 +671,8 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 		}
 
 		if (string.IsNullOrEmpty(perfilUsuarioId) == false)
@@ -687,7 +687,7 @@
 		{
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				opcionesDeseados ??= BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+				opcionesDeseados ??= await BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
 
 				if (string.IsNullOrEmpty(perfilUsuarioId) == true)
 				{
@@ -709,7 +709,7 @@
 							datos.Cantidad = 0;
 							datos.UltimaVisita = DateTime.Now;
 
-							BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos), usuarioId);
+							await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos), usuarioId);
 						}
 					}
 				}
@@ -769,7 +769,7 @@
 						opcionesDeseados.WishlistSort = 3;
 					}
 
-					ElegirOrdenamiento();
+					await ElegirOrdenamiento();
 				}
 
 				#region Bundles
@@ -915,14 +915,12 @@
 		}
 	}
 
-	private void CambiarPestaña(MouseEventArgs e, int nuevaPestaña)
+	private async Task CambiarPestaña(MouseEventArgs e, int nuevaPestaña)
 	{
 		pestañaMostrar = nuevaPestaña;
 
-		BaseDatos.Usuarios.Actualizar.Opcion("WishlistPosition", pestañaMostrar, usuarioId);
+		await BaseDatos.Usuarios.Actualizar.Opcion("WishlistPosition", pestañaMostrar, usuarioId);
 	}
-
-
 
 	private JuegoPrecio SacarMinimo(Juegos.Juego juego, Juegos.JuegoDRM drm)
 	{
@@ -956,13 +954,13 @@
 		return null;
 	}
 
-	private async void QuitarJuego(MouseEventArgs e, int juegoId, Juegos.JuegoDRM drm, JuegoDeseadoMostrar juegoMostrar)
+	private async Task QuitarJuego(MouseEventArgs e, int juegoId, Juegos.JuegoDRM drm, JuegoDeseadoMostrar juegoMostrar)
 	{
 		Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(juegoId);
 
 		if (juego != null)
 		{
-			Herramientas.Deseados.CambiarEstado(usuarioId, juego, false, drm, false);
+			await Herramientas.Deseados.CambiarEstado(usuarioId, juego, false, drm, false);
 		}
 
 		if (deseadosOfertas.Count > 0)
@@ -990,7 +988,7 @@
 
 	#region Ordenar
 
-	private void OrdenarReseñasPorcentaje()
+	private async Task OrdenarReseñasPorcentaje()
 	{
 		if (deseadosGestor != null)
 		{
@@ -1017,12 +1015,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 0, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 0, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarReseñasCantidad()
+	private async Task OrdenarReseñasCantidad()
 	{
 		if (deseadosGestor != null)
 		{
@@ -1049,12 +1047,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 1, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarNombreAZ()
+	private async Task OrdenarNombreAZ()
 	{
 		if (deseadosGestor != null)
 		{
@@ -1081,12 +1079,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 2, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 2, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarNombreZA()
+	private async Task OrdenarNombreZA()
 	{
 		if (deseadosGestor != null)
 		{
@@ -1113,12 +1111,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 5, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 5, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarPrecio()
+	private async Task OrdenarPrecio()
 	{
 		if (deseadosGestor != null)
 		{
@@ -1142,12 +1140,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 3, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 3, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarDescuento()
+	private async Task OrdenarDescuento()
 	{
 		if (deseadosOfertas != null)
 		{
@@ -1171,12 +1169,12 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 4, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 4, usuarioId);
 			}
 		}
 	}
 
-	private void OrdenarDetectado()
+	private async Task OrdenarDetectado()
 	{
 		if (deseadosOfertas != null)
 		{
@@ -1200,7 +1198,7 @@
 
 			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 6, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistSort", 6, usuarioId);
 			}
 		}
 	}
@@ -1273,46 +1271,46 @@
 		return juegosFiltrados;
 	}
 
-	private void ElegirOrdenamiento()
+	private async Task ElegirOrdenamiento()
 	{
 		if (opcionesDeseados.WishlistSort == 0)
 		{
-			OrdenarReseñasPorcentaje();
+			await OrdenarReseñasPorcentaje();
 		}
 		else if (opcionesDeseados.WishlistSort == 1)
 		{
-			OrdenarReseñasCantidad();
+			await OrdenarReseñasCantidad();
 		}
 		else if (opcionesDeseados.WishlistSort == 2)
 		{
-			OrdenarNombreAZ();
+			await OrdenarNombreAZ();
 		}
 		else if (opcionesDeseados.WishlistSort == 5)
 		{
-			OrdenarNombreZA();
+			await OrdenarNombreZA();
 		}
 		else if (opcionesDeseados.WishlistSort == 3)
 		{
-			OrdenarPrecio();
+			await OrdenarPrecio();
 		}
 		else if (opcionesDeseados.WishlistSort == 4)
 		{
-			OrdenarDescuento();
+			await OrdenarDescuento();
 		}
 		else if (opcionesDeseados.WishlistSort == 6)
 		{
-			OrdenarDetectado();
+			await OrdenarDetectado();
 		}
 	}
 
-	private void TextoCambiaBuscador()
+	private async Task TextoCambiaBuscador()
 	{
-		ElegirOrdenamiento();
+		await ElegirOrdenamiento();
 	}
 
 	private int? minimoDescuento = 1;
 
-	private void CambiarMinimoDescuento(ChangeEventArgs e)
+	private async Task CambiarMinimoDescuento(ChangeEventArgs e)
 	{
 		minimoDescuento = int.Parse(e.Value.ToString());
 
@@ -1325,15 +1323,15 @@
 		{
 			opcionesDeseados.WishlistOption3 = minimoDescuento;
 
-			BaseDatos.Usuarios.Actualizar.Opcion("WishlistOption3", (int)minimoDescuento, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("WishlistOption3", (int)minimoDescuento, usuarioId);
 		}
 
-		ElegirOrdenamiento();
+		await ElegirOrdenamiento();
 	}
 
 	private decimal? maximoPrecio = 90;
 
-	private void CambiarMaximoPrecio(ChangeEventArgs e)
+	private async Task CambiarMaximoPrecio(ChangeEventArgs e)
 	{
 		maximoPrecio = decimal.Parse(e.Value.ToString());
 
@@ -1341,10 +1339,10 @@
 		{
 			opcionesDeseados.WishlistOption4 = maximoPrecio;
 
-			BaseDatos.Usuarios.Actualizar.Opcion("WishlistOption4", (decimal)maximoPrecio, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("WishlistOption4", (decimal)maximoPrecio, usuarioId);
 		}
 
-		ElegirOrdenamiento();
+		await ElegirOrdenamiento();
 	}
 
 	private async Task DescargarJson()

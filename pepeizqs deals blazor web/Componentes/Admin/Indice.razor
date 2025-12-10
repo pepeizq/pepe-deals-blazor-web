@@ -196,7 +196,7 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
         }
 
         if (usuarioAdmin == true)

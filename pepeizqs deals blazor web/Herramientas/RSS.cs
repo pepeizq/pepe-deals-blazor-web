@@ -156,7 +156,7 @@ namespace Herramientas
 
 			if (User.Identity.IsAuthenticated == true)
             {
-                if (global::BaseDatos.Usuarios.Buscar.RolDios(User.FindFirst(ClaimTypes.NameIdentifier).Value) == true)
+                if (await global::BaseDatos.Usuarios.Buscar.RolDios(User.FindFirst(ClaimTypes.NameIdentifier).Value) == true)
                 {
                     List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(10);
 

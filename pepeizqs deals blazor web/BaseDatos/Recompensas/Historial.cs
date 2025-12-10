@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Recompensas
 {
@@ -15,32 +14,23 @@ namespace BaseDatos.Recompensas
 
     public static class Historial
     {
-		private static SqlConnection CogerConexion(SqlConnection conexion)
-		{
-			if (conexion == null || conexion.State != System.Data.ConnectionState.Open)
-			{
-				conexion = Herramientas.BaseDatos.Conectar();
-			}
-
-			return conexion;
-		}
-
-		public static void Insertar(string usuarioId, int coins, string razon, DateTime fecha, SqlConnection conexion = null)
+		public static async Task Insertar(string usuarioId, int coins, string razon, DateTime fecha)
         {
-            conexion = CogerConexion(conexion);
-
             try
             {
-				string sqlInsertar = "INSERT INTO recompensasHistorial " +
+				string insertar = "INSERT INTO recompensasHistorial " +
 				   "(usuarioId, coins, razon, fecha) VALUES " +
 				   "(@usuarioId, @coins, @razon, @fecha) ";
 
-				conexion.Execute(sqlInsertar, new
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					usuarioId,
-					coins,
-					razon,
-					fecha
+					await sentencia.Connection.ExecuteAsync(insertar, new
+					{
+						usuarioId,
+						coins,
+						razon,
+						fecha
+					}, transaction: sentencia);
 				});
 			}
             catch (Exception ex)
@@ -49,10 +39,8 @@ namespace BaseDatos.Recompensas
 			}
         }
 
-        public static List<RecompensaHistorial> Leer(string usuarioId = null, SqlConnection conexion = null)
+        public static async Task<List<RecompensaHistorial>> Leer(string usuarioId = null)
         {
-			conexion = CogerConexion(conexion);
-
 			try
 			{
 				string busqueda = "SELECT TOP 30 * FROM recompensasHistorial";
@@ -64,14 +52,17 @@ namespace BaseDatos.Recompensas
 
 				busqueda = busqueda + " ORDER BY fecha DESC";
 
-				return conexion.Query<RecompensaHistorial>(busqueda, new { usuarioId }).ToList();
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryAsync<RecompensaHistorial>(busqueda, new { usuarioId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				});
 			}
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Recompensas Leer", ex);
 			}
 			
-            return new List<RecompensaHistorial>();
+            return null;
         }
     }
 }

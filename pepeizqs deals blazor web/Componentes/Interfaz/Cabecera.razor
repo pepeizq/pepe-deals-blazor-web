@@ -540,14 +540,14 @@
     private int cantidadDeseados = 0;
     private string enlacePatreon = null;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            juegosUsuario ??= Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            deseadosUsuario ??= BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            opcionesCabecera ??= BaseDatos.Usuarios.Buscar.OpcionesCabecera(usuarioId);
+            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+            opcionesCabecera ??= await BaseDatos.Usuarios.Buscar.OpcionesCabecera(usuarioId);
 
             if (string.IsNullOrEmpty(deseadosUsuario?.WishlistData) == false)
             {

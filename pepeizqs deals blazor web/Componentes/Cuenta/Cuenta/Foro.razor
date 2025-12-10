@@ -124,7 +124,7 @@
         avatar = texto.Value.ToString();
     }
 
-    private async void ClickActualizar()
+    private async Task ClickActualizar()
     {
         if (usuario != null)
         {
@@ -136,7 +136,7 @@
                 {
                     if (nombre.Length > 3)
                     {
-                        if (BaseDatos.Usuarios.Buscar.UsuarioNombreRepetido(nombre) == false)
+                        if (await BaseDatos.Usuarios.Buscar.UsuarioNombreRepetido(nombre) == false)
                         {
                             usuario.Nickname = nombre;
                             usuario.ForumLastChangeName = DateTime.Now;

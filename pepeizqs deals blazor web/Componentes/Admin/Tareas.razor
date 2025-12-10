@@ -224,7 +224,7 @@
         }
     }
 
-    private async void ClickearTienda(MouseEventArgs e, string id)
+    private async Task ClickearTienda(MouseEventArgs e, string id)
     {
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -232,14 +232,14 @@
         }
     }
 
-    private void ClickearSuscripcionStreaming(MouseEventArgs e, BaseDatos.Admin.AdminTarea tarea)
+    private async Task ClickearSuscripcionStreaming(MouseEventArgs e, BaseDatos.Admin.AdminTarea tarea)
     {
         if (tarea != null)
         {
             DateTime fecha = DateTime.Now;
             fecha = fecha - TimeSpan.FromDays(1);
 
-            BaseDatos.Admin.Actualizar.Tiendas(tarea.Id, fecha, tarea.Cantidad);
+            await BaseDatos.Admin.Actualizar.Tiendas(tarea.Id, fecha, tarea.Cantidad);
         }
     }
 }

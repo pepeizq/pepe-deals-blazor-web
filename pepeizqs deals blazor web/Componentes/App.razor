@@ -114,8 +114,8 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            usuarioAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-            idioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 
             Usuario usuario = await UserManager.FindByIdAsync(usuarioId);
 
@@ -144,7 +144,7 @@
 
                     if (tiempo == true)
                     {
-                        BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "Steam");
+                        await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "Steam");
                     }
                 }
 
@@ -159,7 +159,7 @@
 
                     if (tiempo == true)
                     {
-                        BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "GOG");
+                        await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "GOG");
                     }
                 }
 
@@ -170,7 +170,7 @@
                         usuario.PatreonLastLogin = DateTime.Now;
                         usuario.PatreonCoins = 2;
 
-                        global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                        await global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
                     }
                     else
                     {
@@ -183,7 +183,7 @@
                                     usuario.PatreonLastLogin = DateTime.Now;
                                     usuario.PatreonCoins = usuario.PatreonCoins + 2;
 
-                                    global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                                    await global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
                                 }
                             }
                         }
@@ -196,7 +196,7 @@
                                     usuario.PatreonLastLogin = DateTime.Now;
                                     usuario.PatreonCoins = usuario.PatreonCoins + 2;
 
-                                    global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                                    await global::BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
                                 }
                             }
                         }

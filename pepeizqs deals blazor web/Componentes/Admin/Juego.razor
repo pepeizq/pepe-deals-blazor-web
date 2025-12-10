@@ -1138,7 +1138,7 @@
         }
     }
 
-    private void TextoCambiaIdAmazon(ChangeEventArgs texto)
+    private async Task TextoCambiaIdAmazon(ChangeEventArgs texto)
     {
         if (string.IsNullOrEmpty(texto.Value.ToString()) == false)
         {
@@ -1146,13 +1146,8 @@
 
             idAmazon = nuevoTexto;
 
-            SqlConnection conexion = Herramientas.BaseDatos.Conectar();
-
-            using (conexion)
-            {
-                juego.IdAmazon = idAmazon;
-                BaseDatos.Pendientes.Actualizar.PlataformaAmazon(idAmazon, juego.Id, conexion);
-            }
+            juego.IdAmazon = idAmazon;
+            await BaseDatos.Pendientes.Actualizar.PlataformaAmazon(idAmazon, juego.Id);
         }
     }
 
@@ -1318,7 +1313,7 @@
         }
     }
 
-    private void ComprobarEnvioNotificaciones(MouseEventArgs e, int id, List<JuegoPrecio> historicos, JuegoDRM drm)
+    private async Task ComprobarEnvioNotificaciones(MouseEventArgs e, int id, List<JuegoPrecio> historicos, JuegoDRM drm)
     {
         JuegoPrecio nuevaOferta = null;
 
@@ -1337,13 +1332,13 @@
             }
         }
 
-        List<string> usuariosInteresados = BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, drm);
+        List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, drm);
 
         if (usuariosInteresados?.Count > 0)
         {
             foreach (var usuarioInteresado in usuariosInteresados)
             {
-                if (BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, drm) == false)
+                if (await BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, drm) == false)
                 {
                     // BaseDatos.Usuarios.DeseadosDatos datosDeseados = null;
 
@@ -1370,13 +1365,13 @@
 
                     // BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
 
-					string correo = BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
+					string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
 
 					if (string.IsNullOrEmpty(correo) == false)
 					{
 						try
 						{
-							Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, nuevaOferta, correo);
+							await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, nuevaOferta, correo);
 						}
 						catch (Exception ex)
 						{
