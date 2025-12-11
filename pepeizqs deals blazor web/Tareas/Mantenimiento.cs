@@ -35,7 +35,7 @@ namespace Tareas
 
 						if (DateTime.Now.Hour == 4)
 						{
-							tiempoSiguiente = TimeSpan.FromMinutes(30);
+							tiempoSiguiente = TimeSpan.FromMinutes(40);
 						}
 
 						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", tiempoSiguiente) == true)
@@ -47,7 +47,7 @@ namespace Tareas
 							await BaseDatos.Portapapeles.Borrar.Limpieza();
 							await Divisas.ActualizarDatos();
 
-							BaseDatos.Mantenimiento.Encoger.Ejecutar();
+							await BaseDatos.Mantenimiento.Encoger.Ejecutar();
 						}
 					}
 					catch (Exception ex)

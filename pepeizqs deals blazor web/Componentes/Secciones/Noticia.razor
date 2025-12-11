@@ -1,7 +1,5 @@
 ﻿@page "/news/{id:int}/{nombreNoticia?}/"
 
-@attribute [StreamRendering(true)]
-
 @using Bundles2
 @using Gratis2
 @using Microsoft.AspNetCore.Identity
@@ -203,32 +201,6 @@
 					{
 						<div style="position: relative; display: flex; flex-direction: column;">
 							<Bundle bundleId="@bundle.Id" tipo="Bundle.Tipo.Noticia" />
-						</div>
-
-						<div class="caja-noticia-contenido" style="padding: 0px;">
-							<div class="caja-noticia-titulo">
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-							</div>
-
-							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, bundle, idioma, false))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										BBCode
-									</div>
-								</button>
-
-								<button @onclick="(e => CopiarAlClipboard(e, bundle, idioma, true))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										ElOtroLado
-									</div>
-								</button>
-
-								<button @onclick="(e => CopiarAlClipboard(e, bundle))" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										Reddit
-									</div>
-								</button>
-							</div>
 						</div>
 					}
 				}
@@ -685,16 +657,6 @@
 	private PeriodicTimer cronometro = null;
 	private int cronometroContador = 0;
 	private int cronometroLimite = 10;
-
-	private async void CopiarAlClipboard(MouseEventArgs e, Bundles2.Bundle bundle, string idioma, bool eol)
-	{
-		CopiarAlClipboard(e, await Herramientas.RedesSociales.BBCode.Bundle(idioma, bundle, eol));
-	}
-
-	private async void CopiarAlClipboard(MouseEventArgs e, Bundles2.Bundle bundle)
-	{
-		CopiarAlClipboard(e, await Herramientas.RedesSociales.Reddit.Bundle(bundle));
-	}
 
 	private async void CopiarAlClipboard(MouseEventArgs e, List<Juegos.JuegoGratis> juegosGratis)
 	{

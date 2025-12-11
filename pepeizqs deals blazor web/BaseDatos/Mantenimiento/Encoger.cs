@@ -6,7 +6,7 @@ namespace BaseDatos.Mantenimiento
 {
 	public static class Encoger
 	{
-		public static async void Ejecutar()
+		public static async Task Ejecutar()
 		{
 			WebApplicationBuilder builder = WebApplication.CreateBuilder();
 			string baseDatos = builder.Configuration.GetValue<string>("Mantenimiento:BaseDatos");

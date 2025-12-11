@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Juegos;
+using Tiendas2;
 
 namespace Herramientas.RedesSociales
 {
@@ -29,7 +30,7 @@ namespace Herramientas.RedesSociales
                     titulo = "[Bundle] " + noticia.TituloEn;
 
                     var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
-					texto = await Bundle(bundle);
+					texto = await Herramientas.Bundles.Reddit.Generar(bundle);
                 }
 
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
@@ -98,339 +99,6 @@ namespace Herramientas.RedesSociales
 
 			return false;
 		}
-
-        public static async Task<string> Bundle(Bundles2.Bundle bundle)
-        {
-            string texto = null;
-
-            if (bundle != null)
-            {
-                texto = "[" + bundle.Enlace + "](" + bundle.Enlace + ")" + Environment.NewLine + Environment.NewLine;
-
-                if (bundle.Tiers != null)
-                {
-                    bundle.Tiers.Sort(delegate (Bundles2.BundleTier t1, Bundles2.BundleTier t2)
-                    {
-                        return t1.Posicion.CompareTo(t2.Posicion);
-                    });
-
-                    decimal totalMinimos = 0;
-
-                    foreach (var tier in bundle.Tiers)
-                    {
-                        List<Bundles2.BundleJuego> juegosTier = new List<Bundles2.BundleJuego>();
-
-                        if (bundle.Juegos != null)
-                        {
-                            if (bundle.Juegos.Count > 0)
-                            {
-                                foreach (var juego in bundle.Juegos)
-                                {
-                                    if (juego.Tier != null)
-                                    {
-                                        if (juego.Tier.Posicion == tier.Posicion)
-                                        {
-                                            juegosTier.Add(juego);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (juegosTier.Count > 0)
-                        {
-                            juegosTier = juegosTier.OrderBy(x => x.Nombre).ToList();
-                        }
-
-                        foreach (var juego in juegosTier)
-                        {
-                            if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
-                            {
-                                if (string.IsNullOrEmpty(juego.Juego?.Maestro) == false)
-                                {
-                                    if (juego.Juego?.Maestro != "no")
-                                    {
-                                        foreach (var juego2 in juegosTier)
-                                        {
-                                            if (juego2.JuegoId == juego.Juego.Maestro)
-                                            {
-                                                if (juego2.DLCs == null)
-                                                {
-                                                    juego2.DLCs = new List<string>();
-                                                }
-
-                                                bool añadir = true;
-
-                                                if (juego2.DLCs.Count > 0)
-                                                {
-                                                    foreach (var dlc in juego2.DLCs)
-                                                    {
-                                                        if (dlc == juego.JuegoId)
-                                                        {
-                                                            añadir = false;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-
-                                                if (añadir == true)
-                                                {
-                                                    juego2.DLCs.Add(juego.JuegoId);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (bundle.Pick == true)
-                        {
-                            if (tier.Posicion == 1)
-                            {
-                                foreach (var tier2 in bundle.Tiers)
-                                {
-                                    if (tier2.CantidadJuegos == 1)
-                                    {
-                                        texto = texto + "**" + tier2.CantidadJuegos.ToString() + " " + Herramientas.Idiomas.BuscarTexto("en", "String21", "Bundle") + " • " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio)) + "**" + Environment.NewLine;
-                                    }
-                                    else if (tier2.CantidadJuegos > 1)
-                                    {
-                                        texto = texto + "**" + tier2.CantidadJuegos.ToString() + " " + Herramientas.Idiomas.BuscarTexto("en", "String8", "Bundle") + " • " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio)) + "** / " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio) / tier2.CantidadJuegos) + " (" + Herramientas.Idiomas.BuscarTexto("en", "String20", "Bundle") + ")" + Environment.NewLine;
-                                    }
-                                }
-
-                                texto = texto + Environment.NewLine;
-                            }
-                        }
-                        else
-                        {
-                            texto = texto + "**Tier " + tier.Posicion.ToString() + ": " + Herramientas.Precios.Euro(decimal.Parse(tier.Precio)) + "**  " + Environment.NewLine;
-
-                            foreach (var juego in juegosTier)
-                            {
-                                if (juego.Juego == null)
-                                {
-                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
-                                }
-
-                                if (juego.Juego?.PrecioMinimosHistoricos != null)
-                                {
-                                    foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
-                                    {
-                                        if (historico.DRM == juego.DRM)
-                                        {
-                                            if (historico.PrecioCambiado > 0)
-                                            {
-                                                totalMinimos = totalMinimos + historico.PrecioCambiado;
-                                            }
-                                            else
-                                            {
-                                                totalMinimos = totalMinimos + historico.Precio;
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-
-                            texto = texto + Herramientas.Idiomas.BuscarTexto("en", "String14", "Bundle") + ": " + Herramientas.Precios.Euro(totalMinimos) + Environment.NewLine + Environment.NewLine;
-                        }
-
-                        if (juegosTier.Count > 0)
-                        {
-                            foreach (var juego in juegosTier)
-                            {
-                                if (juego.Juego == null)
-                                {
-                                    juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
-                                }
-
-                                if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
-                                {
-                                    if (string.IsNullOrEmpty(juego.Juego?.Maestro) == false)
-                                    {
-                                        if (juego.Juego?.Maestro != "no")
-                                        {
-                                            foreach (var juego2 in juegosTier)
-                                            {
-                                                if (juego2.JuegoId == juego.Juego?.Maestro)
-                                                {
-                                                    if (juego2.DLCs == null)
-                                                    {
-                                                        juego2.DLCs = new List<string>();
-                                                    }
-
-                                                    bool añadir = true;
-
-                                                    if (juego2.DLCs.Count > 0)
-                                                    {
-                                                        foreach (var dlc in juego2.DLCs)
-                                                        {
-                                                            if (dlc == juego.JuegoId)
-                                                            {
-                                                                añadir = false;
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-
-                                                    if (añadir == true)
-                                                    {
-                                                        juego2.DLCs.Add(juego.JuegoId);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-                            foreach (var juego in juegosTier)
-                            {
-                                bool mostrar = true;
-
-                                if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
-                                {
-                                    if (string.IsNullOrEmpty(juego.Juego.Maestro) == false)
-                                    {
-                                        if (juego.Juego.Maestro != "no")
-                                        {
-                                            foreach (var juego2 in juegosTier)
-                                            {
-                                                if (juego2.JuegoId == juego.Juego.Maestro)
-                                                {
-                                                    mostrar = false;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                if (mostrar == true)
-                                {
-                                    string nombre = juego.Nombre;
-                                    string precioMinimo = null;
-
-                                    if (juego.Juego != null)
-                                    {
-                                        if (juego.DRM == Juegos.JuegoDRM.Steam && juego.Juego.IdSteam > 0)
-                                        {
-                                            nombre = "[" + nombre + "](https://store.steampowered.com/app/" + juego.Juego.IdSteam + ")";
-                                        }
-                                        else if (juego.DRM == Juegos.JuegoDRM.GOG && string.IsNullOrEmpty(juego.Juego.SlugGOG) == false)
-                                        {
-                                            nombre = "[url=https://www.gog.com/game/" + juego.Juego.SlugGOG + "]" + nombre + "[/url]";
-                                        }
-                                        else if (juego.DRM == Juegos.JuegoDRM.Epic && string.IsNullOrEmpty(juego.Juego.SlugEpic) == false)
-                                        {
-                                            nombre = "[url=https://www.epicgames.com/store/p/" + juego.Juego.SlugEpic + "]" + nombre + "[/url]";
-                                        }
-
-                                        if (juego.Juego.PrecioMinimosHistoricos != null)
-                                        {
-                                            decimal precioMinimoDecimal = 0;
-                                            decimal precioMinimoComparar = 10000;
-
-                                            foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
-                                            {
-                                                if (historico.DRM == juego.DRM)
-                                                {
-                                                    if (historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoComparar)
-                                                    {
-                                                        precioMinimoComparar = historico.PrecioCambiado;
-                                                    }
-                                                    else if (historico.Precio > 0 && historico.Precio < precioMinimoComparar)
-                                                    {
-                                                        precioMinimoComparar = historico.Precio;
-                                                    }
-                                                }
-                                            }
-
-                                            if (precioMinimoComparar < 10000)
-                                            {
-                                                precioMinimoDecimal = precioMinimoComparar;
-                                            }
-
-                                            if (juego.DLCs?.Count > 0)
-                                            {
-                                                foreach (var dlc in juego.DLCs)
-                                                {
-                                                    Juegos.Juego juegoDLC = await global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
-
-                                                    if (juegoDLC?.PrecioMinimosHistoricos != null)
-                                                    {
-                                                        decimal precioMinimoDLCComparar = 10000;
-
-                                                        foreach (var historico in juegoDLC.PrecioMinimosHistoricos)
-                                                        {
-                                                            if (historico.DRM == juego.DRM)
-                                                            {
-                                                                if (historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoDLCComparar)
-                                                                {
-                                                                    precioMinimoDLCComparar = historico.PrecioCambiado;
-                                                                }
-                                                                else if (historico.Precio > 0 && historico.Precio < precioMinimoDLCComparar)
-                                                                {
-                                                                    precioMinimoDLCComparar = historico.Precio;
-                                                                }
-                                                            }
-                                                        }
-
-                                                        if (precioMinimoDLCComparar < 10000)
-                                                        {
-                                                            precioMinimoDecimal = precioMinimoDecimal + precioMinimoDLCComparar;
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (precioMinimoDecimal > 0)
-                                            {
-                                                precioMinimo = Herramientas.Precios.Euro(precioMinimoDecimal);
-                                            }
-                                        }
-                                    }
-
-                                    if (string.IsNullOrEmpty(precioMinimo) == true)
-                                    {
-                                        texto = texto + "* " + nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ")";
-                                    }
-                                    else
-                                    {
-                                        texto = texto + "* " + nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ") (" + precioMinimo + ")";
-                                    }
-
-                                    if (juego.DLCs?.Count > 0)
-                                    {
-                                        if (juego.DLCs.Count == 1)
-                                        {
-                                            texto = texto + " +" + juego.DLCs?.Count.ToString() + " DLC";
-                                        }
-                                        else if (juego.DLCs.Count > 1)
-                                        {
-                                            texto = texto + " +" + juego.DLCs?.Count.ToString() + " DLCs";
-                                        }
-                                    }
-
-                                    if (juego.Juego.Bundles.Count == 1)
-                                    {
-                                        texto = texto + " • **" + Herramientas.Idiomas.BuscarTexto("en", "String24", "Bundle") + "**";
-                                    }
-
-                                    texto = texto + Environment.NewLine;
-                                }
-                            }
-
-                            texto = texto + Environment.NewLine + Environment.NewLine;
-                        }
-                    }
-                }
-            }
-
-            return texto;
-        }
 
         public static async Task<string> Gratis(List<JuegoGratis> gratis)
         {
@@ -612,7 +280,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static async Task Postear(string enlace, int id, string tienda)
+        public static async Task PostearOfertasDia(List<Juego> juegos)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder();
             string cuenta = builder.Configuration.GetValue<string>("Reddit:Cuenta");
@@ -625,179 +293,66 @@ namespace Herramientas.RedesSociales
 
             RedditSharp.Things.Subreddit subreddit = await reddit.GetSubredditAsync("gamedealsue");
 
-            string nombreTienda = string.Empty;
-            foreach (var tienda2 in Tiendas2.TiendasCargar.GenerarListado())
+            string titulo = "Today's Deals [" + DateTime.Now.Day.ToString() + "/" + DateTime.Now.Month.ToString() + "/" + DateTime.Now.Year.ToString() + "]";
+            string texto = null;
+
+            if (juegos?.Count > 0)
             {
-                if (tienda2.Id == tienda)
+				Dictionary<string, List<Juego>> juegosPorTienda = new Dictionary<string, List<Juego>>();
+				List<Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
+
+                foreach (var juego in juegos)
                 {
-                    nombreTienda = tienda2.Nombre;
-                }
-            }
+					var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricos[0].Tienda);
+					string nombreTienda = tiendaJuego.Nombre;
 
-            Juego juego2 = await global::BaseDatos.Juegos.Buscar.UnJuego(id);
+					if (juegosPorTienda.ContainsKey(nombreTienda) == false)
+                    {
+						juegosPorTienda[nombreTienda] = new List<Juego>();
+					}
 
-            if (juego2 != null)
-            {
-                bool valido = true;
+					juegosPorTienda[nombreTienda].Add(juego);
+				}
 
-                if (string.IsNullOrEmpty(juego2.MayorEdad) == false)
+				foreach (var juegosTienda in juegosPorTienda)
                 {
-                    if (juego2.MayorEdad.ToLower() == "true")
+					string tienda = juegosTienda.Key;
+					List<Juego> listaJuegos = juegosTienda.Value;
+
+                    if (listaJuegos?.Count > 0)
                     {
-                        valido = false;
-                    }
-                }
+                        texto = texto + tienda + Environment.NewLine;
 
-                if (valido == true)
-                {
-                    decimal precio = 0;
-                    string descuento = "0";
-                    string codigoTexto = string.Empty;
-
-                    foreach (var precio2 in juego2.PrecioMinimosHistoricos)
-                    {
-                        if (precio2.Tienda == tienda && precio2.Enlace == enlace)
+						foreach (var juego in listaJuegos)
                         {
-                            if (precio2.PrecioCambiado > 0)
-                            {
-                                precio = precio2.PrecioCambiado;
-                            }
-                            else
-                            {
-                                precio = precio2.Precio;
-                            }
+							string precio = Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].Precio);
 
-                            descuento = precio2.Descuento.ToString();
-                            codigoTexto = precio2.CodigoTexto;
+							if (juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+							{
+								precio = Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].PrecioCambiado);
 
-                            break;
-                        }
-                    }
-
-                    if (precio > 0 && descuento != "0")
-                    {
-                        string titulo = "[" + nombreTienda + "] " + juego2.Nombre + " (" + Herramientas.Precios.Euro(precio) + " / " + descuento + "% off)";
-
-                        string texto = "[" + enlace + "](" + enlace + ")  " + Environment.NewLine;
-
-                        if (string.IsNullOrEmpty(codigoTexto) == false)
-                        {
-                            texto = texto + "Use code " + codigoTexto + " to obtain the price indicated in the title.  " + Environment.NewLine;
-                        }
-
-                        if (juego2.Bundles?.Count > 0)
-                        {
-                            List<int> bundlesActivos = new List<int>();
-                            List<int> bundlesViejunos = new List<int>();
-
-                            foreach (var bundle in juego2.Bundles)
-                            {
-                                if (bundle.FechaEmpieza <= DateTime.Now && bundle.FechaTermina >= DateTime.Now)
-                                {
-                                    bundlesActivos.Add(bundle.BundleId);
-                                }
-                                else
-                                {
-                                    bundlesViejunos.Add(bundle.BundleId);
-                                }
-                            }
-
-                            if (bundlesActivos.Count > 0)
-                            {
-                                texto = texto + Environment.NewLine + juego2.Nombre + " is part of the following bundles:" + Environment.NewLine;
-
-                                foreach (var bundle in bundlesActivos)
-                                {
-                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
-
-                                    if (bundle2 != null)
-                                    {
-                                        texto = texto + "* [" + bundle2.Nombre + " • " + bundle2.Tienda + "](" + bundle2.Enlace + ")" + Environment.NewLine;
-                                    }
-                                }
-                            }
-
-                            if (bundlesViejunos.Count > 0)
-                            {
-                                texto = texto + Environment.NewLine + juego2.Nombre + " was part of the following bundles:" + Environment.NewLine;
-
-                                foreach (var bundle in bundlesViejunos)
-                                {
-                                    Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
-
-                                    if (bundle2 != null)
-                                    {
-                                        texto = texto + "* " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (juego2.Gratis?.Count > 0)
-                        {
-                            foreach (var gratis in juego2.Gratis)
-                            {
-                                if (gratis.FechaEmpieza <= DateTime.Now && gratis.FechaTermina >= DateTime.Now)
-                                {
-                                    if (texto.Contains(juego2.Nombre + " is currently free on:") == false)
-                                    {
-                                        texto = texto + Environment.NewLine + juego2.Nombre + " is currently free on:" + Environment.NewLine;
-                                    }
-
-                                    texto = texto + "* [" + Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre + "](" + gratis.Enlace + ")" + Environment.NewLine;
-                                }
-                                else
-                                {
-                                    if (texto.Contains(juego2.Nombre + " was free on:") == false)
-                                    {
-                                        texto = texto + Environment.NewLine + juego2.Nombre + " was free on:" + Environment.NewLine;
-                                    }
-
-                                    texto = texto + "* " + Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre + " (" + Calculadora.DiferenciaTiempo(gratis.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                }
-                            }
-                        }
-
-                        if (juego2.Suscripciones?.Count > 0)
-                        {
-                            foreach (var suscripcion in juego2.Suscripciones)
-                            {
-                                if (suscripcion.FechaEmpieza <= DateTime.Now && suscripcion.FechaTermina >= DateTime.Now)
-                                {
-                                    if (texto.Contains(juego2.Nombre + " is currently available on subscription services:") == false)
-                                    {
-                                        texto = texto + Environment.NewLine + juego2.Nombre + " is currently available on subscription services:" + Environment.NewLine;
-                                    }
-
-                                    texto = texto + "* [" + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre + "](" + suscripcion.Enlace + ")" + Environment.NewLine;
-                                }
-                                else
-                                {
-                                    if (texto.Contains(juego2.Nombre + " was available on subscription services:") == false)
-                                    {
-                                        texto = texto + Environment.NewLine + juego2.Nombre + " was available on subscription services:" + Environment.NewLine;
-                                    }
-
-                                    texto = texto + "* " + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre + " (" + Calculadora.DiferenciaTiempo(suscripcion.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                }
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(texto) == false)
-                        {
-                            try
-                            {
-                                await subreddit.SubmitTextPostAsync(titulo, texto);
 							}
-                            catch (Exception ex)
-                            {
-                                global::BaseDatos.Errores.Insertar.Mensaje("Reddit Postear Noticia", ex);
-                            }
-                        }
-                    }
-                }
+
+							texto = texto + "* [" + juego.Nombre + " • " + juego.PrecioMinimosHistoricos[0].Descuento.ToString() + "% • " + precio + "](" + juego.PrecioMinimosHistoricos[0].Enlace + ")" + Environment.NewLine;
+						}
+
+						texto = texto + Environment.NewLine + "---" + Environment.NewLine + Environment.NewLine;
+					}
+				}
             }
-        }
+
+			if (string.IsNullOrEmpty(texto) == false)
+			{
+				try
+				{
+					await subreddit.SubmitTextPostAsync(titulo, texto);
+				}
+				catch (Exception ex)
+				{
+					global::BaseDatos.Errores.Insertar.Mensaje("Reddit Ofertas Dia", ex);
+				}
+			}
+		}
     }
 }
 

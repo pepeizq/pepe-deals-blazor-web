@@ -1,94 +1,36 @@
 ﻿#nullable disable
 
+using Dapper;
+using Juegos;
 using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.RedesSociales
 {
     public static class Buscar
     {
-        public static bool ExisteEnlace(string enlace, SqlConnection conexion = null)
+        public static async Task<List<Juego>> OfertasDelDia()
         {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
+            string busqueda = @"SELECT TOP 100 j.idMaestra, j.nombre, j.precioMinimosHistoricos, CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') AS DRM, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos j
+                WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 1000 AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = '0'
+                AND CAST(CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS date) = CAST(GETDATE() AS date)
+                ORDER BY CASE WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) END DESC";
 
-            string busqueda = "SELECT COUNT(*) FROM redesSocialesPosteador WHERE enlace=@enlace";
+			if (string.IsNullOrEmpty(busqueda) == false)
+			{
+				try
+				{
+					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					{
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Redes Sociales Ofertas Dia", ex);
+				}
+			}
 
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-            {
-                comando.Parameters.AddWithValue("@enlace", enlace);
-
-                int count = (int)comando.ExecuteScalar();
-                return count > 0;
-            }
-        }
-
-        public static async Task PendientesPosteo(SqlConnection conexion = null)
-        {
-            if (conexion == null)
-            {
-                conexion = Herramientas.BaseDatos.Conectar();
-            }
-            else
-            {
-                if (conexion.State != System.Data.ConnectionState.Open)
-                {
-                    conexion = Herramientas.BaseDatos.Conectar();
-                }
-            }
-
-            List<string> enlacesBorrar = new List<string>();
-
-            string busqueda = "SELECT * FROM redesSocialesPosteador";
-
-            using (SqlCommand comando = new SqlCommand(busqueda, conexion))
-            {
-                using (SqlDataReader lector = comando.ExecuteReader())
-                {
-                    while (lector.Read() == true)
-                    {
-                        if (enlacesBorrar.Count >= 2)
-                        {
-                            break;
-                        }
-
-                        if (lector.IsDBNull(0) == false && lector.IsDBNull(1) == false && lector.IsDBNull(2) == false)
-                        {
-                            string enlace = lector.GetString(0);
-                            enlacesBorrar.Add(enlace);
-
-                            int idJuego = lector.GetInt32(1);
-
-                            string tienda = lector.GetString(2);
-
-                            await Herramientas.RedesSociales.Reddit.Postear(enlace, idJuego, tienda);
-                        }
-                    }
-                }
-            }
-
-            if (enlacesBorrar.Count > 0)
-            {
-                foreach (var enlace in enlacesBorrar)
-                {
-                    string borrar = "DELETE FROM redesSocialesPosteador WHERE enlace=@enlace";
-
-                    using (SqlCommand comando = new SqlCommand(borrar, conexion))
-                    {
-                        comando.Parameters.AddWithValue("@enlace", enlace);
-
-                        comando.ExecuteNonQuery();
-                    }
-                }
-            }
+			return null;
         }
     }
 }

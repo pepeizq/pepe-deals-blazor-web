@@ -1,8 +1,7 @@
 ﻿@page "/bundle/{bundleId:int}/{bundleNombre?}/"
 
-@attribute [StreamRendering(true)]
-
 @using APIs.Steam
+@using Herramientas.Bundles
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.JSInterop
@@ -182,6 +181,33 @@
 		<Titulo tipo="@Titulo.Tipo.Bundle" idioma="@idioma" dominio="@dominio" tituloBundle="@titulo" descripcionBundle="@descripcion" enlaceBundle="@enlace"
 				imagenBundle="@imagen" keywords="@keywords" contenidoJsonBundle="@contenidoJson"/>
 	}
+}
+
+<script>
+	window.clipboardCopy = {
+		copyText: function(text) {
+			navigator.clipboard.writeText(text);
+		}
+	};
+</script>
+
+@if (enseñarAlerta == true)
+{
+	<div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; border: 2px solid var(--fondoSubcabecera); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+		<div style="display: flex; align-items: center; gap: 10px;">
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Clipboard")
+			</div>
+
+			<button @onclick="CerrarAvisoClipboard" class="boton-pequeño" style="display: flex; padding: 0px; background-color: transparent; width: fit-content; box-shadow: none;">
+				<div style="width: 20px; height: 20px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+					</svg>
+				</div>
+			</button>
+		</div>
+	</div>
 }
 
 <script>
@@ -496,6 +522,93 @@
 					i += 1;
 				}
 			}
+
+			@if (bundle.FechaTermina > DateTime.Now)
+			{
+				if (tipo == Tipo.Bundle || tipo == Tipo.Bundles || tipo == Tipo.Noticia)
+				{
+					<div class="caja-bundle-contenido cuerpo-ancho" style="margin-top: 40px; width: 100%;">
+						<div class="caja-bundle-mensaje" style="padding: 20px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String34", "Bundle")
+						</div>
+
+						<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+							<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+								<button @onclick="GenerarBBCode" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										BBCode
+									</div>
+								</button>
+
+								<button @onclick="GenerarReddit" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										Reddit
+									</div>
+								</button>
+
+								<button @onclick="GenerarMarkdown" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										Markdown
+									</div>
+								</button>
+							</div>
+
+							@if (string.IsNullOrEmpty(contenidoCajaClipboard) == false)
+							{
+								<div style="display: flex; flex-direction: column; gap: 20px;">
+									<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+										<button @onclick="CopiarAlClipboard" class="boton-pequeño" style="width: fit-content; padding: 5px 10px;">
+											<div style="width: 22px; height: 22px; display: flex;">
+												<svg style="fill: var(--colorTexto);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+													<path d="M480 400L288 400C279.2 400 272 392.8 272 384L272 128C272 119.2 279.2 112 288 112L421.5 112C425.7 112 429.8 113.7 432.8 116.7L491.3 175.2C494.3 178.2 496 182.3 496 186.5L496 384C496 392.8 488.8 400 480 400zM288 448L480 448C515.3 448 544 419.3 544 384L544 186.5C544 169.5 537.3 153.2 525.3 141.2L466.7 82.7C454.7 70.7 438.5 64 421.5 64L288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L368 496L368 512C368 520.8 360.8 528 352 528L160 528C151.2 528 144 520.8 144 512L144 256C144 247.2 151.2 240 160 240L176 240L176 192L160 192z" />
+												</svg>
+											</div>
+										</button>
+									</div>
+
+									<textarea class="entrada-texto" rows="8">
+									@contenidoCajaClipboard
+								</textarea>
+								</div>
+							}
+						</div>
+					</div>
+
+					if (bundle.Pick == false)
+					{
+						<div class="caja-bundle-contenido cuerpo-ancho" style="margin-top: 40px; width: 100%;">
+							<div class="caja-bundle-mensaje" style="padding: 20px;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String35", "Bundle")
+							</div>
+
+							<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+								@if (valoraciones == null)
+								{
+									<button @onclick="GenerarValoraciones" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+										<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+											@Herramientas.Idiomas.BuscarTexto(idioma, "String36", "Bundle")
+										</div>
+									</button>
+								}
+								else
+								{
+									if (valoraciones.Count > 0)
+									{
+										valoraciones = valoraciones.OrderBy(v => v.Nombre).ToList();
+
+										foreach (var valoracion in valoraciones)
+										{
+											<div>
+												@valoracion.Nombre (@Herramientas.Precios.Euro(valoracion.Valoracion))
+											</div>
+										}
+									}
+								}
+							</div>
+						</div>
+					}
+				}
+			}
 		</div>
 	}
 }
@@ -531,7 +644,7 @@
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
-        dominio = datos.Dominio;
+		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -571,6 +684,11 @@
 	{
 		if (primerRender == true)
 		{
+			if (bundle == null)
+			{
+				bundle ??= await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+			}
+
 			if (bundle != null)
 			{
 				if (tipo == Tipo.Bundle && string.IsNullOrEmpty(bundleNombre) == true)
@@ -590,7 +708,7 @@
 					}
 				}
 			}	
-			
+
 			await InvokeAsync(StateHasChanged);
 		}
 	}
@@ -620,4 +738,73 @@
 	{
 		await JavaScript.InvokeVoidAsync("open", enlace, "_blank");
 	}
+
+	#region Herramientas
+
+	private List<JuegoValoracion> valoraciones = null;
+
+	private async Task GenerarValoraciones(MouseEventArgs e)
+	{
+		valoraciones = await Herramientas.Bundles.ValorEstimado.Generar(bundle);
+	}
+
+	private string contenidoCajaClipboard = null;
+
+	private async Task GenerarBBCode(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.Bundles.BBCode.Generar(idioma, bundle);
+	}
+
+	private async Task GenerarReddit(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.Bundles.Reddit.Generar(bundle);
+	}
+
+	private async Task GenerarMarkdown(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.Bundles.Markdown.Generar(idioma, bundle);
+	}
+
+	#endregion
+
+	#region Portapapeles
+
+	private bool enseñarAlerta = false;
+	private PeriodicTimer cronometro = null;
+	private int cronometroContador = 0;
+	private int cronometroLimite = 10;
+
+	private async void CopiarAlClipboard()
+	{
+		enseñarAlerta = true;
+		await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", contenidoCajaClipboard);
+
+		cronometroContador = 0;
+		cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+		while (await cronometro.WaitForNextTickAsync())
+		{
+			cronometroContador += 1;
+
+			if (cronometroContador > cronometroLimite)
+			{
+				enseñarAlerta = false;
+				cronometro.Dispose();
+				await InvokeAsync(StateHasChanged);
+			}
+		}
+	}
+
+	private void CerrarAvisoClipboard()
+	{
+		enseñarAlerta = false;
+		cronometroContador = 0;
+
+		if (cronometro != null)
+		{
+			cronometro.Dispose();
+		}
+	}
+
+	#endregion
 }

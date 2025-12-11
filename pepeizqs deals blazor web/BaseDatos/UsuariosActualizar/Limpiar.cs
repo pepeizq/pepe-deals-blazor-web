@@ -19,7 +19,11 @@ namespace BaseDatos.UsuariosActualizar
 			{
 				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					await sentencia.Connection.ExecuteAsync(eliminar, transaction: sentencia);
+					await sentencia.Connection.ExecuteAsync(eliminar, new
+					{
+						usuario.IdUsuario,
+						usuario.Metodo
+					}, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

@@ -30,5 +30,8 @@
   "String30": "Fecha Termina",
   "String31": "Fecha Empezó",
   "String32": "Nombre (A-Z)",
-  "String33": "Nombre (Z-A)"
+  "String33": "Nombre (Z-A)",
+  "String34": "Genera un mensaje del bundle para compartir",
+  "String35": "Valor estimado de cada juego si compras el bundle con otras personas",
+  "String36": "Generar"
 }

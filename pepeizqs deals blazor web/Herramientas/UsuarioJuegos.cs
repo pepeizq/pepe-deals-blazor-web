@@ -14,6 +14,11 @@ namespace Herramientas
 		{
 			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.JuegosTiene(usuarioId);
 
+			if (usuario == null)
+			{
+				return null;
+			}
+
 			UsuarioListadosJuegos listados = new UsuarioListadosJuegos();
 
 			if (string.IsNullOrEmpty(usuario.SteamGames) == false)

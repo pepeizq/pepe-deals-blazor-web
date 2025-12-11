@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.Data.SqlClient;
 
 namespace Tareas
 {
@@ -30,20 +29,30 @@ namespace Tareas
 
                 if (piscinaApp == piscinaUsada)
                 {
-					if (BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)) == null)
-					{
-						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", TimeSpan.FromMinutes(5)) == true)
-						{
-							await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
+					TimeSpan tiempoSiguiente = TimeSpan.FromHours(48);
 
-							try
+					if (DateTime.Now.Hour == 21)
+					{
+						tiempoSiguiente = TimeSpan.FromMinutes(120);
+					}
+
+					if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", tiempoSiguiente) == true &&
+						(await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)))?.Count == 0)
+                    {
+						await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
+
+						try
+						{
+							List<Juegos.Juego> juegosDia = await BaseDatos.RedesSociales.Buscar.OfertasDelDia();
+
+							if (juegosDia?.Count > 0)
 							{
-								await BaseDatos.RedesSociales.Buscar.PendientesPosteo();
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(juegosDia);
 							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales", ex);
-							}
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales", ex);
 						}
 					}
 				}

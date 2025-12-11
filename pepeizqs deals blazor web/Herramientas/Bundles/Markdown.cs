@@ -1,0 +1,368 @@
+﻿#nullable disable
+
+namespace Herramientas.Bundles
+{
+	public static class Markdown
+	{
+		public static async Task<string> Generar(string idioma, Bundles2.Bundle bundle)
+		{
+			if (bundle != null)
+			{
+				string texto = null;
+
+				if (string.IsNullOrEmpty(bundle.ImagenNoticia) == false)
+				{
+					texto = "[![Image](" + bundle.ImagenNoticia + ")](" + bundle.Enlace + ")" + Environment.NewLine + Environment.NewLine;
+				}
+
+				texto = texto + "[" + bundle.Enlace + "](" + bundle.Enlace + ")" + Environment.NewLine + Environment.NewLine;
+
+				if (bundle.Tiers != null)
+				{
+					bundle.Tiers.Sort(delegate (Bundles2.BundleTier t1, Bundles2.BundleTier t2)
+					{
+						return t1.Posicion.CompareTo(t2.Posicion);
+					});
+
+					decimal totalMinimos = 0;
+
+					foreach (var tier in bundle.Tiers.ToList())
+					{
+						List<Bundles2.BundleJuego> juegosTier = new List<Bundles2.BundleJuego>();
+
+						if (bundle.Juegos?.Count > 0)
+						{
+							foreach (var juego in bundle.Juegos)
+							{
+								if (juego.Tier != null)
+								{
+									if (juego.Tier.Posicion == tier.Posicion)
+									{
+										juegosTier.Add(juego);
+									}
+								}
+							}
+						}
+
+						if (juegosTier.Count > 0)
+						{
+							juegosTier = juegosTier.OrderBy(x => x.Nombre).ToList();
+						}
+
+						foreach (var juego in juegosTier)
+						{
+							if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
+							{
+								if (string.IsNullOrEmpty(juego.Juego?.Maestro) == false)
+								{
+									if (juego.Juego?.Maestro != "no")
+									{
+										foreach (var juego2 in juegosTier)
+										{
+											if (juego2.JuegoId == juego.Juego.Maestro)
+											{
+												if (juego2.DLCs == null)
+												{
+													juego2.DLCs = new List<string>();
+												}
+
+												bool añadir = true;
+
+												if (juego2.DLCs.Count > 0)
+												{
+													foreach (var dlc in juego2.DLCs)
+													{
+														if (dlc == juego.JuegoId)
+														{
+															añadir = false;
+															break;
+														}
+													}
+												}
+
+												if (añadir == true)
+												{
+													juego2.DLCs.Add(juego.JuegoId);
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+
+						if (bundle.Pick == true)
+						{
+							if (tier.Posicion == 1)
+							{
+								foreach (var tier2 in bundle.Tiers)
+								{
+									if (tier2.CantidadJuegos == 1)
+									{
+										texto = texto + "**" + tier2.CantidadJuegos.ToString() + " " + Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Bundle") + " • " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio)) + "**" + Environment.NewLine + Environment.NewLine;
+									}
+									else if (tier2.CantidadJuegos > 1)
+									{
+										texto = texto + "**" + tier2.CantidadJuegos.ToString() + " " + Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Bundle") + " • " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio)) + "** / " + Herramientas.Precios.Euro(decimal.Parse(tier2.Precio) / tier2.CantidadJuegos) + " (" + Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Bundle") + ")" + Environment.NewLine + Environment.NewLine;
+									}
+								}
+
+								texto = texto + Environment.NewLine;
+							}
+						}
+						else
+						{
+							texto = texto + "**Tier " + tier.Posicion.ToString() + ": " + Herramientas.Precios.Euro(decimal.Parse(tier.Precio)) + "**" + Environment.NewLine + Environment.NewLine;
+
+							foreach (var juego in juegosTier)
+							{
+								if (juego.Juego == null)
+								{
+									juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+								}
+
+								if (juego.Juego?.PrecioMinimosHistoricos != null)
+								{
+									foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
+									{
+										if (historico.DRM == juego.DRM)
+										{
+											if (historico.PrecioCambiado > 0)
+											{
+												totalMinimos = totalMinimos + historico.PrecioCambiado;
+											}
+											else
+											{
+												totalMinimos = totalMinimos + historico.Precio;
+											}
+
+											break;
+										}
+									}
+								}
+							}
+
+							texto = texto + Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Bundle") + ": " + Herramientas.Precios.Euro(totalMinimos) + Environment.NewLine + Environment.NewLine;
+						}
+
+						if (juegosTier.Count > 0)
+						{
+							foreach (var juego in juegosTier)
+							{
+								if (juego.Juego == null)
+								{
+									juego.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+								}
+
+								if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
+								{
+									if (string.IsNullOrEmpty(juego.Juego?.Maestro) == false)
+									{
+										if (juego.Juego?.Maestro != "no")
+										{
+											foreach (var juego2 in juegosTier)
+											{
+												if (juego2.JuegoId == juego.Juego?.Maestro)
+												{
+													if (juego2.DLCs == null)
+													{
+														juego2.DLCs = new List<string>();
+													}
+
+													bool añadir = true;
+
+													if (juego2.DLCs.Count > 0)
+													{
+														foreach (var dlc in juego2.DLCs)
+														{
+															if (dlc == juego.JuegoId)
+															{
+																añadir = false;
+																break;
+															}
+														}
+													}
+
+													if (añadir == true)
+													{
+														juego2.DLCs.Add(juego.JuegoId);
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							foreach (var juego in juegosTier)
+							{
+								bool mostrar = true;
+
+								if (juego.Juego?.Tipo == Juegos.JuegoTipo.DLC)
+								{
+									if (string.IsNullOrEmpty(juego.Juego.Maestro) == false)
+									{
+										if (juego.Juego.Maestro != "no")
+										{
+											foreach (var juego2 in juegosTier)
+											{
+												if (juego2.JuegoId == juego.Juego.Maestro)
+												{
+													mostrar = false;
+												}
+											}
+										}
+									}
+								}
+
+								if (mostrar == true)
+								{
+									string nombre = juego.Nombre;
+									string precioMinimo = null;
+
+									if (juego.Juego != null)
+									{
+										if (juego.DRM == Juegos.JuegoDRM.Steam && juego.Juego.IdSteam > 0)
+										{
+											nombre = "[" + nombre + "](https://store.steampowered.com/app/" + juego.Juego.IdSteam + ")";
+										}
+										else if (juego.DRM == Juegos.JuegoDRM.GOG && string.IsNullOrEmpty(juego.Juego.SlugGOG) == false)
+										{
+											nombre = "[" + nombre + "](https://www.gog.com/game/" + juego.Juego.SlugGOG + ")";
+										}
+										else if (juego.DRM == Juegos.JuegoDRM.Epic && string.IsNullOrEmpty(juego.Juego.SlugEpic) == false)
+										{
+											nombre = "[" + nombre + "](https://www.epicgames.com/store/p/" + juego.Juego.SlugEpic + ")";
+										}
+
+										if (juego.Juego.PrecioMinimosHistoricos != null)
+										{
+											decimal precioMinimoDecimal = 0;
+											decimal precioMinimoComparar = 10000;
+
+											foreach (var historico in juego.Juego.PrecioMinimosHistoricos)
+											{
+												if (historico.DRM == juego.DRM)
+												{
+													if (historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoComparar)
+													{
+														precioMinimoComparar = historico.PrecioCambiado;
+													}
+													else if (historico.Precio > 0 && historico.Precio < precioMinimoComparar)
+													{
+														precioMinimoComparar = historico.Precio;
+													}
+												}
+											}
+
+											if (precioMinimoComparar < 10000)
+											{
+												precioMinimoDecimal = precioMinimoComparar;
+											}
+
+											if (juego.DLCs?.Count > 0)
+											{
+												foreach (var dlc in juego.DLCs)
+												{
+													Juegos.Juego juegoDLC = await global::BaseDatos.Juegos.Buscar.UnJuego(dlc);
+
+													if (juegoDLC?.PrecioMinimosHistoricos != null)
+													{
+														decimal precioMinimoDLCComparar = 10000;
+
+														foreach (var historico in juegoDLC.PrecioMinimosHistoricos)
+														{
+															if (historico.DRM == juego.DRM)
+															{
+																if (historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoDLCComparar)
+																{
+																	precioMinimoDLCComparar = historico.PrecioCambiado;
+																}
+																else if (historico.Precio > 0 && historico.Precio < precioMinimoDLCComparar)
+																{
+																	precioMinimoDLCComparar = historico.Precio;
+																}
+															}
+														}
+
+														if (precioMinimoDLCComparar < 10000)
+														{
+															precioMinimoDecimal = precioMinimoDecimal + precioMinimoDLCComparar;
+														}
+													}
+												}
+											}
+
+											if (precioMinimoDecimal > 0)
+											{
+												precioMinimo = Herramientas.Precios.Euro(precioMinimoDecimal);
+											}
+										}
+									}
+
+									if (string.IsNullOrEmpty(precioMinimo) == true)
+									{
+										texto = texto + "- " + nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ")";
+									}
+									else
+									{
+										texto = texto + "- " + nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + ") (" + precioMinimo + ")";
+									}
+
+									if (juego.DLCs?.Count > 0)
+									{
+										if (juego.DLCs.Count == 1)
+										{
+											texto = texto + " +" + juego.DLCs?.Count.ToString() + " DLC";
+										}
+										else if (juego.DLCs.Count > 1)
+										{
+											texto = texto + " +" + juego.DLCs?.Count.ToString() + " DLCs";
+										}
+									}
+
+									bool añadirNuevo = false;
+
+									if (juego.Juego.Bundles?.Count == 1)
+									{
+										añadirNuevo = true;
+									}
+
+									if (juego.Juego.Suscripciones?.Count > 0)
+									{
+										foreach (var suscripcion in juego.Juego.Suscripciones)
+										{
+											if (suscripcion.DRM == juego.DRM)
+											{
+												añadirNuevo = false;
+												break;
+											}
+										}
+									}
+
+									if (añadirNuevo == true)
+									{
+										texto = texto + " • **" + Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Bundle") + "**";
+									}
+
+									texto = texto + Environment.NewLine;
+								}
+							}
+
+							texto = texto + Environment.NewLine + Environment.NewLine;
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(texto) == false)
+				{
+					texto = texto.Trim();
+				}
+
+				return texto;
+			}
+
+			return null;
+		}
+	}
+}

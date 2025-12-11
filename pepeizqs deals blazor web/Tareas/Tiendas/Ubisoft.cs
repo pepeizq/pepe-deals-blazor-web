@@ -32,16 +32,16 @@ namespace Tareas.Tiendas
 
                 if (piscinaTiendas == piscinaUsada)
                 {
-					TimeSpan siguienteComprobacion = TimeSpan.FromHours(4);
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(3);
 
 					if (DateTime.Now.Hour == 19)
 					{
-						siguienteComprobacion = TimeSpan.FromHours(5);
+						siguienteComprobacion = TimeSpan.FromHours(4);
 					}
 
 					bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
 
-					if (sePuedeUsar == true && BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60))?.Result.Count == 0)
+					if (sePuedeUsar == true && (await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)))?.Count == 0)
 					{
 						try
 						{

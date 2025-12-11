@@ -22,6 +22,7 @@
     <None Remove="APIs\Steam\Juego.cs~RF2b23164.TMP" />
     <None Remove="Componentes\Admin\Indice.razor~RF29f0e87.TMP" />
     <None Remove="Herramientas\Redireccionador\IndexNow.cs~RF14dd761.TMP" />
+    <None Remove="Idiomas\Bundle\pt.json~RF152b8d4.TMP" />
   </ItemGroup>
 
   <ItemGroup>
