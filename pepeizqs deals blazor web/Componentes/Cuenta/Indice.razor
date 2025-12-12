@@ -248,11 +248,11 @@
         </div>
     </div>
 
-    @if (opcionesCuenta.EmailConfirmed == true)
+    @if (opcionesCuenta?.EmailConfirmed == true)
     {
         int? monedas = 0;
 
-        if (opcionesCuenta.PatreonCoins != null)
+        if (opcionesCuenta?.PatreonCoins != null)
         {
             monedas = opcionesCuenta.PatreonCoins;
         }

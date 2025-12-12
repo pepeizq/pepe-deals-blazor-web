@@ -365,7 +365,7 @@ namespace BaseDatos.Juegos
 					{
 						await sentencia.Connection.ExecuteAsync(actualizarMinimos, new
 						{
-							id = juego.Id,
+							idMaestra = juego.Id,
 							mayorEdad = juego.MayorEdad
 						}, transaction: sentencia);
 					});

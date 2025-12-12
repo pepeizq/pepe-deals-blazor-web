@@ -115,7 +115,7 @@
         <div style="width: 100%;">
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; align-items: center; gap: 30px;">
-                    @if (idsPendiente != "0")
+                    @if (idsPendiente != "0" && ocupado == false)
                     {
                         <button @onclick="@(e => ClickearActualizarPendientes(e, enlacePendiente))" class="boton-pequeño" style="width: 130px; text-align: center;">Actualizar</button>
                     }
@@ -373,6 +373,8 @@
 
     #nullable disable
 
+    private bool ocupado = false;
+
     private List<PendientesTienda> pendientesTiendas = new List<PendientesTienda>();
     private List<PendientesSuscripcion> pendientesSuscripcion = new List<PendientesSuscripcion>();
     private List<PendientesStreaming> pendientesStreaming = new List<PendientesStreaming>();
@@ -386,10 +388,14 @@
     private string imagenPendiente = null;
     private string nombrePendiente = null;
     private string enlacePendiente = null;
-    private string idsPendiente = "0";
+    private string idsPendiente = null;
 
     protected override async Task OnInitializedAsync()
     {
+        ocupado = true;
+
+        #region Tiendas
+
         pendientesTiendas.Clear();
 
         foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
@@ -407,7 +413,7 @@
             }
         }
 
-        if (pendientesTiendas?.Count > 0)
+        if (string.IsNullOrEmpty(idsPendiente) == true && pendientesTiendas?.Count > 0)
         {
             nombrePendiente = pendientesTiendas[0].Pendientes[0].Nombre;
             imagenPendiente = pendientesTiendas[0].Pendientes[0].Imagen;
@@ -422,6 +428,10 @@
                 idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesTiendas[0].Pendientes[0].Nombre);
             }
         }
+
+        #endregion
+
+        #region Suscripciones
 
         pendientesSuscripcion.Clear();
 
@@ -440,6 +450,18 @@
             }
         }
 
+        if (string.IsNullOrEmpty(idsPendiente) == true && pendientesSuscripcion?.Count > 0)
+        {
+            nombrePendiente = pendientesSuscripcion[0].Pendientes[0].Nombre;
+            imagenPendiente = pendientesSuscripcion[0].Pendientes[0].Imagen;
+            enlacePendiente = pendientesSuscripcion[0].Pendientes[0].Enlace;
+            idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesSuscripcion[0].Pendientes[0].Nombre);
+        }
+
+        #endregion
+
+        #region Streaming
+
         pendientesStreaming.Clear();
 
         foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
@@ -453,6 +475,18 @@
                 pendientesStreaming.Add(pendienteStreaming);
             }
         }
+
+        if (string.IsNullOrEmpty(idsPendiente) == true && pendientesStreaming?.Count > 0)
+        {
+            nombrePendiente = pendientesStreaming[0].Pendientes[0].Nombre;
+            imagenPendiente = pendientesStreaming[0].Pendientes[0].Imagen;
+            enlacePendiente = pendientesStreaming[0].Pendientes[0].Enlace;
+            idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesStreaming[0].Pendientes[0].Nombre);
+        }
+
+        #endregion
+
+        #region Plataformas
 
         pendientesPlataforma.Clear();
 
@@ -468,21 +502,43 @@
             }
         }
 
+        if (string.IsNullOrEmpty(idsPendiente) == true && pendientesPlataforma?.Count > 0)
+        {
+            nombrePendiente = pendientesPlataforma[0].Pendientes[0].Nombre;
+            imagenPendiente = pendientesPlataforma[0].Pendientes[0].Imagen;
+            enlacePendiente = pendientesPlataforma[0].Pendientes[0].Enlace;
+            idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesPlataforma[0].Pendientes[0].Nombre);
+        }
+
+        #endregion
+
+        if (string.IsNullOrEmpty(idsPendiente) == true)
+        {
+            idsPendiente = "0";
+        }
+
         await ActualizarResultados();
+        ocupado = false;
     }
 
     private async Task ClickearTiendaPendientes(MouseEventArgs e, string id, string nombre)
     {
+        ocupado = true;
+
         idTiendaPendiente = id;
         idSuscripcionPendiente = null;
         idStreamingPendiente = null;
         idPlataformaPendiente = null;
 
         await ClickearTiendaPendientes(idTiendaPendiente);
+
+        ocupado = false;
     }
 
     private async Task ClickearTiendaPendientes(string id)
     {
+        ocupado = true;
+
         resultados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
@@ -538,20 +594,28 @@
         }
 
         await ActualizarResultados();
+
+        ocupado = false;
     }
 
     private async Task ClickearSuscripcionPendientes(MouseEventArgs e, string id, string nombre)
     {
+        ocupado = true;
+
         idTiendaPendiente = null;
         idSuscripcionPendiente = id;
         idStreamingPendiente = null;
         idPlataformaPendiente = null;
 
         await ClickearSuscripcionPendientes(idSuscripcionPendiente);
+
+        ocupado = false;
     }
 
     private async Task ClickearSuscripcionPendientes(string id)
     {
+        ocupado = true;
+
         resultados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
@@ -578,20 +642,28 @@
         }
 
         await ActualizarResultados();
+
+        ocupado = false;
     }
 
     private async Task ClickearStreamingPendientes(MouseEventArgs e, string id, string nombre)
     {
+        ocupado = true;
+
         idTiendaPendiente = null;
         idSuscripcionPendiente = null;
         idStreamingPendiente = id;
         idPlataformaPendiente = null;
 
         await ClickearStreamingPendientes(idStreamingPendiente);
+
+        ocupado = false;
     }
 
     private async Task ClickearStreamingPendientes(string id)
     {
+        ocupado = true;
+
         resultados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
@@ -618,20 +690,28 @@
         }
 
         await ActualizarResultados();
+
+        ocupado = false;
     }
 
     private async Task ClickearPlataformaPendientes(MouseEventArgs e, string id, string nombre)
     {
+        ocupado = true;
+
         idTiendaPendiente = null;
         idSuscripcionPendiente = null;
         idStreamingPendiente = null;
         idPlataformaPendiente = id;
 
         await ClickearPlataformaPendientes(idPlataformaPendiente);
+
+        ocupado = false;
     }
 
     private async Task ClickearPlataformaPendientes(string id)
     {
+        ocupado = true;
+
         resultados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
@@ -663,10 +743,14 @@
                 idsPendiente = "0";
             }
         }
+
+        ocupado = false;
     }
 
     private async Task ClickearDescartarPendientes(MouseEventArgs e, string enlace)
     {
+        ocupado = true;
+
         if (string.IsNullOrEmpty(idTiendaPendiente) == false)
         {
             await BaseDatos.Pendientes.Actualizar.DescartarTienda(idTiendaPendiente, enlace);
@@ -726,10 +810,14 @@
 
             await ClickearPlataformaPendientes(idPlataformaPendiente);
         }
+
+        ocupado = false;
     }
 
     private async Task ClickearActualizarPendientes(MouseEventArgs e, string enlace)
     {
+        ocupado = true;
+
         resultados.Clear();
 
         if (string.IsNullOrEmpty(idTiendaPendiente) == false)
@@ -823,15 +911,21 @@
 
             await ClickearPlataformaPendientes(idPlataformaPendiente);
         }
+
+        ocupado = false;
     }
 
     private List<global::Juegos.Juego> resultados = new List<global::Juegos.Juego>();
 
     private async Task TextoCambiaPendientes(ChangeEventArgs texto)
     {
+        ocupado = true;
+
         idsPendiente = texto.Value.ToString();
 
         await ActualizarResultados();
+
+        ocupado = false;
     }
 
     private async Task ActualizarResultados()
@@ -1041,6 +1135,8 @@
 
     private async Task ClickearIdPendientes(MouseEventArgs e, string id)
     {
+        ocupado = true;
+
         if (string.IsNullOrEmpty(idsPendiente) == true)
         {
             idsPendiente = id;
@@ -1071,10 +1167,14 @@
         }
 
         await ActualizarResultados();
+
+        ocupado = false;
     }
 
     private async Task ClickearBorrarPendientes(MouseEventArgs e, string id)
     {
+        ocupado = true;
+
         await BaseDatos.Juegos.Borrar.Ejecutar(id);
 
         List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
@@ -1091,6 +1191,8 @@
             buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
             buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
         }
+
+        ocupado = false;
     }
 
     #endregion   

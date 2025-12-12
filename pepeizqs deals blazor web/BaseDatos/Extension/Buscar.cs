@@ -69,7 +69,7 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
 
-			return await GenerarDatos(buscar);
+			return await GenerarDatos(buscar, "Steam " + id);
 		}
 
 		public static async Task<Extension> Gog2(string slug)
@@ -88,7 +88,7 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
 
-			return await GenerarDatos(buscar);
+			return await GenerarDatos(buscar, "GOG " + slug);
 		}
 
 		public static async Task<Extension> EpicGames2(string slug)
@@ -107,11 +107,16 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
 
-			return await GenerarDatos(buscar);
+			return await GenerarDatos(buscar, "Epic " + slug);
 		}
 
-		private static async Task<Extension> GenerarDatos(string buscar)
+		private static async Task<Extension> GenerarDatos(string buscar, string id)
 		{
+			if (buscar == null)
+			{
+				return null;
+			}
+
 			try
 			{
 				var fila2 = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
@@ -175,12 +180,20 @@ namespace BaseDatos.Extension
 						{
 							precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
 
-							extension.PreciosActuales.Add(new ExtensionPrecio
+							if (precio != null && precio.Tienda != null)
 							{
-								Datos = precio,
-								Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
-								TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
-							});
+								if (extension.PreciosActuales == null)
+								{
+									extension.PreciosActuales = new List<ExtensionPrecio>();
+								}
+
+								extension.PreciosActuales.Add(new ExtensionPrecio
+								{
+									Datos = precio,
+									Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,
+									TiendaIcono = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).ImagenIcono
+								});
+							}
 						}
 					}
 				}
@@ -267,7 +280,7 @@ namespace BaseDatos.Extension
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Extension Generar", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Extension Generar " + id, ex);
 			}
 
 			return null;

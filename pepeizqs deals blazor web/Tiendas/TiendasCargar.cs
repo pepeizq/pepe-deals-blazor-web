@@ -9,7 +9,6 @@ namespace Tiendas2
 			List<Tienda> tiendas = new List<Tienda>
 			{
 				APIs.Steam.Tienda.Generar(),
-				APIs.Steam.Tienda.GenerarBundles(),
 				APIs.GamersGate.Tienda.Generar(),
 				APIs.Humble.Tienda.Generar(),
 				APIs.Humble.Tienda.GenerarChoice(),
@@ -35,7 +34,8 @@ namespace Tiendas2
 				APIs.EA.Tienda.Generar(),
 				APIs.Nexus.Tienda.Generar(),
 				APIs._2Game.Tienda.Generar(),
-				APIs.Muvegames.Tienda.Generar()
+				APIs.Muvegames.Tienda.Generar(),
+				APIs.Noctre.Tienda.Generar()
 			};
 
 			return tiendas;
@@ -150,6 +150,10 @@ namespace Tiendas2
 			else if (id == APIs.Muvegames.Tienda.Generar().Id)
 			{
 				await APIs.Muvegames.Tienda.BuscarOfertas();
+			}
+			else if (id == APIs.Noctre.Tienda.Generar().Id)
+			{
+				await APIs.Noctre.Tienda.BuscarOfertas();
 			}
 		}
 

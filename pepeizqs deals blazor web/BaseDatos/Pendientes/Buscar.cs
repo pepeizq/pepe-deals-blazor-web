@@ -10,7 +10,7 @@ namespace BaseDatos.Pendientes
 		{
 			try
 			{
-				string busqueda1 = "SELECT id FROM juegos WHERE nombre = @nombre OR nombreCodigo = @nombreLimpio";
+				string busqueda1 = "SELECT id FROM juegos WHERE nombre=@nombre OR nombreCodigo=@nombreLimpio";
 
 				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
@@ -33,7 +33,7 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre = @nombre";
+				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre=@nombre";
 
 				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{

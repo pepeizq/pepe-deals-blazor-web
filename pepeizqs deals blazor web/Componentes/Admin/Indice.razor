@@ -257,7 +257,7 @@
                 }
                 else if (subpagina == subpaginaErrores)
                 {
-                    MostrarErrores();
+                    await MostrarErrores();
                 }
                 else if (subpagina == subpaginaTareas)
                 {
@@ -397,7 +397,7 @@
     private string subpaginaErrores = "errores";
     private int nuevosErroresCantidad = 0;
 
-    private async void MostrarErrores()
+    private async Task MostrarErrores()
     {
         CerrarPestañas();
         mostrarErrores = true;

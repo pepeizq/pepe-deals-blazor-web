@@ -101,28 +101,31 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Gratis)
         @if (gratisSeleccionadoNoticias != GratisTipo.Desconocido)
         {
             <div>
-                @foreach (var gratis2 in gratis)
+                @if (gratis?.Count > 0)
                 {
-                    <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis2.JuegoId, gratis2.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
-                        <div style="display: flex; align-items: center;">
-                            @if (noticia.Juegos != null)
-                            {
-                                @if (noticia.Juegos.Contains(gratis2.JuegoId.ToString()) == true)
+                    foreach (var gratis2 in gratis)
+                    {
+                        <button @onclick="@(e => ClickearGratisJuegoNoticias(e, gratis2.JuegoId, gratis2.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
+                            <div style="display: flex; align-items: center;">
+                                @if (noticia.Juegos != null)
                                 {
-                                    <div style="margin-left: 10px; margin-right: 20px;">
-                                        <div style="max-width: 20px; max-height: 20px;">
-                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-                                            </svg>
+                                    @if (noticia.Juegos.Contains(gratis2.JuegoId.ToString()) == true)
+                                    {
+                                        <div style="margin-left: 10px; margin-right: 20px;">
+                                            <div style="max-width: 20px; max-height: 20px;">
+                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 }
-                            }
 
-                            <img src="@GratisCargar.DevolverGratis(gratis2.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
-                            <div>@gratis2.Nombre</div>
-                        </div>
-                    </button>
+                                <img src="@GratisCargar.DevolverGratis(gratis2.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
+                                <div>@gratis2.Nombre</div>
+                            </div>
+                        </button>
+                    }
                 }
             </div>
         }
@@ -163,28 +166,31 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
         @if (suscripcionSeleccionadaNoticias != SuscripcionTipo.Desconocido)
         {
             <div>
-                @foreach (var suscripcion in suscripciones)
+                @if (suscripciones?.Count > 0)
                 {
-                    <button @onclick="@(e => ClickearSuscripcionJuego(e, suscripcion.JuegoId, suscripcion.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
-                        <div style="display: flex; align-items: center;">
-                            @if (noticia.Juegos != null)
-                            {
-                                @if (noticia.Juegos.Contains(suscripcion.JuegoId.ToString()) == true)
+                    foreach (var suscripcion in suscripciones)
+                    {
+                        <button @onclick="@(e => ClickearSuscripcionJuego(e, suscripcion.JuegoId, suscripcion.Id))" class="boton-pequeño" style="margin: 20px 0px 0px 0px;">
+                            <div style="display: flex; align-items: center;">
+                                @if (noticia.Juegos != null)
                                 {
-                                    <div style="margin-left: 10px; margin-right: 20px;">
-                                        <div style="max-width: 20px; max-height: 20px;">
-                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-                                            </svg>
+                                    @if (noticia.Juegos.Contains(suscripcion.JuegoId.ToString()) == true)
+                                    {
+                                        <div style="margin-left: 10px; margin-right: 20px;">
+                                            <div style="max-width: 20px; max-height: 20px;">
+                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 }
-                            }
 
-                            <img src="@SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
-                            <div style="margin-left: 20px;">@suscripcion.Nombre</div>
-                        </div>
-                    </button>
+                                <img src="@SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenLogo" style="width: 12%; margin: 10px;" />
+                                <div style="margin-left: 20px;">@suscripcion.Nombre</div>
+                            </div>
+                        </button>
+                    }
                 }
             </div>
         }

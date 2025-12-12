@@ -188,6 +188,7 @@
 
                 if (window.hls) {
                     try {
+                        window.hls.stopLoad();
                         window.hls.detachMedia();
                         window.hls.destroy();
                     } catch (e) {
@@ -197,9 +198,8 @@
                 }
 
                 video.removeAttribute("src");
-                video.src = "";
+                video.removeAttribute("poster");
                 video.currentTime = 0;
-                video.load();
 
                 const lowerUrl = url.toLowerCase();
                 
@@ -213,12 +213,12 @@
                   
                         window.hls.loadSource(url);
                         window.hls.attachMedia(video);
+
                     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
                         video.src = url;
                     }
                 } else if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm")) {
                     video.src = url;
-                    video.load();
                 }
 
                 video._timeUpdateHandler = function () {

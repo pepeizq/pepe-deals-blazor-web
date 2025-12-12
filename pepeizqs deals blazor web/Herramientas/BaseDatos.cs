@@ -17,44 +17,88 @@ namespace Herramientas
             
 			if (usarEstado == true && estado != ConnectionState.Open)
 			{
-				conexion.Open();
+				try
+				{
+					conexion.Open();
+				}
+				catch (SqlException ex) when (EsErrorDeTransporte(ex))
+				{
+					SqlConnection.ClearPool(conexion);
+					conexion.Open();
+				}
 			}
 
 			return conexion;	
         }
 
+		private static bool EsErrorDeTransporte(SqlException ex)
+		{
+			int[] errores =
+			{
+				-1,      // General network error
+				18,      // Connection has been closed by peer
+				19,      // Physical connection is not usable
+				10053,   // Connection aborted
+				10054,   // Connection reset by peer
+				10060    // Timeout
+			};
+
+			return ex.Errors.Cast<SqlError>().Any(e => errores.Contains(e.Number));
+		}
+
 		public static async Task EjecutarConConexionAsync(Func<SqlTransaction, Task> sentencia, SqlConnection conexion = null)
 		{
 			bool cerrar = conexion == null;
+			int intentos = 2; 
 
-			if (conexion == null)
-			{
-				conexion = Conectar();
-			}
-
-			if (conexion.State != ConnectionState.Open)
-			{
-				await conexion.OpenAsync();
-			}
-
-			await using (SqlTransaction transaccion = (SqlTransaction)await conexion.BeginTransactionAsync())
+			while (true)
 			{
 				try
 				{
-					await sentencia(transaccion);
-					await transaccion.CommitAsync();
-				}
-				catch
-				{
-					try { await transaccion.RollbackAsync(); } catch { }
-					throw;
-				}
-				finally
-				{
-					if (cerrar)
+					if (conexion == null)
 					{
-						await conexion.CloseAsync();
+						conexion = Conectar();
+					}						
+
+					if (conexion.State != ConnectionState.Open)
+					{
+						await conexion.OpenAsync();
+					}			
+
+					await using var transaccion = await conexion.BeginTransactionAsync();
+					{
+						try
+						{
+							await sentencia((SqlTransaction)transaccion);
+							await transaccion.CommitAsync();
+						}
+						catch
+						{
+							try { await transaccion.RollbackAsync(); } catch { }
+							throw;
+						}
+						finally
+						{
+							if (cerrar == true)
+							{
+								await conexion.CloseAsync();
+							}
+						}
 					}
+
+					return;
+				}
+				catch (SqlException ex) when (EsErrorDeTransporte(ex) && intentos-- > 0)
+				{
+					SqlConnection.ClearPool(conexion);
+
+					if (cerrar == true)
+					{
+						await conexion.DisposeAsync();
+						conexion = null;
+					}
+
+					await Task.Delay(150);
 				}
 			}
 		}
@@ -62,37 +106,55 @@ namespace Herramientas
 		public static async Task<T> EjecutarConConexionAsync<T>(Func<SqlTransaction, Task<T>> sentencia, SqlConnection conexion = null)
 		{
 			bool cerrar = conexion == null;
+			int intentos = 2;
 
-			if (conexion == null)
-			{
-				conexion = Conectar();
-			}
-
-			if (conexion.State != ConnectionState.Open)
-			{
-				await conexion.OpenAsync();
-			}
-
-			await using (SqlTransaction transaccion = (SqlTransaction)await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted))
+			while (true)
 			{
 				try
 				{
-					T resultado = await sentencia(transaccion);
-					await transaccion.CommitAsync();
+					if (conexion == null)
+					{
+						conexion = Conectar();
+					}
 
-					return resultado;
+					if (conexion.State != ConnectionState.Open)
+					{
+						await conexion.OpenAsync();
+					}
+
+					await using var transaccion = await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
+
+					try
+					{
+						T resultado = await sentencia((SqlTransaction)transaccion);
+						await transaccion.CommitAsync();
+
+						return resultado;
+					}
+					catch
+					{
+						try { await transaccion.RollbackAsync(); } catch { }
+						throw;
+					}
+					finally
+					{
+						if (cerrar == true)
+						{
+							await conexion.CloseAsync();
+						}		
+					}
 				}
-				catch
+				catch (SqlException ex) when (EsErrorDeTransporte(ex) && intentos-- > 0)
 				{
-					try { await transaccion.RollbackAsync(); } catch { }
-					throw;
-				}
-				finally
-				{
+					SqlConnection.ClearPool(conexion);
+
 					if (cerrar == true)
 					{
-						await conexion.CloseAsync();
+						await conexion.DisposeAsync();
+						conexion = null;
 					}
+
+					await Task.Delay(150);
 				}
 			}
 		}
