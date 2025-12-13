@@ -104,7 +104,7 @@
 
                 @if (avisoSobreescrito == true)
                 {
-                    <div style="background-color: var(--fondoAlerta); border: 1px solid var(--fondoBotonPequeño); padding: 20px 25px;">
+                    <div style="background-color: var(--fondoAlerta); padding: 20px 25px; margin-top: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
                         @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "AccountLanguage")
                     </div>
                 }
@@ -182,6 +182,9 @@
     [Parameter]
     public string idioma { get; set; }
 
+    [Parameter]
+    public string usuarioId { get; set; }
+
     private Usuario usuario = new Usuario();
 
     private string idiomaWeb = string.Empty;
@@ -193,7 +196,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        usuario = await UserManager.GetUserAsync(Contexto.HttpContext.User);
+        usuario = await BaseDatos.Usuarios.Buscar.OpcionesIdioma(usuarioId);
 
         if (usuario != null)
         {
@@ -239,7 +242,7 @@
             idiomaSobreescrito = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(usuario.LanguageOverride), "Languages");
             banderaSobreescrita = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(usuario.LanguageOverride) + ".svg";
 
-            await UserManager.UpdateAsync(usuario);
+            await BaseDatos.Usuarios.Actualizar.Opcion("LanguageOverride", usuario.LanguageOverride, usuarioId);
 
             idioma = usuario.LanguageOverride;
             avisoSobreescrito = true;
@@ -264,7 +267,8 @@
             idiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(usuario.LanguageGames), "Languages");
             banderaJuegos = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(usuario.LanguageGames) + ".svg";
 
-            await UserManager.UpdateAsync(usuario);
+            await BaseDatos.Usuarios.Actualizar.Opcion("LanguageGames", usuario.LanguageGames, usuarioId);
+          
             await InvokeAsync(StateHasChanged);
         }
     }

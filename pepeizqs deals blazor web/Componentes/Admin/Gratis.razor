@@ -165,7 +165,7 @@ else
         imagenNoticiaGratis = imagenNoticia2;
     }
 
-    private async void CambiarTipoGratis(ChangeEventArgs texto)
+    private async Task CambiarTipoGratis(ChangeEventArgs texto)
     {
         tipoGratis = texto.Value.ToString();
         enlaceSeleccionadoGratis = null;
@@ -230,7 +230,7 @@ else
         imagenNoticiaGratis = texto.Value.ToString();
     }
 
-    private async void AñadirJuegoGratis(MouseEventArgs e)
+    private async Task AñadirJuegoGratis(MouseEventArgs e)
     {
         global::Juegos.Juego juegoGratis = await BaseDatos.Juegos.Buscar.UnJuego(idSeleccionadaGratis);
 

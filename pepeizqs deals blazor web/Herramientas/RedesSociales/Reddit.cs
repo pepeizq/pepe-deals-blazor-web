@@ -321,7 +321,16 @@ namespace Herramientas.RedesSociales
 
                     if (listaJuegos?.Count > 0)
                     {
-                        texto = texto + tienda + Environment.NewLine;
+                        listaJuegos = listaJuegos.OrderBy(t => t.Nombre).ToList();
+
+                        string codigo = string.Empty;
+
+                        if (string.IsNullOrEmpty(listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto) == false)
+                        {
+                            codigo = " - Code: " + listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto;
+						}
+
+                        texto = texto + tienda + codigo + Environment.NewLine;
 
 						foreach (var juego in listaJuegos)
                         {

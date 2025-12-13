@@ -1400,7 +1400,7 @@
 
                                                         @if (juego.Idiomas != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                                         {
-                                                            if (juego.Idiomas.Count > 0)
+                                                            if (juego.Idiomas?.Count > 0)
                                                             {
                                                                 bool tieneIdiomasSteam = false;
                                                                 bool tieneIdiomasGog = false;
@@ -1658,7 +1658,7 @@
                                     </div>
                                 }
 
-                                @if (preciosActualesDRM.Count > 0 && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+                                @if (preciosActualesDRM.Count > 0)
                                 {
                                     List<JuegoPrecio> preciosMostrar = new List<JuegoPrecio>();
                                     List<JuegoPrecio> preciosBajos = new List<JuegoPrecio>();

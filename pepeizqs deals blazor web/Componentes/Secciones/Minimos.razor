@@ -66,7 +66,7 @@ else
 	<div class="subcabecera">
 		<div class="cuerpo-ancho sub-subcabecera">
 			<h1 style="font-size: 18px; margin: 0px; width: fit-content; padding: 9px 0px;">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "HistoricalLows") (@juegosMostrar.Count().ToString())
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "HistoricalLows")
 			</h1>
 
 			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
@@ -803,6 +803,24 @@ else
 					</ItemContent>
 				</Virtualize>
 			</div>
+
+			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+			{
+				<div style="margin-top: 20px; width: 100%; display: flex; align-items: center; gap: 20px; justify-content: center;">
+					@if (cargandoMas == false)
+					{
+						<button class="boton-pequeño" @onclick="CargarMasMinimos" style="width: fit-content; padding: 10px 25px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String41", "HistoricalLows")
+						</button>
+					}
+					else
+					{
+						<div style="padding: 10px 25px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String42", "HistoricalLows")
+						</div>
+					}
+				</div>
+			}
 		}
 	</div>
 }
@@ -834,6 +852,7 @@ else
 	[PersistentState] public List<Juegos.Juego> juegosGestor { get; set; }
 	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
 
+	private int posicion = 0;
 	private string ordenamientoElegido = string.Empty;
 
 	private string textoBuscador { get; set; }
@@ -1292,17 +1311,24 @@ else
 
 	#region Ordenar
 
-	private async Task OrdenarReseñasPorcentaje(bool buscar = true)
+	private async Task OrdenarReseñasPorcentaje(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String3", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -1321,17 +1347,24 @@ else
 		}
 	}
 
-	private async Task OrdenarReseñasCantidad(bool buscar = true)
+	private async Task OrdenarReseñasCantidad(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));					
+				}
 			}
 		}
 		else
@@ -1350,17 +1383,24 @@ else
 		}
 	}
 
-	private async Task OrdenarNombreAZ(bool buscar = true)
+	private async Task OrdenarNombreAZ(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String5", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -1379,17 +1419,24 @@ else
 		}
 	}
 
-	private async Task OrdenarNombreZA(bool buscar = true)
+	private async Task OrdenarNombreZA(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));					
+				}
 			}
 		}
 		else
@@ -1408,17 +1455,24 @@ else
 		}
 	}
 
-	private async Task OrdenarPrecio(bool buscar = true)
+	private async Task OrdenarPrecio(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String7", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -1437,17 +1491,24 @@ else
 		}
 	}
 
-	private async Task OrdenarDescuento(bool buscar = true)
+	private async Task OrdenarDescuento(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String8", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -1466,17 +1527,24 @@ else
 		}
 	}
 
-	private async Task OrdenarFechaDetectado(bool buscar = true)
+	private async Task OrdenarFechaDetectado(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String34", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
-			if (juegosGestor.Count > 0)
+			if (juegosGestor?.Count > 0)
 			{
-				juegosMostrar = Filtros(juegosGestor);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -1495,20 +1563,27 @@ else
 		}
 	}
 
-	private async Task OrdenarFechaLanzamiento(bool buscar = true)
+	private async Task OrdenarFechaLanzamiento(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String35", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
 
 			if (juegosMostrar.Count > 0)
 			{
 				var juegosMostradosIds = juegosMostrar.Select(j => j.Juego).ToList();
 				var juegosRestantes = juegosGestor.Except(juegosMostradosIds).ToList();
 
-				juegosMostrar = Filtros(juegosRestantes);
+				if (fusionar == false)
+				{
+					juegosMostrar = Filtros(juegosGestor);
+				}
+				else
+				{
+					juegosMostrar.AddRange(Filtros(juegosGestor));
+				}
 			}
 		}
 		else
@@ -2237,8 +2312,8 @@ else
 		enseñarMinimoReseñas = false;
 		enseñarCategorias = false;
 		enseñarSteamDeck = false;
-        enseñarLanzamiento = false;
-        enseñarInteligenciaArtificial = false;
+		enseñarLanzamiento = false;
+		enseñarInteligenciaArtificial = false;
 	}
 
 	private bool enseñarOcultar = false;
@@ -2380,7 +2455,7 @@ else
 		else
 		{
 			enseñarLanzamiento = false;
-        }
+		}
 	}
 
 	private bool enseñarInteligenciaArtificial = false;
@@ -2395,7 +2470,7 @@ else
 		else
 		{
 			enseñarInteligenciaArtificial = false;
-        }
+		}
 	}
 
 	#endregion
@@ -2450,4 +2525,56 @@ else
 	}
 
 	#endregion
+
+	private bool cargandoMas = false;
+
+	private async Task CargarMasMinimos()
+	{
+		posicion = posicion + 100;
+
+		cargandoMas = true;
+
+		if (opcionesMinimos == null)
+		{
+			await OrdenarReseñasCantidad(true, true);
+		}
+		else
+		{
+			if (opcionesMinimos.HistoricalLowsSort == null)
+			{
+				opcionesMinimos.HistoricalLowsSort = 1;
+			}
+
+			if (opcionesMinimos.HistoricalLowsSort == 0)
+			{
+				await OrdenarReseñasPorcentaje(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 1)
+			{
+				await OrdenarReseñasCantidad(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 2)
+			{
+				await OrdenarNombreAZ(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 3)
+			{
+				await OrdenarNombreZA(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 4)
+			{
+				await OrdenarPrecio(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 5)
+			{
+				await OrdenarDescuento(true, true);
+			}
+			else if (opcionesMinimos.HistoricalLowsSort == 6)
+			{
+				await OrdenarFechaDetectado(true, true);
+			}
+		}
+
+		cargandoMas = false;
+	}
 }

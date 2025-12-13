@@ -4,6 +4,8 @@ using Bundles2;
 using Dapper;
 using Juegos;
 using System.Data;
+using System.Data.SqlTypes;
+using System.Text;
 using System.Text.Json;
 
 public class JuegoHandler<T> : SqlMapper.TypeHandler<T>
@@ -15,18 +17,57 @@ public class JuegoHandler<T> : SqlMapper.TypeHandler<T>
 			return default;
 		}
 
-		string texto = valor.ToString();
+		string texto;
+
+		switch (valor)
+		{
+			case SqlString ss:
+				texto = ss.Value;
+				break;
+			case SqlChars sc:
+				texto = new string(sc.Value);
+				break;
+			case SqlBytes sb:
+				texto = Encoding.UTF8.GetString(sb.Value);
+				break;
+			default:
+				texto = valor.ToString();
+				break;
+		}
+
 		if (string.IsNullOrWhiteSpace(texto) || texto == "null")
 		{
 			return default;
 		}
 
-		return JsonSerializer.Deserialize<T>(texto);
+		try
+		{
+			return JsonSerializer.Deserialize<T>(texto);
+		}
+		catch (Exception ex) 
+		{
+			BaseDatos.Errores.Insertar.Mensaje($"[JuegoHandler] JSON inválido para tipo {typeof(T).Name}: {texto}", ex.Message);
+
+			if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(List<>))
+			{
+				return (T)Activator.CreateInstance(typeof(T));
+			}
+				
+			return default;
+		}
 	}
 
 	public override void SetValue(IDbDataParameter parametro, T valor)
 	{
-		parametro.Value = valor == null ? (object)DBNull.Value : JsonSerializer.Serialize(valor);
+		if (valor == null)
+		{
+			parametro.Value = DBNull.Value;
+		}
+		else
+		{
+			string json = JsonSerializer.Serialize(valor);
+			parametro.Value = json;
+		}
 	}
 }
 

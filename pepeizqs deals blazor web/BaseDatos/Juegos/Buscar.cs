@@ -811,7 +811,7 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
+		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0)
 		{
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
@@ -1064,11 +1064,14 @@ FROM seccionMinimos j";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
+				busqueda = busqueda + @$" OFFSET {posicion} ROWS
+										FETCH NEXT 100 ROWS ONLY";
+
 				try
 				{
 					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia, commandTimeout: 180).ContinueWith(t => t.Result.ToList());
 					});
 				}
 				catch (Exception ex)
@@ -1077,7 +1080,7 @@ FROM seccionMinimos j";
 				}
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> Ultimos(string tabla, int cantidad)
@@ -1149,7 +1152,7 @@ FROM seccionMinimos j";
 			return 0;
 		}
 
-		public static async Task<List<Juego>> Filtro(List<string> ids, int cantidad)
+		public static async Task<List<Juego>> Filtro(List<string> ids, int posicion = 0)
 		{
 			List<string> etiquetas = new List<string>();
 			List<string> categorias = new List<string>();
@@ -1391,12 +1394,15 @@ FROM seccionMinimos j";
 				}
 			}
 
-			string busqueda = "SELECT TOP " + cantidad.ToString() + " *, CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) AS Cantidad FROM juegos " + Environment.NewLine +
+			string busqueda = "SELECT *, CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) AS Cantidad FROM juegos " + Environment.NewLine +
 				"WHERE ISJSON(analisis) > 0 " + etiquetasTexto + " " + categoriasTexto + " " + generosTexto + " " + deckTexto + " " + sistemasTexto + " " + tiposTexto +
 				" ORDER BY Cantidad DESC";
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
+				busqueda = busqueda + @$" OFFSET {posicion} ROWS
+										FETCH NEXT 50 ROWS ONLY";
+
 				try
 				{
 					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>

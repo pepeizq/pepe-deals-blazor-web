@@ -375,57 +375,52 @@ namespace Herramientas
 			return false;
 		}
 
+		private static readonly Dictionary<string, Dictionary<string, string>> cache = new();
+
 		public static string BuscarTexto(string idiomaUsuario, string cadena, string carpeta)
 		{
 			idiomaUsuario = SacarIdiomaUsuarioWeb(idiomaUsuario);
 
-			string rutaFichero = "Idiomas/" + idiomaUsuario + ".json";
+			string rutaFichero = string.IsNullOrEmpty(carpeta) ? $"Idiomas/{idiomaUsuario}.json" : $"Idiomas/{carpeta}/{idiomaUsuario}.json";
 
-			if (string.IsNullOrEmpty(carpeta) == false)
+			string cacheKey = rutaFichero;
+
+			if (cache.TryGetValue(cacheKey, out var diccionario) == false)
 			{
-				rutaFichero = "Idiomas/" + carpeta + "/" + idiomaUsuario + ".json";
-			}
-
-			if (File.Exists(rutaFichero) == true)
-			{
-				using (StreamReader r = new StreamReader(rutaFichero))
-				{
-					try
-					{
-						string json = r.ReadToEnd();
-						JsonElement elementos = JsonSerializer.Deserialize<JsonElement>(json);
-
-						if (elementos.TryGetProperty(cadena, out var resultado))
-						{
-							return resultado.GetString();
-						}
-					}
-					catch (Exception ex)
-					{
-						global::BaseDatos.Errores.Insertar.Mensaje("Traduccion Carpeta: " + carpeta + " - Cadena: " + cadena, ex);
-					}
-				}
-
-				if (string.IsNullOrEmpty(cadena) == false)
+				if (File.Exists(rutaFichero) == false)
 				{
 					if (idiomaUsuario != "en")
 					{
 						return BuscarTexto("en", cadena, carpeta);
 					}
-					else
-					{
-						return null;
-					}
+
+					return null;
 				}
-				else
+
+				try
 				{
+					string json = File.ReadAllText(rutaFichero);
+					diccionario = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+					cache[cacheKey] = diccionario;
+				}
+				catch (Exception ex)
+				{
+					global::BaseDatos.Errores.Insertar.Mensaje($"Traduccion Carpeta: {carpeta} - Cadena: {cadena}", ex);
 					return null;
 				}
 			}
-			else
+
+			if (diccionario.TryGetValue(cadena, out var resultado) == true)
+			{
+				return resultado;
+			}
+
+			if (idiomaUsuario != "en")
 			{
 				return BuscarTexto("en", cadena, carpeta);
 			}
+
+			return null;
 		}
 
 		public static string CogerTodo(string idiomaUsuario, string carpeta)

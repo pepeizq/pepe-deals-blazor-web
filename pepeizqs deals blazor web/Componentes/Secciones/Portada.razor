@@ -547,44 +547,49 @@
 		@{
 			bool llegadoLimite = false;
 
-			if (cantidadJuegosMinimos > juegosMinimosMostrar.Count)
+			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				llegadoLimite = true;
-			}
-			else
-			{
-				if (string.IsNullOrEmpty(usuarioId) == false)
+				if (usuarioPatreon == true || usuarioAdmin == true)
 				{
-					if (usuarioPatreon == true || usuarioAdmin == true)
+					if (posicionJuegosMinimos > 950 && posicionJuegosMinimos <= 1000)
 					{
-						if (cantidadJuegosMinimos > 950 && cantidadJuegosMinimos <= 1000)
-						{
-							llegadoLimite = true;
-						}
-					}
-					else
-					{
-						if (cantidadJuegosMinimos > 450 && cantidadJuegosMinimos <= 500)
-						{
-							llegadoLimite = true;
-						}
+						llegadoLimite = true;
 					}
 				}
 				else
 				{
-					if (cantidadJuegosMinimos > 150 && cantidadJuegosMinimos <= 200)
+					if (posicionJuegosMinimos > 450 && posicionJuegosMinimos <= 500)
 					{
 						llegadoLimite = true;
 					}
 				}
 			}
+			else
+			{
+				if (posicionJuegosMinimos > 150 && posicionJuegosMinimos <= 200)
+				{
+					llegadoLimite = true;
+				}
+			}
 
 			<div style="margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 40px;">
-				@if (llegadoLimite == false)
+				@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 				{
-					<button class="boton-pequeño" @onclick="CargarMasMinimos" style="width: fit-content; padding: 15px 30px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Index")
-					</button>
+					if (llegadoLimite == false)
+					{
+						if (cargandoMasMinimos == false)
+						{
+							<button class="boton-pequeño" @onclick="CargarMasMinimos" style="width: fit-content; padding: 15px 30px;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Index")
+							</button>
+						}
+						else
+						{
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Index")
+							</div>
+						}
+					}
 				}
 
 				<a class="boton-pequeño" href="/historical-lows" style="width: fit-content; padding: 15px 30px;">
@@ -900,7 +905,7 @@
 
 		#region Minimos
 
-		await Filtros(true);
+		await Filtros();
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -1058,9 +1063,10 @@
 
 	#region Minimos Lista
 
-	private int cantidadJuegosMinimos = 100;
+	private int posicionJuegosMinimos = 0;
+	private bool cargandoMasMinimos = false;
 
-	private async Task GenerarListaMinimos(bool cargaInicial = false)
+	private async Task GenerarListaMinimos(bool fusionar = false)
 	{
 		try
 		{
@@ -1092,26 +1098,47 @@
 
 			if (tipoSeleccionadoMinimos == MinimosTipo.Nuevos)
 			{
-				if (cargaInicial == false)
+				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
 				}
 				else
 				{
-					juegosMinimosGestor ??= await BaseDatos.Portada.Buscar.Minimos(0, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199));
 				}				
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Populares)
 			{
-				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(1, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+				if (fusionar == false)
+				{
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+				}
+				else
+				{
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199));
+				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Lanzamientos)
 			{
-				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(2, cantidadJuegosMinimos, categoriasNumeros, drmsNumeros, 49);
+				if (fusionar == false)
+				{
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29);
+				}
+				else
+				{
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29));
+				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
 			{
-				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Proximamente(cantidadJuegosMinimos, categoriasNumeros, drmsNumeros);
+				if (fusionar == false)
+				{
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Proximamente(posicionJuegosMinimos, categoriasNumeros, drmsNumeros);
+				}
+				else
+				{
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Proximamente(posicionJuegosMinimos, categoriasNumeros, drmsNumeros));
+				}
 			}
 		}
 		catch (Exception ex)
@@ -1122,9 +1149,13 @@
 
 	private async Task CargarMasMinimos()
 	{
-		cantidadJuegosMinimos += 50;
+		cargandoMasMinimos = true;
 
-		await Filtros();
+		posicionJuegosMinimos = posicionJuegosMinimos + 100;
+
+		await Filtros(true);
+
+		cargandoMasMinimos = false;
 	}
 
 	private PeriodicTimer cronometroMinimos = null;
@@ -1196,9 +1227,9 @@
 		Proximamente
 	}
 
-	private async Task Filtros(bool cargaInicial = false)
+	private async Task Filtros(bool fusionar = false)
 	{
-		await GenerarListaMinimos(cargaInicial);
+		await GenerarListaMinimos(fusionar);
 
 		if (juegosMinimosGestor?.Count > 0)
 		{

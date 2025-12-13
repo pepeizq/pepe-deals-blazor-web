@@ -340,7 +340,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.Steam)
                             </div>
 
-                            @if (string.IsNullOrEmpty(opcionesCuenta.SteamAccountLastCheck) == false)
+                            @if (string.IsNullOrEmpty(opcionesCuenta?.SteamAccountLastCheck) == false)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Account") @Herramientas.Calculadora.DiferenciaTiempo(Convert.ToDateTime(opcionesCuenta.SteamAccountLastCheck), idioma)
@@ -359,7 +359,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.GOG)
                             </div>
 
-                            @if (opcionesCuenta.GogAccountLastCheck != null)
+                            @if (opcionesCuenta?.GogAccountLastCheck != null)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.GogAccountLastCheck, idioma)
@@ -378,7 +378,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.Amazon)
                             </div>
 
-                            @if (opcionesCuenta.AmazonLastImport != null)
+                            @if (opcionesCuenta?.AmazonLastImport != null)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.AmazonLastImport, idioma)
@@ -397,7 +397,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.Epic)
                             </div>
 
-                            @if (opcionesCuenta.EpicGamesLastImport != null)
+                            @if (opcionesCuenta?.EpicGamesLastImport != null)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.EpicGamesLastImport, idioma)
@@ -416,7 +416,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft)
                             </div>
 
-                            @if (opcionesCuenta.UbisoftLastImport != null)
+                            @if (opcionesCuenta?.UbisoftLastImport != null)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.UbisoftLastImport, idioma)
@@ -435,7 +435,7 @@
                                 @JuegoDRM2.DevolverDRM(JuegoDRM.EA)
                             </div>
 
-                            @if (opcionesCuenta.EaLastImport != null)
+                            @if (opcionesCuenta?.EaLastImport != null)
                             {
                                 <div style="font-size: 14px;">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.EaLastImport, idioma)
@@ -490,7 +490,7 @@ else
 
         @if (mostrarIdioma == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Idioma idioma="@idioma" />
+            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Idioma idioma="@idioma" usuarioId="@usuarioId" />
         }
 
         @if (mostrarClaves == true)
@@ -624,7 +624,7 @@ else
 
                 if (seccion == "language")
                 {
-                    MostrarIdioma();
+                    await MostrarIdioma();
                 }
 
                 if (seccion == "keys")
@@ -705,6 +705,18 @@ else
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (string.IsNullOrEmpty(seccion) == true)
+        {
+            await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/");
+        }
+        else
+        {
+            await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
+        }
+    }
+
     private void CerrarPestañas()
     {
         tituloOpcion = string.Empty;
@@ -740,7 +752,7 @@ else
         enseñarOpcion = false;
 
         seccion = string.Empty;
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/");
+        
     }
 
     #region Cuenta
@@ -755,7 +767,6 @@ else
         enseñarOpcion = true;
         mostrarCorreo = true;
         seccion = "email";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarContraseña = false;
@@ -768,7 +779,6 @@ else
         enseñarOpcion = true;
         mostrarContraseña = true;
         seccion = "password";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarDatosPersonales = false;
@@ -781,12 +791,11 @@ else
         enseñarOpcion = true;
         mostrarDatosPersonales = true;
         seccion = "data";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarIdioma = false;
 
-    private async void MostrarIdioma()
+    private async Task MostrarIdioma()
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Account");
@@ -794,7 +803,6 @@ else
         enseñarOpcion = true;
         mostrarIdioma = true;
         seccion = "language";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarClaves = false;
@@ -807,7 +815,6 @@ else
         enseñarOpcion = true;
         mostrarClaves = true;
         seccion = "keys";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarForo = false;
@@ -820,7 +827,6 @@ else
         enseñarOpcion = true;
         mostrarForo = true;
         seccion = "forum";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarJuegos = false;
@@ -833,7 +839,6 @@ else
         enseñarOpcion = true;
         mostrarJuegos = true;
         seccion = "games";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarPerfil = false;
@@ -846,7 +851,6 @@ else
         enseñarOpcion = true;
         mostrarPerfil = true;
         seccion = "profile";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     #endregion
@@ -863,7 +867,6 @@ else
         enseñarOpcion = true;
         mostrarTienda = true;
         seccion = "store";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarHistorial = false;
@@ -876,7 +879,6 @@ else
         enseñarOpcion = true;
         mostrarHistorial = true;
         seccion = "record";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
     
     private bool mostrarPatreon = false;
@@ -889,7 +891,6 @@ else
         enseñarOpcion = true;
         mostrarPatreon = true;
         seccion = "patreon";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     #endregion
@@ -906,7 +907,6 @@ else
         enseñarOpcion = true;
         mostrarNotificacionesCorreo = true;
         seccion = "notificationsemail";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarNotificacionesPush = false;
@@ -919,7 +919,6 @@ else
         enseñarOpcion = true;
         mostrarNotificacionesPush = true;
         seccion = "notificationspush";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     #endregion
@@ -936,7 +935,6 @@ else
         enseñarOpcion = true;
         mostrarSteam = true;
         seccion = "steam";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarGog = false;
@@ -949,7 +947,6 @@ else
         enseñarOpcion = true;
         mostrarGog = true;
         seccion = "gog";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarAmazon = false;
@@ -962,7 +959,6 @@ else
         enseñarOpcion = true;
         mostrarAmazon = true;
         seccion = "amazon";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarEpicGames = false;
@@ -975,7 +971,6 @@ else
         enseñarOpcion = true;
         mostrarEpicGames = true;
         seccion = "epicgames";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarUbisoft = false;
@@ -988,7 +983,6 @@ else
         enseñarOpcion = true;
         mostrarUbisoft = true;
         seccion = "ubisoft";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     private bool mostrarEa = false;
@@ -1001,7 +995,6 @@ else
         enseñarOpcion = true;
         mostrarEa = true;
         seccion = "ea";
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
     }
 
     #endregion

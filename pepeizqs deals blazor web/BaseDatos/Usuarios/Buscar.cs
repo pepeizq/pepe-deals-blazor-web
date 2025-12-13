@@ -312,6 +312,30 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
+		public static async Task<Usuario> OpcionesIdioma(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT Language, LanguageOverride, LanguageGames FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Cuenta", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<List<Usuario>> UsuariosNotificacionesCorreo()
 		{
 			string busqueda = "SELECT Id, NotificationBundles, NotificationFree, NotificationSubscriptions, NotificationOthers, NotificationWeb, NotificationDelisted, Email, Language FROM AspNetUsers";

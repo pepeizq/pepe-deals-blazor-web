@@ -39,17 +39,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
         (pmh.FechaActualizacion <= DATEADD(hour, 25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
         (pmh.FechaActualizacion <= DATEADD(hour, 48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
         (pmh.FechaActualizacion <= DATEADD(hour, 12, GETDATE()))    
-      )
-  AND NOT EXISTS (
-        SELECT 1
-        FROM seccionMinimos sm
-        CROSS APPLY OPENJSON(sm.PrecioMinimosHistoricos)
-        WITH (
-            DRM INT '$.DRM'
-        ) AS sm_pmh
-        WHERE sm.idMaestra = j.id
-          AND sm_pmh.DRM = pmh.DRM
-    );";
+      );";
 
 			try
 			{
@@ -139,7 +129,7 @@ ORDER BY NEWID()";
 			return new List<Juego>();
 		}
 
-		public static async Task<List<Juego>> Minimos(int tipo, int cantidadJuegos, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
+		public static async Task<List<Juego>> Minimos(int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
 		{
 			string categoria = null;
 
@@ -191,7 +181,7 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @"SELECT TOP @cantidadJuegos j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.bundles, 
+			string busqueda = @"SELECT j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.bundles, 
 	(
         SELECT g.gratis
         FROM gratis g
@@ -237,10 +227,12 @@ ORDER BY NEWID()";
 				busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) DESC";
 			}
 
-			busqueda = busqueda.Replace("@cantidadJuegos", cantidadJuegos.ToString());
 			busqueda = busqueda.Replace("@categoria", categoria);
 			busqueda = busqueda.Replace("@drm", drm);
 			busqueda = busqueda.Replace("@cantidadAnalisis", cantidadReseñas.ToString());
+
+			busqueda = busqueda + @$" OFFSET {posicion} ROWS
+										FETCH NEXT 100 ROWS ONLY";
 
 			try
 			{

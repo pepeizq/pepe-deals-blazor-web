@@ -574,6 +574,24 @@ else
 					</ItemContent>
 				</Virtualize>
 			</div>
+
+			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+			{
+				<div style="margin-top: 40px; width: 100%; display: flex; align-items: center; gap: 20px; justify-content: center;">
+					@if (cargandoMas == false)
+					{
+						<button class="boton-pequeño" @onclick="CargarMasResultados" style="width: fit-content; padding: 10px 25px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Filter")
+						</button>
+					}
+					else
+					{
+						<div style="padding: 10px 25px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Filter")
+						</div>
+					}
+				</div>
+			}
 		</div>
 	</div>
 }
@@ -607,7 +625,7 @@ else
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
-        dominio = datos.Dominio;
+		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -638,32 +656,32 @@ else
 					if (id.Contains("i") == true)
 					{
 						enseñarTipos = true;
-                    }
+					}
 
 					if (id.Contains("s") == true)
 					{
 						enseñarSistemas = true;
-                    }
+					}
 
 					if (id.Contains("t") == true)
 					{
 						enseñarEtiquetas = true;
-                    }
+					}
 
 					if (id.Contains("c") == true)
 					{
 						enseñarCategorias = true;
-                    }
+					}
 
 					if (id.Contains("a") == true)
 					{
 						enseñarAccesibilidad = true;
-                    }
+					}
 				}
-            }
+			}
 		}
 
-		resultadosGestor ??= await BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
+		resultadosGestor ??= await BaseDatos.Juegos.Buscar.Filtro(idsLista, posicion);
 
 		cargado = true;
 	}
@@ -732,7 +750,7 @@ else
 			await JavaScript.InvokeVoidAsync("ChangeUrl", "/filter/");
 		}
 
-        await InvokeAsync(StateHasChanged);
+		await InvokeAsync(StateHasChanged);
 	}
 
 	private int CantidadIDs(string letra)
@@ -906,7 +924,7 @@ else
 
 	#endregion
 
-    #region Categorias y Accesibilidad
+	#region Categorias y Accesibilidad
 
 	private List<FiltroItem> categorias = new List<FiltroItem>();
 	private List<FiltroItem> accesibilidad = new List<FiltroItem>();
@@ -934,7 +952,7 @@ else
 					nuevaAccesibilidad.Id = item2.Key;
 					nuevaAccesibilidad.Contenido = item2.Value.ToString();
 					accesibilidad.Add(nuevaAccesibilidad);
-                }
+				}
 			}
 		}
 	}
@@ -953,19 +971,33 @@ else
 		}
 	}
 
-    private bool enseñarAccesibilidad = false;
+	private bool enseñarAccesibilidad = false;
 
-    private void AbrirAccesibilidad(MouseEventArgs e)
-    {
-        if (enseñarAccesibilidad == true)
+	private void AbrirAccesibilidad(MouseEventArgs e)
+	{
+		if (enseñarAccesibilidad == true)
 		{
 			enseñarAccesibilidad = false;
 		}
 		else
 		{
 			enseñarAccesibilidad = true;
-        }
-    }
+		}
+	}
 
 	#endregion
+
+	private int posicion = 0;
+	private bool cargandoMas = false;
+
+	private async Task CargarMasResultados()
+	{
+		posicion = posicion + 50;
+
+		cargandoMas = true;
+
+		resultadosGestor.AddRange(await BaseDatos.Juegos.Buscar.Filtro(idsLista, posicion));
+
+		cargandoMas = false;
+	}
 }

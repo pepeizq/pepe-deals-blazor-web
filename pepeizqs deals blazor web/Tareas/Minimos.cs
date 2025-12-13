@@ -50,7 +50,7 @@ namespace Tareas
 
 								if (juego.PrecioMinimosHistoricos?.Count > 0)
 								{
-									await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", false);
+									await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", true);
 								}
 							}
 						}

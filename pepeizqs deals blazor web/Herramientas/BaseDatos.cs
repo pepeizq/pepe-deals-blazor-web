@@ -65,7 +65,7 @@ namespace Herramientas
 						await conexion.OpenAsync();
 					}			
 
-					await using var transaccion = await conexion.BeginTransactionAsync();
+					await using var transaccion = await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
 					{
 						try
 						{
