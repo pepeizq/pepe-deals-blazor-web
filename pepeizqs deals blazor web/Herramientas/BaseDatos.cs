@@ -66,23 +66,22 @@ namespace Herramientas
 					}			
 
 					await using var transaccion = await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
+
+					try
 					{
-						try
+						await sentencia((SqlTransaction)transaccion);
+						await transaccion.CommitAsync();
+					}
+					catch
+					{
+						try { await transaccion.RollbackAsync(); } catch { }
+						throw;
+					}
+					finally
+					{
+						if (cerrar == true)
 						{
-							await sentencia((SqlTransaction)transaccion);
-							await transaccion.CommitAsync();
-						}
-						catch
-						{
-							try { await transaccion.RollbackAsync(); } catch { }
-							throw;
-						}
-						finally
-						{
-							if (cerrar == true)
-							{
-								await conexion.CloseAsync();
-							}
+							await conexion.CloseAsync();
 						}
 					}
 

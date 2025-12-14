@@ -229,7 +229,7 @@
 		{
 			<a href="/game/@juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Nombre)/" style="cursor: pointer; border: 0px; padding: 0px; display: block; width: 100%;">
 				<div style="position: relative; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); background-color: @juegosDestacadosMostrar[posicionMostrarDestacados].Color;">
-					<div class="destacado-mostrar" @onmouseover="@(e => EnseñarDestacadoVideo(e, juegosDestacadosMostrar[posicionMostrarDestacados].Juego))">
+					<div class="destacado-mostrar" @onmouseover="@(e => EnseñarDestacadoVideo(e, juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego))">
 						@if (string.IsNullOrEmpty(videoDestacado) == false)
 						{
 							<div class="destacado-fondo">
@@ -934,9 +934,9 @@
 	{
 		videoDestacado = null;
 
-		if (juegosDestacadosMostrar[posicionMostrarDestacados].Juego?.Media?.Videos?.Count > 0)
+		if (juegoDestacado?.Media?.Videos?.Count > 0)
 		{
-			videoDestacado = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Media.Videos[0].Micro;
+			videoDestacado = juegoDestacado.Media.Videos[0].Micro;
 		}
 	}
 

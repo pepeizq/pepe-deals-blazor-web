@@ -17,7 +17,7 @@ namespace BaseDatos.Curators
 			{
 				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WITH (NOLOCK) WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
 				});
 
 				if (fila == null)
@@ -60,7 +60,7 @@ namespace BaseDatos.Curators
 			{
 				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WITH (NOLOCK) WHERE slug=@slug", new { slug }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM curators WHERE slug=@slug", new { slug }, transaction: sentencia);
 				});
 
 				if (fila == null)

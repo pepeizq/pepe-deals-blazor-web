@@ -31,7 +31,7 @@ namespace BaseDatos.Juegos
 				{
 					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE id=@id", new { id }, transaction: sentencia);
+						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -47,7 +47,7 @@ namespace BaseDatos.Juegos
 					{
 						return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -63,7 +63,7 @@ namespace BaseDatos.Juegos
 						{
 							return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 							{
-								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
+								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
 							});
 						}
 						catch (Exception ex)
@@ -79,7 +79,7 @@ namespace BaseDatos.Juegos
 							{
 								return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 								{
-									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WITH (NOLOCK) WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
+									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
 								});
 							}
 							catch (Exception ex)
@@ -130,7 +130,7 @@ namespace BaseDatos.Juegos
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM juegos j
-WITH (NOLOCK) WHERE id=@id";
+WHERE id=@id";
 
 			try
 			{
@@ -1212,11 +1212,11 @@ FROM seccionMinimos j";
 					{
 						if (i == 0)
 						{
-							etiquetasTexto = "etiquetas LIKE '%" + Strings.ChrW(34) + etiqueta2 + Strings.ChrW(34) + "%'";
+							etiquetasTexto = "j.etiquetas LIKE '%" + Strings.ChrW(34) + etiqueta2 + Strings.ChrW(34) + "%'";
 						}
 						else
 						{
-							etiquetasTexto = etiquetasTexto + " AND etiquetas LIKE '%" + Strings.ChrW(34) + etiqueta2 + Strings.ChrW(34) + "%'";
+							etiquetasTexto = etiquetasTexto + " AND j.etiquetas LIKE '%" + Strings.ChrW(34) + etiqueta2 + Strings.ChrW(34) + "%'";
 						}
 
 						i += 1;
@@ -1225,7 +1225,7 @@ FROM seccionMinimos j";
 
 				if (string.IsNullOrEmpty(etiquetasTexto) == false)
 				{
-					etiquetasTexto = " AND ISJSON(etiquetas) > 0 AND (" + etiquetasTexto + ")";
+					etiquetasTexto = " AND ISJSON(j.etiquetas) > 0 AND (" + etiquetasTexto + ")";
 				}
 			}
 
@@ -1245,11 +1245,11 @@ FROM seccionMinimos j";
 					{
 						if (i == 0)
 						{
-							categoriasTexto = "categorias LIKE '%" + Strings.ChrW(34) + categoria2 + Strings.ChrW(34) + "%'";
+							categoriasTexto = "j.categorias LIKE '%" + Strings.ChrW(34) + categoria2 + Strings.ChrW(34) + "%'";
 						}
 						else
 						{
-							categoriasTexto = categoriasTexto + " AND categorias LIKE '%" + Strings.ChrW(34) + categoria2 + Strings.ChrW(34) + "%'";
+							categoriasTexto = categoriasTexto + " AND j.categorias LIKE '%" + Strings.ChrW(34) + categoria2 + Strings.ChrW(34) + "%'";
 						}
 
 						i += 1;
@@ -1258,7 +1258,7 @@ FROM seccionMinimos j";
 
 				if (string.IsNullOrEmpty(categoriasTexto) == false)
 				{
-					categoriasTexto = " AND ISJSON(categorias) > 0 AND (" + categoriasTexto + ")";
+					categoriasTexto = " AND ISJSON(j.categorias) > 0 AND (" + categoriasTexto + ")";
 				}
 			}
 
@@ -1277,11 +1277,11 @@ FROM seccionMinimos j";
 					{
 						if (i == 0)
 						{
-							generosTexto = "generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
+							generosTexto = "j.generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
 						}
 						else
 						{
-							generosTexto = generosTexto + " AND generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
+							generosTexto = generosTexto + " AND j.generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
 						}
 
 						i += 1;
@@ -1290,7 +1290,7 @@ FROM seccionMinimos j";
 
 				if (string.IsNullOrEmpty(generosTexto) == false)
 				{
-					generosTexto = " AND ISJSON(generos) > 0 AND (" + generosTexto + ")";
+					generosTexto = " AND ISJSON(j.generos) > 0 AND (" + generosTexto + ")";
 				}
 			}
 
@@ -1309,11 +1309,11 @@ FROM seccionMinimos j";
 					{
 						if (i == 0)
 						{
-							deckTexto = "deck = " + deck2;
+							deckTexto = "j.deck = " + deck2;
 						}
 						else
 						{
-							deckTexto = deckTexto + " AND deck = " + deck2;
+							deckTexto = deckTexto + " AND j.deck = " + deck2;
 						}
 
 						i += 1;
@@ -1342,17 +1342,17 @@ FROM seccionMinimos j";
 
 					if (sistema2 == "1")
 					{
-						sistemasTexto = sistemasTexto + "caracteristicas LIKE '%" + Strings.ChrW(34) + "Windows" + Strings.ChrW(34) + ":true%'";
+						sistemasTexto = sistemasTexto + "j.caracteristicas LIKE '%" + Strings.ChrW(34) + "Windows" + Strings.ChrW(34) + ":true%'";
 					}
 
 					if (sistema2 == "2")
 					{
-						sistemasTexto = sistemasTexto + "caracteristicas LIKE '%" + Strings.ChrW(34) + "Mac" + Strings.ChrW(34) + ":true%'";
+						sistemasTexto = sistemasTexto + "j.caracteristicas LIKE '%" + Strings.ChrW(34) + "Mac" + Strings.ChrW(34) + ":true%'";
 					}
 
 					if (sistema2 == "3")
 					{
-						sistemasTexto = sistemasTexto + "caracteristicas LIKE '%" + Strings.ChrW(34) + "Linux" + Strings.ChrW(34) + ":true%'";
+						sistemasTexto = sistemasTexto + "j.caracteristicas LIKE '%" + Strings.ChrW(34) + "Linux" + Strings.ChrW(34) + ":true%'";
 					}
 				}
 
@@ -1377,11 +1377,11 @@ FROM seccionMinimos j";
 					{
 						if (i == 0)
 						{
-							tiposTexto = "tipo = " + tipo2;
+							tiposTexto = "j.tipo = " + tipo2;
 						}
 						else
 						{
-							tiposTexto = tiposTexto + " AND tipo = " + tipo2;
+							tiposTexto = tiposTexto + " AND j.tipo = " + tipo2;
 						}
 
 						i += 1;
@@ -1394,7 +1394,38 @@ FROM seccionMinimos j";
 				}
 			}
 
-			string busqueda = "SELECT *, CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) AS Cantidad FROM juegos " + Environment.NewLine +
+			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados, CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) AS Cantidad FROM juegos j " + Environment.NewLine +
 				"WHERE ISJSON(analisis) > 0 " + etiquetasTexto + " " + categoriasTexto + " " + generosTexto + " " + deckTexto + " " + sistemasTexto + " " + tiposTexto +
 				" ORDER BY Cantidad DESC";
 

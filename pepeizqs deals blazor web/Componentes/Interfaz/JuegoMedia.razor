@@ -286,13 +286,23 @@
 
         seek: function(clientX) {
             const video = document.getElementById("reproductor");
+            if (!video) return;
 
-            if (video != null)
-            {
-                const rect = video.getBoundingClientRect();
-                const percent = (clientX - rect.left) / rect.width;
-                video.currentTime = video.duration * percent;
+            if (!Number.isFinite(video.duration) || video.duration <= 0) {
+                return;
             }
+
+            const rect = video.getBoundingClientRect();
+            if (rect.width <= 0) return;
+
+            let porcentaje = (clientX - rect.left) / rect.width;
+
+            porcentaje = Math.max(0, Math.min(1, porcentaje));
+
+            const tiempo = video.duration * porcentaje;
+            if (!Number.isFinite(tiempo)) return;
+
+            video.currentTime = tiempo;
         }
     };
 </script>
@@ -390,11 +400,11 @@
 
                 @if (difuminar == false)
                 {
-                    <img src="@mediaMostrar" style="width: 100%; height: calc(100vh - 190px); object-fit: contain;" alt="@nombre">
+                    <img src="@mediaMostrar" style="width: 100%; height: calc(100vh - 190px); object-fit: contain;" alt="@nombre" loading="lazy">
                 }
                 else
                 {
-                    <img src="@mediaMostrar" style="width: 100%; height: calc(100vh - 190px); object-fit: contain; filter: blur(10px);" alt="@nombre">
+                    <img src="@mediaMostrar" style="width: 100%; height: calc(100vh - 190px); object-fit: contain; filter: blur(10px);" alt="@nombre" loading="lazy">
                 }
             </div>
 
@@ -412,7 +422,7 @@
                         string capturaVideo = videos[videoPosicion].CapturaPequeña;
 
                         <div class="juego-galeria-columna" @onclick="@(e => CambiarMediaMostrar(e, videoPosicion + 99999))" style="position: relative;">
-                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaVideo, 232, 130)" style="width: 100%;" alt="@videos[videoPosicion].Nombre">
+                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaVideo, 232, 130)" style="width: 100%;" alt="@videos[videoPosicion].Nombre" loading="lazy">
 
                             <div style="max-width: 42px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                                 <svg class="svg-boton" style="cursor: pointer;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -449,13 +459,13 @@
                     if (difuminarMiniatura == false)
                     {
                         <div class="juego-galeria-columna" @onclick="@(e => CambiarMediaMostrar(e, nuevaPosicion))">
-                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaMiniatura, 220, 124)" style="width: 100%;" alt="@nombre">
+                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaMiniatura, 220, 124)" style="width: 100%;" alt="@nombre" loading="lazy">
                         </div>
                     }
                     else
                     {
                         <div class="juego-galeria-columna" @onclick="@(e => CambiarMediaMostrar(e, nuevaPosicion))" style="overflow: hidden;">
-                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaMiniatura, 220, 124)" style="width: 100%; filter: blur(10px);" alt="@nombre">
+                            <img class="juego-galeria-capturas juego-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(capturaMiniatura, 220, 124)" style="width: 100%; filter: blur(10px);" alt="@nombre" loading="lazy">
                         </div>
                     }
 

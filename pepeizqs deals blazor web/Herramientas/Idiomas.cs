@@ -7,6 +7,7 @@
 using APIs.GOG;
 using APIs.Xbox;
 using Juegos;
+using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace Herramientas
@@ -375,7 +376,7 @@ namespace Herramientas
 			return false;
 		}
 
-		private static readonly Dictionary<string, Dictionary<string, string>> cache = new();
+		private static readonly ConcurrentDictionary<string, Dictionary<string, string>> cache = new();
 
 		public static string BuscarTexto(string idiomaUsuario, string cadena, string carpeta)
 		{
@@ -383,34 +384,18 @@ namespace Herramientas
 
 			string rutaFichero = string.IsNullOrEmpty(carpeta) ? $"Idiomas/{idiomaUsuario}.json" : $"Idiomas/{carpeta}/{idiomaUsuario}.json";
 
-			string cacheKey = rutaFichero;
-
-			if (cache.TryGetValue(cacheKey, out var diccionario) == false)
+			var diccionario = cache.GetOrAdd(rutaFichero, key =>
 			{
-				if (File.Exists(rutaFichero) == false)
+				if (File.Exists(key) == false)
 				{
-					if (idiomaUsuario != "en")
-					{
-						return BuscarTexto("en", cadena, carpeta);
-					}
-
 					return null;
 				}
 
-				try
-				{
-					string json = File.ReadAllText(rutaFichero);
-					diccionario = JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
-					cache[cacheKey] = diccionario;
-				}
-				catch (Exception ex)
-				{
-					global::BaseDatos.Errores.Insertar.Mensaje($"Traduccion Carpeta: {carpeta} - Cadena: {cadena}", ex);
-					return null;
-				}
-			}
+				string json = File.ReadAllText(key);
+				return JsonSerializer.Deserialize<Dictionary<string, string>>(json) ?? new Dictionary<string, string>();
+			});
 
-			if (diccionario.TryGetValue(cadena, out var resultado) == true)
+			if (diccionario != null && diccionario.TryGetValue(cadena, out var resultado))
 			{
 				return resultado;
 			}
@@ -419,7 +404,7 @@ namespace Herramientas
 			{
 				return BuscarTexto("en", cadena, carpeta);
 			}
-
+				
 			return null;
 		}
 

@@ -91,6 +91,7 @@ builder.Services.AddDbContextPool<pepeizqs_deals_webContext>(opciones => {
 	opciones.UseSqlServer(conexionTexto, opciones2 =>
 	{
 		opciones2.CommandTimeout(30);
+		opciones2.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), new List<int>() { 18, 19 });
 	});
 	opciones.EnableSensitiveDataLogging();
 	opciones.EnableDetailedErrors();

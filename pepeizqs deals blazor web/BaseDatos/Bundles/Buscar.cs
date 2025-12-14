@@ -69,7 +69,7 @@ namespace BaseDatos.Bundles
 
 		public static async Task<Bundle> UnBundle(int bundleId)
 		{
-			string busqueda = "SELECT * FROM bundles WITH (NOLOCK) WHERE id=@id";
+			string busqueda = "SELECT * FROM bundles WHERE id=@id";
 
 			try
 			{

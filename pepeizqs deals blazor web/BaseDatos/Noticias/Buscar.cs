@@ -9,7 +9,7 @@ namespace BaseDatos.Noticias
 	{
 		public static async Task<Noticia> UnaNoticia(int id)
 		{
-			string sql = "SELECT * FROM noticias WITH (NOLOCK) WHERE id = @id";
+			string sql = "SELECT * FROM noticias WHERE id = @id";
 
 			try
 			{
