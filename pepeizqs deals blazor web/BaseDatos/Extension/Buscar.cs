@@ -150,7 +150,8 @@ namespace BaseDatos.Extension
 				if (string.IsNullOrEmpty(jsonMinimos) == false)
 				{
 					var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonMinimos);
-					if (lista != null)
+
+					if (lista?.Count > 0)
 					{
 						extension.MinimosHistoricos = new List<ExtensionPrecio>();
 
@@ -172,7 +173,8 @@ namespace BaseDatos.Extension
 				if (string.IsNullOrEmpty(jsonActuales) == false)
 				{
 					var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(jsonActuales);
-					if (lista != null)
+
+					if (lista?.Count > 0)
 					{
 						extension.PreciosActuales = new List<ExtensionPrecio>();
 
@@ -202,7 +204,8 @@ namespace BaseDatos.Extension
 				if (string.IsNullOrEmpty(jsonBundles) == false)
 				{
 					var lista = JsonSerializer.Deserialize<List<JuegoBundle>>(jsonBundles);
-					if (lista != null)
+
+					if (lista?.Count > 0)
 					{
 						extension.Bundles = new List<ExtensionBundle>();
 
@@ -229,7 +232,8 @@ namespace BaseDatos.Extension
 				if (string.IsNullOrEmpty(jsonGratis) == false)
 				{
 					var lista = JsonSerializer.Deserialize<List<JuegoGratisJson>>(jsonGratis);
-					if (lista != null)
+
+					if (lista?.Count > 0)
 					{
 						extension.Gratis = new List<ExtensionGratis>();
 
@@ -252,7 +256,7 @@ namespace BaseDatos.Extension
 				{
 					var lista = JsonSerializer.Deserialize<List<JuegoSuscripcionJson>>(jsonSuscripciones);
 
-					if (lista != null)
+					if (lista?.Count > 0)
 					{
 						extension.Suscripciones = new List<ExtensionSuscripcion>();
 

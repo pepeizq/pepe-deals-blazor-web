@@ -2,7 +2,6 @@
 
 using Juegos;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 using pepeizqs_deals_web.Data;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,8 +10,10 @@ namespace Herramientas.Ficheros
 {
 	public static class HeroicGames
 	{
-		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, Usuario usuario, UserManager<Usuario> UserManager)
+		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, string usuarioId)
 		{
+			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesAmazon(usuarioId);
+
 			int importados = 0;
 
 			int maximoTamaño = 268435456; //256 mb
@@ -81,15 +82,8 @@ namespace Herramientas.Ficheros
 					{
 						usuario.AmazonGames = textoIds;
 						usuario.AmazonLastImport = DateTime.Now;
-					}
 
-					try
-					{
-						await UserManager.UpdateAsync(usuario);
-					}
-					catch
-					{
-						global::BaseDatos.Errores.Insertar.Mensaje("Cuenta Heroic Juegos", usuario.Id);
+						await global::BaseDatos.Usuarios.Actualizar.Amazon(usuario);
 					}
 				}
 			}

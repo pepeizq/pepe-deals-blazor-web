@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Dapper;
+using pepeizqs_deals_web.Data;
 
 namespace BaseDatos.Usuarios
 {
@@ -157,6 +158,171 @@ namespace BaseDatos.Usuarios
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Decimal", ex, false);
+			}
+		}
+
+		public static async Task Opcion(string variable, DateTime valor, string usuarioId)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Datetime", ex, false);
+			}
+		}
+
+		public static async Task Steam(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET SteamGames = @SteamGames, 
+															SteamWishlist = @SteamWishlist, 
+															Avatar = @Avatar, 
+															Nickname = @Nickname,
+															SteamAccountLastCheck = @SteamAccountLastCheck,
+															OfficialGroup = @OfficialGroup,
+															OfficialGroup2 = @OfficialGroup2
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						SteamGames = usuario.SteamGames,
+						SteamWishlist = usuario.SteamWishlist,
+						Avatar = usuario.Avatar,
+						Nickname = usuario.Nickname,
+						SteamAccountLastCheck = usuario.SteamAccountLastCheck,
+						OfficialGroup = usuario.OfficialGroup,
+						OfficialGroup2 = usuario.OfficialGroup2
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Steam", ex, false);
+			}
+		}
+
+		public static async Task GOG(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET GogGames = @GogGames, 
+															GogWishlist = @GogWishlist, 
+															GogAccountLastCheck = @GogAccountLastCheck
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						GogGames = usuario.GogGames,
+						GogWishlist = usuario.GogWishlist,
+						GogAccountLastCheck = usuario.GogAccountLastCheck
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos GOG", ex, false);
+			}
+		}
+
+		public static async Task Amazon(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET AmazonGames = @AmazonGames, 
+															AmazonLastImport = @AmazonLastImport
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						AmazonGames = usuario.AmazonGames,
+						AmazonLastImport = usuario.AmazonLastImport
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Amazon", ex, false);
+			}
+		}
+
+		public static async Task Epic(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET EpicGames = @EpicGames, 
+															EpicGamesLastImport = @EpicGamesLastImport
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						EpicGames = usuario.EpicGames,
+						EpicGamesLastImport = usuario.EpicGamesLastImport
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Epic", ex, false);
+			}
+		}
+
+		public static async Task EA(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET EaGames = @EaGames, 
+															EaLastImport = @EaLastImport
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						EaGames = usuario.EaGames,
+						EaLastImport = usuario.EaLastImport
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos EA", ex, false);
+			}
+		}
+
+		public static async Task Ubisoft(Usuario usuario)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+														SET UbisoftGames = @UbisoftGames, 
+															UbisoftLastImport = @UbisoftLastImport
+														WHERE Id = @Id", new
+					{
+						Id = usuario.Id,
+						UbisoftGames = usuario.UbisoftGames,
+						UbisoftLastImport = usuario.UbisoftLastImport
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos Ubisoft", ex, false);
 			}
 		}
 	}

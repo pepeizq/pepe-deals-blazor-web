@@ -4,9 +4,6 @@
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
-@inject UserManager<Usuario> UserManager
-@inject IHttpContextAccessor HttpContextAccessor
-
 <style>
 	.caja-cuenta-contenido {
 		background-color: var(--fondoSubsubcabecera);
@@ -265,6 +262,9 @@
     [Parameter]
     public string idioma { get; set; }
 
+    [Parameter]
+    public string usuarioId { get; set; }
+
     private Usuario usuario = new Usuario();
 
     private bool trabajando = false;
@@ -272,7 +272,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        usuario = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+        usuario = await BaseDatos.Usuarios.Buscar.OpcionesEpicGames(usuarioId);
     }
 
     private void CerrarPestañas()
@@ -297,14 +297,14 @@
         mostrarPlaynite = true;
     }
 
-    private async void GogGalaxyCargarFichero(InputFileChangeEventArgs e)
+    private async Task GogGalaxyCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("galaxy-2.0") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.GogGalaxy.Cargar(JuegoDRM.Epic, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.GogGalaxy.Cargar(JuegoDRM.Epic, e.File, usuarioId);
         }
 
         trabajando = false;
@@ -315,14 +315,14 @@
         });
     }
 
-    private async void PlayniteCargarFichero(InputFileChangeEventArgs e)
+    private async Task PlayniteCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("games") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Epic, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Epic, e.File, usuarioId);
         }
 
         trabajando = false;
@@ -337,13 +337,6 @@
     {
         usuario.EpicGames = null;
 
-        try
-        {
-            await UserManager.UpdateAsync(usuario);
-        }
-        catch
-        {
-            BaseDatos.Errores.Insertar.Mensaje("Borrar Epic Juegos", usuario.Id);
-        }
+        await BaseDatos.Usuarios.Actualizar.Epic(usuario);
     }
 }

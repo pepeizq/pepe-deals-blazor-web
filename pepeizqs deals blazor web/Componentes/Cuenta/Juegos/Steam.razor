@@ -5,7 +5,6 @@
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
-@inject UserManager<Usuario> UserManager
 @inject IHttpContextAccessor HttpContextAccessor
 
 <style>
@@ -182,6 +181,9 @@
 	[Parameter]
 	public string idioma { get; set; }
 
+	[Parameter]
+    public string usuarioId { get; set; }
+
 	private Usuario usuario = new Usuario();
 	private List<SteamUsuarioJuego> listadoJuegos = null;
 
@@ -195,7 +197,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		usuario = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+		usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuarioId);
 
 		if (usuario != null)
 		{
@@ -281,14 +283,7 @@
 							usuario.OfficialGroup2 = datos.GrupoNormal;
 							usuario.SteamId = datos.SteamId;
 
-							try
-							{
-								await UserManager.UpdateAsync(usuario);
-							}
-							catch
-							{
-								BaseDatos.Errores.Insertar.Mensaje("Cuenta Usuario Steam", usuario.Id + Environment.NewLine + enlaceCuenta);
-							}
+                            await BaseDatos.Usuarios.Actualizar.Steam(usuario);
 						}
 					}
 					else
@@ -297,13 +292,7 @@
 
 						usuario.SteamAccount = null;
 
-						try
-						{
-							await UserManager.UpdateAsync(usuario);
-						}
-						catch
-						{							
-						}
+						await BaseDatos.Usuarios.Actualizar.Steam(usuario);
 					}					
 				}
 			}

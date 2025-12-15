@@ -8,9 +8,6 @@
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
-@inject UserManager<Usuario> UserManager
-@inject IHttpContextAccessor HttpContextAccessor
-
 <style>
 	.caja-cuenta-contenido {
 		background-color: var(--fondoSubsubcabecera);
@@ -409,6 +406,9 @@
     [Parameter]
     public string idioma { get; set; }
 
+    [Parameter]
+    public string usuarioId { get; set; }
+
     private Usuario usuario = new Usuario();
 
     private bool trabajando = false;
@@ -416,7 +416,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        usuario = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+        usuario = await BaseDatos.Usuarios.Buscar.OpcionesAmazon(usuarioId);
     }
 
     private void CerrarPestañas()
@@ -459,14 +459,14 @@
         mostrarHeroicGames = true;
     }
 
-    private async void AmazonCargarFichero(InputFileChangeEventArgs e)
+    private async Task AmazonCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("gameuserinteractionsinfo") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.Amazon.Cargar(e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.Amazon.Cargar(e.File, usuario.Id);
         }
 
         trabajando = false;
@@ -477,14 +477,14 @@
         });
     }
 
-    private async void GogGalaxyCargarFichero(InputFileChangeEventArgs e)
+    private async Task GogGalaxyCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("galaxy-2.0") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.GogGalaxy.Cargar(JuegoDRM.Amazon, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.GogGalaxy.Cargar(JuegoDRM.Amazon, e.File, usuario.Id);
         }
 
         trabajando = false;
@@ -495,14 +495,14 @@
         });
     }
 
-    private async void PlayniteCargarFichero(InputFileChangeEventArgs e)
+    private async Task PlayniteCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("games") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Amazon, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Amazon, e.File, usuarioId);
         }
 
         trabajando = false;
@@ -513,14 +513,14 @@
         });
     }
 
-     private async void HeroicGamesCargarFichero(InputFileChangeEventArgs e)
+    private async Task HeroicGamesCargarFichero(InputFileChangeEventArgs e)
     {
         trabajando = true;
 
         if (e.File.Name.ToLower().Contains("library") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.HeroicGames.Cargar(JuegoDRM.Amazon, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.HeroicGames.Cargar(JuegoDRM.Amazon, e.File, usuarioId);
         }
 
         trabajando = false;
@@ -535,13 +535,6 @@
     {
         usuario.AmazonGames = null;
 
-        try
-        {
-            await UserManager.UpdateAsync(usuario);
-        }
-        catch
-        {
-            BaseDatos.Errores.Insertar.Mensaje("Borrar Amazon Juegos", usuario.Id);
-        }
+        await BaseDatos.Usuarios.Actualizar.Amazon(usuario);
     }
 }

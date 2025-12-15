@@ -991,67 +991,70 @@
 			{
 				bool tomarSiguiente = false;
 
-				int i = 0;
-				foreach (var destacado in juegosDestacadosMostrar)
+				if (juegosDestacadosMostrar?.Count > 0)
 				{
-					if (tomarSiguiente == true)
+					int i = 0;
+					foreach (var destacado in juegosDestacadosMostrar)
 					{
-						posicionMostrarDestacados = posicionMostrarDestacados + 1;
-						videoDestacado = null;
-						break;
-					}
-
-					if (destacado.Juego.IdMaestra == juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra)
-					{
-						tomarSiguiente = true;
-					}
-
-					i += 1;
-				}
-
-				if (i == juegosDestacadosMostrar.Count)
-				{
-					juegosDestacadosMostrar.Clear();
-
-					List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados();
-
-					if (juegosDestacadosMostrar2?.Count > 0)
-					{
-						posicionMostrarDestacados = 0;
-						videoDestacado = null;
-					}
-
-					foreach (var juego in juegosDestacadosMostrar2)
-					{
-						JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
+						if (tomarSiguiente == true)
 						{
-							Juego = juego,
-							DeseadoImportado = false,
-							Color = "var(--fondoBotonPequeño)"
-						};
-
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
-						{
-							juegoDestacadoMostrar.Color = "var(--fondoBien)";
-						}
-						else
-						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-							{
-								juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
-								juegoDestacadoMostrar.DeseadoImportado = true;
-							}
-
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-							{
-								juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
-							}
+							posicionMostrarDestacados = posicionMostrarDestacados + 1;
+							videoDestacado = null;
+							break;
 						}
 
-						juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
+						if (destacado.Juego.IdMaestra == juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra)
+						{
+							tomarSiguiente = true;
+						}
+
+						i += 1;
+					}
+
+					if (i == juegosDestacadosMostrar.Count)
+					{
+						juegosDestacadosMostrar.Clear();
+
+						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados();
+
+						if (juegosDestacadosMostrar2?.Count > 0)
+						{
+							posicionMostrarDestacados = 0;
+							videoDestacado = null;
+						}
+
+						foreach (var juego in juegosDestacadosMostrar2)
+						{
+							JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
+							{
+								Juego = juego,
+								DeseadoImportado = false,
+								Color = "var(--fondoBotonPequeño)"
+							};
+
+							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+							{
+								juegoDestacadoMostrar.Color = "var(--fondoBien)";
+							}
+							else
+							{
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+									juegoDestacadoMostrar.DeseadoImportado = true;
+								}
+
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+								}
+							}
+
+							juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
+						}
 					}
 				}
-
+				
 				cronometroContador = 0;
 			}
 

@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using pepeizqs_deals_web.Data;
 
@@ -9,8 +8,10 @@ namespace Herramientas.Ficheros
 {
 	public static class Amazon
 	{
-		public static async Task<int> Cargar(IBrowserFile fichero, Usuario usuario, UserManager<Usuario> UserManager)
+		public static async Task<int> Cargar(IBrowserFile fichero, string usuarioId)
 		{
+			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesAmazon(usuarioId);
+
 			int importados = 0;
 
 			int maximoTamaño = 268435456; //256 mb;
@@ -19,7 +20,7 @@ namespace Herramientas.Ficheros
 			Herramientas.Ficheros.LecturaPerezosa stream = new Herramientas.Ficheros.LecturaPerezosa(fichero, maximoTamaño);
 			StreamContent contenido = new StreamContent(stream);
 
-			string ubicacion = Path.GetFullPath("./wwwroot/otros/amazon-" + usuario.Id + ".sqlite");
+			string ubicacion = Path.GetFullPath("./wwwroot/otros/amazon-" + usuarioId + ".sqlite");
 			await File.WriteAllBytesAsync(ubicacion, await contenido.ReadAsByteArrayAsync());
 
 			List<string> listadoIds = new List<string>();
@@ -71,14 +72,7 @@ namespace Herramientas.Ficheros
 					usuario.AmazonGames = textoIds;
 					usuario.AmazonLastImport = DateTime.Now;
 
-					try
-					{
-						await UserManager.UpdateAsync(usuario);
-					}
-					catch
-					{
-						global::BaseDatos.Errores.Insertar.Mensaje("Cuenta Amazon Juegos", usuario.Id);
-					}
+					await global::BaseDatos.Usuarios.Actualizar.Amazon(usuario);
 				}
 			}
 

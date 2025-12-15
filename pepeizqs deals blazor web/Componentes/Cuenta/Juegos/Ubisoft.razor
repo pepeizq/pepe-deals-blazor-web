@@ -4,9 +4,6 @@
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
-@inject UserManager<Usuario> UserManager
-@inject IHttpContextAccessor HttpContextAccessor
-
 <style>
 	.caja-cuenta-contenido {
 		background-color: var(--fondoSubsubcabecera);
@@ -195,6 +192,9 @@
     [Parameter]
     public string idioma { get; set; }
 
+    [Parameter]
+    public string usuarioId { get; set; }
+
     private Usuario usuario = new Usuario();
 
     private bool trabajando = false;
@@ -202,7 +202,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        usuario = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+        usuario = await BaseDatos.Usuarios.Buscar.OpcionesUbisoft(usuarioId);
     }
 
     private void CerrarPestañas()
@@ -225,7 +225,7 @@
         if (e.File.Name.ToLower().Contains("games") == true)
         {
             importados = 0;
-            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Ubisoft, e.File, usuario, UserManager);
+            importados = await Herramientas.Ficheros.Playnite.Cargar(JuegoDRM.Ubisoft, e.File, usuarioId);
         }
 
         trabajando = false;
@@ -240,13 +240,6 @@
     {
         usuario.UbisoftGames = null;
 
-        try
-        {
-            await UserManager.UpdateAsync(usuario);
-        }
-        catch
-        {
-            BaseDatos.Errores.Insertar.Mensaje("Borrar Ubisoft Juegos", usuario.Id);
-        }
+        await BaseDatos.Usuarios.Actualizar.Ubisoft(usuario);
     }
 }

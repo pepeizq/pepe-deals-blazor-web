@@ -3,7 +3,6 @@
 using Dapper;
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using pepeizqs_deals_web.Data;
 
 namespace BaseDatos.Usuarios
@@ -331,6 +330,232 @@ namespace BaseDatos.Usuarios
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Cuenta", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesApp(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT Language, EmailConfirmed, PatreonLastCheck, SteamAccount, SteamAccountLastCheck,
+								GogAccount, GogAccountLastCheck, PatreonLastLogin, PatreonCoins, PatreonContribution
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones App", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesSteam(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT SteamGames, SteamWishlist, Avatar, Nickname, SteamAccountLastCheck, OfficialGroup, OfficialGroup2
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Steam", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesGOG(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones GOG", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesAmazon(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT AmazonGames, AmazonLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Amazon", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesEpicGames(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT EpicGames, EpicGamesLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Epic Games", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesEA(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT EaGames, EaLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Ea", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesUbisoft(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT UbisoftGames, UbisoftLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Ubisoft", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesGOGGalaxy(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck, AmazonGames, AmazonLastImport, EpicGames, EpicGamesLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones GOG Galaxy", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesPlaynite(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT AmazonGames, AmazonLastImport, EpicGames, EpicGamesLastImport, UbisoftGames, UbisoftLastImport, EaGames, EaLastImport
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones GOG Galaxy", ex);
 			}
 
 			return null;

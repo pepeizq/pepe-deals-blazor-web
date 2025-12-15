@@ -3,15 +3,16 @@
 using Juegos;
 using LiteDB;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 using pepeizqs_deals_web.Data;
 
 namespace Herramientas.Ficheros
 {
 	public static class Playnite
 	{
-		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, Usuario usuario, UserManager<Usuario> UserManager)
+		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, string usuarioId)
 		{
+			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesPlaynite(usuarioId);
+
 			int importados = 0;
 
 			int maximoTamaño = 268435456; //256 mb
@@ -20,7 +21,7 @@ namespace Herramientas.Ficheros
 			LecturaPerezosa stream = new LecturaPerezosa(fichero, maximoTamaño);
 			StreamContent contenido = new StreamContent(stream);
 
-			string ubicacion = Path.GetFullPath("./wwwroot/otros/playnite-" + usuario.Id + ".db");
+			string ubicacion = Path.GetFullPath("./wwwroot/otros/playnite-" + usuarioId + ".db");
 			await File.WriteAllBytesAsync(ubicacion, await contenido.ReadAsByteArrayAsync());
 
 			List<PlayniteJuego> listadoJuegos = new List<PlayniteJuego>();
@@ -123,33 +124,32 @@ namespace Herramientas.Ficheros
 					{
 						usuario.AmazonGames = textoIds;
 						usuario.AmazonLastImport = DateTime.Now;
+
+						await global::BaseDatos.Usuarios.Actualizar.Amazon(usuario);
 					}
 
 					if (drm == JuegoDRM.Epic)
 					{
 						usuario.EpicGames = textoIds;
 						usuario.EpicGamesLastImport = DateTime.Now;
+
+						await global::BaseDatos.Usuarios.Actualizar.Epic(usuario);
 					}
 
 					if (drm == JuegoDRM.Ubisoft)
 					{
 						usuario.UbisoftGames = textoIds;
 						usuario.UbisoftLastImport = DateTime.Now;
+
+						await global::BaseDatos.Usuarios.Actualizar.Ubisoft(usuario);
 					}
 
 					if (drm == JuegoDRM.EA)
 					{
 						usuario.EaGames = textoIds;
 						usuario.EaLastImport = DateTime.Now;
-					}
 
-					try
-					{
-						await UserManager.UpdateAsync(usuario);
-					}
-					catch
-					{
-						global::BaseDatos.Errores.Insertar.Mensaje("Cuenta Playnite Juegos", usuario.Id);
+						await global::BaseDatos.Usuarios.Actualizar.EA(usuario);
 					}
 				}
 			}

@@ -2,7 +2,6 @@
 
 using Juegos;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.VisualBasic;
 using pepeizqs_deals_web.Data;
@@ -11,8 +10,10 @@ namespace Herramientas.Ficheros
 {
 	public static class GogGalaxy
 	{
-		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, Usuario usuario, UserManager<Usuario> UserManager)
+		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, string usuarioId)
 		{
+			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesGOGGalaxy(usuarioId);
+
 			int importados = 0;
 
 			int maximoTamaño = 268435456; //256 mb
@@ -21,7 +22,7 @@ namespace Herramientas.Ficheros
 			LecturaPerezosa stream = new LecturaPerezosa(fichero, maximoTamaño);
 			StreamContent contenido = new StreamContent(stream);
 
-			string ubicacion = Path.GetFullPath("./wwwroot/otros/goggalaxy-" + usuario.Id + ".db");
+			string ubicacion = Path.GetFullPath("./wwwroot/otros/goggalaxy-" + usuarioId + ".db");
 			await File.WriteAllBytesAsync(ubicacion, await contenido.ReadAsByteArrayAsync());
 
 			List<GogGalaxyJuego> listadoJuegos = new List<GogGalaxyJuego>();
@@ -118,27 +119,24 @@ namespace Herramientas.Ficheros
 					{
 						usuario.AmazonGames = textoIds;
 						usuario.AmazonLastImport = DateTime.Now;
+
+						await global::BaseDatos.Usuarios.Actualizar.Amazon(usuario);
 					}
 
 					if (drm == JuegoDRM.Epic)
 					{
 						usuario.EpicGames = textoIds;
 						usuario.EpicGamesLastImport = DateTime.Now;
+
+						await global::BaseDatos.Usuarios.Actualizar.Epic(usuario);
 					}
 
 					if (drm == JuegoDRM.EA)
 					{
 						usuario.EaGames = textoIds;
 						usuario.EaLastImport = DateTime.Now;
-					}
 
-					try
-					{
-						await UserManager.UpdateAsync(usuario);
-					}
-					catch
-					{
-						global::BaseDatos.Errores.Insertar.Mensaje("Cuenta Gog Galaxy Juegos", usuario.Id);
+						await global::BaseDatos.Usuarios.Actualizar.EA(usuario);
 					}
 				}
 			}

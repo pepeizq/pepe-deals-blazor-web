@@ -50,9 +50,7 @@ namespace Tareas
 								{
 									if (usuario2.Metodo == "Steam")
 									{
-										UserManager<Usuario> UserManager = _factoria.CreateScope().ServiceProvider.GetRequiredService<UserManager<Usuario>>();
-
-										Usuario usuario = await UserManager.FindByIdAsync(usuario2.IdUsuario);
+										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuario2.IdUsuario);
 										SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
 
 										usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
@@ -63,23 +61,19 @@ namespace Tareas
 										usuario.OfficialGroup = datos.GrupoPremium;
 										usuario.OfficialGroup2 = datos.GrupoNormal;
 
-										await UserManager.UpdateAsync(usuario);
-
+										await BaseDatos.Usuarios.Actualizar.Steam(usuario);
 										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 									}
 
 									if (usuario2.Metodo == "GOG")
 									{
-										UserManager<Usuario> UserManager = _factoria.CreateScope().ServiceProvider.GetRequiredService<UserManager<Usuario>>();
-
-										Usuario usuario = await UserManager.FindByIdAsync(usuario2.IdUsuario);
+										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesGOG(usuario2.IdUsuario);
 
 										usuario.GogGames = JsonSerializer.Serialize(await APIs.GOG.Cuenta.BuscarJuegos(usuario.GogAccount));
 										usuario.GogWishlist = await APIs.GOG.Cuenta.BuscarDeseados(usuario.GogId);
 										usuario.GogAccountLastCheck = DateTime.Now;
 
-										await UserManager.UpdateAsync(usuario);
-
+										await BaseDatos.Usuarios.Actualizar.GOG(usuario);
 										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 									}
 								}

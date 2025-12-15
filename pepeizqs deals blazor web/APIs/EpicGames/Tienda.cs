@@ -70,7 +70,7 @@ namespace APIs.EpicGames
 						BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, false);
 					}
 
-					if (juegos2 > 6000)
+					if (juegos2 > 10000)
 					{
 						break;
 					}

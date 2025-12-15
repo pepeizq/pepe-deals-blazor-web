@@ -115,30 +115,22 @@ namespace BaseDatos.Juegos
 
 			if (noExiste == true)
 			{
-				string tiendaNueva = juego.PrecioMinimosHistoricos?[0]?.Tienda;
-				parametros.Add("@tiendaNueva", tiendaNueva);
-
-				int drm = juego.PrecioMinimosHistoricos?.Count > 0 ? (int)juego.PrecioMinimosHistoricos[0].DRM : 0;
-				parametros.Add("@drm", drm);
-
-				var sets = columnas
-					.Where(c => c != "idMaestra") 
-					.Select(c => $"{c} = @{c}");
-
 				sqlInsertar = $@"IF EXISTS (SELECT 1 FROM {tabla} 
-							WHERE idMaestra={juego.IdMaestra}
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = @drm
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].Tienda') <> @tiendaNueva
-							BEGIN
-								UPDATE {tabla}
-								SET {string.Join(", ", sets)}
-								WHERE idMaestra = @idMaestra
-									AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = @drm
-							END
-							ELSE
-							BEGIN
-								{sqlInsertar}
-							END";
+								WHERE JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}'
+								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
+								AND JSON_QUERY(precioMinimosHistoricos, '$[0]') <> '{juego.PrecioMinimosHistoricos[0]}')
+				BEGIN 
+					DELETE FROM seccionMinimos 
+					WHERE idMaestra={juego.IdMaestra}
+					AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
+				END
+				IF NOT EXISTS (SELECT 1 FROM {tabla} 
+								WHERE JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}'
+								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
+								AND JSON_QUERY(precioMinimosHistoricos, '$[0]') <> '{juego.PrecioMinimosHistoricos[0]}')
+				BEGIN
+					{sqlInsertar}
+				END";
 			}
 
 			try
