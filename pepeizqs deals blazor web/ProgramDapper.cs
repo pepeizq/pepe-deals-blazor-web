@@ -138,3 +138,29 @@ public static class ClasesDapper
 		SqlMapper.AddTypeHandler(new JuegoDRMHandler());
 	}
 }
+
+public static class DapperSentencias
+{
+	public static string GenerarTexto(string sql, DynamicParameters parametros)
+	{
+		if (parametros == null)
+		{
+			return sql;
+		}
+
+		foreach (var nombre in parametros.ParameterNames)
+		{
+			var valor = parametros.Get<object>(nombre);
+
+			string valorFormateado =
+				valor == null ? "NULL" :
+				valor is string or DateTime ? $"'{valor.ToString().Replace("'", "''")}'" :
+				valor is bool b ? (b ? "1" : "0") :
+				valor.ToString();
+
+			sql = sql.Replace("@" + nombre, valorFormateado);
+		}
+
+		return sql;
+	}
+}

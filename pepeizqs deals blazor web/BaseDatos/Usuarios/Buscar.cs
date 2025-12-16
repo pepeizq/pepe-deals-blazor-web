@@ -368,7 +368,8 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = @"SELECT SteamGames, SteamWishlist, Avatar, Nickname, SteamAccountLastCheck, OfficialGroup, OfficialGroup2
+			string busqueda = @"SELECT SteamGames, SteamWishlist, Avatar, Nickname, SteamAccountLastCheck, OfficialGroup, OfficialGroup2,
+								SteamGamesAllow, SteamWishlistAllow, SteamAccount, SteamId
 								FROM AspNetUsers WHERE Id=@Id";
 
 			try
@@ -393,7 +394,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck
+			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck, GogGamesAllow, GogWishlistAllow
 								FROM AspNetUsers WHERE Id=@Id";
 
 			try
@@ -714,31 +715,23 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
-		public static async Task<bool> CuentaSteamUsada(string id64Steam, string idUsuario)
+		public static async Task<string> CuentaSteamUsada(string id64Steam)
 		{
 			try
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE SteamId=@SteamId";
 
-				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return await sentencia.Connection.QueryAsync(busqueda, new { SteamId = id64Steam }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { SteamId = id64Steam }, transaction: sentencia);
 				});
-
-				foreach (var id in ids)
-				{
-					if (id != idUsuario)
-					{
-						return true;
-					}
-				}
 			}
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Usuario Cuenta Steam Usada", ex);
 			}
 
-			return false;
+			return null;
 		}
 
 		public static async Task<bool> CuentaGogUsada(string idGog, string idUsuario)

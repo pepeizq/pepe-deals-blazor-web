@@ -50,7 +50,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Buscar Minimos", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Buscar Minimos", ex, false);
 			}
 
 			return new List<JuegoMinimoTarea>();
@@ -123,10 +123,10 @@ ORDER BY NEWID()";
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Portada Destacados", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Portada Destacados", ex, false);
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> Minimos(int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
@@ -310,10 +310,10 @@ ORDER BY NEWID()";
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Portada Minimos", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Portada Minimos", ex, false);
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> Proximamente(int cantidadJuegos, List<string> categorias = null, List<string> drms = null)
@@ -370,10 +370,10 @@ ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Portada Proximamente", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Portada Proximamente", ex, false);
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 	}
 }

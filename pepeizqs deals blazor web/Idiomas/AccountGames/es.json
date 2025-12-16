@@ -1,6 +1,6 @@
 {
   "String1": "tu nombre",
-  "String2": "Puedes sincronizar con la web los juegos y deseados que tengas en {0} simplemente añadiendo un enlace a tu cuenta. No tendrás que volver a hacer nada más dado que se actualizara automáticamente cada 7 días (o 1 día si contribuyes en Patreon).",
+  "String2": "Puedes sincronizar con la web los juegos y deseados que tengas en {0} simplemente añadiendo un enlace a tu cuenta. No tendrás que volver a hacer nada más dado que se actualizará automáticamente cada 7 días (o 1 día si contribuyes en Patreon).",
   "String3": "Los permisos de tu cuenta de {0} deben estar así.",
   "String4": "Ese usuario de {0} ya está asociado a otra cuenta registrada.",
   "String5": "Actualizar",
@@ -26,5 +26,16 @@
   "String26": "Si tenéis la versión portable de Playnite, debéis cargar el fichero '{0}' ubicado en la carpeta '{1}'.",
   "String27": "Todos",
   "String28": "{0} horas",
-  "String29": "No tienes ningún juego cargado en tu cuenta."
+  "String29": "No tienes ningún juego cargado en tu cuenta.",
+  "String30": "Opciones",
+  "String31": "Sincronizar tus juegos",
+  "String32": "Si no quieres que la web lea tus juegos desactiva la opción.",
+  "String33": "Sincronizar tus deseados",
+  "String34": "Si no quieres que la web lea tus deseados desactiva la opción.",
+  "String35": "Cuenta guardada: {0}",
+  "String36": "ID64 asociada a la cuenta: {0}",
+  "String37": "Borrar juegos",
+  "String38": "Si tienes activa la sincronización, los juegos se cargarán en tu cuenta en la próxima sincronización automática.",
+  "String39": "Borrar deseados",
+  "String40": "Si tienes activa la sincronización, los deseados se cargarán en tu cuenta en la próxima sincronización automática."
 }

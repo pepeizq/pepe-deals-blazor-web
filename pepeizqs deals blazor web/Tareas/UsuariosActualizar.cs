@@ -2,7 +2,6 @@
 
 using APIs.Steam;
 using Herramientas;
-using Microsoft.AspNetCore.Identity;
 using pepeizqs_deals_web.Data;
 using System.Text.Json;
 
@@ -51,26 +50,77 @@ namespace Tareas
 									if (usuario2.Metodo == "Steam")
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuario2.IdUsuario);
-										SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
 
-										usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
-										usuario.SteamWishlist = datos.Deseados;
-										usuario.Avatar = datos.Avatar;
-										usuario.Nickname = datos.Nombre;
-										usuario.SteamAccountLastCheck = DateTime.Now.ToString();
-										usuario.OfficialGroup = datos.GrupoPremium;
-										usuario.OfficialGroup2 = datos.GrupoNormal;
+										if (string.IsNullOrEmpty(usuario?.SteamAccount) == false)
+										{
+											SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
 
-										await BaseDatos.Usuarios.Actualizar.Steam(usuario);
-										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
+											if (datos != null)
+											{
+												bool actualizarJuegos = true;
+
+												if (usuario.SteamGamesAllow != null && usuario.SteamGamesAllow == false)
+												{
+													actualizarJuegos = false;
+												}
+
+												if (actualizarJuegos == true)
+												{
+													usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
+												}
+
+												bool actualizarDeseados = true;
+
+												if (usuario.SteamWishlistAllow != null && usuario.SteamWishlistAllow == false)
+												{
+													actualizarDeseados = false;
+												}
+
+												if (actualizarDeseados == true)
+												{
+													usuario.SteamWishlist = datos.Deseados;
+												}
+
+												usuario.Avatar = datos.Avatar;
+												usuario.Nickname = datos.Nombre;
+												usuario.SteamAccountLastCheck = DateTime.Now.ToString();
+												usuario.OfficialGroup = datos.GrupoPremium;
+												usuario.OfficialGroup2 = datos.GrupoNormal;
+
+												await BaseDatos.Usuarios.Actualizar.Steam(usuario);
+												await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
+											}
+										}
 									}
 
 									if (usuario2.Metodo == "GOG")
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesGOG(usuario2.IdUsuario);
 
-										usuario.GogGames = JsonSerializer.Serialize(await APIs.GOG.Cuenta.BuscarJuegos(usuario.GogAccount));
-										usuario.GogWishlist = await APIs.GOG.Cuenta.BuscarDeseados(usuario.GogId);
+										bool actualizarJuegos = true;
+
+										if (usuario.GogGamesAllow != null && usuario.GogGamesAllow == false)
+										{
+											actualizarJuegos = false;
+										}
+
+										if (actualizarJuegos == true)
+										{
+											usuario.GogGames = JsonSerializer.Serialize(await APIs.GOG.Cuenta.BuscarJuegos(usuario.GogAccount));
+										}
+
+										bool actualizarDeseados = true;
+
+										if (usuario.GogWishlistAllow != null && usuario.GogWishlistAllow == false)
+										{
+											actualizarDeseados = false;
+										}
+
+										if (actualizarDeseados == true)
+										{
+											usuario.GogWishlist = await APIs.GOG.Cuenta.BuscarDeseados(usuario.GogId);
+										}
+
 										usuario.GogAccountLastCheck = DateTime.Now;
 
 										await BaseDatos.Usuarios.Actualizar.GOG(usuario);

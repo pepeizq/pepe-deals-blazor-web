@@ -23,7 +23,7 @@ namespace BaseDatos.Juegos
 								"@imagenes", "@precioMinimosHistoricos", "@precioActualesTiendas",
 								"@analisis", "@caracteristicas", "@media", "@nombreCodigo", "@categorias" };
 
-			DynamicParameters parametros = new();
+			DynamicParameters parametros = new DynamicParameters();
 
 			parametros.Add("@idSteam", juego.IdSteam);
 			parametros.Add("@idGog", juego.IdGog);
@@ -115,19 +115,35 @@ namespace BaseDatos.Juegos
 
 			if (noExiste == true)
 			{
+				parametros.Add("@idMaestra", juego.IdMaestra);
+
+				parametros.Add("@tienda", juego.PrecioMinimosHistoricos[0].Tienda);
+				parametros.Add("@drm", (int)juego.PrecioMinimosHistoricos[0].DRM);
+				parametros.Add("@enlace", juego.PrecioMinimosHistoricos[0].Enlace);
+				parametros.Add("@precio", juego.PrecioMinimosHistoricos[0].Precio);
+				parametros.Add("@precioCambiado", juego.PrecioMinimosHistoricos[0].PrecioCambiado);
+
 				sqlInsertar = $@"IF EXISTS (SELECT 1 FROM {tabla} 
-								WHERE JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}'
-								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
-								AND JSON_QUERY(precioMinimosHistoricos, '$[0]') <> '{juego.PrecioMinimosHistoricos[0]}')
+								WHERE idMaestra={juego.IdMaestra}
+								AND JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}' 
+								AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
+								AND JSON_VALUE(precioMinimosHistoricos, '$[0].Tienda')<>'{juego.PrecioMinimosHistoricos[0].Tienda}')
 				BEGIN 
-					DELETE FROM seccionMinimos 
+					UPDATE {tabla}
+					SET precioMinimosHistoricos = JSON_MODIFY(
+						JSON_MODIFY(
+							JSON_MODIFY(
+								JSON_MODIFY(precioMinimosHistoricos, '$[0].Tienda', @tienda),
+							'$[0].Enlace', @enlace),
+						'$[0].Precio', @precio),
+					'$[0].PrecioCambiado', @precioCambiado)
 					WHERE idMaestra={juego.IdMaestra}
 					AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
 				END
+				
 				IF NOT EXISTS (SELECT 1 FROM {tabla} 
 								WHERE JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}'
-								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
-								AND JSON_QUERY(precioMinimosHistoricos, '$[0]') <> '{juego.PrecioMinimosHistoricos[0]}')
+								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
 				BEGIN
 					{sqlInsertar}
 				END";

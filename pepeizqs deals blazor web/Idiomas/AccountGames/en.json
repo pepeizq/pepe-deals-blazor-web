@@ -26,5 +26,16 @@
   "String26": "If you have the portable version of Playnite, you must load the file '{0}' located in the folder '{1}'.",
   "String27": "All",
   "String28": "{0} hours",
-  "String29": "You don't have any games loaded on your account."
+  "String29": "You don't have any games loaded on your account.",
+  "String30": "Options",
+  "String31": "Sync your games",
+  "String32": "If you don't want the website to read your games, disable the option.",
+  "String33": "Sync your wishlist",
+  "String34": "If you don't want the website to read your wishlist, disable the option.",
+  "String35": "Account saved: {0}",
+  "String36": "ID64 associated with the account: {0}",
+  "String37": "Delete games",
+  "String38": "If you have synchronization enabled, the games will be uploaded to your account during the next automatic synchronization.",
+  "String39": "Delete wishlist",
+  "String40": "If you have synchronization enabled, the wishlist will be uploaded to your account during the next automatic synchronization."
 }

@@ -38,6 +38,7 @@ namespace Herramientas
 				-1,      // General network error
 				18,      // Connection has been closed by peer
 				19,      // Physical connection is not usable
+				1205,	 // Deadlock
 				10053,   // Connection aborted
 				10054,   // Connection reset by peer
 				10060    // Timeout
@@ -97,7 +98,7 @@ namespace Herramientas
 						conexion = null;
 					}
 
-					await Task.Delay(150);
+					Thread.Sleep(1000);
 				}
 			}
 		}
@@ -153,7 +154,7 @@ namespace Herramientas
 						conexion = null;
 					}
 
-					await Task.Delay(150);
+					Thread.Sleep(1000);
 				}
 			}
 		}

@@ -122,7 +122,7 @@ namespace BaseDatos.Usuarios
 			{
 				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+					await sentencia.Connection.ExecuteAsync($"UPDATE AspNetUsers SET {variable}=@valor WHERE Id=@usuarioId", new { valor, usuarioId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -182,9 +182,11 @@ namespace BaseDatos.Usuarios
 			{
 				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					int filas = await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET SteamGames = @SteamGames, 
+															SteamGamesAllow = @SteamGamesAllow, 
 															SteamWishlist = @SteamWishlist, 
+															SteamWishlistAllow = @SteamWishlistAllow,
 															Avatar = @Avatar, 
 															Nickname = @Nickname,
 															SteamAccountLastCheck = @SteamAccountLastCheck,
@@ -194,7 +196,9 @@ namespace BaseDatos.Usuarios
 					{
 						Id = usuario.Id,
 						SteamGames = usuario.SteamGames,
+						SteamGamesAllow = usuario.SteamGamesAllow,
 						SteamWishlist = usuario.SteamWishlist,
+						SteamWishlistAllow = usuario.SteamWishlistAllow,
 						Avatar = usuario.Avatar,
 						Nickname = usuario.Nickname,
 						SteamAccountLastCheck = usuario.SteamAccountLastCheck,
@@ -217,13 +221,17 @@ namespace BaseDatos.Usuarios
 				{
 					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET GogGames = @GogGames, 
+															GogGamesAllow = @GogGamesAllow,
 															GogWishlist = @GogWishlist, 
+															GogWishlistAllow = @GogWishlistAllow,
 															GogAccountLastCheck = @GogAccountLastCheck
 														WHERE Id = @Id", new
 					{
 						Id = usuario.Id,
 						GogGames = usuario.GogGames,
+						GogGamesAllow = usuario.GogGamesAllow,
 						GogWishlist = usuario.GogWishlist,
+						GogWishlistAllow = usuario.GogWishlistAllow,
 						GogAccountLastCheck = usuario.GogAccountLastCheck
 					}, transaction: sentencia);
 				});

@@ -29,9 +29,16 @@ public class Usuario : IdentityUser
 	[Column(TypeName = "nvarchar(max)")]
 	public string? SteamGames { get; set; }
 
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamGamesAllow { get; set; }
+
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
 	public string? SteamWishlist { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamWishlistAllow { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
@@ -217,6 +224,9 @@ public class Usuario : IdentityUser
 	[Column(TypeName = "nvarchar(max)")]
 	public string? GogWishlist { get; set; }
 
+	[Column(TypeName = "bit(1)")]
+	public bool? GogWishlistAllow { get; set; }
+
 	[PersonalData]
 	[Column(TypeName = "datetime(8)")]
 	public DateTime? GogAccountLastCheck { get; set; }
@@ -224,6 +234,9 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
 	public string? GogGames { get; set; }
+
+	[Column(TypeName = "bit(1)")]
+	public bool? GogGamesAllow { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]

@@ -75,7 +75,8 @@ namespace BaseDatos.Juegos
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje2("Juego Actualizar " + id, ex,false, sql.ToString());
+				await Task.Delay(5000);
+				BaseDatos.Errores.Insertar.Mensaje2("Juego Actualizar " + id, ex, false, sql.ToString());
 			}
 		}
 

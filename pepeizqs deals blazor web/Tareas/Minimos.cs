@@ -30,7 +30,7 @@ namespace Tareas
 
             while (await timer.WaitForNextTickAsync(tokenParar))
             {
-				if (await _semaforo.WaitAsync(0, tokenParar) == false)
+				if (await _semaforo.WaitAsync(0) == false)
 				{
 					continue;
 				}
@@ -52,11 +52,14 @@ namespace Tareas
 							foreach (var juego in juegos)
 							{
 								juego.IdMaestra = juego.Id;
-								juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido && Herramientas.OfertaActiva.Verificar(x) == true).ToList();
+								juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido).ToList();
 
 								if (juego.PrecioMinimosHistoricos?.Count > 0)
 								{
-									await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", true);
+									if (juego.PrecioMinimosHistoricos[0].Precio > 0 || juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+									{
+										await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", true);
+									}
 								}
 							}
 						}

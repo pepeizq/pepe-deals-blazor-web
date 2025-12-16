@@ -1,18 +1,21 @@
 ﻿@using APIs.Steam
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
 @using System.Text.Json
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
-@inject IHttpContextAccessor HttpContextAccessor
-
 <style>
-	.caja-cuenta-contenido {
+	.caja-cuenta-steam-contenido {
 		background-color: var(--fondoSubsubcabecera);
 		border: 2px solid var(--fondoSubcabecera);
-		padding: 30px;
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+	}
+
+	.caja-cuenta-steam-titulo {
+		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+		font-size: 18px;
+		padding: 20px 30px;
+		border: 1px solid var(--fondoSubsubcabecera);
 	}
 </style>
 
@@ -38,11 +41,29 @@
 	} 
 </style>
 
+<script>
+	function enseñarTooltip(e, id) {
+		var x = e.clientX,
+			y = e.clientY;
+
+		var tooltip = document.getElementById(id);
+
+		if (screen.width / 2 > x) {
+			tooltip.style.top = (y + 10) + 'px';
+			tooltip.style.left = (x + 20) + 'px';
+		}
+		else {
+			tooltip.style.top = (y - 10) + 'px';
+			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+		};
+	}
+</script>
+
 @if (usuario != null)
 {
 	<div style="display: flex; flex-direction: column; gap: 30px;">
-		<div class="caja-cuenta-contenido">
-			<div style="display: flex; align-items: center; gap: 20px; text-align: left;">
+		<div class="caja-cuenta-steam-contenido">
+			<div class="caja-cuenta-steam-titulo" style="display: flex; align-items: center; gap: 20px; text-align: left;">
 				<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 40px; max-height: 40px;" />
 
 				<div>
@@ -56,50 +77,48 @@
 				</div>
 			</div>
 
-			<hr />
-
-			<div style="display: flex; align-items: center; gap: 20px;">
-				@{
-					int cantidadJuegos = 0;
-
-					if (listadoJuegos != null)
-					{
-						cantidadJuegos = listadoJuegos.Count;
-					}
-
-					<div style="background-color: var(--fondoBien); padding: 10px 20px;">
+			<div style="padding: 20px 30px; display: flex; flex-direction: column; gap: 20px;">
+				<div style="display: flex; align-items: center; gap: 20px;">
+					<div style="background-color: var(--fondoBien); padding: 10px 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);">
 						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountGames"), cantidadJuegos.ToString())
 					</div>
 
-					int cantidadDeseados = 0;
-
-					if (string.IsNullOrEmpty(usuario.SteamWishlist) == false)
-					{
-						cantidadDeseados = Herramientas.Listados.Generar(usuario.SteamWishlist).Count;
-					}
-
-					<div style="background-color: var(--fondoAlerta); padding: 10px 20px;">
+					<div style="background-color: var(--fondoAlerta); padding: 10px 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);">
 						@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AccountGames"), cantidadDeseados.ToString())
 					</div>
-				}
+				</div>
 
-				@if (string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == false)
-				{
-					<div>
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountGames") @Herramientas.Calculadora.DiferenciaTiempo(Convert.ToDateTime(usuario.SteamAccountLastCheck), idioma)
-					</div>
-				}
+				<div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+					@if (string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == false)
+					{
+						<div>
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountGames") @Herramientas.Calculadora.DiferenciaTiempo(Convert.ToDateTime(usuario.SteamAccountLastCheck), idioma)
+						</div>
+					}
+
+					@if (string.IsNullOrEmpty(usuario.SteamAccount) == false)
+					{
+						<div>
+							@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String35", "AccountGames"), usuario.SteamAccount)
+						</div>
+					}
+					
+                    @if (string.IsNullOrEmpty(usuario.SteamId) == false)
+					{
+						<div>
+							@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String36", "AccountGames"), usuario.SteamId)
+						</div>
+					}
+				</div>
 			</div>
 		</div>
 
-		<div class="caja-cuenta-contenido">
-			<div style="font-size: 18px;">
+		<div class="caja-cuenta-steam-contenido">
+			<div class="caja-cuenta-steam-titulo" style="font-size: 18px;">
 				@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "AccountGames")
 			</div>
 
-			<hr/>
-
-			<div style="display: flex; flex-direction: column; gap: 20px;">
+			<div style="padding: 20px 30px; display: flex; flex-direction: column; gap: 20px;">
 				<label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountGames"), "Steam")</label>
 
 				<button @onclick="ClickearEnseñarImagen" style="outline: none; border: 0; background-color: transparent; color: var(--colorTextoOscuro); padding: 0px; text-align: left;">
@@ -154,6 +173,114 @@
 				}
 			</div>
 		</div>
+
+		<div class="caja-cuenta-steam-contenido">
+			<div class="caja-cuenta-steam-titulo" style="font-size: 18px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String30", "AccountGames")
+			</div>
+
+			<div style="padding: 20px 30px;">
+				<div style="display: flex; align-items: center; gap: 30px; padding: 10px 0px;">
+					<div class="checkbox-caja">
+						<input type="checkbox" class="checkbox-interior" checked="@estadoJuegos" @onchange="ClickearCambioJuegos">
+					</div>
+
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String31", "AccountGames")
+					</div>
+
+					<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steam1')">
+						<div style="width: 24px; height: 24px;">
+							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+								<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+							</svg>
+						</div>
+
+						<div id="tooltip-steam1" class="tooltip-relleno">
+							<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "AccountGames")
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<hr/>
+
+				<div style="display: flex; align-items: center; gap: 30px; padding: 10px 0px;">
+					<div class="checkbox-caja">
+						<input type="checkbox" class="checkbox-interior" checked="@estadoDeseados" @onchange="ClickearCambioDeseados">
+					</div>
+
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String33", "AccountGames")
+					</div>
+
+					<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steam2')">
+						<div style="width: 24px; height: 24px;">
+							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+								<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+							</svg>
+						</div>
+
+						<div id="tooltip-steam2" class="tooltip-relleno">
+							<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String34", "AccountGames")
+							</div>
+						</div>
+					</div>
+				</div>
+
+				@if (cantidadJuegos > 0)
+				{
+					<hr />
+
+					<div style="display: flex; align-items: center; gap: 25px;">
+						<button @onclick="ClickearBorrarJuegos" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String37", "AccountGames")
+						</button>
+
+						<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steam3')">
+							<div style="width: 24px; height: 24px;">
+								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+								</svg>
+							</div>
+
+							<div id="tooltip-steam3" class="tooltip-relleno">
+								<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String38", "AccountGames")
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+				
+				@if (cantidadDeseados > 0)
+				{
+					<hr />
+
+					<div style="display: flex; align-items: center; gap: 25px;">
+						<button @onclick="ClickearBorrarDeseados" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String39", "AccountGames")
+						</button>
+
+						<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steam4')">
+							<div style="width: 24px; height: 24px;">
+								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+								</svg>
+							</div>
+
+							<div id="tooltip-steam4" class="tooltip-relleno">
+								<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String40", "AccountGames")
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
 	</div>
 }
 
@@ -188,6 +315,8 @@
 	private List<SteamUsuarioJuego> listadoJuegos = null;
 
 	private string enlaceCuenta = string.Empty;
+	private int cantidadJuegos = 0;
+    private int cantidadDeseados = 0;
 
 	private bool enseñarImagen = false;
 
@@ -201,12 +330,21 @@
 
 		if (usuario != null)
 		{
+            usuario.Id = usuarioId;
+
 			try
 			{
 				listadoJuegos = JsonSerializer.Deserialize<List<SteamUsuarioJuego>>(usuario.SteamGames);
 			}
 			catch
 			{ }
+
+            cantidadJuegos = listadoJuegos?.Count ?? 0;
+
+			if (string.IsNullOrEmpty(usuario.SteamWishlist) == false)
+			{
+				cantidadDeseados = Herramientas.Listados.Generar(usuario.SteamWishlist)?.Count ?? 0;
+			}
 
 			if (string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == false)
 			{
@@ -222,6 +360,38 @@
 				else
 				{
 					ocupado = true;
+				}
+			}
+
+			if (usuario.SteamGamesAllow == null)
+			{
+				estadoJuegos = "checked";
+			}
+			else
+			{
+				if (usuario.SteamGamesAllow == true)
+				{
+					estadoJuegos = "checked";
+				}
+				else
+				{
+					estadoJuegos = null;
+				}
+			}
+
+			if (usuario.SteamWishlistAllow == null)
+			{
+				estadoDeseados = "checked";
+			}
+			else
+			{
+				if (usuario.SteamWishlistAllow == true)
+				{
+					estadoDeseados = "checked";
+				}
+				else
+				{
+					estadoDeseados = null;
 				}
 			}
 		}
@@ -263,9 +433,9 @@
 
 				if (id64 != null)
 				{
-					bool cuentaUsada = await BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64, usuario.Id);
+					string cuentaUsa = await BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64);
 
-					if (cuentaUsada == false)
+					if (cuentaUsa == usuarioId)
 					{
 						mensajeCargando = Herramientas.Idiomas.BuscarTexto(idioma, "Steam14", "Account");
 
@@ -274,8 +444,31 @@
 						if (datos != null)
 						{
 							usuario.SteamAccount = enlaceCuenta;
-							usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
-							usuario.SteamWishlist = datos.Deseados;
+
+							bool actualizarJuegos = true;
+
+							if (usuario.SteamGamesAllow != null && usuario.SteamGamesAllow == false)
+							{
+								actualizarJuegos = false;
+                            }
+							
+							if (actualizarJuegos == true)
+							{
+								usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
+                            }
+
+                            bool actualizarDeseados = true;
+
+							if (usuario.SteamWishlistAllow != null && usuario.SteamWishlistAllow == false)
+							{
+								actualizarDeseados = false;
+                            }
+							
+							if (actualizarDeseados == true)
+							{
+								usuario.SteamWishlist = datos.Deseados;
+                            }
+
 							usuario.Avatar = datos.Avatar;
 							usuario.Nickname = datos.Nombre;
 							usuario.SteamAccountLastCheck = DateTime.Now.ToString();
@@ -306,5 +499,72 @@
 		{
 			ocupado = false;
 		}		
+	}
+
+    private string estadoJuegos = null;
+
+	private async Task ClickearCambioJuegos()
+	{
+		if (usuario != null)
+		{
+			bool estado = false;
+
+			if (estadoJuegos == null)
+			{
+				estadoJuegos = "checked";
+				estado = true;
+			}
+			else
+			{
+				estadoJuegos = null;
+				estado = false;
+			}
+
+			usuario.SteamGamesAllow = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("SteamGamesAllow", estado, usuario.Id); 		
+		}
+	}
+
+	private string estadoDeseados = null;
+
+	private async Task ClickearCambioDeseados()
+	{
+		if (usuario != null)
+		{
+			bool estado = false;
+
+			if (estadoDeseados == null)
+			{
+				estadoDeseados = "checked";
+				estado = true;
+			}
+			else
+			{
+				estadoDeseados = null;
+				estado = false;
+			}
+
+			usuario.SteamWishlistAllow = estado;
+
+			await BaseDatos.Usuarios.Actualizar.Opcion("SteamWishlistAllow", estado, usuario.Id);
+		}
+	}
+
+	private async Task ClickearBorrarJuegos(MouseEventArgs args)
+	{
+        usuario.SteamGames = null;
+        listadoJuegos.Clear();
+        cantidadJuegos = 0;
+
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamGames", null, usuario.Id);
+    }
+
+	private async Task ClickearBorrarDeseados(MouseEventArgs args)
+	{
+		usuario.SteamWishlist = null;
+        cantidadDeseados = 0;
+
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamWishlist", null, usuario.Id);
 	}
 }
