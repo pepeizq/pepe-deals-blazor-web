@@ -104,35 +104,26 @@ namespace APIs.Steam
                         {
                             SteamJuegosAPI json = JsonSerializer.Deserialize<SteamJuegosAPI>(htmlJuegos);
 
-                            if (json != null)
-                            {
-                                if (json.Datos != null)
-                                {
-                                    if (json.Datos.Juegos != null)
-                                    {
-                                        if (json.Datos.Juegos.Count > 0)
-                                        {
-                                            foreach (SteamJuegosAPIJuego juego in json.Datos.Juegos)
-                                            {
-												SteamUsuarioJuego nuevoJuego = new SteamUsuarioJuego
-                                                {
-                                                    Id = juego.ID,
-                                                    TiempoJugadoEnMinutos = juego.JugadoEnMinutos + juego.JugadoDesconectadoEnMinutos,
-                                                    TiempoJugadoUltimaVez = juego.JugadoUltimaVez
-                                                };
+							if (json?.Datos?.Juegos?.Count > 0)
+							{
+								foreach (SteamJuegosAPIJuego juego in json.Datos.Juegos)
+								{
+									SteamUsuarioJuego nuevoJuego = new SteamUsuarioJuego
+									{
+										Id = juego.ID,
+										TiempoJugadoEnMinutos = juego.JugadoEnMinutos + juego.JugadoDesconectadoEnMinutos,
+										TiempoJugadoUltimaVez = juego.JugadoUltimaVez
+									};
 
-                                                if (juegos == null)
-                                                {
-                                                    juegos = new List<SteamUsuarioJuego>();
-												}
+									if (juegos == null)
+									{
+										juegos = new List<SteamUsuarioJuego>();
+									}
 
-                                                juegos.Add(nuevoJuego);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+									juegos.Add(nuevoJuego);
+								}
+							}
+						}
 
 						//----------------------------------------------
 
@@ -159,27 +150,22 @@ namespace APIs.Steam
                                         BaseDatos.Errores.Insertar.Mensaje("Steam deseados", ex);
 									};
 
-									if (juegosDeseados != null)
+									if (juegosDeseados?.Datos?.Juegos?.Count > 0)
 									{
-										if (juegosDeseados.Datos?.Juegos?.Count > 0)
+										foreach (var juegoDeseado in juegosDeseados.Datos.Juegos)
 										{
-											foreach (var juegoDeseado in juegosDeseados.Datos.Juegos)
+											if (deseados == string.Empty)
 											{
-												if (deseados == string.Empty)
-												{
-													deseados = juegoDeseado.Id.ToString();
-												}
-												else
-												{
-													deseados = deseados + "," + juegoDeseado.Id.ToString();
-												}
+												deseados = juegoDeseado.Id.ToString();
+											}
+											else
+											{
+												deseados = deseados + "," + juegoDeseado.Id.ToString();
 											}
 										}
 									}
 								}
 							}
-
-							
 						}
                         catch (Exception ex) 
                         { 

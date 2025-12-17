@@ -1,9 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using pepeizqs_deals_web.Data
-
-@inject UserManager<Usuario> UserManager
-@inject IHttpContextAccessor HttpContextAccessor
+﻿@using pepeizqs_deals_web.Data
 
 <style>
 	.caja-cuenta-contenido {
@@ -19,9 +14,27 @@
 	}
 </style>
 
+<script>
+	function enseñarTooltip(e, id) {
+		var x = e.clientX,
+			y = e.clientY;
+
+		var tooltip = document.getElementById(id);
+
+		if (screen.width / 2 > x) {
+			tooltip.style.top = (y + 10) + 'px';
+			tooltip.style.left = (x + 20) + 'px';
+		}
+		else {
+			tooltip.style.top = (y - 10) + 'px';
+			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+		};
+	}
+</script>
+
 <div style="display: flex; flex-direction: column; gap: 30px;">
 	<div class="caja-cuenta-contenido">
-		<div class="caja-cuenta-titulo">
+		<div class="caja-cuenta-titulo" style="font-size: 18px;">
 			@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountNotificationsMail")
 		</div>
 
@@ -69,7 +82,7 @@
 	</div>
 
 	<div class="caja-cuenta-contenido">
-		<div class="caja-cuenta-titulo">
+		<div class="caja-cuenta-titulo" style="font-size: 18px;">
 			@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountNotificationsMail")
 		</div>
 
@@ -190,9 +203,10 @@
 	[Parameter]
 	public string idioma { get; set; }
 
-	private Usuario usuario = new Usuario();
+	[Parameter]
+	public string usuarioId { get; set; }
 
-	
+	private Usuario usuario = new Usuario();
 
 	private string estadoBundles = null;
 	private string estadoGratis = null;
@@ -203,7 +217,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		usuario = await UserManager.GetUserAsync(HttpContextAccessor.HttpContext.User);
+		usuario = await BaseDatos.Usuarios.Buscar.OpcionesNotificacionesCorreo(usuarioId);
 
 		if (usuario != null)
 		{
@@ -358,7 +372,7 @@
 
 			usuario.NotificationLows = boolMinimos;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationLows", boolMinimos, usuario.Id);
 		}	
 	}
 
@@ -383,7 +397,7 @@
 
 			usuario.NotificationWishlistBundles = boolDeseados;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationWishlistBundles", boolDeseados, usuario.Id);
 		}	
 	}
 
@@ -406,7 +420,7 @@
 
 			usuario.NotificationBundles = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationBundles", estado, usuario.Id);
 		}
 	}
 
@@ -429,7 +443,7 @@
 
 			usuario.NotificationFree = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationFree", estado, usuario.Id);
 		}
 	}
 
@@ -452,7 +466,7 @@
 
 			usuario.NotificationSubscriptions = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationSubscriptions", estado, usuario.Id);
 		}
 	}
 
@@ -475,7 +489,7 @@
 
 			usuario.NotificationOthers = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationOthers", estado, usuario.Id);
 		}
 	}
 
@@ -498,7 +512,7 @@
 
 			usuario.NotificationWeb = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationWeb", estado, usuario.Id);
 		}
 	}
 
@@ -521,7 +535,7 @@
 
 			usuario.NotificationDelisted = estado;
 
-			await UserManager.UpdateAsync(usuario);
+			await BaseDatos.Usuarios.Actualizar.Opcion("NotificationDelisted", estado, usuario.Id);
 		}
 	}
 }

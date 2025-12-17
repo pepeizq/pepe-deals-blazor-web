@@ -189,7 +189,7 @@ namespace BaseDatos.Extension
 									extension.PreciosActuales = new List<ExtensionPrecio>();
 								}
 
-								extension.PreciosActuales.Add(new ExtensionPrecio
+								extension.PreciosActuales?.Add(new ExtensionPrecio
 								{
 									Datos = precio,
 									Tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre,

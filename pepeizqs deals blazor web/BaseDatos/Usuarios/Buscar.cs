@@ -361,6 +361,32 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
+		public static async Task<Usuario> OpcionesNotificacionesCorreo(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT NotificationLows, NotificationWishlistBundles, NotificationBundles, NotificationFree,
+								NotificationSubscriptions, NotificationOthers, NotificationWeb, NotificationDelisted
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				{
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Notificaciones Correo", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<Usuario> OpcionesSteam(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
@@ -394,7 +420,8 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck, GogGamesAllow, GogWishlistAllow
+			string busqueda = @"SELECT GogGames, GogWishlist, GogAccountLastCheck, GogGamesAllow, GogWishlistAllow,
+								GogAccount, GogId	
 								FROM AspNetUsers WHERE Id=@Id";
 
 			try

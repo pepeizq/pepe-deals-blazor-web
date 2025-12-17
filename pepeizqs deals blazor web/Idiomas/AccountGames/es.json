@@ -37,5 +37,6 @@
   "String37": "Borrar juegos",
   "String38": "Si tienes activa la sincronización, los juegos se cargarán en tu cuenta en la próxima sincronización automática.",
   "String39": "Borrar deseados",
-  "String40": "Si tienes activa la sincronización, los deseados se cargarán en tu cuenta en la próxima sincronización automática."
+  "String40": "Si tienes activa la sincronización, los deseados se cargarán en tu cuenta en la próxima sincronización automática.",
+  "String41": "ID asociada a la cuenta: {0}"
 }

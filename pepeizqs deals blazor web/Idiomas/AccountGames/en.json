@@ -37,5 +37,6 @@
   "String37": "Delete games",
   "String38": "If you have synchronization enabled, the games will be uploaded to your account during the next automatic synchronization.",
   "String39": "Delete wishlist",
-  "String40": "If you have synchronization enabled, the wishlist will be uploaded to your account during the next automatic synchronization."
+  "String40": "If you have synchronization enabled, the wishlist will be uploaded to your account during the next automatic synchronization.",
+  "String41": "ID associated with the account: {0}"
 }
