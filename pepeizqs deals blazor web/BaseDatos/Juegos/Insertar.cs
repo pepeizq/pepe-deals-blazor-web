@@ -16,12 +16,12 @@ namespace BaseDatos.Juegos
 			}
 
 			List<string> columnas = new() { "idSteam", "idGog", "nombre", "tipo", "fechaSteamAPIComprobacion",
-								"imagenes", "precioMinimosHistoricos", "precioActualesTiendas",
-								"analisis", "caracteristicas", "media", "nombreCodigo", "categorias" };
+								"imagenes", "precioMinimosHistoricos",
+								"analisis", "caracteristicas", "media", "nombreCodigo" };
 
 			List<string> valores = new() { "@idSteam", "@idGog", "@nombre", "@tipo", "@fechaSteamAPIComprobacion",
-								"@imagenes", "@precioMinimosHistoricos", "@precioActualesTiendas",
-								"@analisis", "@caracteristicas", "@media", "@nombreCodigo", "@categorias" };
+								"@imagenes", "@precioMinimosHistoricos",
+								"@analisis", "@caracteristicas", "@media", "@nombreCodigo" };
 
 			DynamicParameters parametros = new DynamicParameters();
 
@@ -32,13 +32,11 @@ namespace BaseDatos.Juegos
 			parametros.Add("@fechaSteamAPIComprobacion", juego.FechaSteamAPIComprobacion.ToString());
 			parametros.Add("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
 			parametros.Add("@precioMinimosHistoricos", JsonSerializer.Serialize(juego.PrecioMinimosHistoricos));
-			parametros.Add("@precioActualesTiendas", JsonSerializer.Serialize(juego.PrecioActualesTiendas));
 			parametros.Add("@analisis", JsonSerializer.Serialize(juego.Analisis));
 			parametros.Add("@caracteristicas", JsonSerializer.Serialize(juego.Caracteristicas));
 			parametros.Add("@media", JsonSerializer.Serialize(juego.Media));
 			parametros.Add("@nombreCodigo", Herramientas.Buscador.LimpiarNombre(juego.Nombre));
-			parametros.Add("@categorias", JsonSerializer.Serialize(juego.Categorias));
-
+			
 			void AñadirSi(string columna, string parametro, object valor)
 			{
 				columnas.Add(columna);
@@ -76,29 +74,35 @@ namespace BaseDatos.Juegos
 				AñadirSi("mayorEdad", "@mayorEdad", juego.MayorEdad);
 			}
 
-			if (juego.Etiquetas?.Count > 0)
+			if (tabla == "juegos")
 			{
-				AñadirSi("etiquetas", "@etiquetas", JsonSerializer.Serialize(juego.Etiquetas));
-			}
+				AñadirSi("precioActualesTiendas", "@precioActualesTiendas", JsonSerializer.Serialize(juego.PrecioActualesTiendas));
+				AñadirSi("categorias", "@categorias", JsonSerializer.Serialize(juego.Categorias));
 
-			if (juego.Idiomas?.Count > 0)
-			{
-				AñadirSi("idiomas", "@idiomas", JsonSerializer.Serialize(juego.Idiomas));
-			}
+				if (juego.Etiquetas?.Count > 0)
+				{
+					AñadirSi("etiquetas", "@etiquetas", JsonSerializer.Serialize(juego.Etiquetas));
+				}
 
-			if (juego.Deck != JuegoDeck.Desconocido)
-			{
-				AñadirSi("deck", "@deck", juego.Deck);
-			}
+				if (juego.Idiomas?.Count > 0)
+				{
+					AñadirSi("idiomas", "@idiomas", JsonSerializer.Serialize(juego.Idiomas));
+				}
 
-			if (juego.SteamOS != JuegoSteamOS.Desconocido)
-			{
-				AñadirSi("steamOS", "@steamOS", juego.SteamOS);
-			}
+				if (juego.Deck != JuegoDeck.Desconocido)
+				{
+					AñadirSi("deck", "@deck", juego.Deck);
+				}
 
-			if (juego.InteligenciaArtificial == true)
-			{
-				AñadirSi("inteligenciaArtificial", "@inteligenciaArtificial", true);
+				if (juego.SteamOS != JuegoSteamOS.Desconocido)
+				{
+					AñadirSi("steamOS", "@steamOS", juego.SteamOS);
+				}
+
+				if (juego.InteligenciaArtificial == true)
+				{
+					AñadirSi("inteligenciaArtificial", "@inteligenciaArtificial", true);
+				}
 			}
 
 			if (tabla == "seccionMinimos")
@@ -106,7 +110,7 @@ namespace BaseDatos.Juegos
 				AñadirSi("idMaestra", "@idMaestra", juego.IdMaestra);
 			}
 
-			if (juego.OcultarPortada)
+			if (juego.OcultarPortada == true)
 			{
 				AñadirSi("ocultarPortada", "@ocultarPortada", true);
 			}
@@ -120,30 +124,30 @@ namespace BaseDatos.Juegos
 				parametros.Add("@tienda", juego.PrecioMinimosHistoricos[0].Tienda);
 				parametros.Add("@drm", (int)juego.PrecioMinimosHistoricos[0].DRM);
 				parametros.Add("@enlace", juego.PrecioMinimosHistoricos[0].Enlace);
-				parametros.Add("@precio", juego.PrecioMinimosHistoricos[0].Precio);
+				parametros.Add("@precio2", juego.PrecioMinimosHistoricos[0].Precio);
 				parametros.Add("@precioCambiado", juego.PrecioMinimosHistoricos[0].PrecioCambiado);
+				parametros.Add("@moneda", (int)juego.PrecioMinimosHistoricos[0].Moneda);
 
 				sqlInsertar = $@"IF EXISTS (SELECT 1 FROM {tabla} 
 								WHERE idMaestra={juego.IdMaestra}
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}' 
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].Tienda')<>'{juego.PrecioMinimosHistoricos[0].Tienda}')
+								AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
 				BEGIN 
 					UPDATE {tabla}
 					SET precioMinimosHistoricos = JSON_MODIFY(
 						JSON_MODIFY(
 							JSON_MODIFY(
-								JSON_MODIFY(precioMinimosHistoricos, '$[0].Tienda', @tienda),
-							'$[0].Enlace', @enlace),
-						'$[0].Precio', @precio),
+								JSON_MODIFY(
+									JSON_MODIFY(precioMinimosHistoricos, '$[0].Tienda', @tienda),
+								'$[0].Enlace', @enlace),
+							'$[0].Moneda', @moneda),
+						'$[0].Precio', @precio2),
 					'$[0].PrecioCambiado', @precioCambiado)
 					WHERE idMaestra={juego.IdMaestra}
 					AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
 				END
 				
 				IF NOT EXISTS (SELECT 1 FROM {tabla} 
-								WHERE JSON_VALUE(precioMinimosHistoricos, '$[0].Enlace')='{juego.PrecioMinimosHistoricos[0].Enlace}'
-								AND idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
+								WHERE idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
 				BEGIN
 					{sqlInsertar}
 				END";

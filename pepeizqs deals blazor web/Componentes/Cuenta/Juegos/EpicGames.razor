@@ -5,12 +5,18 @@
 @using pepeizqs_deals_web.Data
 
 <style>
-	.caja-cuenta-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 30px;
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-	}
+    .caja-cuenta-epic-contenido {
+        background-color: var(--fondoSubsubcabecera);
+        border: 2px solid var(--fondoSubcabecera);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+    }
+
+    .caja-cuenta-epic-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        font-size: 18px;
+        padding: 20px 30px;
+        border: 1px solid var(--fondoSubsubcabecera);
+    }
 </style>
 
 <style>
@@ -36,11 +42,29 @@
     }
 </style>
 
+<script>
+    function enseñarTooltip(e, id) {
+        var x = e.clientX,
+            y = e.clientY;
+
+        var tooltip = document.getElementById(id);
+
+        if (screen.width / 2 > x) {
+            tooltip.style.top = (y + 10) + 'px';
+            tooltip.style.left = (x + 20) + 'px';
+        }
+        else {
+            tooltip.style.top = (y - 10) + 'px';
+            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+        };
+    }
+</script>
+
 @if (usuario != null)
 {
     <div style="display: flex; flex-direction: column; gap: 30px;">
-        <div class="caja-cuenta-contenido">
-            <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
+        <div class="caja-cuenta-epic-contenido">
+            <div class="caja-cuenta-epic-titulo" style="display: flex; align-items: center; gap: 20px; text-align: left;">
                 <img src="@JuegoDRM2.SacarImagen(JuegoDRM.Epic)" style="max-width: 40px; max-height: 40px;" />
 
                 <div>
@@ -54,61 +78,53 @@
                 </div>
             </div>
 
-            <hr />
-
-            <div style="display: flex; align-items: center; gap: 20px;">
-                @{
-                    int cantidadJuegos = 0;
-
-                    if (string.IsNullOrEmpty(usuario.EpicGames) == false)
-                    {
-                        cantidadJuegos = Herramientas.Listados.Generar(usuario.EpicGames).Count;
-                    }
-
-                    <div style="background-color: var(--fondoBien); padding: 10px 20px;">
+            <div style="padding: 20px 30px; display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="background-color: var(--fondoBien); padding: 10px 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);">
                         @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountGames"), cantidadJuegos.ToString())
                     </div>
-                }
+                </div>
 
-                @if (usuario.EpicGamesLastImport != null)
-                {
-                    <div>
-                        @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountGames") @Herramientas.Calculadora.DiferenciaTiempo(usuario.EpicGamesLastImport, idioma)
-                    </div>
-                }
-
-                @if (cantidadJuegos > 0)
-                {
-                    <div style="margin-left: auto;">
-                        <button class="boton-pequeño" style="padding: 10px 15px; width: fit-content;" @onclick="@(e => BorrarJuegos(e))">
-                            <div style="max-width: 18px;">
-							    <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                    <path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/>
-                                </svg>
-						    </div>
-                        </button>
-                    </div>
-                }
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+                    @if (usuario.EpicGamesLastImport != null)
+                    {
+                        <div>
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountGames") @Herramientas.Calculadora.DiferenciaTiempo(usuario.EpicGamesLastImport, idioma)
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="caja-cuenta-contenido">
-            <div style="font-size: 18px;">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String15", "AccountGames")
+        <div class="caja-cuenta-epic-contenido">
+            <div class="caja-cuenta-epic-titulo" style="display: flex; align-items: center; gap: 20px;">
+                <div style="font-size: 18px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String15", "AccountGames")
+                </div>
+
+                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-epic1')" style="margin-left: auto;">
+                    <div style="width: 24px; height: 24px;">
+                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                        </svg>
+                    </div>
+
+                    <div id="tooltip-epic1" class="tooltip-relleno">
+                        <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "AccountGames"), "Epic Games")
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <hr/>
-
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "AccountGames"), "Epic Games")</label>
-
+            <div style="padding: 20px 30px; display: flex; flex-direction: column; gap: 20px;">
                 @if (trabajando == false)
                 {
                     <div style="display: flex; align-items: center; gap: 20px;">
                         <button @onclick="@(e => MostrarGogGalaxy(e))" title="GOG Galaxy" class="boton-pestañas" style="font-size: 16px; padding: 0px; width: fit-content; height: 60px;">
                             <div>
                                 <div style="display: flex; align-items: center; gap: 15px; justify-content: center; padding: 15px 20px;">
-                                    <img src="/imagenes/otros/goggalaxy.webp" style="max-width: 30px; max-height: 30px;" />
+                                    <img src="/imagenes/otros/goggalaxy.webp" style="max-width: 30px; height: 30px; object-fit: contain;" />
 
                                     @if (mostrarGogGalaxy == true)
                                     {
@@ -128,7 +144,7 @@
                         <button @onclick="@(e => MostrarPlaynite(e))" title="Playnite" class="boton-pestañas" style="font-size: 16px; padding: 0px; width: fit-content; height: 60px;">
                             <div>
                                 <div style="display: flex; align-items: center; gap: 15px; justify-content: center; padding: 15px 20px;">
-                                    <img src="/imagenes/otros/playnite.webp" style="max-width: 30px; max-height: 30px;" />
+                                    <img src="/imagenes/otros/playnite.webp" style="max-width: 30px; height: 30px; object-fit: contain;" />
 
                                     @if (mostrarPlaynite == true)
                                     {
@@ -149,7 +165,7 @@
 
                 @if (mostrarGogGalaxy == true)
                 {
-                    <div>
+                    <div style="background: color-mix(in srgb, var(--fondoSubcabecera) 95%, var(--fondoBotonPequeño)); padding: 20px 20px 0px 20px;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-left: 5px;">
                             <div style="max-width: 14px;">
 							    <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -163,19 +179,21 @@
                         </div>
 
                         <ul style="display: grid; gap: 15px; margin-bottom: 30px;">
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountGames"), "galaxy-2.0.db", "%ProgramData%\\GOG.com\\Galaxy\\storage")
                             </li>
 
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 <a href="https://support.microsoft.com/en-us/windows/file-explorer-in-windows-ef370130-1cca-9dc5-e0df-2f7416fe1cb1#ID0EDBBBBBFD-button" target="_blank" style="text-decoration: none;">@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "AccountGames")</a>
                             </li>
 
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String22", "AccountGames")
                             </li>
                         </ul>
+                    </div>
 
+                    <div>
                         @if (trabajando == false)
                         {
                             <label class="boton-pequeño" style="cursor: pointer; font-size: 16px; width: fit-content; padding: 10px 15px;">
@@ -199,7 +217,7 @@
 
                 @if (mostrarPlaynite == true)
                 {
-                    <div>
+                    <div style="background: color-mix(in srgb, var(--fondoSubcabecera) 95%, var(--fondoBotonPequeño)); padding: 20px 20px 0px 20px;">
                         <div style="display: flex; align-items: center; gap: 10px; margin-left: 5px;">
                             <div style="max-width: 14px;">
 							    <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -213,23 +231,25 @@
                         </div>
 
                         <ul style="display: grid; gap: 15px; margin-bottom: 30px;">
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String25", "AccountGames"), "games.db", "%appdata%\\Playnite\\library\\")
                             </li>
 
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String26", "AccountGames"), "games.db", "C:\\Playnite\\library\\")
                             </li>
 
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 <a href="https://support.microsoft.com/en-us/windows/file-explorer-in-windows-ef370130-1cca-9dc5-e0df-2f7416fe1cb1#ID0EDBBBBBFD-button" target="_blank" style="text-decoration: none;">@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "AccountGames")</a>
                             </li>
 
-                            <li>
+                            <li style="margin-bottom: 0px;">
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String22", "AccountGames")
                             </li>
                         </ul>
+                    </div>
 
+                    <div>
                         @if (trabajando == false)
                         {
                             <label class="boton-pequeño" style="cursor: pointer; font-size: 16px; width: fit-content; padding: 10px 15px;">
@@ -252,6 +272,23 @@
                 }
             </div>
         </div>
+
+        @if (cantidadJuegos > 0)
+        {
+            <div class="caja-cuenta-epic-contenido">
+                <div class="caja-cuenta-epic-titulo" style="font-size: 18px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String30", "AccountGames")
+                </div>
+
+                <div style="padding: 20px 30px;">
+                    <div style="display: flex; align-items: center; gap: 25px;">
+                        <button @onclick="ClickearBorrarJuegos" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String37", "AccountGames")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
 
@@ -267,12 +304,22 @@
 
     private Usuario usuario = new Usuario();
 
+    private int cantidadJuegos = 0;
+
     private bool trabajando = false;
     private int importados = 0;
 
     protected override async Task OnInitializedAsync()
     {
         usuario = await BaseDatos.Usuarios.Buscar.OpcionesEpicGames(usuarioId);
+
+        if (usuario != null)
+        {
+            if (string.IsNullOrEmpty(usuario.EpicGames) == false)
+            {
+                cantidadJuegos = Herramientas.Listados.Generar(usuario.EpicGames)?.Count ?? 0;
+            }
+        }
     }
 
     private void CerrarPestañas()
@@ -333,10 +380,12 @@
         });
     }
 
-    private async Task BorrarJuegos(MouseEventArgs args)
+    private async Task ClickearBorrarJuegos(MouseEventArgs args)
     {
         usuario.EpicGames = null;
+        cantidadJuegos = 0;
 
+        usuario.Id = usuarioId;
         await BaseDatos.Usuarios.Actualizar.Epic(usuario);
     }
 }

@@ -12,6 +12,7 @@ namespace Herramientas.Ficheros
 		public static async Task<int> Cargar(JuegoDRM drm, IBrowserFile fichero, string usuarioId)
 		{
 			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesPlaynite(usuarioId);
+			usuario.Id = usuarioId;
 
 			int importados = 0;
 

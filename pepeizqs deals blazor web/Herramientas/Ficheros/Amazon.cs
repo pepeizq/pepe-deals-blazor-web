@@ -11,6 +11,7 @@ namespace Herramientas.Ficheros
 		public static async Task<int> Cargar(IBrowserFile fichero, string usuarioId)
 		{
 			Usuario usuario = await global::BaseDatos.Usuarios.Buscar.OpcionesAmazon(usuarioId);
+			usuario.Id = usuarioId;
 
 			int importados = 0;
 

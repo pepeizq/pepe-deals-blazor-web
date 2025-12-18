@@ -3,21 +3,21 @@
 using Herramientas;
 using Juegos;
 
-namespace Tareas
+namespace Tareas.Minimos
 {
 	public class JuegoMinimoTarea : Juego
 	{
 		public JuegoDRM DRMElegido { get; set; }
 	}
 
-	public class Minimos : BackgroundService
+	public class Steam : BackgroundService
     {
-        private readonly ILogger<Minimos> _logger;
+        private readonly ILogger<Steam> _logger;
         private readonly IServiceScopeFactory _factoria;
         private readonly IDecompiladores _decompilador;
 		private readonly SemaphoreSlim _semaforo = new SemaphoreSlim(1, 1);
 
-		public Minimos(ILogger<Minimos> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public Steam(ILogger<Steam> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
         {
             _logger = logger;
             _factoria = factory;
@@ -43,7 +43,7 @@ namespace Tareas
 
 					if (piscinaWeb == piscinaUsada)
 					{
-						List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos();
+						List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(JuegoDRM.Steam);
 
 						if (juegos?.Count > 0)
 						{

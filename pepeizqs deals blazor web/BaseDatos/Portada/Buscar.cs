@@ -3,13 +3,13 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
-using Tareas;
+using Tareas.Minimos;
 
 namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos()
+		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(JuegoDRM drm)
 		{
 			string busqueda = @"SELECT j.*,
        pmh.DRM as DRMElegido
@@ -33,13 +33,25 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
   AND j.PrecioMinimosHistoricos IS NOT NULL
   AND j.PrecioMinimosHistoricos <> 'null'
   AND ISJSON(j.PrecioMinimosHistoricos) = 1
-  AND pmh.DRM <> 7
   AND (
         (pmh.FechaActualizacion <= DATEADD(hour, 24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
         (pmh.FechaActualizacion <= DATEADD(hour, 25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
         (pmh.FechaActualizacion <= DATEADD(hour, 48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
         (pmh.FechaActualizacion <= DATEADD(hour, 12, GETDATE()))    
-      );";
+      )";
+
+			if (drm == JuegoDRM.Steam)
+			{
+				busqueda = busqueda + " AND pmh.DRM = 0";
+			}
+			else if (drm == JuegoDRM.GOG)
+			{
+				busqueda = busqueda + " AND pmh.DRM = 8";
+			}
+			else if (drm == JuegoDRM.NoEspecificado)
+			{
+				busqueda = busqueda + " AND pmh.DRM NOT IN (0, 7, 8)";
+			}
 
 			try
 			{
