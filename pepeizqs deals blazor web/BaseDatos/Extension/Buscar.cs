@@ -284,7 +284,7 @@ namespace BaseDatos.Extension
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Extension Generar " + id, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Extension Generar " + id, ex, false);
 			}
 
 			return null;

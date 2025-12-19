@@ -20,12 +20,17 @@ namespace BaseDatos.Pendientes
                 if (string.IsNullOrEmpty(resultado) == true)
                 {
 					string insertar = "INSERT INTO juegosIDs " +
-						   "(nombre, ids) VALUES " +
-						   "(@nombre, @ids) ";
+						   "(nombre, ids, nombreCodigo) VALUES " +
+						   "(@nombre, @ids, @nombreCodigo) ";
 
 					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 					{
-						await sentencia.Connection.ExecuteAsync(insertar, new { nombre, ids }, transaction: sentencia);
+						await sentencia.Connection.ExecuteAsync(insertar, new 
+						{ 
+							nombre, 
+							ids,
+							nombreCodigo = Herramientas.Buscador.LimpiarNombre(nombre, true)
+						}, transaction: sentencia);
 					});
 				}
 			}

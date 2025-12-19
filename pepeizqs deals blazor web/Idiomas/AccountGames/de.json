@@ -26,5 +26,17 @@
   "String26": "Wenn Sie die tragbare Version von PlayNite haben, müssen Sie die Datei '{0}' im Ordner '{1}' laden.",
   "String27": "Alle",
   "String28": "{0} Stunden",
-  "String29": "Sie haben keine Spiele auf Ihrem Konto geladen."
+  "String29": "Sie haben keine Spiele auf Ihrem Konto geladen.",
+  "String30": "Optionen",
+  "String31": "Synchronisieren Sie Ihre Spiele",
+  "String32": "Wenn Sie nicht möchten, dass die Website Ihre Spiele liest, deaktivieren Sie die Option.",
+  "String33": "Synchronisieren Sie Ihre Wunschliste",
+  "String34": "Wenn Sie nicht möchten, dass die Website Ihre Wunschliste liest, deaktivieren Sie die Option.",
+  "String35": "Konto gespeichert: {0}",
+  "String36": "Mit dem Konto verknüpfte ID64: {0}",
+  "String37": "Spiele löschen",
+  "String38": "Wenn Sie die Synchronisierung aktiviert haben, werden die Spiele bei der nächsten automatischen Synchronisierung auf Ihr Konto hochgeladen.",
+  "String39": "Wunschliste löschen",
+  "String40": "Wenn Sie die Synchronisierung aktiviert haben, wird die Wunschliste bei der nächsten automatischen Synchronisierung in Ihr Konto hochgeladen.",
+  "String41": "Mit dem Konto verknüpfte ID: {0}"
 }

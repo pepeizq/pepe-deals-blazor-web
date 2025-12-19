@@ -34,8 +34,7 @@ namespace Tiendas2
 				APIs.EA.Tienda.Generar(),
 				APIs.Nexus.Tienda.Generar(),
 				APIs._2Game.Tienda.Generar(),
-				APIs.Muvegames.Tienda.Generar(),
-				APIs.Noctre.Tienda.Generar()
+				APIs.Muvegames.Tienda.Generar()
 			};
 
 			return tiendas;

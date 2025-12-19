@@ -44,7 +44,7 @@ namespace Herramientas.Correos
 
 						await global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
 
-						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar", ex);
+						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar", ex, false);
 						return false;
 					}
 				}
@@ -66,7 +66,7 @@ namespace Herramientas.Correos
 
 						await global::BaseDatos.Admin.Actualizar.TareaUso("correosEnviar", nuevaFecha);
 
-						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar " + correoDesde + " - " + correoHacia, ex);
+						global::BaseDatos.Errores.Insertar.Mensaje("Correo Enviar " + correoDesde + " - " + correoHacia, ex, false);
 
 						return false;
 					}

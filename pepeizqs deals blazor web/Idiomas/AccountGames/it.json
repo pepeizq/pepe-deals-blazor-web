@@ -26,5 +26,17 @@
   "String26": "Se hai la versione portatile di PlayNite, è necessario caricare il file '{0}' situato nella cartella '{1}'.",
   "String27": "Tutto",
   "String28": "{0} ore",
-  "String29": "Non hai giochi caricati sul tuo account."
+  "String29": "Non hai giochi caricati sul tuo account.",
+  "String30": "Opzioni",
+  "String31": "Sincronizza i tuoi giochi",
+  "String32": "Se non vuoi che il sito web legga i tuoi giochi, disabilita l'opzione.",
+  "String33": "Sincronizza la tua lista dei desideri",
+  "String34": "Se non vuoi che il sito web legga la tua lista dei desideri, disabilita l'opzione.",
+  "String35": "Account salvato: {0}",
+  "String36": "ID64 associato all'account: {0}",
+  "String37": "Elimina giochi",
+  "String38": "Se hai abilitato la sincronizzazione, i giochi verranno caricati sul tuo account durante la successiva sincronizzazione automatica.",
+  "String39": "Elimina la lista dei desideri",
+  "String40": "Se hai abilitato la sincronizzazione, la lista dei desideri verrà caricata sul tuo account durante la successiva sincronizzazione automatica.",
+  "String41": "ID associato all'account: {0}"
 }

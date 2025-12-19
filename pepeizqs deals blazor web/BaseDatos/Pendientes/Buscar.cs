@@ -10,14 +10,14 @@ namespace BaseDatos.Pendientes
 		{
 			try
 			{
-				string busqueda1 = "SELECT id FROM juegos WHERE nombre=@nombre OR nombreCodigo=@nombreLimpio";
+				string busqueda1 = "SELECT id FROM juegos WHERE nombre=@nombre OR REPLACE(nombreCodigo, ' ', '')=@nombreLimpio";
 
 				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
 					return await sentencia.Connection.QueryFirstOrDefaultAsync<int?>(busqueda1, new
 					{
 						nombre,
-						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, false)
+						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, true)
 					}, transaction: sentencia);
 				});
 
@@ -33,11 +33,15 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre=@nombre";
+				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre=@nombre OR REPLACE(nombreCodigo, ' ', '')=@nombreLimpio";
 
 				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda2, new { nombre }, transaction: sentencia);
+					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda2, new 
+					{ 
+						nombre,
+						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, true)
+					}, transaction: sentencia);
 				});
 
 				if (ids != null)

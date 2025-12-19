@@ -2,7 +2,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos;
@@ -576,7 +575,7 @@ WHERE idSteam IN (";
 			return juegos;
 		}
 
-		public static async Task<List<Juego>> Nombre2(string nombre, int cantidadResultados = 10)
+		public static async Task<List<Juego>> Nombre2(string nombre, int cantidadResultados = 10, bool reducido = false)
 		{
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
@@ -601,6 +600,14 @@ WHERE idSteam IN (";
 FROM juegos j
 WHERE 1=1";
 
+			if (reducido == true)
+			{
+				busqueda = @"SELECT TOP (@cantidad) 
+								j.id, j.nombre, j.imagenes, j.tipo, j.nombreCodigo
+							FROM juegos j
+							WHERE 1=1";
+			}
+
 			string[] palabras = nombre.Split(" ");
 
 			foreach (var palabra in palabras)
@@ -609,14 +616,14 @@ WHERE 1=1";
 				{
 					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
 
-					busqueda = busqueda + $" AND nombreCodigo LIKE '%{palabraLimpia}%'";
+					busqueda = busqueda + $" AND j.nombreCodigo LIKE '%{palabraLimpia}%'";
 				}
 			}
 
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
 				busqueda = busqueda + @" ORDER BY CASE 
-WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
 END DESC";
 			}
 

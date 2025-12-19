@@ -26,5 +26,17 @@
   "String26": "Se você tiver a versão portátil do Playnite, deve carregar o arquivo '{0}' localizado na pasta '{1}'.",
   "String27": "Todos",
   "String28": "{0} horas",
-  "String29": "Você não tem nenhum jogo carregado em sua conta."
+  "String29": "Você não tem nenhum jogo carregado em sua conta.",
+  "String30": "Opções",
+  "String31": "Sincronize seus jogos",
+  "String32": "Se você não quiser que o site leia seus jogos, desative a opção.",
+  "String33": "Sincronize sua lista de desejos",
+  "String34": "Se você não quiser que o site leia sua lista de desejos, desative a opção.",
+  "String35": "Conta salva: {0}",
+  "String36": "ID64 associado à conta: {0}",
+  "String37": "Excluir jogos",
+  "String38": "Se você tiver a sincronização habilitada, os jogos serão carregados em sua conta durante a próxima sincronização automática.",
+  "String39": "Excluir lista de desejos",
+  "String40": "Se você tiver a sincronização habilitada, a lista de desejos será carregada em sua conta durante a próxima sincronização automática.",
+  "String41": "ID associado à conta: {0}"
 }

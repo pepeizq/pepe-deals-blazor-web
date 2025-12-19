@@ -32,10 +32,10 @@ namespace Tareas.Minimos
 				try
 				{
 					WebApplicationBuilder builder = WebApplication.CreateBuilder();
-					string piscinaWeb = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+					string piscinaTiendas = builder.Configuration.GetValue<string>("PoolTiendas:Contenido");
 					string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-					if (piscinaWeb == piscinaUsada)
+					if (piscinaTiendas == piscinaUsada)
 					{
 						List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(Juegos.JuegoDRM.NoEspecificado);
 
