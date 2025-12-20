@@ -19,7 +19,7 @@ namespace BaseDatos.Juegos
 								"imagenes", "precioMinimosHistoricos",
 								"analisis", "caracteristicas", "media", "nombreCodigo" };
 
-			List<string> valores = new() { "@idSteam", "@idGog", "@nombre", "@tipo", "@fechaSteamAPIComprobacion",
+			List<string> valores = new() { "@idSteam", "@idGog", "@nombre2", "@tipo", "@fechaSteamAPIComprobacion",
 								"@imagenes", "@precioMinimosHistoricos",
 								"@analisis", "@caracteristicas", "@media", "@nombreCodigo" };
 
@@ -27,8 +27,8 @@ namespace BaseDatos.Juegos
 
 			parametros.Add("@idSteam", juego.IdSteam);
 			parametros.Add("@idGog", juego.IdGog);
-			parametros.Add("@nombre", juego.Nombre);
-			parametros.Add("@tipo", juego.Tipo);
+			parametros.Add("@nombre2", juego.Nombre);
+			parametros.Add("@tipo", (int)juego.Tipo);
 			parametros.Add("@fechaSteamAPIComprobacion", juego.FechaSteamAPIComprobacion.ToString());
 			parametros.Add("@imagenes", JsonSerializer.Serialize(juego.Imagenes));
 			parametros.Add("@precioMinimosHistoricos", JsonSerializer.Serialize(juego.PrecioMinimosHistoricos));
@@ -127,10 +127,10 @@ namespace BaseDatos.Juegos
 				parametros.Add("@precio2", juego.PrecioMinimosHistoricos[0].Precio);
 				parametros.Add("@precioCambiado", juego.PrecioMinimosHistoricos[0].PrecioCambiado);
 				parametros.Add("@moneda", (int)juego.PrecioMinimosHistoricos[0].Moneda);
+				parametros.Add("@fechaDetectado", juego.PrecioMinimosHistoricos[0].FechaDetectado);
 
 				sqlInsertar = $@"IF EXISTS (SELECT 1 FROM {tabla} 
-								WHERE idMaestra={juego.IdMaestra}
-								AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
+								WHERE idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
 				BEGIN 
 					UPDATE {tabla}
 					SET precioMinimosHistoricos = JSON_MODIFY(

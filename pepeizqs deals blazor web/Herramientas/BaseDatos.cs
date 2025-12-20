@@ -47,115 +47,42 @@ namespace Herramientas
 			return ex.Errors.Cast<SqlError>().Any(e => errores.Contains(e.Number));
 		}
 
-		public static async Task EjecutarConConexionAsync(Func<SqlTransaction, Task> sentencia, SqlConnection conexion = null)
+		public static async Task EjecutarConConexionAsync(Func<SqlConnection, SqlTransaction, Task> accion)
 		{
-			bool cerrar = conexion == null;
-			int intentos = 2; 
+			await using var conexion = Conectar();
+			await conexion.OpenAsync();
 
-			while (true)
+			await using var transaccion = await conexion.BeginTransactionAsync();
+
+			try
 			{
-				try
-				{
-					if (conexion == null)
-					{
-						conexion = Conectar();
-					}						
-
-					if (conexion.State != ConnectionState.Open)
-					{
-						await conexion.OpenAsync();
-					}			
-
-					await using var transaccion = await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
-
-					try
-					{
-						await sentencia((SqlTransaction)transaccion);
-						await transaccion.CommitAsync();
-					}
-					catch
-					{
-						try { await transaccion.RollbackAsync(); } catch { }
-						throw;
-					}
-					finally
-					{
-						if (cerrar == true)
-						{
-							await conexion.CloseAsync();
-						}
-					}
-
-					return;
-				}
-				catch (SqlException ex) when (EsErrorDeTransporte(ex) && intentos-- > 0)
-				{
-					SqlConnection.ClearPool(conexion);
-
-					if (cerrar == true)
-					{
-						await conexion.DisposeAsync();
-						conexion = null;
-					}
-
-					Thread.Sleep(1000);
-				}
+				await accion(conexion, (SqlTransaction)transaccion);
+				await transaccion.CommitAsync();
+			}
+			catch
+			{
+				await transaccion.RollbackAsync();
+				throw;
 			}
 		}
 
-		public static async Task<T> EjecutarConConexionAsync<T>(Func<SqlTransaction, Task<T>> sentencia, SqlConnection conexion = null)
+		public static async Task<T> EjecutarConConexionAsync<T>(Func<SqlConnection, SqlTransaction, Task<T>> accion)
 		{
-			bool cerrar = conexion == null;
-			int intentos = 2;
+			await using var conexion = Conectar();
+			await conexion.OpenAsync();
 
-			while (true)
+			await using var transaccion = await conexion.BeginTransactionAsync();
+
+			try
 			{
-				try
-				{
-					if (conexion == null)
-					{
-						conexion = Conectar();
-					}
-
-					if (conexion.State != ConnectionState.Open)
-					{
-						await conexion.OpenAsync();
-					}
-
-					await using var transaccion = await conexion.BeginTransactionAsync(IsolationLevel.ReadUncommitted);
-
-					try
-					{
-						T resultado = await sentencia((SqlTransaction)transaccion);
-						await transaccion.CommitAsync();
-
-						return resultado;
-					}
-					catch
-					{
-						try { await transaccion.RollbackAsync(); } catch { }
-						throw;
-					}
-					finally
-					{
-						if (cerrar == true)
-						{
-							await conexion.CloseAsync();
-						}		
-					}
-				}
-				catch (SqlException ex) when (EsErrorDeTransporte(ex) && intentos-- > 0)
-				{
-					SqlConnection.ClearPool(conexion);
-
-					if (cerrar == true)
-					{
-						await conexion.DisposeAsync();
-						conexion = null;
-					}
-
-					Thread.Sleep(1000);
-				}
+				T resultado = await accion(conexion, (SqlTransaction)transaccion);
+				await transaccion.CommitAsync();
+				return resultado;
+			}
+			catch
+			{
+				await transaccion.RollbackAsync();
+				throw;
 			}
 		}
 

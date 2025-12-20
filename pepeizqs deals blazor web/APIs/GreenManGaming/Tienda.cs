@@ -146,25 +146,21 @@ namespace APIs.GreenManGaming
 
 			int juegos2 = 0;
 
-			int i = 0;
-			while (i < 10000)
+			for (decimal precioMin = 0; precioMin < 80; precioMin += 1)
 			{
 				HttpClient cliente = new HttpClient();
 				cliente.BaseAddress = new Uri("https://www.greenmangaming.com/");
 				cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-				string peticionEnBruto = "{\"requests\":[{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES&hitsPerPage=24&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.ES.ReleaseDateStatus%22%2C%22Regions.ES.Mrp%22%2C%22Regions.ES.IsOnSaleVip%22%2C%22Regions.ES.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22Regions.ES.IsXpOffer%3Atrue%22%5D%5D\"},{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES&hitsPerPage=1&distinct=true&analytics=false&clickAnalytics=false&maxValuesPerFacet=10&page=0&attributesToRetrieve=%5B%5D&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=Regions.ES.IsXpOffer\"},{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES%20AND%20IsDlc%3Atrue&hitsPerPage=24&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&highlightPreTag=__ais-highlight__&highlightPostTag=__%2Fais-highlight__&page=0&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.ES.ReleaseDateStatus%22%2C%22Regions.ES.Mrp%22%2C%22Regions.ES.IsOnSaleVip%22%2C%22Regions.ES.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22Regions.ES.IsXpOffer%3Atrue%22%5D%5D\"},{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES%20AND%20IsDlc%3Atrue&hitsPerPage=1&distinct=true&analytics=false&clickAnalytics=false&maxValuesPerFacet=10&highlightPreTag=__ais-highlight__&highlightPostTag=__%2Fais-highlight__&page=0&attributesToRetrieve=%5B%5D&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=Regions.ES.IsXpOffer\"},{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES%20AND%20IsDlc%3Afalse&hitsPerPage=24&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&highlightPreTag=__ais-highlight__&highlightPostTag=__%2Fais-highlight__&page=0&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.ES.ReleaseDateStatus%22%2C%22Regions.ES.Mrp%22%2C%22Regions.ES.IsOnSaleVip%22%2C%22Regions.ES.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22Regions.ES.IsXpOffer%3Atrue%22%5D%5D\"},{\"indexName\":\"prod_ProductSearch_ES_LK\",\"params\":\"query=hot-deals-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES%20AND%20IsDlc%3Afalse&hitsPerPage=1&distinct=true&analytics=false&clickAnalytics=false&maxValuesPerFacet=10&highlightPreTag=__ais-highlight__&highlightPostTag=__%2Fais-highlight__&page=0&attributesToRetrieve=%5B%5D&attributesToHighlight=%5B%5D&attributesToSnippet=%5B%5D&tagFilters=&facets=Regions.ES.IsXpOffer\"}]}";
+				decimal precioMax = precioMin + 1;
 
-				if (peticionEnBruto.Contains("&page=0") == true)
-				{
-					int int1 = peticionEnBruto.LastIndexOf("&page=0");
-					string temp1 = peticionEnBruto.Remove(int1, peticionEnBruto.Length - int1);
+				string peticionEnBruto = $@"{{
+					""requests"":[{{
+						""indexName"":""prod_ProductSearch_ES_Mrp_ASC"",
+						""params"":""query=xp-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES&hitsPerPage=1000&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.ES.ReleaseDateStatus%22%2C%22Regions.ES.Mrp%22%2C%22Regions.ES.IsOnSaleVip%22%2C%22Regions.ES.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22DrmName%3ASteam%22%5D%5D&numericFilters=%5B%22Regions.ES.Mrp%3E%3D{precioMin}%22,%22Regions.ES.Mrp%3C{precioMax}%22%5D"" 
+					}}]
+				}}";
 
-					int int2 = temp1.LastIndexOf("&page=0");
-					peticionEnBruto = peticionEnBruto.Remove(int2, 7);
-					peticionEnBruto = peticionEnBruto.Insert(int2, "&page=" + i.ToString());
-				}
-				
 				HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://sczizsp09z-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(4.5.1)%3B%20Browser%20(lite)%3B%20instantsearch.js%20(4.8.3)%3B%20JS%20Helper%20(3.2.2)&x-algolia-api-key=3bc4cebab2aa8cddab9e9a3cfad5aef3&x-algolia-application-id=SCZIZSP09Z");
 				peticion.Content = new StringContent(peticionEnBruto, Encoding.UTF8, "application/json");
 
@@ -184,13 +180,13 @@ namespace APIs.GreenManGaming
 
 					if (datos != null)
 					{
-						if (datos.Resultados[4].Juegos.Count == 0)
+						if (datos.Resultados[0].Juegos.Count == 0)
 						{
 							break;
 						}
 						else
 						{
-							foreach (var juego in datos.Resultados[4].Juegos)
+							foreach (var juego in datos.Resultados[0].Juegos)
 							{
 								if (juego.SinStocks.ES == false)
 								{
@@ -246,8 +242,6 @@ namespace APIs.GreenManGaming
 				{
 					break;
 				}
-
-				i += 1;
 			}
 		}
 	}

@@ -9,7 +9,7 @@ namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(JuegoDRM drm)
+		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(JuegoDRM drm, string tienda = null)
 		{
 			string busqueda = @"SELECT j.*,
        pmh.DRM as DRMElegido
@@ -42,7 +42,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 
 			if (drm == JuegoDRM.Steam)
 			{
-				busqueda = busqueda + " AND pmh.DRM = 0";
+				busqueda = busqueda + $" AND pmh.DRM = 0 AND pmh.Tienda='{tienda}'";
 			}
 			else if (drm == JuegoDRM.GOG)
 			{

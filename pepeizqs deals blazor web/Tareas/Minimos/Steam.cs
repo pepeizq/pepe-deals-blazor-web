@@ -43,22 +43,25 @@ namespace Tareas.Minimos
 
 					if (piscinaTiendas == piscinaUsada)
 					{
-						List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(JuegoDRM.Steam);
-
-						if (juegos?.Count > 0)
+						foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 						{
-							await BaseDatos.Portada.Limpiar.Total();
+							List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(JuegoDRM.Steam, tienda.Id);
 
-							foreach (var juego in juegos)
+							if (juegos?.Count > 0)
 							{
-								juego.IdMaestra = juego.Id;
-								juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido).ToList();
+								await BaseDatos.Portada.Limpiar.Total();
 
-								if (juego.PrecioMinimosHistoricos?.Count > 0)
+								foreach (var juego in juegos)
 								{
-									if (juego.PrecioMinimosHistoricos[0].Precio > 0 || juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+									juego.IdMaestra = juego.Id;
+									juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido).ToList();
+
+									if (juego.PrecioMinimosHistoricos?.Count > 0)
 									{
-										await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", true);
+										if (juego.PrecioMinimosHistoricos[0].Precio > 0 || juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+										{
+											await BaseDatos.Juegos.Insertar.Ejecutar(juego, "seccionMinimos", true);
+										}
 									}
 								}
 							}

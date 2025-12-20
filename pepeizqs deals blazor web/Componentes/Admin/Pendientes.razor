@@ -943,6 +943,11 @@
         string[] datosPartidos = idsPendiente.Split(',');
         lista.AddRange(datosPartidos);
 
+        if (resultados == null)
+        {
+            resultados = new List<global::Juegos.Juego>();
+        }
+
         if (lista?.Count > 0)
         {
             var idsJuegos = new HashSet<int>(resultados.Select(j => j.Id));
