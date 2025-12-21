@@ -20,9 +20,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sql, new
+					return await conexion.ExecuteAsync(sql, new
 					{
 						usuarioId = datos.UserId,
 						notificacionId = datos.NotificationSubscriptionId,

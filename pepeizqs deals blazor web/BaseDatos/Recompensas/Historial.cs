@@ -22,9 +22,9 @@ namespace BaseDatos.Recompensas
 				   "(usuarioId, coins, razon, fecha) VALUES " +
 				   "(@usuarioId, @coins, @razon, @fecha) ";
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(insertar, new
+					return await conexion.ExecuteAsync(insertar, new
 					{
 						usuarioId,
 						coins,
@@ -52,9 +52,9 @@ namespace BaseDatos.Recompensas
 
 				busqueda = busqueda + " ORDER BY fecha DESC";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<RecompensaHistorial>(busqueda, new { usuarioId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<RecompensaHistorial>(busqueda, new { usuarioId })).ToList();
 				});
 			}
 			catch (Exception ex)

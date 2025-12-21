@@ -10,9 +10,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -25,9 +25,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync($"UPDATE adminTiendas SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad }, transaction: sentencia);
+					return await conexion.ExecuteAsync($"UPDATE adminTiendas SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -40,9 +40,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE adminTareas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha }, transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE adminTareas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -55,9 +55,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE adminDatos SET contenido=@contenido WHERE id=@id", new { id = id, contenido = contenido }, transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE adminDatos SET contenido=@contenido WHERE id=@id", new { id = id, contenido = contenido }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

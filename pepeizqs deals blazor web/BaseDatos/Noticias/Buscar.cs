@@ -13,9 +13,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Noticia>(sql, new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Noticia>(sql, new { id });
 				});
 			}
 			catch (Exception ex)
@@ -44,9 +44,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Noticia>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -63,9 +63,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Noticia>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -82,9 +82,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Noticia>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -101,9 +101,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, new { noticiaTipo = tipo }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Noticia>(busqueda, new { noticiaTipo = tipo })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -120,9 +120,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Noticia>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Noticia>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)

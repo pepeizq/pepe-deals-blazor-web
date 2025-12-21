@@ -14,13 +14,13 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new
 					{
 						Email = correoBuscar,
 						PatreonMail = correoBuscar
-					}, transaction: sentencia);
+					});
 				});
 			}
 			catch (Exception ex)
@@ -37,9 +37,9 @@ namespace BaseDatos.Usuarios
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(actualizar, new
+						return await conexion.ExecuteAsync(actualizar, new
 						{
 							Id = id,
 							PatreonLastCheck = fechaActualizar,
@@ -61,13 +61,13 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new
 					{
 						Email = correoNuevo,
 						PatreonMail = correoNuevo
-					}, transaction: sentencia);
+					});
 				});
 			}
 			catch (Exception ex)
@@ -81,9 +81,9 @@ namespace BaseDatos.Usuarios
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(actualizar, new
+						return await conexion.ExecuteAsync(actualizar, new
 						{
 							Id = usuarioId,
 							PatreonMail = correoNuevo
@@ -105,9 +105,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -120,9 +120,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync($"UPDATE AspNetUsers SET {variable}=@valor WHERE Id=@usuarioId", new { valor, usuarioId }, transaction: sentencia);
+					return await conexion.ExecuteAsync($"UPDATE AspNetUsers SET {variable}=@valor WHERE Id=@usuarioId", new { valor, usuarioId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -135,9 +135,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -150,9 +150,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -165,9 +165,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
+					return await conexion.ExecuteAsync("UPDATE AspNetUsers SET " + variable + "='" + valor + "' WHERE Id='" + usuarioId + "'", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -180,9 +180,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					int filas = await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET SteamGames = @SteamGames, 
 															SteamGamesAllow = @SteamGamesAllow, 
 															SteamWishlist = @SteamWishlist, 
@@ -217,9 +217,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET GogGames = @GogGames, 
 															GogGamesAllow = @GogGamesAllow,
 															GogWishlist = @GogWishlist, 
@@ -246,9 +246,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET AmazonGames = @AmazonGames, 
 															AmazonLastImport = @AmazonLastImport
 														WHERE Id = @Id", new
@@ -269,9 +269,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET EpicGames = @EpicGames, 
 															EpicGamesLastImport = @EpicGamesLastImport
 														WHERE Id = @Id", new
@@ -292,9 +292,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET EaGames = @EaGames, 
 															EaLastImport = @EaLastImport
 														WHERE Id = @Id", new
@@ -315,9 +315,9 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(@"UPDATE AspNetUsers 
+					return await conexion.ExecuteAsync(@"UPDATE AspNetUsers 
 														SET UbisoftGames = @UbisoftGames, 
 															UbisoftLastImport = @UbisoftLastImport
 														WHERE Id = @Id", new

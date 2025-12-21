@@ -15,9 +15,9 @@ namespace BaseDatos.Mantenimiento
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlEncoger, commandTimeout: 5000, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlEncoger, commandTimeout: 5000, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

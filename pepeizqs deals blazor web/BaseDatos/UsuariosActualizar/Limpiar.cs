@@ -17,9 +17,9 @@ namespace BaseDatos.UsuariosActualizar
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(eliminar, new
+					return await conexion.ExecuteAsync(eliminar, new
 					{
 						usuario.IdUsuario,
 						usuario.Metodo

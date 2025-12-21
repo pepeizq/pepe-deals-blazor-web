@@ -12,9 +12,9 @@ namespace BaseDatos.Usuarios
 			{
 				string borrar = "DELETE FROM usuariosNotificaciones WHERE usuarioId=@usuarioId";
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(borrar, new { usuarioId }, transaction: sentencia);
+					return await conexion.ExecuteAsync(borrar, new { usuarioId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

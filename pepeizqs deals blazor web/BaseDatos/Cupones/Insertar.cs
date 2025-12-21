@@ -39,9 +39,9 @@ namespace BaseDatos.Cupones
 					precioRebaja = (precioRebaja.HasValue && precioRebaja > 0) ? precioRebaja : null
 				};
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sql, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sql, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

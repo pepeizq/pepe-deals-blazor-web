@@ -12,9 +12,9 @@ namespace BaseDatos.CorreosEnviar
 			{
 				string busqueda = "SELECT * FROM correosEnviar";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<CorreoPendienteEnviar>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<CorreoPendienteEnviar>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)

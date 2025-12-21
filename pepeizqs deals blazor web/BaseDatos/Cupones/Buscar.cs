@@ -18,9 +18,9 @@ namespace BaseDatos.Cupones
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Cupon>(sql, new { tienda }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Cupon>(sql, new { tienda });
 				});
 
 			}

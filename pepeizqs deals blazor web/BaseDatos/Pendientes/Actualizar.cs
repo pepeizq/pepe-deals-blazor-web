@@ -20,9 +20,9 @@ namespace BaseDatos.Pendientes
 
 					try
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(sqlActualizar, new { idJuegos, enlace }, transaction: sentencia);
+							return await conexion.ExecuteAsync(sqlActualizar, new { idJuegos, enlace }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -69,9 +69,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+						return await conexion.ExecuteAsync(sqlInsertar, new
 						{
 							enlace,
 							nombre = nombreJuego,
@@ -93,9 +93,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlBorrar, new { enlace }, transaction: sentencia);
+						return await conexion.ExecuteAsync(sqlBorrar, new { enlace }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -116,9 +116,9 @@ namespace BaseDatos.Pendientes
 
 					try
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(sqlActualizar, new { idJuego, nombreCodigo }, transaction: sentencia);
+							return await conexion.ExecuteAsync(sqlActualizar, new { idJuego, nombreCodigo }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -133,9 +133,9 @@ namespace BaseDatos.Pendientes
 
 					try
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(sqlActualizar2, new { idJuego, id = nombreCodigo }, transaction: sentencia);
+							return await conexion.ExecuteAsync(sqlActualizar2, new { idJuego, id = nombreCodigo }, transaction: sentencia);
 						});
 					}
 					catch (Exception ex)
@@ -154,9 +154,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					string idExistente = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego });
 					});
 
 					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
@@ -166,9 +166,9 @@ namespace BaseDatos.Pendientes
 						string actualizar = "UPDATE juegos " +
 							"SET idAmazon=@idAmazon WHERE id=@id";
 
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, idAmazon }, transaction: sentencia);
+							return await conexion.ExecuteAsync(actualizar, new { id = idJuego, idAmazon }, transaction: sentencia);
 						});
 
 						yaPuesto = true;
@@ -176,9 +176,9 @@ namespace BaseDatos.Pendientes
 					
 					if (yaPuesto == true)
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalAmazonJuegos WHERE id=@id", new { id = idAmazon }, transaction: sentencia);
+							return await conexion.ExecuteAsync("DELETE FROM temporalAmazonJuegos WHERE id=@id", new { id = idAmazon }, transaction: sentencia);
 						});
 					}
 				}
@@ -197,9 +197,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					string idExistente = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego });
 					});
 
 					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
@@ -209,9 +209,9 @@ namespace BaseDatos.Pendientes
 						string actualizar = "UPDATE juegos " +
 							"SET exeEpic=@exeEpic WHERE id=@id";
 
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeEpic = idEpic }, transaction: sentencia);
+							return await conexion.ExecuteAsync(actualizar, new { id = idJuego, exeEpic = idEpic }, transaction: sentencia);
 						});
 
 						yaPuesto = true;
@@ -219,9 +219,9 @@ namespace BaseDatos.Pendientes
 
 					if (yaPuesto == true)
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalEpicJuegos WHERE id=@id", new { id = idEpic }, transaction: sentencia);
+							return await conexion.ExecuteAsync("DELETE FROM temporalEpicJuegos WHERE id=@id", new { id = idEpic }, transaction: sentencia);
 						});
 					}
 				}
@@ -240,9 +240,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					string idExistente = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego });
 					});
 
 					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
@@ -252,9 +252,9 @@ namespace BaseDatos.Pendientes
 						string actualizar = "UPDATE juegos " +
 							"SET exeUbisoft=@exeUbisoft WHERE id=@id";
 
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeUbisoft = idUbisoft }, transaction: sentencia);
+							return await conexion.ExecuteAsync(actualizar, new { id = idJuego, exeUbisoft = idUbisoft }, transaction: sentencia);
 						});
 
 						yaPuesto = true;
@@ -262,9 +262,9 @@ namespace BaseDatos.Pendientes
 
 					if (yaPuesto == true)
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalUbisoftJuegos WHERE id=@id", new { id = idUbisoft }, transaction: sentencia);
+							return await conexion.ExecuteAsync("DELETE FROM temporalUbisoftJuegos WHERE id=@id", new { id = idUbisoft }, transaction: sentencia);
 						});
 					}
 				}
@@ -283,9 +283,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					string idExistente = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					string idExistente = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { id = idJuego });
 					});
 
 					bool yaPuesto = !string.IsNullOrEmpty(idExistente);
@@ -295,9 +295,9 @@ namespace BaseDatos.Pendientes
 						string actualizar = "UPDATE juegos " +
 							"SET exeEA=@exeEA WHERE id=@id";
 
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync(actualizar, new { id = idJuego, exeEA = idEa }, transaction: sentencia);
+							return await conexion.ExecuteAsync(actualizar, new { id = idJuego, exeEA = idEa }, transaction: sentencia);
 						});
 
 						yaPuesto = true;
@@ -305,9 +305,9 @@ namespace BaseDatos.Pendientes
 
 					if (yaPuesto == true)
 					{
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							await sentencia.Connection.ExecuteAsync("DELETE FROM temporalEaJuegos WHERE id=@id", new { id = idEa }, transaction: sentencia);
+							return await conexion.ExecuteAsync("DELETE FROM temporalEaJuegos WHERE id=@id", new { id = idEa }, transaction: sentencia);
 						});
 					}
 				}
@@ -325,9 +325,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						descartado = "si",
 						enlace
@@ -351,9 +351,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+					return await conexion.ExecuteAsync(sqlInsertar, new
 					{
 						Enlace = enlace,
 						IdJuegos = "0",
@@ -370,9 +370,9 @@ namespace BaseDatos.Pendientes
 			{
 				string sqlBorrar = $"DELETE FROM temporal{idSuscripcion} WHERE enlace = @enlace";
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlBorrar, new
+					return await conexion.ExecuteAsync(sqlBorrar, new
 					{
 						enlace
 					}, transaction: sentencia);
@@ -393,9 +393,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+						return await conexion.ExecuteAsync(sqlActualizar, new
 						{
 							descartado = 1,
 							nombreCodigo
@@ -414,9 +414,9 @@ namespace BaseDatos.Pendientes
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+						return await conexion.ExecuteAsync(sqlActualizar2, new
 						{
 							descartado = 1,
 							id = nombreCodigo
@@ -436,9 +436,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlBorrar, new
+					return await conexion.ExecuteAsync(sqlBorrar, new
 					{
 						id = idJuego
 					}, transaction: sentencia);
@@ -455,9 +455,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+					return await conexion.ExecuteAsync(sqlInsertar, new
 					{
 						id = idJuego
 					}, transaction: sentencia);

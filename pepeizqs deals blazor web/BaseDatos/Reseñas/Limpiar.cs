@@ -10,9 +10,9 @@ namespace BaseDatos.Reseñas
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("TRUNCATE TABLE juegosAnalisis", transaction: sentencia);
+					return await conexion.ExecuteAsync("TRUNCATE TABLE juegosAnalisis", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

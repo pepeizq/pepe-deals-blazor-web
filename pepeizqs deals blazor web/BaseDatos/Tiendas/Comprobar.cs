@@ -47,9 +47,9 @@ namespace BaseDatos.Tiendas
 
 					try
 					{
-						var datos = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						var datos = await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<dynamic>(buscarJuego, new { idSteam }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<dynamic>(buscarJuego, new { idSteam });
 						});
 
 						if (datos != null)
@@ -154,12 +154,12 @@ WHERE t.enlace = @Enlace
 
 			try
 			{
-				resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(sqlBuscar, new
+					return (await conexion.QueryAsync(sqlBuscar, new
 					{
 						Enlace = oferta.Enlace
-					}, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					})).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -222,9 +222,9 @@ END;
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+						return await conexion.ExecuteAsync(sqlInsertar, new
 						{
 							oferta.Enlace,
 							oferta.Nombre,

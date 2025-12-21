@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.Plataformas
 {
@@ -13,9 +12,9 @@ namespace BaseDatos.Plataformas
 			{
 				string sqlExisteJuego = $"SELECT 1 FROM juegos WHERE {campoJuego} = @id";
 
-				bool yaPuesto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool yaPuesto = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteJuego, new { id }, transaction: sentencia) != null;
+					return await conexion.ExecuteScalarAsync<int?>(sqlExisteJuego, new { id }) != null;
 				});
 
 				if (yaPuesto == true)
@@ -25,9 +24,9 @@ namespace BaseDatos.Plataformas
 
 				string sqlExisteTemporal = $"SELECT 1 FROM {tablaTemporal} WHERE id = @id";
 
-				bool yaTemporal = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool yaTemporal = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteTemporal, new { id }, transaction: sentencia) != null;
+					return await conexion.ExecuteScalarAsync<int?>(sqlExisteTemporal, new { id }) != null;
 				});
 
 				if (yaTemporal == true)
@@ -37,9 +36,9 @@ namespace BaseDatos.Plataformas
 
 				string sqlExisteDescartado = $"SELECT 1 FROM {tablaDescartes} WHERE id = @id";
 
-				bool yaDescartado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool yaDescartado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int?>(sqlExisteDescartado, new { id }, transaction: sentencia) != null;
+					return await conexion.ExecuteScalarAsync<int?>(sqlExisteDescartado, new { id }) != null;
 				});
 
 				if (yaDescartado == true)
@@ -58,9 +57,9 @@ namespace BaseDatos.Plataformas
 					sqlInsertar = $"INSERT INTO {tablaTemporal} (id, nombre) VALUES (@id, @nombre)";
 				}
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlInsertar, new { id, nombre }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlInsertar, new { id, nombre }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

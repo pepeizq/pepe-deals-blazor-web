@@ -33,9 +33,9 @@ namespace BaseDatos.Recompensas
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(insertar, new
+					return await conexion.ExecuteAsync(insertar, new
 					{
 						juegoId = recompensa.JuegoId.ToString(),
 						clave = recompensa.Clave,
@@ -59,9 +59,9 @@ namespace BaseDatos.Recompensas
 			{
 				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId IS NULL AND (fechaCaduca IS NULL OR fechaCaduca > GETDATE()) ORDER BY juegoNombre";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<RecompensaJuego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<RecompensaJuego>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -79,9 +79,9 @@ namespace BaseDatos.Recompensas
 				string actualizar = "UPDATE recompensasJuegos " +
 					"SET usuarioId=@usuarioId WHERE id=@id";
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(actualizar, new { id, usuarioId }, transaction: sentencia);
+					return await conexion.ExecuteAsync(actualizar, new { id, usuarioId }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -96,9 +96,9 @@ namespace BaseDatos.Recompensas
 			{
 				string busqueda = "SELECT * FROM recompensasJuegos WHERE usuarioId=@usuarioId ORDER BY juegoNombre";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<RecompensaJuego>(busqueda, new { usuarioId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<RecompensaJuego>(busqueda, new { usuarioId })).ToList();
 				});
 			}
 			catch (Exception ex)

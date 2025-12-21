@@ -18,9 +18,9 @@ namespace BaseDatos.Gratis
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+					return await conexion.ExecuteAsync(sqlInsertar, new
 					{
 						actual.Tipo,
 						actual.JuegoId,

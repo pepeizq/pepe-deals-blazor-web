@@ -20,9 +20,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				string rol = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				string rol = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(sql, new { Id = id });
 				});
 
 				if (string.IsNullOrEmpty(rol) == false)
@@ -54,9 +54,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				string idiomaBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				string idiomaBD = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId });
 				});
 
 				if (string.IsNullOrEmpty(idiomaBD) == false)
@@ -85,9 +85,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				string idiomaBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				string idiomaBD = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(sql, new { Id = usuarioId });
 				});
 
 				if (string.IsNullOrEmpty(idiomaBD) == false)
@@ -123,9 +123,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -147,9 +147,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<DateTime?>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -178,9 +178,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex) 
@@ -202,9 +202,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -226,9 +226,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -250,9 +250,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -274,9 +274,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -298,9 +298,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -322,9 +322,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -348,9 +348,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -374,9 +374,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -400,9 +400,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -426,9 +426,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -451,9 +451,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -476,9 +476,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -501,9 +501,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -526,9 +526,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -551,9 +551,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -576,9 +576,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -595,9 +595,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				List<Usuario> usuarios = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				List<Usuario> usuarios = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Usuario>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Usuario>(busqueda)).ToList();
 				});
 
 				return usuarios
@@ -631,9 +631,9 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				int resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { Email = correo }, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<int>(busqueda, new { Email = correo });
 				});
 
 				return resultados > 0;
@@ -689,9 +689,9 @@ namespace BaseDatos.Usuarios
 			{
 				try
 				{
-					string resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					string resultado = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { id = usuarioId, juegoId }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { id = usuarioId, juegoId });
 					});
 
 					return resultado != null;
@@ -716,9 +716,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT " + seccion + " AS Notificaciones, EmailConfirmed, Email FROM AspNetUsers WHERE Id=@Id";
 
-				var datos = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var datos = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync(busqueda, new { id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync(busqueda, new { id = usuarioId });
 				});
 
 				if (datos == null)
@@ -748,9 +748,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE SteamId=@SteamId";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { SteamId = id64Steam }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { SteamId = id64Steam });
 				});
 			}
 			catch (Exception ex)
@@ -767,9 +767,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE GogId=@GogId";
 
-				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var ids = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(busqueda, new { GogId = idGog }, transaction: sentencia);
+					return await conexion.QueryAsync(busqueda, new { GogId = idGog });
 				});
 
 				foreach (var id in ids)
@@ -794,9 +794,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT * FROM usuariosNotificaciones WHERE usuarioId=@usuarioId";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<NotificacionSuscripcion>(busqueda, new { usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<NotificacionSuscripcion>(busqueda, new { usuarioId });
 				});
 			}
 			catch (Exception ex)
@@ -818,9 +818,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE Nickname=@Nickname";
 
-				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Nickname = nombre }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Nickname = nombre });
 				});
 
 				return id != null;
@@ -844,9 +844,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT Id FROM AspNetUsers WHERE ProfileNickname=@ProfileNickname";
 
-				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { ProfileNickname = nombre }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { ProfileNickname = nombre });
 				});
 
 				return id != null;
@@ -870,9 +870,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT Id, ProfileNickname2, ProfileAvatar, ProfileSteamAccount, ProfileGogAccount, ProfileLastPlayed, ProfileGames, ProfileWishlist FROM AspNetUsers WHERE ProfileNickname=@ProfileNickname AND ProfileShow='true'";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { ProfileNickname = nombre }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { ProfileNickname = nombre });
 				});
 			}
 			catch (Exception ex)
@@ -894,9 +894,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT SteamAccount FROM AspNetUsers WHERE Id=@Id";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id });
 				});
 			}
 			catch (Exception ex)
@@ -918,9 +918,9 @@ namespace BaseDatos.Usuarios
 			{
 				string busqueda = "SELECT GogAccount FROM AspNetUsers WHERE Id=@Id";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id });
 				});
 			}
 			catch (Exception ex)
@@ -969,9 +969,9 @@ namespace BaseDatos.Usuarios
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { juegoId }, transaction: sentencia);
+						return await conexion.ExecuteScalarAsync<int>(busqueda, new { juegoId });
 					});
 				}
 				catch (Exception ex)
@@ -1021,9 +1021,9 @@ namespace BaseDatos.Usuarios
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.ExecuteScalarAsync<int>(busqueda, new { juegoId }, transaction: sentencia);
+						return await conexion.ExecuteScalarAsync<int>(busqueda, new { juegoId });
 					});
 				}
 				catch (Exception ex)
@@ -1095,9 +1095,9 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<string>(busqueda, new { juegoId }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<string>(busqueda, new { juegoId })).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1122,9 +1122,9 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 				{
 					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id";
 
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = usuarioId });
 					});
 				}
 				catch (Exception ex)
@@ -1147,9 +1147,9 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			{
 				string busqueda = "SELECT BundlesSort FROM AspNetUsers WHERE id=@Id";
 
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>(busqueda, new { Id = usuarioId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<int>(busqueda, new { Id = usuarioId });
 				});
 			}
 			catch (Exception ex)

@@ -13,9 +13,9 @@ namespace BaseDatos.Reseñas
 		{
 			try
 			{
-				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var fila = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id });
 				});
 
 				JuegoAnalisisAmpliado reseñas = new JuegoAnalisisAmpliado();
@@ -45,9 +45,9 @@ namespace BaseDatos.Reseñas
 		{
 			try
 			{
-				DateTime? fechaRegistrada = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				DateTime? fechaRegistrada = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<DateTime?>($"SELECT fecha{idioma} FROM juegosAnalisis WHERE id=@id", new { id });
 				});
 
 				if (fechaRegistrada.HasValue == false)

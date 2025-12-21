@@ -18,9 +18,9 @@ namespace BaseDatos.Curators
 					string slug = string.IsNullOrEmpty(api.Slug) ? Herramientas.EnlaceAdaptador.Nombre(api.Nombre) : api.Slug; 
 					
 					try {
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							return await sentencia.Connection.ExecuteAsync(@"INSERT INTO curators (idSteam, nombre, imagen, descripcion, slug, steamIds, web, fecha) VALUES (@idSteam, @nombre, @imagen, @descripcion, @slug, @steamIds, @web, @fecha)", new
+							return await conexion.ExecuteAsync(@"INSERT INTO curators (idSteam, nombre, imagen, descripcion, slug, steamIds, web, fecha) VALUES (@idSteam, @nombre, @imagen, @descripcion, @slug, @steamIds, @web, @fecha)", new
 							{
 								idSteam = api.Id,
 								nombre,

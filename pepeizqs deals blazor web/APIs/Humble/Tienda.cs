@@ -77,7 +77,7 @@ namespace APIs.Humble
 
 		public static async Task BuscarOfertas()
 		{
-			BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -85,9 +85,9 @@ namespace APIs.Humble
 
 			try
 			{
-				IEnumerable<dynamic> filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				IEnumerable<dynamic> filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia);
+					return await conexion.QueryAsync(busqueda);
 				});
 
 				foreach (var fila in filas)
@@ -224,7 +224,7 @@ namespace APIs.Humble
 
 												try
 												{
-													BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
 												}
 												catch (Exception ex)
 												{
@@ -242,9 +242,9 @@ namespace APIs.Humble
 					{
 						string limpieza = "DELETE FROM temporalhumble WHERE enlace=@enlace";
 
-						await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 						{
-							return await sentencia.Connection.ExecuteAsync(limpieza, new { enlace = fila.enlace }, transaction: sentencia);
+							return await conexion.ExecuteAsync(limpieza, new { enlace = fila.enlace }, transaction: sentencia);
 						});
 					}
 				}

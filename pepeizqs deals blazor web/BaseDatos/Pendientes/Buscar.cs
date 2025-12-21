@@ -12,13 +12,13 @@ namespace BaseDatos.Pendientes
 			{
 				string busqueda1 = "SELECT id FROM juegos WHERE nombre=@nombre OR REPLACE(nombreCodigo, ' ', '')=@nombreLimpio";
 
-				var id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int?>(busqueda1, new
+					return await conexion.QueryFirstOrDefaultAsync<int?>(busqueda1, new
 					{
 						nombre,
 						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, true)
-					}, transaction: sentencia);
+					});
 				});
 
 				if (id != null)
@@ -35,13 +35,13 @@ namespace BaseDatos.Pendientes
 			{
 				string busqueda2 = "SELECT ids FROM juegosIDs WHERE nombre=@nombre OR REPLACE(nombreCodigo, ' ', '')=@nombreLimpio";
 
-				var ids = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var ids = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(busqueda2, new 
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda2, new 
 					{ 
 						nombre,
 						nombreLimpio = Herramientas.Buscador.LimpiarNombre(nombre, true)
-					}, transaction: sentencia);
+					});
 				});
 
 				if (ids != null)
@@ -79,9 +79,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<int>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<int>(sql)).ToList();
 				});
 
 				return resultados.Sum();
@@ -116,9 +116,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<int>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<int>(sql)).ToList();
 				});
 
 				return resultados.Sum();
@@ -152,9 +152,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<int>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<int>(sql)).ToList();
 				});
 
 				return resultados.Sum();
@@ -186,9 +186,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<int>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<int>(sql)).ToList();
 				});
 
 				return resultados.Sum();
@@ -208,9 +208,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Pendiente>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Pendiente>(sql)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -228,9 +228,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Pendiente>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Pendiente>(sql)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -253,9 +253,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Pendiente>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Pendiente>(sql)).ToList();
 				});
 
 				List<Pendiente> lista = new List<Pendiente>();
@@ -286,9 +286,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Pendiente>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Pendiente>(sql)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -303,9 +303,9 @@ namespace BaseDatos.Pendientes
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'", transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'");
 				});
 			}
 			catch (Exception ex)
@@ -320,9 +320,9 @@ namespace BaseDatos.Pendientes
         {
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM temporal{suscripcionId}", transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM temporal{suscripcionId}");
 				});
 			}
 			catch (Exception ex)
@@ -344,9 +344,9 @@ namespace BaseDatos.Pendientes
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Pendiente>(sql, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Pendiente>(sql);
 				});
 			}
 			catch (Exception ex)
@@ -361,9 +361,9 @@ namespace BaseDatos.Pendientes
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM temporal{plataformaId}juegos", transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM temporal{plataformaId}juegos");
 				});
 			}
 			catch (Exception ex)

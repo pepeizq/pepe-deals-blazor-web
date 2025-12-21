@@ -25,9 +25,9 @@ WHERE
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(limpiar, transaction: sentencia);
+					return await conexion.ExecuteAsync(limpiar, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

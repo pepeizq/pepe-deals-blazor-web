@@ -104,9 +104,9 @@ namespace APIs.Ubisoft
 
                         bool encontrado = false;
 
-						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						string idJuegosTexto = await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
 						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
@@ -210,9 +210,9 @@ namespace APIs.Ubisoft
 
 						bool encontrado = false;
 
-						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						string idJuegosTexto = await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<string>("SELECT idJuegos FROM tiendaubisoft WHERE enlace=@enlace", new { enlace });
 						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)

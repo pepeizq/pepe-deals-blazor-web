@@ -28,9 +28,9 @@ FROM(
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoGratis>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -55,9 +55,9 @@ ORDER BY sub.nombre DESC;
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, new { año }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoGratis>(busqueda, new { año })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -80,9 +80,9 @@ ORDER BY sub.ID DESC;";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { juegoId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { juegoId });
 				});
 			}
 			catch (Exception ex)
@@ -104,9 +104,9 @@ FROM (
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<JuegoGratis>(busqueda, new { id });
 				});
 			}
 			catch (Exception ex)
@@ -129,9 +129,9 @@ FROM (
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoGratis>(busqueda, new { cantidad }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoGratis>(busqueda, new { cantidad })).ToList();
 				});
 			}
 			catch (Exception ex)

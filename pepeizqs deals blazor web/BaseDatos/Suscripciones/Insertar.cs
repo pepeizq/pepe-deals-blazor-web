@@ -13,9 +13,9 @@ namespace BaseDatos.Suscripciones
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+					return await conexion.ExecuteAsync(sqlInsertar, new
 					{
 						Tipo = actual.Tipo,
 						JuegoId = actual.JuegoId,
@@ -41,9 +41,9 @@ namespace BaseDatos.Suscripciones
 
 			try
 			{
-				var resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QuerySingleOrDefaultAsync(sqlBuscar, new { enlace }, transaction: sentencia);
+					return await conexion.QuerySingleOrDefaultAsync(sqlBuscar, new { enlace });
 				});
 
 				if (resultado == null)
@@ -51,9 +51,9 @@ namespace BaseDatos.Suscripciones
 					string sqlInsertar = $"INSERT INTO temporal{nombreTabla} (enlace, nombre, imagen) " +
 									 "VALUES (@enlace, @nombre, @imagen)";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+						return await conexion.ExecuteAsync(sqlInsertar, new
 						{
 							enlace,
 							nombre = nombreJuego,

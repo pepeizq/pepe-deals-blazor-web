@@ -103,9 +103,11 @@ namespace APIs.AmazonLuna
 
 			try 
 			{
-				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<AmazonLunaFila>("SELECT contenido FROM temporallunastandardjson", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<AmazonLunaFila>(
+						"SELECT contenido FROM temporallunastandardjson"
+					)).ToList();
 				});
 
 				foreach (var fila in filas)
@@ -126,9 +128,9 @@ namespace APIs.AmazonLuna
 					{
 						bool encontrado = false;
 
-						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						string idJuegosTexto = await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id });
 						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
@@ -196,9 +198,9 @@ namespace APIs.AmazonLuna
 
 				try 
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync("DELETE FROM temporallunastandardjson WHERE enlace='1'", transaction: sentencia);
+						return await conexion.ExecuteAsync("DELETE FROM temporallunastandardjson WHERE enlace='1'", transaction: sentencia);
 					});
 				} 
 				catch (Exception ex) 
@@ -219,9 +221,9 @@ namespace APIs.AmazonLuna
 
 			try
 			{
-				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<AmazonLunaFila>("SELECT contenido FROM temporallunapremiumjson", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<AmazonLunaFila>("SELECT contenido FROM temporallunapremiumjson")).ToList();
 				});
 
 				foreach (var fila in filas)
@@ -242,9 +244,9 @@ namespace APIs.AmazonLuna
 					{
 						bool encontrado = false;
 
-						string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						string idJuegosTexto = await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<string>($"SELECT idJuegos FROM {GenerarPremium().TablaPendientes} WHERE enlace=@enlace", new { enlace = juego.Id });
 						});
 
 						if (string.IsNullOrEmpty(idJuegosTexto) == false)
@@ -312,9 +314,9 @@ namespace APIs.AmazonLuna
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync("DELETE FROM temporallunapremiumjson WHERE enlace='1'", transaction: sentencia);
+						return await conexion.ExecuteAsync("DELETE FROM temporallunapremiumjson WHERE enlace='1'", transaction: sentencia);
 					});
 				}
 				catch (Exception ex)

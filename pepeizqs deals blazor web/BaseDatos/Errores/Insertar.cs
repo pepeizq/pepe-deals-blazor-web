@@ -24,9 +24,9 @@ namespace BaseDatos.Errores
 
 			sqlInsertar = string.Format(sqlInsertar, columnasExtra, valoresExtra);
 
-			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 			{
-				return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+				return await conexion.ExecuteAsync(sqlInsertar, new
 				{
 					seccion,
 					mensaje = ex.Message,
@@ -57,9 +57,9 @@ namespace BaseDatos.Errores
                 VALUES (@seccion, @mensaje, @stacktrace, @fecha)
             ";
 
-			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 			{
-				return await sentencia.Connection.ExecuteAsync(sql, new
+				return await conexion.ExecuteAsync(sql, new
 				{
 					seccion,
 					mensaje = ex.Message,
@@ -89,9 +89,9 @@ namespace BaseDatos.Errores
 				VALUES (@seccion, @mensaje, @stacktrace, @fecha, @enlace);
 			";
 
-			await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 			{
-				return await sentencia.Connection.ExecuteAsync(sql, new
+				return await conexion.ExecuteAsync(sql, new
 				{
 					seccion,
 					mensaje,

@@ -12,9 +12,9 @@ namespace BaseDatos.Sitemaps
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {tabla}", transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<int>($"SELECT COUNT(*) FROM {tabla}");
 				});
 			}
 			catch (Exception ex)
@@ -31,9 +31,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -76,9 +76,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -121,9 +121,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -166,9 +166,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { id1 = id1, id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -211,9 +211,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { id1 = id1, id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -265,9 +265,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { id1 = id1, id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();
@@ -319,9 +319,9 @@ namespace BaseDatos.Sitemaps
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(buscar, new { Id1 = id1, Id2 = id2 }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(buscar, new { id1 = id1, id2 = id2 })).ToList();
 				});
 
 				List<string> lineas = new List<string>();

@@ -85,9 +85,9 @@ namespace APIs.Boosteroid
 
 										try
 										{
-											encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+											encontrado = await Herramientas.BaseDatos.Select(async conexion =>
 											{
-												return await sentencia.Connection.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { id = juego.Id }, transaction: sentencia);
+												return await conexion.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { id = juego.Id });
 											});
 										}
 										catch (Exception ex)
@@ -105,9 +105,9 @@ namespace APIs.Boosteroid
 
 											try
 											{
-												await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+												await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 												{
-													return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id = juego.Id, fecha }, transaction: sentencia);
+													return await conexion.ExecuteAsync(sqlActualizar, new { id = juego.Id, fecha }, transaction: sentencia);
 												});
 											}
 											catch (Exception ex)
@@ -123,9 +123,9 @@ namespace APIs.Boosteroid
 
 											try
 											{
-												await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+												await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 												{
-													return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+													return await conexion.ExecuteAsync(sqlInsertar, new
 													{
 														id = juego.Id,
 														nombre = juego.Nombre,

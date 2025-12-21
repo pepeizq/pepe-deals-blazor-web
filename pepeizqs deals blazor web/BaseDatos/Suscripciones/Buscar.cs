@@ -27,9 +27,9 @@ FROM (
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoSuscripcion>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -54,9 +54,9 @@ ORDER BY sub.Nombre DESC";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoSuscripcion>(busqueda, new { año }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda, new { año })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -79,9 +79,9 @@ FROM (
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<JuegoSuscripcion>(busqueda, new { Id = id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<JuegoSuscripcion>(busqueda, new { Id = id });
 				});
 			}
 			catch (Exception ex)
@@ -104,9 +104,9 @@ FROM (
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoSuscripcion>(busqueda, new { JuegoId = id }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda, new { JuegoId = id })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -130,9 +130,9 @@ ORDER BY fechaEmpieza DESC";
 			
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoSuscripcion>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -155,9 +155,9 @@ ORDER BY id DESC";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoSuscripcion>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)

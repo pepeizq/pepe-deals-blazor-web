@@ -13,9 +13,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id });
 				});
 			}
 			catch (Exception ex)
@@ -30,9 +30,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				DateTime? fecha = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				DateTime? fecha = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTiendas WHERE id=@id", new { id = tiendaId });
 				});
 
 				if (fecha == null)
@@ -54,9 +54,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				List<AdminTarea> tiendas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				List<AdminTarea> tiendas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC")).ToList();
 				});
 
 				tiendas = tiendas.Where(t =>
@@ -112,9 +112,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				var fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var fila = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendas WHERE id=@id", new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendas WHERE id=@id", new { id });
 				});
 
 				if (fila == null)
@@ -161,9 +161,9 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<AdminTarea>(sql)).ToList();
 					});
 				}
 			}
@@ -199,9 +199,9 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<AdminTarea>(sql)).ToList();
 					});
 				}
 			}
@@ -234,9 +234,9 @@ namespace BaseDatos.Admin
 
 				if (string.IsNullOrEmpty(sql) == false)
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<AdminTarea>(sql)).ToList();
 					});
 				}
 			}
@@ -283,9 +283,9 @@ namespace BaseDatos.Admin
 					sql = sql + ")";
 				}
 
-				List<AdminTarea> nuevas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				List<AdminTarea> nuevas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<AdminTarea>(sql, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<AdminTarea>(sql)).ToList();
 				});
 
 				var diccionarioNuevas = nuevas.ToDictionary(t => t.Id);
@@ -306,9 +306,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				DateTime? fecha = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				DateTime? fecha = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTareas WHERE id=@id", new { id });
 				}); 
 
 				if (fecha == null)
@@ -330,9 +330,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				int enUso = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int enUso = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())", transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM adminTiendas WHERE fecha > DATEADD(SECOND, -60, GETDATE())");
 				}); 
 
 				return enUso == 0;
@@ -349,9 +349,9 @@ namespace BaseDatos.Admin
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM errores OPTION (MAXDOP 8)", transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM errores");
 				});
 			}
 			catch (Exception ex)

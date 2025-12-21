@@ -28,14 +28,17 @@
     public string dolar { get; set; }
     public string libra { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        dolar = Herramientas.Divisas.MensajeDolar();
-        libra = Herramientas.Divisas.MensajeLibra();
+        dolar = await Herramientas.Divisas.MensajeDolar();
+        libra = await Herramientas.Divisas.MensajeLibra();
     }
 
     private async Task ActualizarDivisas(MouseEventArgs e)
     {
         await Herramientas.Divisas.ActualizarDatos();
+
+        dolar = await Herramientas.Divisas.MensajeDolar();
+        libra = await Herramientas.Divisas.MensajeLibra();
     }
 }

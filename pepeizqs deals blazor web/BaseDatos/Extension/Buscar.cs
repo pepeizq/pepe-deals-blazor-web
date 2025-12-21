@@ -119,9 +119,9 @@ namespace BaseDatos.Extension
 
 			try
 			{
-				var fila2 = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var fila2 = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<dynamic>(buscar, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<dynamic>(buscar);
 				});
 
 				IDictionary<string, object> fila = (IDictionary<string, object>)fila2;

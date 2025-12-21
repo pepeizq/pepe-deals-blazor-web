@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Dapper;
+
 namespace BaseDatos.Juegos
 {
 	public static class Limpiar
@@ -9,9 +10,9 @@ namespace BaseDatos.Juegos
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync("TRUNCATE TABLE seccionMinimos", transaction: sentencia);
+					return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos", transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

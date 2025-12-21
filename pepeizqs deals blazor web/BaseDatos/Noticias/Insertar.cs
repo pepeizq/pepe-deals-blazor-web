@@ -111,9 +111,9 @@ namespace BaseDatos.Noticias
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, p, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<int>(sql, p);
 				});
 			}
 			catch (Exception ex)

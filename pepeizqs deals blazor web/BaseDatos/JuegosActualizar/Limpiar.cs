@@ -14,9 +14,9 @@ namespace BaseDatos.JuegosActualizar
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync(sqlEliminar, new
+						return await conexion.ExecuteAsync(sqlEliminar, new
 						{
 							idJuego = ficha.IdJuego,
 							idPlataforma = ficha.IdPlataforma,

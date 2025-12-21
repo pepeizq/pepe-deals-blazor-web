@@ -40,11 +40,11 @@ namespace Herramientas
 
 								if (Buscar.Ejecutar(dolar.Id) == null)
 								{
-									Insertar.Ejecutar(dolar);
+									await Insertar.Ejecutar(dolar);
 								}
 								else
 								{
-									Actualizar.Ejecutar(dolar);
+									await Actualizar.Ejecutar(dolar);
 								}
 							}
 							else if (nodo.Attributes["currency"].Value == "GBP")
@@ -58,11 +58,11 @@ namespace Herramientas
 
 								if (Buscar.Ejecutar(libra.Id) == null)
 								{
-									Insertar.Ejecutar(libra);
+									await Insertar.Ejecutar(libra);
 								}
 								else
 								{
-									Actualizar.Ejecutar(libra);
+									await Actualizar.Ejecutar(libra);
 								}
 							}
 						}
@@ -71,11 +71,11 @@ namespace Herramientas
 			}
 		}
 
-		public static string MensajeDolar()
+		public static async Task<string> MensajeDolar()
 		{
 			string mensaje = string.Empty;
 
-			Divisa dolar = Buscar.Ejecutar("USD");
+			Divisa dolar = await Buscar.Ejecutar("USD");
 
 			if (dolar != null)
 			{
@@ -85,11 +85,11 @@ namespace Herramientas
 			return mensaje;
 		}
 
-		public static string MensajeLibra()
+		public static async Task<string> MensajeLibra()
 		{
 			string mensaje = string.Empty;
 
-			Divisa libra = Buscar.Ejecutar("GBP");
+			Divisa libra = await Buscar.Ejecutar("GBP");
 
 			if (libra != null)
 			{
@@ -114,7 +114,7 @@ namespace Herramientas
 
 			if (buscar != string.Empty)
 			{
-				Divisa divisa = Buscar.Ejecutar(buscar);
+				Divisa divisa = Buscar.Ejecutar(buscar).Result;
 
 				decimal temp = cantidad / divisa.Cantidad;
 

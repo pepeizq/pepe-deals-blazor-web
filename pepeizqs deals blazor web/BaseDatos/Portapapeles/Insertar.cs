@@ -14,9 +14,9 @@ namespace BaseDatos.Portapapeles
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(insertar, new { id, contenido }, transaction: sentencia);
+						return await conexion.ExecuteAsync(insertar, new { id, contenido }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)
@@ -30,9 +30,9 @@ namespace BaseDatos.Portapapeles
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(actualizar, new { id, contenido }, transaction: sentencia);
+						return await conexion.ExecuteAsync(actualizar, new { id, contenido }, transaction: sentencia);
 					});
 				}
 				catch (Exception ex)

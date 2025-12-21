@@ -99,9 +99,9 @@ namespace APIs.GeforceNOW
 
 									try
 									{
-										encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										encontrado = await Herramientas.BaseDatos.Select(async conexion =>
 										{
-											return await sentencia.Connection.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true) }, transaction: sentencia);
+											return await conexion.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true) });
 										});
 									}
 									catch (Exception ex)
@@ -119,9 +119,9 @@ namespace APIs.GeforceNOW
 
 										try
 										{
-											await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+											await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 											{
-												return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true), fecha }, transaction: sentencia);
+												return await conexion.ExecuteAsync(sqlActualizar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true), fecha }, transaction: sentencia);
 											});
 										}
 										catch (Exception ex)
@@ -137,9 +137,9 @@ namespace APIs.GeforceNOW
 
 										try
 										{
-											await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+											await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 											{
-												return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+												return await conexion.ExecuteAsync(sqlInsertar, new
 												{
 													nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true),
 													nombre = juego.Nombre,

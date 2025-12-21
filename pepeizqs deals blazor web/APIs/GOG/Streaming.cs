@@ -64,12 +64,11 @@ namespace APIs.GOG
 
 								try
 								{
-									encontrado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+									encontrado = await Herramientas.BaseDatos.Select(async conexion =>
 									{
-										var resultado = await sentencia.Connection.QueryFirstOrDefaultAsync<bool?>(
+										var resultado = await conexion.QueryFirstOrDefaultAsync<bool?>(
 											sqlBuscar,
-											new { nombreCodigo = juego.Id },
-											transaction: sentencia
+											new { nombreCodigo = juego.Id }
 										);
 
 										return resultado ?? false;  
@@ -90,9 +89,9 @@ namespace APIs.GOG
 
 									try
 									{
-										await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 										{
-											return await sentencia.Connection.ExecuteAsync(sqlActualizar, new { nombreCodigo = juego.Id, fecha }, transaction: sentencia);
+											return await conexion.ExecuteAsync(sqlActualizar, new { nombreCodigo = juego.Id, fecha }, transaction: sentencia);
 										});
 									}
 									catch (Exception ex)
@@ -108,9 +107,9 @@ namespace APIs.GOG
 
 									try
 									{
-										await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+										await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 										{
-											return await sentencia.Connection.ExecuteAsync(sqlInsertar, new
+											return await conexion.ExecuteAsync(sqlInsertar, new
 											{
 												nombreCodigo = juego.Id,
 												nombre = juego.Nombre,

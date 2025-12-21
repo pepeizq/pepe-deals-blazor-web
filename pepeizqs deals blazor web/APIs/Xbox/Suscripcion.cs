@@ -66,9 +66,9 @@ namespace APIs.Xbox
 
 							try
 							{
-								string idJuegosTexto = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+								string idJuegosTexto = await Herramientas.BaseDatos.Select(async conexion =>
 								{
-									return await sentencia.Connection.QueryFirstOrDefaultAsync<string>(sqlBuscar, new { enlace }, transaction: sentencia);
+									return await conexion.QueryFirstOrDefaultAsync<string>(sqlBuscar, new { enlace });
 								});
 
 								if (string.IsNullOrEmpty(idJuegosTexto) == false)

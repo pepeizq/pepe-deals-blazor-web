@@ -121,43 +121,24 @@ namespace BaseDatos.Juegos
 			{
 				parametros.Add("@idMaestra", juego.IdMaestra);
 
-				parametros.Add("@tienda", juego.PrecioMinimosHistoricos[0].Tienda);
-				parametros.Add("@drm", (int)juego.PrecioMinimosHistoricos[0].DRM);
-				parametros.Add("@enlace", juego.PrecioMinimosHistoricos[0].Enlace);
-				parametros.Add("@precio2", juego.PrecioMinimosHistoricos[0].Precio);
-				parametros.Add("@precioCambiado", juego.PrecioMinimosHistoricos[0].PrecioCambiado);
-				parametros.Add("@moneda", (int)juego.PrecioMinimosHistoricos[0].Moneda);
-				parametros.Add("@fechaDetectado", juego.PrecioMinimosHistoricos[0].FechaDetectado);
-
-				sqlInsertar = $@"IF EXISTS (SELECT 1 FROM {tabla} 
-								WHERE idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
-				BEGIN 
+				sqlInsertar = $@"BEGIN TRAN
 					UPDATE {tabla}
-					SET precioMinimosHistoricos = JSON_MODIFY(
-						JSON_MODIFY(
-							JSON_MODIFY(
-								JSON_MODIFY(
-									JSON_MODIFY(precioMinimosHistoricos, '$[0].Tienda', @tienda),
-								'$[0].Enlace', @enlace),
-							'$[0].Moneda', @moneda),
-						'$[0].Precio', @precio2),
-					'$[0].PrecioCambiado', @precioCambiado)
+					SET precioMinimosHistoricos = '{JsonSerializer.Serialize(juego.PrecioMinimosHistoricos)}'
 					WHERE idMaestra={juego.IdMaestra}
 					AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
-				END
 				
-				IF NOT EXISTS (SELECT 1 FROM {tabla} 
-								WHERE idMaestra={juego.IdMaestra} AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM})
+				IF @@ROWCOUNT = 0
 				BEGIN
 					{sqlInsertar}
-				END";
+				END
+				COMMIT;";
 			}
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -171,9 +152,9 @@ namespace BaseDatos.Juegos
 		{
 			try
 			{
-				int? idJuegoBD = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int? idJuegoBD = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<int?>("SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia", new { idReferencia }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<int?>("SELECT * FROM gogReferencias2 WHERE idReferencia=@idReferencia", new { idReferencia });
 				}); 
 
 				if (idJuegoBD.HasValue == true && idJuegoBD.Value > 0)
@@ -196,9 +177,9 @@ namespace BaseDatos.Juegos
 
 				try
 				{
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync(sqlInsert, new
+						return await conexion.ExecuteAsync(sqlInsert, new
 						{
 							idReferencia,
 							idJuego

@@ -3,13 +3,13 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
-using Tareas.Minimos;
+using Tareas;
 
 namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(JuegoDRM drm, string tienda = null)
+		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(string tienda = null)
 		{
 			string busqueda = @"SELECT j.*,
        pmh.DRM as DRMElegido
@@ -40,24 +40,16 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
         (pmh.FechaActualizacion <= DATEADD(hour, 12, GETDATE()))    
       )";
 
-			if (drm == JuegoDRM.Steam)
+			if (string.IsNullOrEmpty(tienda) == false)
 			{
 				busqueda = busqueda + $" AND pmh.DRM = 0 AND pmh.Tienda='{tienda}'";
-			}
-			else if (drm == JuegoDRM.GOG)
-			{
-				busqueda = busqueda + " AND pmh.DRM = 8";
-			}
-			else if (drm == JuegoDRM.NoEspecificado)
-			{
-				busqueda = busqueda + " AND pmh.DRM NOT IN (0, 7, 8)";
 			}
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoMinimoTarea>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoMinimoTarea>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -85,9 +77,9 @@ ORDER BY NEWID()";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					var filas = await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia);
+					var filas = await conexion.QueryAsync(busqueda);
 
 					var juegos = filas.Select(fila =>
 					{
@@ -248,9 +240,9 @@ ORDER BY NEWID()";
 
 			try
 			{
-				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return await conexion.QueryAsync(busqueda);
 				});
 
 				List<Juego> resultados = new List<Juego>();
@@ -338,9 +330,9 @@ ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam
 
 			try
 			{
-				var filas = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(busqueda)).ToList();
 				});
 
 				List<Juego> resultados = new List<Juego>();

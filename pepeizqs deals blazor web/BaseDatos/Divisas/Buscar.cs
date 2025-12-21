@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using BaseDatos.Cupones;
 using Dapper;
 using Herramientas;
 
@@ -8,7 +7,7 @@ namespace BaseDatos.Divisas
 {
 	public static class Buscar
 	{
-		public static Divisa Ejecutar(string id)
+		public static async Task<Divisa> Ejecutar(string id)
 		{
 			if (string.IsNullOrEmpty(id) == false) 
 			{
@@ -16,14 +15,14 @@ namespace BaseDatos.Divisas
 
 				try
 				{
-					return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return sentencia.Connection.QueryFirstOrDefault<Divisa>(sqlBuscar, new { id }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<Divisa>(sqlBuscar, new { id });
 					});
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Cupones Activos", ex, false);
+					BaseDatos.Errores.Insertar.Mensaje("Divisa Buscar", ex, false);
 				}
 			}
 

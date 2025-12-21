@@ -10,9 +10,9 @@ namespace BaseDatos.Errores
         {
 			string busqueda = "SELECT * FROM errores ORDER BY fecha DESC";
 
-			return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+			return await Herramientas.BaseDatos.Select(async conexion =>
 			{
-				return await sentencia.Connection.QueryAsync<Error>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+				return (await conexion.QueryAsync<Error>(busqueda)).ToList();
 			});
         }
     }

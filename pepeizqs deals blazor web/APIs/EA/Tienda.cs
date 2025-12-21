@@ -347,9 +347,9 @@ namespace APIs.EA
 
 							foreach (var tipo in tipos)
 							{
-								EASuscripcionFila fila = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+								EASuscripcionFila fila = await Herramientas.BaseDatos.Select(async conexion =>
 								{
-									return await sentencia.Connection.QueryFirstOrDefaultAsync<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion }, transaction: sentencia);
+									return await conexion.QueryFirstOrDefaultAsync<EASuscripcionFila>("SELECT idJuegos, descartado FROM tiendaea WHERE enlace=@enlace", new { enlace = enlaceSuscripcion });
 								});
 
 								if (fila != null)

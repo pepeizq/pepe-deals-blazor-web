@@ -12,9 +12,9 @@ namespace BaseDatos.UsuariosActualizar
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<UsuarioActualizar>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<UsuarioActualizar>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)

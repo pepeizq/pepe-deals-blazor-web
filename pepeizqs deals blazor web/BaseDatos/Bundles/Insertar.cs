@@ -30,9 +30,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlInsertar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -42,9 +42,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				int id = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int id = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QuerySingleOrDefaultAsync<int>("SELECT MAX(id) FROM bundles", transaction: sentencia);
+					return await conexion.QuerySingleOrDefaultAsync<int>("SELECT MAX(id) FROM bundles");
 				});
 
 				if (id <= 0 || bundle.Juegos == null || bundle.Juegos?.Count == 0)
@@ -94,9 +94,9 @@ namespace BaseDatos.Bundles
 						bundles = JsonConvert.SerializeObject(juego2.Bundles)
 					};
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						return await sentencia.Connection.ExecuteAsync(sqlActualizarJuego, parametrosJuego, transaction: sentencia);
+						return await conexion.ExecuteAsync(sqlActualizarJuego, parametrosJuego, transaction: sentencia);
 					});
 				}
 			}

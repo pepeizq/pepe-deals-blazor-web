@@ -12,9 +12,9 @@ namespace BaseDatos.Pendientes
 
             try
             {
-				string resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				string resultado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<string>(busqueda, new { nombre }, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<string>(busqueda, new { nombre });
 				});
 
                 if (string.IsNullOrEmpty(resultado) == true)
@@ -23,9 +23,9 @@ namespace BaseDatos.Pendientes
 						   "(nombre, ids, nombreCodigo) VALUES " +
 						   "(@nombre, @ids, @nombreCodigo) ";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(insertar, new 
+						return await conexion.ExecuteAsync(insertar, new 
 						{ 
 							nombre, 
 							ids,

@@ -14,9 +14,9 @@ namespace BaseDatos.Suscripciones
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						Enlace = suscripcion.Enlace,
 						FechaTermina = suscripcion.FechaTermina

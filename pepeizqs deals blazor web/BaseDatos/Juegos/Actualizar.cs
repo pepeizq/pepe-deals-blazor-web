@@ -68,9 +68,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -87,9 +87,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						imagenes = JsonSerializer.Serialize(juego.Imagenes)
@@ -106,9 +106,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					return await conexion.ExecuteAsync(sqlActualizar2, new
 					{
 						id = juego.Id,
 						imagenes = JsonSerializer.Serialize(juego.Imagenes)
@@ -128,9 +128,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						precioActualesTiendas = JsonSerializer.Serialize(juego.PrecioActualesTiendas)
@@ -150,9 +150,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						precioMinimosHistoricos = JsonSerializer.Serialize(juego.PrecioMinimosHistoricos)
@@ -174,9 +174,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						bundles = valorBundles
@@ -198,9 +198,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						gratis = valorGratis
@@ -217,9 +217,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					return await conexion.ExecuteAsync(sqlActualizar2, new
 					{
 						id = juego.Id,
 						gratis = valorGratis
@@ -239,9 +239,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						suscripciones = JsonSerializer.Serialize(juego.Suscripciones)
@@ -258,9 +258,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar2, new
+					return await conexion.ExecuteAsync(sqlActualizar2, new
 					{
 						id = juego.Id,
 						suscripciones = JsonSerializer.Serialize(juego.Suscripciones)
@@ -280,9 +280,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						maestro = juego.Maestro
@@ -302,9 +302,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						freeToPlay = juego.FreeToPlay
@@ -326,9 +326,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						mayorEdad = juego.MayorEdad
@@ -347,12 +347,12 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				bool actualizar = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool actualizar = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					int resultado = await sentencia.Connection.ExecuteScalarAsync<int>(buscarMinimos, new
+					int resultado = await conexion.ExecuteScalarAsync<int>(buscarMinimos, new
 					{
 						IdMaestra = juego.Id
-					}, transaction: sentencia);
+					});
 
 					return resultado > 0;
 				});
@@ -362,9 +362,9 @@ namespace BaseDatos.Juegos
 					string actualizarMinimos = "UPDATE seccionMinimos " +
 						"SET mayorEdad=@mayorEdad WHERE idMaestra=@idMaestra";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(actualizarMinimos, new
+						return await conexion.ExecuteAsync(actualizarMinimos, new
 						{
 							idMaestra = juego.Id,
 							mayorEdad = juego.MayorEdad
@@ -387,9 +387,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						ocultarPortada = juego.OcultarPortada
@@ -408,12 +408,12 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				bool actualizar = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool actualizar = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-				    int resultado = await sentencia.Connection.ExecuteScalarAsync<int>(buscarMinimos, new
+				    int resultado = await conexion.ExecuteScalarAsync<int>(buscarMinimos, new
 					{
 						IdMaestra = juego.Id
-					}, transaction: sentencia);
+					});
 
 					return resultado > 0;
 				});
@@ -423,9 +423,9 @@ namespace BaseDatos.Juegos
 					string actualizarMinimos = "UPDATE seccionMinimos " +
 						"SET ocultarPortada=@ocultarPortada WHERE idMaestra=@idMaestra";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(actualizarMinimos, new
+						return await conexion.ExecuteAsync(actualizarMinimos, new
 						{
 							id = juego.Id,
 							ocultarPortada = juego.OcultarPortada
@@ -528,9 +528,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sql, new
+					return await conexion.ExecuteAsync(sql, new
 					{
 						id = juego.Id,
 						nombre = juego.Nombre,
@@ -589,9 +589,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						tipo = juego.Tipo
@@ -611,9 +611,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						idSteam = juego.IdSteam
@@ -633,9 +633,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						idGOG = juego.IdGog
@@ -655,9 +655,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						slugGOG = juego.SlugGOG
@@ -677,9 +677,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						slugEpic = juego.SlugEpic
@@ -699,9 +699,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						exeEpic = juego.ExeEpic
@@ -721,9 +721,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = idJuego,
 						exeUbisoft = idXbox
@@ -743,9 +743,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						exeUbisoft = juego.ExeUbisoft
@@ -765,9 +765,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new
+					return await conexion.ExecuteAsync(sqlActualizar, new
 					{
 						id = juego.Id,
 						deck = juego.Deck,
@@ -797,9 +797,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -821,9 +821,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -846,9 +846,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -871,9 +871,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -896,9 +896,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -911,9 +911,9 @@ namespace BaseDatos.Juegos
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
+					return await conexion.ExecuteAsync("UPDATE juegos SET cantidadJugadoresSteam=@cantidadJugadoresSteam WHERE id=@id", new
 					{
 						id = juego.Id,
 						cantidadJugadoresSteam = JsonSerializer.Serialize(juego.CantidadJugadores)
@@ -956,9 +956,9 @@ namespace BaseDatos.Juegos
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sql.ToString(), parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

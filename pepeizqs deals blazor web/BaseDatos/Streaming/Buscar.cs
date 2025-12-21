@@ -14,9 +14,9 @@ namespace BaseDatos.Streaming
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<string>(busqueda, new { idJuego }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<string>(busqueda, new { idJuego })).ToList();
 				});
 
 				List<JuegoDRM> listaDRMs = new List<JuegoDRM>();
@@ -52,11 +52,9 @@ namespace BaseDatos.Streaming
 
 				try
 				{
-					var existe = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					var existe = await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						var resultado = await sentencia.Connection.ExecuteScalarAsync<int?>(
-							busqueda, transaction: sentencia
-						);
+						var resultado = await conexion.ExecuteScalarAsync<int?>(busqueda);
 
 						return resultado.HasValue;
 					});

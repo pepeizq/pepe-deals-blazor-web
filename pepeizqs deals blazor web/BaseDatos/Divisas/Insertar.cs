@@ -7,7 +7,7 @@ namespace BaseDatos.Divisas
 {
 	public static class Insertar
 	{
-		public static async void Ejecutar(Divisa divisa)
+		public static async Task Ejecutar(Divisa divisa)
 		{
 			string sqlAñadir = "INSERT INTO divisas " +
                      "(id, cantidad, fecha) VALUES " +
@@ -15,9 +15,9 @@ namespace BaseDatos.Divisas
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sqlAñadir, new
+					return await conexion.ExecuteAsync(sqlAñadir, new
 					{
 						id = divisa.Id,
 						cantidad = divisa.Cantidad,

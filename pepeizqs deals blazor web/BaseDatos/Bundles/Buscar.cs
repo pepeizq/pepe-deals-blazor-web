@@ -35,9 +35,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Bundle>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -54,9 +54,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Bundle>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -73,9 +73,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Bundle>(busqueda, new { id = bundleId }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Bundle>(busqueda, new { id = bundleId });
 				});
 			}
 			catch (Exception ex)
@@ -92,9 +92,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Bundle>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -111,9 +111,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Bundle>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Bundle>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)

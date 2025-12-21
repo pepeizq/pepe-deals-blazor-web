@@ -12,9 +12,9 @@ namespace BaseDatos.Portapapeles
 			{
 				string sql = "SELECT COUNT(*) FROM portapapeles WHERE id=@id";
 
-				int resultado = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int resultado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, new { id }, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<int>(sql, new { id });
 				});
 
 				return resultado > 0;
@@ -33,9 +33,9 @@ namespace BaseDatos.Portapapeles
 			{
 				string sql = "SELECT contenido FROM portapapeles WHERE id=@id";
 
-				string contenido = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				string contenido = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<string>(sql, new { id }, transaction: sentencia);
+					return await conexion.ExecuteScalarAsync<string>(sql, new { id });
 				});
 
 				return contenido ?? string.Empty;

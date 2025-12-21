@@ -19,9 +19,9 @@ namespace BaseDatos.RedesSociales
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 					});
 				}
 				catch (Exception ex)

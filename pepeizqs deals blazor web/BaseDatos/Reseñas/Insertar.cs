@@ -10,9 +10,9 @@ namespace BaseDatos.Reseñas
 		{
 			try
 			{
-				bool existe = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				bool existe = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>("SELECT COUNT(1) FROM juegosAnalisis WHERE id=@id", new { id }, transaction: sentencia) > 0;
+					return await conexion.ExecuteScalarAsync<int>("SELECT COUNT(1) FROM juegosAnalisis WHERE id=@id", new { id }) > 0;
 				});
 
 				string fechaCol = "fecha" + idioma;
@@ -24,18 +24,18 @@ namespace BaseDatos.Reseñas
 				{
 					string sqlInsertar = $@"INSERT INTO juegosAnalisis (id, {positivosCol}, {negativosCol}, {fechaCol}, {contenidoCol}) VALUES (@id, @positivos, @negativos, @fecha, @contenido)";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlInsertar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
+						return await conexion.ExecuteAsync(sqlInsertar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
 					});
 				}
 				else
 				{
 					string sqlActualizar = $@"UPDATE juegosAnalisis SET {positivosCol}=@positivos, {negativosCol}=@negativos, {fechaCol}=@fecha, {contenidoCol}=@contenido WHERE id=@id";
 
-					await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 					{
-						await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
+						return await conexion.ExecuteAsync(sqlActualizar, new { id, positivos, negativos, fecha = DateTime.Now, contenido }, transaction: sentencia);
 					});
 				}
 			}

@@ -12,9 +12,9 @@ namespace BaseDatos.Portapapeles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(borrar, new
+					return await conexion.ExecuteAsync(borrar, new
 					{
 						id
 					}, transaction: sentencia);
@@ -32,9 +32,9 @@ namespace BaseDatos.Portapapeles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.QueryAsync(limpiar, transaction: sentencia);
+					return await conexion.QueryAsync(limpiar, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

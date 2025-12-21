@@ -18,9 +18,9 @@ namespace BaseDatos.Curators
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync($@"UPDATE curators SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha {añadirImagenFondo} WHERE idSteam=@idSteam", new
+					return await conexion.ExecuteAsync($@"UPDATE curators SET nombre=@nombre, imagen=@imagen, descripcion=@descripcion, slug=@slug, steamIds=@steamIds, web=@web, fecha=@fecha {añadirImagenFondo} WHERE idSteam=@idSteam", new
 					{
 						idSteam = curator.IdSteam,
 						nombre = curator.Nombre,
@@ -44,9 +44,9 @@ namespace BaseDatos.Curators
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("UPDATE curators SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam", new
+					return await conexion.ExecuteAsync("UPDATE curators SET imagenFondo=@imagenFondo WHERE idSteam=@idSteam", new
 					{
 						imagenFondo,
 						idSteam = id

@@ -14,14 +14,14 @@ namespace BaseDatos.JuegosActualizar
 
 			try
 			{
-				int valor = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				int valor = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.ExecuteScalarAsync<int>(sql, new
+					return await conexion.ExecuteScalarAsync<int>(sql, new
 					{
 						idJuego,
 						idPlataforma,
 						metodo
-					}, transaction: sentencia);
+					});
 				});
 
 				return valor > 0;
@@ -38,9 +38,9 @@ namespace BaseDatos.JuegosActualizar
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<JuegoActualizar>("SELECT * FROM fichasActualizar", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<JuegoActualizar>("SELECT * FROM fichasActualizar")).ToList();
 				});
 			}
 			catch (Exception ex)

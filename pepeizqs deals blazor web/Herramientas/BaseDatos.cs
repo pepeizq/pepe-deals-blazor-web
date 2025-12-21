@@ -47,42 +47,45 @@ namespace Herramientas
 			return ex.Errors.Cast<SqlError>().Any(e => errores.Contains(e.Number));
 		}
 
-		public static async Task EjecutarConConexionAsync(Func<SqlConnection, SqlTransaction, Task> accion)
+		public static async Task<T> RestoOperaciones<T>(Func<SqlConnection, SqlTransaction, Task<T>> accion, SqlConnection conexion = null)
 		{
-			await using var conexion = Conectar();
-			await conexion.OpenAsync();
+			bool cerrar = conexion == null;
 
-			await using var transaccion = await conexion.BeginTransactionAsync();
+			if (conexion == null)
+			{
+				conexion = Conectar();
+			}
+
+			if (conexion.State != ConnectionState.Open)
+			{
+				await conexion.OpenAsync();
+			}
+
+			SqlTransaction transaccion = null;
 
 			try
 			{
-				await accion(conexion, (SqlTransaction)transaccion);
-				await transaccion.CommitAsync();
-			}
-			catch
-			{
-				await transaccion.RollbackAsync();
-				throw;
-			}
-		}
+				transaccion = (SqlTransaction)await conexion.BeginTransactionAsync();
 
-		public static async Task<T> EjecutarConConexionAsync<T>(Func<SqlConnection, SqlTransaction, Task<T>> accion)
-		{
-			await using var conexion = Conectar();
-			await conexion.OpenAsync();
+				T resultado = await accion(conexion, transaccion);
 
-			await using var transaccion = await conexion.BeginTransactionAsync();
-
-			try
-			{
-				T resultado = await accion(conexion, (SqlTransaction)transaccion);
 				await transaccion.CommitAsync();
 				return resultado;
 			}
 			catch
 			{
-				await transaccion.RollbackAsync();
+				if (transaccion != null)
+				{
+					try { await transaccion.RollbackAsync(); } catch { }
+				}
 				throw;
+			}
+			finally
+			{
+				if (cerrar == true)
+				{
+					await conexion.CloseAsync();
+				}	
 			}
 		}
 
@@ -115,6 +118,33 @@ namespace Herramientas
 					{
 						conexion.Close();
 					}
+				}
+			}
+		}
+
+		public static async Task<T> Select<T>(Func<SqlConnection, Task<T>> accion, SqlConnection conexion = null)
+		{
+			bool cerrar = conexion == null;
+
+			if (conexion == null)
+			{
+				conexion = Conectar();
+			}
+
+			if (conexion.State != ConnectionState.Open)
+			{
+				await conexion.OpenAsync();
+			}
+
+			try
+			{
+				return await accion(conexion);
+			}
+			finally
+			{
+				if (cerrar == true)
+				{
+					await conexion.CloseAsync();
 				}
 			}
 		}

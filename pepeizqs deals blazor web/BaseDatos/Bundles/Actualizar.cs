@@ -14,9 +14,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, nombre }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, nombre }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -33,9 +33,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, fechaEmpieza }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, fechaEmpieza }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -52,9 +52,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, fechaTermina }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, fechaTermina }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -71,9 +71,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, imagen }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, imagen }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -90,9 +90,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, imagenNoticia = imagen }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, imagenNoticia = imagen }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -109,9 +109,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, juegos }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, juegos }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -128,9 +128,9 @@ namespace BaseDatos.Bundles
 
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync(sqlActualizar, new { id, tiers }, transaction: sentencia);
+					return await conexion.ExecuteAsync(sqlActualizar, new { id, tiers }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

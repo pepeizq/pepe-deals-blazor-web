@@ -32,9 +32,9 @@ namespace BaseDatos.CorreosEnviar
 					json
 				};
 
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await sentencia.Connection.ExecuteAsync(sql, parametros, transaction: sentencia);
+					return await conexion.ExecuteAsync(sql, parametros, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)

@@ -28,9 +28,9 @@ namespace BaseDatos.Juegos
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+						return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id });
 					});
 				}
 				catch (Exception ex)
@@ -44,9 +44,9 @@ namespace BaseDatos.Juegos
 				{
 					try
 					{
-						return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+						return await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam }, transaction: sentencia);
+							return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam });
 						});
 					}
 					catch (Exception ex)
@@ -60,9 +60,9 @@ namespace BaseDatos.Juegos
 					{
 						try
 						{
-							return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+							return await Herramientas.BaseDatos.Select(async conexion =>
 							{
-								return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog }, transaction: sentencia);
+								return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog });
 							});
 						}
 						catch (Exception ex)
@@ -76,9 +76,9 @@ namespace BaseDatos.Juegos
 						{
 							try
 							{
-								return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+								return await Herramientas.BaseDatos.Select(async conexion =>
 								{
-									return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic }, transaction: sentencia);
+									return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic });
 								});
 							}
 							catch (Exception ex)
@@ -133,9 +133,9 @@ WHERE id=@id";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id });
 				});
 			}
 			catch (Exception ex)
@@ -187,9 +187,9 @@ WHERE id=@id";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id }, transaction: sentencia);
+					return await conexion.QueryFirstOrDefaultAsync<Juego>(busqueda, new { id });
 				});
 			}
 			catch (Exception ex)
@@ -234,9 +234,9 @@ WHERE id=@id";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -283,9 +283,9 @@ WHERE id=@id";
             {
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -349,9 +349,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -394,9 +394,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<int>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<int>(sqlBuscar)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -441,9 +441,9 @@ WHERE idSteam IN (";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -519,9 +519,9 @@ WHERE idSteam IN (";
 					{
 						try
 						{
-							var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+							var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 							{
-								return await sentencia.Connection.QueryAsync<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+								return (await conexion.QueryAsync<(int id, string nombre, string imagen, object drmValor)>(sqlBuscar)).ToList();
 							});
 
 							foreach (var fila in resultados)
@@ -629,9 +629,9 @@ END DESC";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -702,9 +702,9 @@ END DESC";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados }, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -804,9 +804,9 @@ END DESC";
 
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1076,9 +1076,9 @@ FROM seccionMinimos j";
 
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia, commandTimeout: 180).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1094,9 +1094,9 @@ FROM seccionMinimos j";
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC", transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Juego>("SELECT TOP (" + cantidad + ") * FROM " + tabla + " ORDER BY id DESC")).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -1129,9 +1129,9 @@ FROM seccionMinimos j";
 
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -1146,9 +1146,9 @@ FROM seccionMinimos j";
 		{
 			try
 			{
-				return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QuerySingleAsync<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')", transaction: sentencia);
+					return await conexion.QuerySingleAsync<int>("SELECT COUNT(*) FROM juegos WHERE (maestro IS NULL OR maestro = 'no') AND tipo IN ('1','3')");
 				});
 			}
 			catch (Exception ex)
@@ -1443,9 +1443,9 @@ FROM seccionMinimos j";
 
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1468,9 +1468,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(busqueda, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1534,9 +1534,9 @@ FROM seccionMinimos j";
 			{
 				try
 				{
-					return await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await sentencia.Connection.QueryAsync<Juego>(sqlBase, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+						return (await conexion.QueryAsync<Juego>(sqlBase)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1547,9 +1547,9 @@ FROM seccionMinimos j";
 
 			try
 			{
-				var resultados = await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await sentencia.Connection.QueryAsync(sqlFecha, transaction: sentencia).ContinueWith(t => t.Result.ToList());
+					return (await conexion.QueryAsync(sqlFecha)).ToList();
 				});
 
 				List<Juego> juegos = new List<Juego>();

@@ -8,9 +8,9 @@ namespace BaseDatos.Juegos
 		{
 			try
 			{
-				await Herramientas.BaseDatos.EjecutarConConexionAsync(async sentencia =>
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					await sentencia.Connection.ExecuteAsync("DELETE FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
+					return await conexion.ExecuteAsync("DELETE FROM juegos WHERE id=@id", new { id }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
