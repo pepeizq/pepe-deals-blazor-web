@@ -97,34 +97,37 @@ namespace Tareas
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesGOG(usuario2.IdUsuario);
 
-										bool actualizarJuegos = true;
-
-										if (usuario.GogGamesAllow != null && usuario.GogGamesAllow == false)
+										if (usuario != null)
 										{
-											actualizarJuegos = false;
+											bool actualizarJuegos = true;
+
+											if (usuario.GogGamesAllow != null && usuario.GogGamesAllow == false)
+											{
+												actualizarJuegos = false;
+											}
+
+											if (actualizarJuegos == true)
+											{
+												usuario.GogGames = JsonSerializer.Serialize(await APIs.GOG.Cuenta.BuscarJuegos(usuario.GogAccount));
+											}
+
+											bool actualizarDeseados = true;
+
+											if (usuario.GogWishlistAllow != null && usuario.GogWishlistAllow == false)
+											{
+												actualizarDeseados = false;
+											}
+
+											if (actualizarDeseados == true)
+											{
+												usuario.GogWishlist = await APIs.GOG.Cuenta.BuscarDeseados(usuario.GogId);
+											}
+
+											usuario.GogAccountLastCheck = DateTime.Now;
+
+											await BaseDatos.Usuarios.Actualizar.GOG(usuario);
+											await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 										}
-
-										if (actualizarJuegos == true)
-										{
-											usuario.GogGames = JsonSerializer.Serialize(await APIs.GOG.Cuenta.BuscarJuegos(usuario.GogAccount));
-										}
-
-										bool actualizarDeseados = true;
-
-										if (usuario.GogWishlistAllow != null && usuario.GogWishlistAllow == false)
-										{
-											actualizarDeseados = false;
-										}
-
-										if (actualizarDeseados == true)
-										{
-											usuario.GogWishlist = await APIs.GOG.Cuenta.BuscarDeseados(usuario.GogId);
-										}
-
-										usuario.GogAccountLastCheck = DateTime.Now;
-
-										await BaseDatos.Usuarios.Actualizar.GOG(usuario);
-										await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 									}
 								}
 							}

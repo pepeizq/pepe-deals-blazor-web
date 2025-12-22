@@ -205,6 +205,91 @@ namespace BaseDatos.Sitemaps
 			return new List<string>();
 		}
 
+		public static async Task<List<string>> NoticiasUltimas(string dominio, string idioma)
+		{
+			string buscar = @"SELECT id, tituloEn, tituloEs, fechaEmpieza
+								FROM noticias
+								WHERE fechaEmpieza >= DATEADD(HOUR, -48, GETDATE())";
+
+			try
+			{
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync(buscar)).ToList();
+				});
+
+				List<string> lineas = new List<string>();
+
+				foreach (var fila in resultados)
+				{
+					int id = fila.id;
+					string tituloEn = fila.tituloEn;
+					string tituloEs = fila.tituloEs;
+					DateTime? fecha = fila.fechaEmpieza != null ? (DateTime?)fila.fechaEmpieza : null;
+
+					if (id > 0 && string.IsNullOrEmpty(tituloEn) == false && idioma == "en")
+					{
+						tituloEn = tituloEn.Replace("&", "&amp;");
+						tituloEs = tituloEs.Replace("&", "&amp;");
+
+						string texto = @$"<url>
+							<loc>https://{dominio}/news/{id.ToString()}/{EnlaceAdaptador.Nombre(tituloEn)}/</loc>
+							<news:news>
+								<news:publication>
+									<news:name>pepe's deals</news:name>
+									<news:language>en</news:language>
+								</news:publication>";
+
+						if (fecha.HasValue && fecha.Value.Year > 1)
+						{
+							texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
+						}
+
+						texto = texto + @$"<news:title>{tituloEn}</news:title>
+											</news:news>
+											<xhtml:link rel=""alternate"" hreflang=""es"" href=""https://{dominio}/news/{id.ToString()}/{EnlaceAdaptador.Nombre(tituloEs)}"" />
+											</url>";
+
+						lineas.Add(texto);
+					}
+
+					if (id > 0 && string.IsNullOrEmpty(tituloEs) == false && idioma == "es")
+					{
+						tituloEn = tituloEn.Replace("&", "&amp;");
+						tituloEs = tituloEs.Replace("&", "&amp;");
+
+						string texto = @$"<url>
+							<loc>https://{dominio}/news/{id.ToString()}/{EnlaceAdaptador.Nombre(tituloEs)}/</loc>
+							<news:news>
+								<news:publication>
+									<news:name>pepe's deals</news:name>
+									<news:language>en</news:language>
+								</news:publication>";
+
+						if (fecha.HasValue && fecha.Value.Year > 1)
+						{
+							texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
+						}
+
+						texto = texto + @$"<news:title>{tituloEs}</news:title>
+											</news:news>
+											<xhtml:link rel=""alternate"" hreflang=""en"" href=""https://{dominio}/news/{id.ToString()}/{EnlaceAdaptador.Nombre(tituloEn)}"" />
+											</url>";
+
+						lineas.Add(texto);
+					}
+				}
+
+				return lineas;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Sitemaps Noticias Ultimas", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<List<string>> NoticiasIngles(string dominio, int id1, int id2)
 		{
 			string buscar = "SELECT id, tituloEn, fechaEmpieza FROM noticias WHERE id > @id1 AND id < @id2";
@@ -229,21 +314,14 @@ namespace BaseDatos.Sitemaps
 						tituloEn = tituloEn.Replace("&", "&amp;");
 
 						string texto = "<url>" + Environment.NewLine +
-							"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEn) + "/</loc>" + Environment.NewLine +
-							"<news:news>" + Environment.NewLine +
-							"<news:publication>" + Environment.NewLine +
-							"<news:name>pepe's deals</news:name>" + Environment.NewLine +
-							"<news:language>en</news:language>" + Environment.NewLine +
-							"</news:publication>" + Environment.NewLine;
+							 "<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEn) + "/</loc>" + Environment.NewLine;
 
 						if (fecha.HasValue && fecha.Value.Year > 1)
 						{
-							texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
+							texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 						}
 
-						texto = texto + "<news:title>" + tituloEn + "</news:title>" + Environment.NewLine +
-							"</news:news>" + Environment.NewLine +
-							"</url>";
+						texto = texto + "</url>";
 
 						lineas.Add(texto);
 					}
@@ -256,7 +334,7 @@ namespace BaseDatos.Sitemaps
 				BaseDatos.Errores.Insertar.Mensaje("Sitemaps Noticias Ingles", ex);
 			}
 
-			return new List<string>();
+			return null;
 		}
 
 		public static async Task<List<string>> NoticiasEspañol(string dominio, int id1, int id2)
@@ -283,21 +361,14 @@ namespace BaseDatos.Sitemaps
 						tituloEs = tituloEs.Replace("&", "&amp;");
 
 						string texto = "<url>" + Environment.NewLine +
-							"<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEs) + "/</loc>" + Environment.NewLine +
-							"<news:news>" + Environment.NewLine +
-							"<news:publication>" + Environment.NewLine +
-							"<news:name>pepe's deals</news:name>" + Environment.NewLine +
-							"<news:language>es</news:language>" + Environment.NewLine +
-							"</news:publication>" + Environment.NewLine;
+							 "<loc>https://" + dominio + "/news/" + id.ToString() + "/" + EnlaceAdaptador.Nombre(tituloEs) + "/</loc>" + Environment.NewLine;
 
 						if (fecha.HasValue && fecha.Value.Year > 1)
 						{
-							texto = texto + "<news:publication_date>" + fecha.Value.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine;
+							texto = texto + "<lastmod>" + fecha.Value.ToString("yyyy-MM-dd") + "</lastmod>" + Environment.NewLine;
 						}
 
-						texto = texto + "<news:title>" + tituloEs + "</news:title>" + Environment.NewLine +
-							"</news:news>" + Environment.NewLine +
-							"</url>";
+						texto = texto + "</url>";
 
 						lineas.Add(texto);
 					}
@@ -310,7 +381,7 @@ namespace BaseDatos.Sitemaps
 				BaseDatos.Errores.Insertar.Mensaje("Sitemaps Noticias Español", ex);
 			}
 
-			return new List<string>();
+			return null;
 		}
 
 		public static async Task<List<string>> Curators(string dominio, int id1, int id2)

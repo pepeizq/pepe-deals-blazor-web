@@ -42,7 +42,7 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
 
 			if (string.IsNullOrEmpty(tienda) == false)
 			{
-				busqueda = busqueda + $" AND pmh.DRM = 0 AND pmh.Tienda='{tienda}'";
+				busqueda = busqueda + $" AND pmh.Tienda='{tienda}'";
 			}
 
 			try

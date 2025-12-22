@@ -186,15 +186,15 @@
                     video._timeUpdateHandler = null;
                 }
 
-                if (window.hls) {
+                if (window.hlsPlayer._hls) {
                     try {
-                        window.hls.stopLoad();
-                        window.hls.detachMedia();
-                        window.hls.destroy();
+                        window.hlsPlayer._hls.stopLoad();
+                        window.hlsPlayer._hls.detachMedia();
+                        window.hlsPlayer._hls.destroy();
                     } catch (e) {
                         console.warn("Error al destruir HLS:", e);
                     }
-                    window.hls = null;
+                    window.hlsPlayer._hls = null;
                 }
 
                 video.removeAttribute("src");
@@ -204,17 +204,15 @@
                 const lowerUrl = url.toLowerCase();
                 
                 if (lowerUrl.endsWith(".m3u8")) {
-                    if (window.Hls && window.Hls.isSupported()) {
-                        window.hls = new window.Hls({
+                    if (typeof Hls !== "undefined" && Hls.isSupported()) {
+                        window.hlsPlayer._hls = new Hls({
                             autoStartLoad: true,
                             enableWorker: true,
                             lowLatencyMode: false
                         });
-                  
-                        window.hls.loadSource(url);
-                        window.hls.attachMedia(video);
-
-                    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+                        window.hlsPlayer._hls.loadSource(url);
+                        window.hlsPlayer._hls.attachMedia(video);
+                    } else if (video.canPlayType("application/vnd.apple.mpegurl") !== "") {
                         video.src = url;
                     }
                 } else if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm")) {

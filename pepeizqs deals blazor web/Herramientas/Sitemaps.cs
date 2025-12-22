@@ -1,19 +1,20 @@
 ﻿#nullable disable
 
-using Microsoft.AspNetCore.Mvc;
-using Noticias;
 using System.Text;
 
 namespace Herramientas
 {
-	public class Sitemaps : Controller
+	public static class Sitemaps
 	{
-		[HttpGet("sitemap.xml")]
-		public async Task<IActionResult> Maestro()
+		public static async Task Maestro(HttpContext contexto)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
-			List<string> sitemaps = ["https://" + dominio + "/sitemap-main.xml"];
+			List<string> sitemaps = [
+				"https://" + dominio + "/sitemap-lastnews-en.xml",
+				"https://" + dominio + "/sitemap-lastnews-es.xml",
+				"https://" + dominio + "/sitemap-main.xml"
+			];
 
 			int cantidadJuegos = await global::BaseDatos.Sitemaps.Buscar.Cantidad("juegos");
 
@@ -126,18 +127,13 @@ namespace Herramientas
 
 			sb.Append("</sitemapindex>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-main.xml")]
-		public async Task<IActionResult> Principal()
+		public static async Task Principal(HttpContext contexto)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
 			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
@@ -229,54 +225,19 @@ namespace Herramientas
 
 			sb.Append(textoApi);
 
-			List<Noticia> noticias = await global::BaseDatos.Noticias.Buscar.Ultimas(20);
-
-			if (noticias.Count > 0)
-			{
-				foreach (Noticia noticia in noticias)
-				{
-					DateTime fechaTemporal = noticia.FechaEmpieza;
-					fechaTemporal = fechaTemporal.AddDays(7);
-
-					if (fechaTemporal > DateTime.Now)
-					{
-						string titulo = noticia.TituloEn;
-						titulo = titulo.Replace("&", "&amp;");
-
-						string texto = "<url>" + Environment.NewLine +
-						"<loc>https://" + dominio + "/news/" + noticia.Id.ToString() + "/" + EnlaceAdaptador.Nombre(noticia.TituloEn) + "/</loc>" + Environment.NewLine +
-						"<news:news>" + Environment.NewLine +
-						"<news:publication>" + Environment.NewLine +
-						"<news:name>pepe's deals</news:name>" + Environment.NewLine +
-						"<news:language>en</news:language>" + Environment.NewLine +
-						"</news:publication>" + Environment.NewLine +
-						"<news:publication_date>" + noticia.FechaEmpieza.ToString("yyyy-MM-dd") + "</news:publication_date>" + Environment.NewLine +
-						"<news:title>" + titulo + "</news:title>" + Environment.NewLine +
-						"</news:news>" + Environment.NewLine +
-						"</url>";
-
-						sb.Append(texto);
-					}
-				}
-			}
-
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-games-{i:int}.xml")]
-		public async Task<IActionResult> Juegos(int i)
+		public static async Task Juegos(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -301,21 +262,17 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-        [HttpGet("sitemap-bundles-{i:int}.xml")]
-		public async Task<IActionResult> Bundles(int i)
+		public static async Task Bundles(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -340,21 +297,17 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-free-{i:int}.xml")]
-		public async Task<IActionResult> Gratis(int i)
+		public static async Task Gratis(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -379,21 +332,17 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-subscriptions-{i:int}.xml")]
-		public async Task<IActionResult> Suscripciones(int i)
+		public static async Task Suscripciones(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -418,21 +367,71 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-news-en-{i:int}.xml")]
-		public async Task<IActionResult> NoticiasIngles(int i)
+		public static async Task NoticiasUltimasIngles(HttpContext contexto)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\"\r\n    xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset
+							  xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""
+							  xmlns:news=""http://www.google.com/schemas/sitemap-news/0.9""
+							  xmlns:xhtml=""http://www.w3.org/1999/xhtml"">");
+
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.NoticiasUltimas(dominio, "en");
+
+			if (lineas.Count > 0)
+			{
+				foreach (var linea in lineas)
+				{
+					sb.Append(linea);
+				}
+			}
+
+			sb.Append("</urlset>");
+
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
+		}
+
+		public static async Task NoticiasUltimasEspañol(HttpContext contexto)
+		{
+			string dominio = contexto.Request.Host.Value;
+
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset
+							  xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9""
+							  xmlns:news=""http://www.google.com/schemas/sitemap-news/0.9""
+							  xmlns:xhtml=""http://www.w3.org/1999/xhtml"">");
+
+			List<string> lineas = await global::BaseDatos.Sitemaps.Buscar.NoticiasUltimas(dominio, "es");
+
+			if (lineas.Count > 0)
+			{
+				foreach (var linea in lineas)
+				{
+					sb.Append(linea);
+				}
+			}
+
+			sb.Append("</urlset>");
+
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
+		}
+
+		public static async Task NoticiasIngles(HttpContext contexto, int i)
+		{
+			string dominio = contexto.Request.Host.Value;
+
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -457,21 +456,17 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-news-es-{i:int}.xml")]
-		public async Task<IActionResult> NoticiasEspañol(int i)
+		public static async Task NoticiasEspañol(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\"\r\n    xmlns:xhtml=\"http://www.w3.org/1999/xhtml\">");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -496,21 +491,17 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 
-		[HttpGet("sitemap-curators-{i:int}.xml")]
-		public async Task<IActionResult> Curators(int i)
+		public static async Task Curators(HttpContext contexto, int i)
 		{
-			string dominio = HttpContext.Request.Host.Value;
+			string dominio = contexto.Request.Host.Value;
 
 			StringBuilder sb = new StringBuilder();
-			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
+			sb.AppendLine(@"<?xml version=""1.0"" encoding=""UTF-8""?>");
+			sb.AppendLine(@"<urlset xmlns=""http://www.sitemaps.org/schemas/sitemap/0.9"">");
 
 			int minimo = 0;
 			int maximo = 0;
@@ -535,12 +526,8 @@ namespace Herramientas
 
 			sb.Append("</urlset>");
 
-			return new ContentResult
-			{
-				ContentType = "application/xml",
-				Content = sb.ToString(),
-				StatusCode = 200
-			};
+			contexto.Response.ContentType = "application/xml; charset=utf-8";
+			await contexto.Response.WriteAsync(sb.ToString());
 		}
 	}
 }

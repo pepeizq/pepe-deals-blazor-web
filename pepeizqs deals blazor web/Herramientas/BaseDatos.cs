@@ -61,23 +61,17 @@ namespace Herramientas
 				await conexion.OpenAsync();
 			}
 
-			SqlTransaction transaccion = null;
+			await using var transaccion = conexion.BeginTransaction();
 
 			try
 			{
-				transaccion = (SqlTransaction)await conexion.BeginTransactionAsync();
-
-				T resultado = await accion(conexion, transaccion);
-
-				await transaccion.CommitAsync();
+				var resultado = await accion(conexion, transaccion);
+				transaccion.Commit();
 				return resultado;
 			}
 			catch
 			{
-				if (transaccion != null)
-				{
-					try { await transaccion.RollbackAsync(); } catch { }
-				}
+				try { transaccion.Rollback(); } catch { }
 				throw;
 			}
 			finally
@@ -146,6 +140,59 @@ namespace Herramientas
 				{
 					await conexion.CloseAsync();
 				}
+			}
+		}
+
+		public static T Select<T>(Func<SqlConnection, T> accion, SqlConnection conexion = null)
+		{
+			bool cerrar = conexion == null;
+
+			if (conexion == null)
+			{
+				conexion = Conectar();
+			}
+
+			if (conexion.State != ConnectionState.Open)
+			{
+				conexion.OpenAsync();
+			}
+
+			try
+			{
+				return accion(conexion);
+			}
+			finally
+			{
+				if (cerrar == true)
+				{
+					conexion.CloseAsync();
+				}
+			}
+		}
+
+		public static async Task<T> Shrink<T>(Func<SqlConnection, Task<T>> accion, SqlConnection conexion = null)
+		{
+			if (conexion == null)
+			{
+				conexion = Conectar();
+			}
+
+			if (conexion.State != ConnectionState.Open)
+			{
+				await conexion.OpenAsync();
+			}
+
+			try
+			{
+				return await accion(conexion);
+			}
+			catch
+			{
+				throw;
+			}
+			finally
+			{
+				await conexion.CloseAsync();
 			}
 		}
 	}

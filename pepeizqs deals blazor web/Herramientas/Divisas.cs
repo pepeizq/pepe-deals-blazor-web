@@ -75,7 +75,7 @@ namespace Herramientas
 		{
 			string mensaje = string.Empty;
 
-			Divisa dolar = await Buscar.Ejecutar("USD");
+			Divisa dolar = Buscar.Ejecutar("USD");
 
 			if (dolar != null)
 			{
@@ -89,7 +89,7 @@ namespace Herramientas
 		{
 			string mensaje = string.Empty;
 
-			Divisa libra = await Buscar.Ejecutar("GBP");
+			Divisa libra = Buscar.Ejecutar("GBP");
 
 			if (libra != null)
 			{
@@ -114,7 +114,7 @@ namespace Herramientas
 
 			if (buscar != string.Empty)
 			{
-				Divisa divisa = Buscar.Ejecutar(buscar).Result;
+				Divisa divisa = Buscar.Ejecutar(buscar);
 
 				decimal temp = cantidad / divisa.Cantidad;
 

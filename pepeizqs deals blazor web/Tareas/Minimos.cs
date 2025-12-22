@@ -68,77 +68,83 @@ namespace Tareas
 								}
 							}
 
-							DataTable tabla = new DataTable();
-							tabla.Columns.Add("idSteam", typeof(long));
-							tabla.Columns.Add("idGog", typeof(long));
-							tabla.Columns.Add("nombre", typeof(string));
-							tabla.Columns.Add("tipo", typeof(int));
-							tabla.Columns.Add("fechaSteamAPIComprobacion", typeof(DateTime));
-							tabla.Columns.Add("imagenes", typeof(string));
-							tabla.Columns.Add("precioMinimosHistoricos", typeof(string));
-							tabla.Columns.Add("analisis", typeof(string));
-							tabla.Columns.Add("caracteristicas", typeof(string));
-							tabla.Columns.Add("media", typeof(string));
-							tabla.Columns.Add("nombreCodigo", typeof(string));
-							tabla.Columns.Add("bundles", typeof(string));
-							tabla.Columns.Add("gratis", typeof(string));
-							tabla.Columns.Add("suscripciones", typeof(string));
-							tabla.Columns.Add("maestro", typeof(string));
-							tabla.Columns.Add("freeToPlay", typeof(string));
-							tabla.Columns.Add("mayorEdad", typeof(string));
-							tabla.Columns.Add("precioActualesTiendas", typeof(string));
-							tabla.Columns.Add("categorias", typeof(string));
-							tabla.Columns.Add("etiquetas", typeof(string));
-							tabla.Columns.Add("idiomas", typeof(string));
-							tabla.Columns.Add("deck", typeof(int));
-							tabla.Columns.Add("steamOS", typeof(int));
-							tabla.Columns.Add("inteligenciaArtificial", typeof(bool));
-							tabla.Columns.Add("idMaestra", typeof(long));
-							tabla.Columns.Add("ocultarPortada", typeof(bool));
-
-							foreach (var juego in juegosParaInsertar)
+							int batchSize = 500;
+							for (int i = 0; i < juegosParaInsertar.Count; i += batchSize)
 							{
-								tabla.Rows.Add(
-									juego.IdSteam,
-									juego.IdGog,
-									juego.Nombre,
-									(int)juego.Tipo,
-									juego.FechaSteamAPIComprobacion,
-									JsonSerializer.Serialize(juego.Imagenes),
-									JsonSerializer.Serialize(juego.PrecioMinimosHistoricos),
-									JsonSerializer.Serialize(juego.Analisis),
-									JsonSerializer.Serialize(juego.Caracteristicas),
-									JsonSerializer.Serialize(juego.Media),
-									Herramientas.Buscador.LimpiarNombre(juego.Nombre),
-									juego.Bundles != null ? JsonSerializer.Serialize(juego.Bundles) : null,
-									juego.Gratis != null ? JsonSerializer.Serialize(juego.Gratis) : null,
-									juego.Suscripciones != null ? JsonSerializer.Serialize(juego.Suscripciones) : null,
-									juego.Maestro,
-									juego.FreeToPlay,
-									juego.MayorEdad,
-									juego.PrecioActualesTiendas != null ? JsonSerializer.Serialize(juego.PrecioActualesTiendas) : null,
-									juego.Categorias != null ? JsonSerializer.Serialize(juego.Categorias) : null,
-									juego.Etiquetas != null ? JsonSerializer.Serialize(juego.Etiquetas) : null,
-									juego.Idiomas != null ? JsonSerializer.Serialize(juego.Idiomas) : null,
-									(int)juego.Deck,
-									(int)juego.SteamOS,
-									juego.InteligenciaArtificial,
-									juego.IdMaestra,
-									juego.OcultarPortada
-								);
+								var chunk = juegosParaInsertar.Skip(i).Take(batchSize).ToList();
+								DataTable tabla = new DataTable();
+								tabla.Columns.Add("idSteam", typeof(long));
+								tabla.Columns.Add("idGog", typeof(long));
+								tabla.Columns.Add("nombre", typeof(string));
+								tabla.Columns.Add("tipo", typeof(int));
+								tabla.Columns.Add("fechaSteamAPIComprobacion", typeof(DateTime));
+								tabla.Columns.Add("imagenes", typeof(string));
+								tabla.Columns.Add("precioMinimosHistoricos", typeof(string));
+								tabla.Columns.Add("analisis", typeof(string));
+								tabla.Columns.Add("caracteristicas", typeof(string));
+								tabla.Columns.Add("media", typeof(string));
+								tabla.Columns.Add("nombreCodigo", typeof(string));
+								tabla.Columns.Add("bundles", typeof(string));
+								tabla.Columns.Add("gratis", typeof(string));
+								tabla.Columns.Add("suscripciones", typeof(string));
+								tabla.Columns.Add("maestro", typeof(string));
+								tabla.Columns.Add("freeToPlay", typeof(string));
+								tabla.Columns.Add("mayorEdad", typeof(string));
+								tabla.Columns.Add("precioActualesTiendas", typeof(string));
+								tabla.Columns.Add("categorias", typeof(string));
+								tabla.Columns.Add("etiquetas", typeof(string));
+								tabla.Columns.Add("idiomas", typeof(string));
+								tabla.Columns.Add("deck", typeof(int));
+								tabla.Columns.Add("steamOS", typeof(int));
+								tabla.Columns.Add("inteligenciaArtificial", typeof(bool));
+								tabla.Columns.Add("idMaestra", typeof(long));
+								tabla.Columns.Add("ocultarPortada", typeof(bool));
+
+								foreach (var juego in chunk)
+								{
+									tabla.Rows.Add(
+										juego.IdSteam,
+										juego.IdGog,
+										juego.Nombre,
+										(int)juego.Tipo,
+										juego.FechaSteamAPIComprobacion,
+										JsonSerializer.Serialize(juego.Imagenes),
+										JsonSerializer.Serialize(juego.PrecioMinimosHistoricos),
+										JsonSerializer.Serialize(juego.Analisis),
+										JsonSerializer.Serialize(juego.Caracteristicas),
+										JsonSerializer.Serialize(juego.Media),
+										Herramientas.Buscador.LimpiarNombre(juego.Nombre),
+										juego.Bundles != null ? JsonSerializer.Serialize(juego.Bundles) : null,
+										juego.Gratis != null ? JsonSerializer.Serialize(juego.Gratis) : null,
+										juego.Suscripciones != null ? JsonSerializer.Serialize(juego.Suscripciones) : null,
+										juego.Maestro,
+										juego.FreeToPlay,
+										juego.MayorEdad,
+										juego.PrecioActualesTiendas != null ? JsonSerializer.Serialize(juego.PrecioActualesTiendas) : null,
+										juego.Categorias != null ? JsonSerializer.Serialize(juego.Categorias) : null,
+										juego.Etiquetas != null ? JsonSerializer.Serialize(juego.Etiquetas) : null,
+										juego.Idiomas != null ? JsonSerializer.Serialize(juego.Idiomas) : null,
+										(int)juego.Deck,
+										(int)juego.SteamOS,
+										juego.InteligenciaArtificial,
+										juego.IdMaestra,
+										juego.OcultarPortada
+									);
+								}
+
+								DynamicParameters parametros = new DynamicParameters();
+								parametros.Add("@Datos", tabla.AsTableValuedParameter("dbo.SeccionMinimosType"));
+
+								await Herramientas.BaseDatos.Select(async conexion =>
+								{
+									return await conexion.ExecuteAsync(
+										"dbo.UpsertSeccionMinimosBatch",
+										parametros,
+										commandType: CommandType.StoredProcedure,
+										commandTimeout: 600
+									);
+								});
 							}
-
-							DynamicParameters parametros = new DynamicParameters();
-							parametros.Add("@Datos", tabla.AsTableValuedParameter("dbo.SeccionMinimosType"));
-
-							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-							{
-								return await conexion.ExecuteAsync("dbo.UpsertSeccionMinimos",
-								parametros,
-								transaction: sentencia,
-								commandType: CommandType.StoredProcedure,
-								commandTimeout: 600);
-							});
 						}
 					}
 				}

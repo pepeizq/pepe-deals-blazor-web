@@ -446,4 +446,58 @@ app.MapGet("extension/epic2/{slug}/{clave}/", async (string slug, string clave) 
 
 #endregion
 
+#region Sitemaps
+
+app.MapGet("/sitemap.xml", async (HttpContext http) =>
+{
+	await Herramientas.Sitemaps.Maestro(http);
+});
+
+app.MapGet("/sitemap-main.xml", async (HttpContext http) =>
+{
+	await Herramientas.Sitemaps.Principal(http);
+});
+
+app.MapGet("/sitemap-games-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.Juegos(http, i);
+});
+
+app.MapGet("/sitemap-bundles-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.Bundles(http, i);
+});
+
+app.MapGet("/sitemap-free-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.Gratis(http, i);
+});
+
+app.MapGet("/sitemap-subscriptions-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.Suscripciones(http, i);
+});
+
+app.MapGet("/sitemap-lastnews-en.xml", async (HttpContext http) =>
+{
+	await Herramientas.Sitemaps.NoticiasUltimasIngles(http);
+});
+
+app.MapGet("/sitemap-lastnews-es.xml", async (HttpContext http) =>
+{
+	await Herramientas.Sitemaps.NoticiasUltimasEspañol(http);
+});
+
+app.MapGet("/sitemap-news-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.NoticiasIngles(http, i);
+});
+
+app.MapGet("/sitemap-curators-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.Curators(http, i);
+});
+
+#endregion
+
 app.Run();

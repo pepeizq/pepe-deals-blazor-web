@@ -934,7 +934,7 @@
 		return null;
 	}
 
-	private string MensajeMinimo(JuegoPrecio precio, bool moneda)
+	private async Task<string> MensajeMinimo(JuegoPrecio precio, bool moneda)
 	{
 		if (precio != null)
 		{

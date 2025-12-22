@@ -17,7 +17,7 @@ namespace BaseDatos.Admin
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas", ex);
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas", ex, false);
 			}
 		}
 

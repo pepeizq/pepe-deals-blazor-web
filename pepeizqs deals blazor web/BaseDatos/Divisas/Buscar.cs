@@ -7,7 +7,7 @@ namespace BaseDatos.Divisas
 {
 	public static class Buscar
 	{
-		public static async Task<Divisa> Ejecutar(string id)
+		public static Divisa Ejecutar(string id)
 		{
 			if (string.IsNullOrEmpty(id) == false) 
 			{
@@ -15,9 +15,9 @@ namespace BaseDatos.Divisas
 
 				try
 				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
+					return Herramientas.BaseDatos.Select(conexion =>
 					{
-						return await conexion.QueryFirstOrDefaultAsync<Divisa>(sqlBuscar, new { id });
+						return conexion.QueryFirstOrDefault<Divisa>(sqlBuscar, new { id });
 					});
 				}
 				catch (Exception ex)

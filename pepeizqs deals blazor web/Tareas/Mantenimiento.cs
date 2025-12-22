@@ -19,15 +19,15 @@ namespace Tareas
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
 		{
+			WebApplicationBuilder builder = WebApplication.CreateBuilder();
+			string piscinaWeb = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+			string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
+
 			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{
-				WebApplicationBuilder builder = WebApplication.CreateBuilder();
-				string piscinaApp = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
-				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
-
-				if (piscinaApp == piscinaUsada)
+				if (piscinaWeb == piscinaUsada)
 				{
 					try
 					{
@@ -47,7 +47,7 @@ namespace Tareas
 							await BaseDatos.Portapapeles.Borrar.Limpieza();
 							await Divisas.ActualizarDatos();
 
-							//await BaseDatos.Mantenimiento.Encoger.Ejecutar();
+							await BaseDatos.Mantenimiento.Encoger.Ejecutar();
 						}
 					}
 					catch (Exception ex)
