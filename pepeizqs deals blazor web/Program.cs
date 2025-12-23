@@ -11,6 +11,7 @@ using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json.Serialization;
 
 ClasesDapper.Registrar();
@@ -496,6 +497,27 @@ app.MapGet("/sitemap-news-{i:int}.xml", async (HttpContext http, int i) =>
 app.MapGet("/sitemap-curators-{i:int}.xml", async (HttpContext http, int i) =>
 {
 	await Herramientas.Sitemaps.Curators(http, i);
+});
+
+#endregion
+
+#region Robots.txt
+
+app.MapGet("/robots.txt", async (HttpContext http) =>
+{
+	string dominio = http.Request.Host.Value;
+
+	string texto = @$"Sitemap: https://{dominio}/sitemap.xml
+
+User-agent: *
+Disallow: /account/
+Disallow: /link/
+Disallow: /publisher/
+Disallow: /_framework/
+Disallow: /_blazor/
+";
+
+	return Results.Text(texto, "text/plain; charset=utf-8");
 });
 
 #endregion

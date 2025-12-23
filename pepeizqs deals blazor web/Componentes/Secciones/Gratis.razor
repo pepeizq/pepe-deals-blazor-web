@@ -461,7 +461,7 @@ else
     private List<Gratis2.GratisTipo> tiposActuales = new List<Gratis2.GratisTipo>();
     private bool mostrarArchivo = false;
 
-    private async void CambiarTipo(MouseEventArgs e, Gratis2.GratisTipo nuevoTipo, bool esArchivo)
+    private async Task CambiarTipo(MouseEventArgs e, Gratis2.GratisTipo nuevoTipo, bool esArchivo)
     {
         mostrarArchivo = esArchivo;
 
@@ -483,7 +483,7 @@ else
         else
         {
             añoSeleccionado = DateTime.Now.Year.ToString();
-            GenerarArchivo();
+            await GenerarArchivo();
         }
     }
 
@@ -515,13 +515,13 @@ else
 
     #region Archivo
 
-    private void CambiarAño(MouseEventArgs e, string nuevoAño)
+    private async Task CambiarAño(MouseEventArgs e, string nuevoAño)
     {
         añoSeleccionado = nuevoAño;
-        GenerarArchivo();
+        await GenerarArchivo();
     }
 
-    private async void GenerarArchivo()
+    private async Task GenerarArchivo()
     {
         List<Juegos.JuegoGratis> juegosPasados = await BaseDatos.Gratis.Buscar.Año(añoSeleccionado);
 

@@ -34,10 +34,10 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
   AND j.PrecioMinimosHistoricos <> 'null'
   AND ISJSON(j.PrecioMinimosHistoricos) = 1
   AND (
-        (pmh.FechaActualizacion <= DATEADD(hour, 24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
-        (pmh.FechaActualizacion <= DATEADD(hour, 25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
-        (pmh.FechaActualizacion <= DATEADD(hour, 48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
-        (pmh.FechaActualizacion <= DATEADD(hour, 12, GETDATE()))    
+        (pmh.FechaActualizacion >= DATEADD(hour, -24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
+        (pmh.FechaActualizacion >= DATEADD(hour, -25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
+        (pmh.FechaActualizacion >= DATEADD(hour, -48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
+        (pmh.FechaActualizacion >= DATEADD(hour, -12, GETDATE()))    
       )";
 
 			if (string.IsNullOrEmpty(tienda) == false)

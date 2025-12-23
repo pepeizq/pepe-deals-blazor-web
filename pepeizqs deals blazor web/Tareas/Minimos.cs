@@ -55,7 +55,10 @@ namespace Tareas
 
 							List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(tienda.Id);
 
-							if (juegos == null) continue;
+							if (juegos == null)
+							{
+								continue;
+							}
 
 							foreach (var juego in juegos)
 							{
