@@ -16,6 +16,7 @@ namespace Suscripciones2
 		LunaPremium,
 		LunaStandard,
 		LunaClaims,
+		PlayStationPlus,
 		Desconocido
 	}
 
@@ -36,7 +37,8 @@ namespace Suscripciones2
 				APIs.Ubisoft.Suscripcion.GenerarPremium(),
 				APIs.AmazonLuna.Suscripcion.GenerarStandard(),
 				APIs.AmazonLuna.Suscripcion.GenerarPremium(),
-				APIs.AmazonLuna.Suscripcion.GenerarClaims()
+				APIs.AmazonLuna.Suscripcion.GenerarClaims(),
+				APIs.PlayStation.Suscripcion.Generar()
 			};
 
 			return suscripciones;

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <None Remove="APIs\Steam\Juego.cs~RF2b23164.TMP" />
+    <None Remove="APIs\Xbox\pf02yajj.32n~" />
     <None Remove="Componentes\Admin\Indice.razor~RF29f0e87.TMP" />
     <None Remove="Componentes\App.razor~RF25ea62f.TMP" />
     <None Remove="Componentes\Cuenta\jvq35qmy.m31~" />

@@ -72,11 +72,21 @@ namespace BaseDatos.Tiendas
 
 									if (id > 0)
 									{
-										List<JuegoPrecio> ofertasHistoricas = string.IsNullOrEmpty((string)datos.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos);
+										List<JuegoPrecio> ofertasHistoricas = null;
 
-										if (ofertasHistoricas.Count == 0)
+										if (string.IsNullOrEmpty(datos.precioMinimosHistoricos) == false)
 										{
-											ofertasHistoricas.Add(oferta);
+											if (ofertasHistoricas == null)
+											{
+												ofertasHistoricas = new List<JuegoPrecio>();
+											}
+
+											ofertasHistoricas = JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos);
+
+											if (ofertasHistoricas.Count == 0)
+											{
+												ofertasHistoricas.Add(oferta);
+											}
 										}
 
 										List<JuegoPrecio> ofertasActuales = string.IsNullOrEmpty((string)datos.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioActualesTiendas);

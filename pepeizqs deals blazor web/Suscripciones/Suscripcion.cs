@@ -22,7 +22,9 @@ namespace Suscripciones2
 		public double Precio;
 		public bool AdminPendientes;
 		public string TablaPendientes;
-    }
+		public bool SoloStreaming;
+		public bool AdminAñadir;
+	}
 
     public class SuscripcionComponente
     {

@@ -23,7 +23,8 @@ namespace APIs.AmazonLuna
 				AdminInteractuar = true,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = true,
-				Precio = 4.99
+				Precio = 4.99,
+				AdminAñadir = true
 			};
 
 			DateTime fechaPrime = DateTime.Now;
@@ -50,7 +51,9 @@ namespace APIs.AmazonLuna
 				ParaSiempre = false,
 				Precio = 4.99,
 				AdminPendientes = true,
-				TablaPendientes = "suscripcionlunapremium"
+				TablaPendientes = "suscripcionlunapremium",
+				SoloStreaming = true,
+				AdminAñadir = false
 			};
 
 			return amazon;
@@ -71,7 +74,9 @@ namespace APIs.AmazonLuna
 				ParaSiempre = false,
 				Precio = 9.99,
 				AdminPendientes = true,
-				TablaPendientes = "suscripcionlunapremium"
+				TablaPendientes = "suscripcionlunapremium",
+				SoloStreaming = true,
+				AdminAñadir = false
 			};
 
 			return amazon;

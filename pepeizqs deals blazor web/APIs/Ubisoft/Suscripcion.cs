@@ -4,7 +4,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;

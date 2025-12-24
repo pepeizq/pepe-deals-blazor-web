@@ -786,6 +786,8 @@
                     pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
                 }
             }
+
+            await ClickearSuscripcionPendientes(idSuscripcionPendiente);
         }
 
         if (string.IsNullOrEmpty(idStreamingPendiente) == false)
@@ -1040,7 +1042,7 @@
 
         if (textoBuscador.Trim().Length > 2)
         {
-            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 30, true);
+            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 250, true);
 
             if (resultados.Count > 0)
             {

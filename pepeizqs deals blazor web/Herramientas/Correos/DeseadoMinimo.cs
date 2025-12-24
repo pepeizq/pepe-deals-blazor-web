@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Juegos;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Herramientas.Correos
@@ -15,6 +16,8 @@ namespace Herramientas.Correos
 		public string Enlace { get; set; }
 		public string Descuento { get; set; }
 		public string Idioma { get; set; }
+		public int JuegoId { get; set; }
+		public int JuegoDRM { get; set; }
 	}
 
 	public static class DeseadoMinimo
@@ -143,12 +146,31 @@ namespace Herramientas.Correos
 			json.Enlace = enlace;
 			json.Descuento = descuento;
 			json.Idioma = idioma;
+			json.JuegoId = juego.Id;
+			json.JuegoDRM = (int)juego.Tipo;
 
 			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo, JsonSerializer.Serialize(json));
 		}
 
 		public static void Nuevos(List<CorreoMinimoJson> jsons, string correoHacia, DateTime horaOriginal)
 		{
+			decimal ParsePrecio(string precio)
+			{
+				if (string.IsNullOrWhiteSpace(precio))
+				{
+					return decimal.MaxValue;
+				}
+
+				string limpio = precio.Replace("€", null).Trim();
+
+				if (decimal.TryParse(limpio, NumberStyles.Any, new CultureInfo("es-ES"), out var resultado))
+				{
+					return resultado;
+				}
+
+				return decimal.MaxValue;
+			}
+
 			if (jsons?.Count > 0)
 			{
 				string idioma = jsons[0].Idioma;
@@ -157,6 +179,8 @@ namespace Herramientas.Correos
 				{
 					idioma = "en";
 				}
+
+				jsons = jsons.GroupBy(x => new { x.JuegoId, x.JuegoDRM }).Select(g => g.Aggregate((minimo, actual) => ParsePrecio(actual.Precio) < ParsePrecio(minimo.Precio) ? actual : minimo)).OrderBy(x => x.Nombre).ToList();
 
 				string titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "Lows6", "Mails"), jsons.Count);
 
@@ -172,25 +196,43 @@ namespace Herramientas.Correos
 
 				foreach (var json in jsons)
 				{
-					string htmlJson = @"<div style=""margin-bottom: 30px; color: #f5f5f5; background-color: #0d1621; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-											<a href=""{{enlace}}"" style=""color: #f5f5f5; user-select: none; width: 100%; text-align: left; font-size: 16px; text-decoration: none;"" target=""_blank"">
-												<div>
-													<div style=""display: flex; align-content: center; align-items: center; justify-content: center; font-size: 18px;"">
-														<img src=""{{imagen}}"" style=""max-width: 100%; max-height: 300px;"" />
-													</div>
-													<div style=""display: flex; align-content: center; align-items: center; justify-content: center; gap: 10px; font-size: 18px; padding: 15px;"">
-														<img src=""{{imagenTienda}}"" style=""width: 120px; margin-right: 10px;"" />
-														<div style=""padding: 10px; background-color: darkgreen; box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 3px 0px, rgba(0, 0, 0, 0.1) 0px 0px 2px 0px;"">
-															{{descuento}}
-														</div>
-														<div style=""padding: 5px 10px;"">
-															{{precio}}
-														</div>
-													</div>
-												</div>
-											</a>
-										</div>";
+					string htmlJson = @"<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-bottom:20px; background-color:#0d1621; box-shadow:0px 4px 8px rgba(0,0,0,0.28);"">
+  <tr>
+    <td>
+      <a href=""{{enlace}}"" target=""_blank"" style=""text-decoration:none; color:#f5f5f5;"">
 
+        <table width=""100%"" cellpadding=""0"" cellspacing=""0"">
+          <tr>
+            <td align=""center"">
+              <img src=""{{imagen}}"" title=""{{nombreJuego}}"" style=""max-width:100%; max-height:300px; display:block;"" />
+            </td>
+          </tr>
+        </table>
+
+        <table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""padding:15px;"">
+          <tr>
+            <td align=""center"" style=""padding-right:10px;"">
+              <img src=""{{imagenTienda}}"" style=""width:120px; display:block;"" />
+            </td>
+
+            <td align=""center"" style=""width: 70px;"">
+              <div style=""padding:10px; background-color:darkgreen; color:#fff; font-size:17px;"">
+                {{descuento}}
+              </div>
+            </td>
+
+            <td align=""center"" style=""padding-left:10px; font-size:17px;"">
+              {{precio}}
+            </td>
+          </tr>
+        </table>
+
+      </a>
+    </td>
+  </tr>
+</table>";
+
+					htmlJson = htmlJson.Replace("{{nombreJuego}}", json.Nombre);
 					htmlJson = htmlJson.Replace("{{enlace}}", json.Enlace);
 					htmlJson = htmlJson.Replace("{{imagen}}", json.Imagen);
 					htmlJson = htmlJson.Replace("{{imagenTienda}}", json.TiendaIcono);

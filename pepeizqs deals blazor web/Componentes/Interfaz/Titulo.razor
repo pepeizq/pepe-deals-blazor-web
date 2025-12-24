@@ -6,11 +6,7 @@
 	<meta name="og:title" Content="@titulo" />
 	<meta name="description" content="@descripcion" />
 	<meta name="og:description" content="@descripcion" />
-	<meta name="og:url" content="@enlace" />
 	<meta name="og:image" content="@imagen" />
-	<meta name="og:site_name" content="pepe's deals" />
-	<meta name="og:type" content="website" />
-	<meta name="robots" content="noimageindex" />
 	<meta name="keywords" content="@keywords2" />
 
 	@if (tipo == Tipo.Bundles)
@@ -227,25 +223,6 @@
 			}
 		</script>
 	}
-
-	@if (tipo != Tipo.Noticia)
-	{
-		<link rel="canonical" href="@enlace" />
-	}
-	else
-	{
-		<link rel="canonical" href="@enlaceEnNoticia"/>
-
-		<link rel="alternate" hreflang="en" href="@enlaceEnNoticia" />
-		<link rel="alternate" hreflang="es" href="@enlaceEsNoticia" />
-		<link rel="alternate" hreflang="x-default" href="@enlaceEnNoticia" />
-	}
-	
-	<link title="pepe's deals • @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "LastNews")" rel="alternate" type="application/rss+xml" href="https://@dominio/rss-en.xml" />
-
-	<meta name="twitter:site" content="@@pepeizqdeals" />
-	<meta name="twitter:domain" content="pepeizqdeals.com" />
-	<meta name="twitter:card" content="summary_large_image" />
 </HeadContent>
 
 @code {

@@ -11,7 +11,7 @@ namespace BaseDatos.Mantenimiento
 			WebApplicationBuilder builder = WebApplication.CreateBuilder();
 			string baseDatos = builder.Configuration.GetValue<string>("Mantenimiento:BaseDatos");
 
-			string sqlEncoger = $"DBCC SHRINKDATABASE ({baseDatos})";
+			string sqlEncoger = $"DBCC SHRINKDATABASE ({baseDatos}, 10)";
 
 			try
 			{

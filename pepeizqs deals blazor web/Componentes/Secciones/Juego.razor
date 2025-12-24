@@ -2220,7 +2220,7 @@
                                                 <img src="@JuegoDRM2.SacarImagen(suscripcion2.DRM)" style="max-width: 22px; max-height: 22px;" alt="DRM"  />
                                             </div>
 
-                                            <div style="margin-right: 20px;">
+                                            <div style="margin-right: 20px; display: flex; flex-direction: column; gap: 5px;">
                                                 <div style="display: flex; align-items: center; gap: 5px;">
                                                     <div>
                                                         @suscripcionUsar.Nombre
@@ -2236,11 +2236,20 @@
 
                                                 @if (suscripcionUsar.ParaSiempre == true)
                                                 {
-                                                    <div style="font-size: 14px; margin-top: 5px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String70", "Game") (@Herramientas.Calculadora.DiferenciaTiempo(suscripcion2.FechaTermina, idioma, 1)).</div>
+                                                    <div style="font-size: 14px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String70", "Game") (@Herramientas.Calculadora.DiferenciaTiempo(suscripcion2.FechaTermina, idioma, 1)).</div>
                                                 }
                                                 else
                                                 {
-                                                    <div style="font-size: 14px; margin-top: 5px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String69", "Game").</div>
+                                                    <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
+                                                        @if (suscripcionUsar.SoloStreaming == true)
+                                                        {
+                                                            <div style="background: color-mix(in srgb, var(--fondoSubsubcabecera), var(--fondoBotonPequeño) 70%); padding: 5px 10px;">
+                                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String115", "Game")
+                                                            </div>
+                                                        }
+                      
+                                                         <div>@Herramientas.Idiomas.BuscarTexto(idioma, "String69", "Game").</div>
+                                                    </div>
                                                 }
                                             </div>
                                         </div>

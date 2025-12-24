@@ -26,6 +26,25 @@ namespace BaseDatos.Noticias
 			return null;
 		}
 
+		public static async Task<Noticia> UnaNoticiaTitulos(int id)
+		{
+			string sql = "SELECT id, tituloEn, tituloEs FROM noticias WHERE id = @id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Noticia>(sql, new { id });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticia Titulos", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<List<Noticia>> Actuales(NoticiaTipo tipo = NoticiaTipo.Desconocido, int ultimosDias = 0)
 		{
 			string busqueda = "SELECT * FROM noticias WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina)";

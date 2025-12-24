@@ -20,7 +20,8 @@ namespace Juegos
 		Giants,
 		PearlAbyss,
 		SquareEnix,
-		AmazonLuna
+		AmazonLuna,
+		PlayStation
 	}
 
 	public static class JuegoDRM2
@@ -207,6 +208,18 @@ namespace Juegos
 			};
 
 			drms.Add(luna);
+
+			//----------------------------
+
+			DRM ps = new DRM
+			{
+				Id = JuegoDRM.PlayStation,
+				Nombre = "PlayStation",
+				Imagen = "/imagenes/drm/playstation.webp",
+				Acepciones = new List<string> { "playstation" }
+			};
+
+			drms.Add(ps);
 
 			//----------------------------
 

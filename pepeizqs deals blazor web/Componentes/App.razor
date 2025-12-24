@@ -16,20 +16,50 @@
     <ResourcePreloader />
     <link rel="stylesheet" href="@Assets["/css/bundle.css"]" type="text/css" media="print" onload="this.media='all'" />
 
-    <ImportMap />
-
     <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-icon-180x180.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicons/android-icon-192x192.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="96x96" href="/favicons/favicon-96x96.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png" />
+
     <link rel="manifest" href="/manifest.json" />
+
+    <meta name="og:site_name" content="pepe's deals" />
+    <meta name="robots" content="noimageindex" />
+
+    @if (string.IsNullOrEmpty(enlace) == false)
+    {
+        <link rel="canonical" href="@enlace" />
+        <meta name="og:url" content="@enlace" />
+
+        if (enlace.Contains("/news/") == true)
+        {
+            <link rel="alternate" hreflang="en" href="@enlaceEnNoticia" />
+            <link rel="alternate" hreflang="es" href="@enlaceEsNoticia" />
+            <link rel="alternate" hreflang="x-default" href="@enlaceEnNoticia" />
+
+            <meta property="og:type" content="article" />
+        }
+        else
+        {
+            <meta property="og:type" content="website" />
+        }
+    }
+
+    <link title="pepe's deals • @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "LastNews")" rel="alternate" type="application/rss+xml" href="https://@dominio/rss-en.xml" />
+
+    <meta name="twitter:site" content="@@pepeizqdeals" />
+    <meta name="twitter:domain" content="pepeizqdeals.com" />
+    <meta name="twitter:card" content="summary_large_image" />
+    
     <meta name="msapplication-TileColor" content="#007272" />
     <meta name="msapplication-TileImage" content="/favicons/ms-icon-144x144.png" />
     <meta name="theme-color" content="#007272" />
 
     <HeadOutlet @rendermode="renderizacion" />
+
+    <ImportMap />
 </head>
 
 <body class="cuerpo" id="cuerpazo" style="margin: 0px;">
@@ -45,7 +75,7 @@
     {
         <script async src="@Assets["~/superjs.js"]"></script>
 
-        if (enlaceBase.Contains("/game/") == true)
+        if (enlace.Contains("/game/") == true)
         {
             <script async src="@Assets["/video.js"]"></script>
         }
@@ -85,12 +115,15 @@
 
     private IComponentRenderMode renderizacion => contexto.AcceptsInteractiveRouting() ? InteractiveServer : null;
 
-    private string enlaceBase = null;
+    private string enlace = null;
     private string idioma = "en";
     private string usuarioId = null;
     private string userAgent = null;
     private string dominio = null;
     private bool usuarioAdmin = false;
+
+    private string enlaceEnNoticia = null;
+    private string enlaceEsNoticia = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,7 +139,22 @@
             dominio = contexto?.Request?.Host.Value;
 
             var path = contexto?.Request?.Path.ToString();
-            enlaceBase = path.EndsWith("/") ? path : path + "/";
+            enlace = "https://" + dominio + path;
+
+            if (path.Contains("/news/") == true)
+            {
+                string temp1 = path.Replace("/news/", null);
+                int int1 = temp1.IndexOf("/");
+                string temp2 = temp1.Remove(int1, temp1.Length - int1);
+
+                Noticias.Noticia noticia = await BaseDatos.Noticias.Buscar.UnaNoticiaTitulos(int.Parse(temp2));
+
+                if (noticia != null)
+                {
+                    enlaceEsNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEs)}/";
+                    enlaceEnNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEn)}/";
+                } 
+            }
         }
 
         if (string.IsNullOrEmpty(usuarioId) == false)

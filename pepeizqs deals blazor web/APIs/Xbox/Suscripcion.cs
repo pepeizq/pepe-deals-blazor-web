@@ -1,4 +1,6 @@
-﻿#nullable disable
+﻿//https://catalog.gamepass.com/subscriptions?subscription=all&market=US
+
+#nullable disable
 
 using Dapper;
 using Herramientas;
@@ -26,8 +28,9 @@ namespace APIs.Xbox
                 ParaSiempre = false,
                 Precio = 14.99,
 				AdminPendientes = true,
-				TablaPendientes = "tiendamicrosoftstore"
-            };
+				TablaPendientes = "tiendamicrosoftstore",
+				AdminAñadir = false
+			};
 
             return gamepass;
         }

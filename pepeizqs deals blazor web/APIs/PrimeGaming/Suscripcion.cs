@@ -18,8 +18,9 @@ namespace APIs.PrimeGaming
 				AdminInteractuar = false,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = true,
-                Precio = 4.99
-            };
+                Precio = 4.99,
+				AdminAñadir = false
+			};
 
 			DateTime fechaPrime = DateTime.Now;
 			fechaPrime = fechaPrime.AddMonths(1);
@@ -42,8 +43,9 @@ namespace APIs.PrimeGaming
 				DRMDefecto = JuegoDRM.Amazon,
 				AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
-                ParaSiempre = true
-            };
+                ParaSiempre = true,
+				AdminAñadir = false
+			};
 
 			DateTime fechaPrime = DateTime.Now;
 			fechaPrime = fechaPrime.AddMonths(1);

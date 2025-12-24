@@ -17,7 +17,8 @@ namespace APIs.Humble
 				AdminInteractuar = true,
 				UsuarioEnlacesEspecificos = false,
 				ParaSiempre = true,
-				Precio = 12.99
+				Precio = 12.99,
+				AdminAñadir = true
 			};
 
 			DateTime fechaHumbleChoice = DateTime.Now;
@@ -69,8 +70,9 @@ namespace APIs.Humble
 				DRMDefecto = JuegoDRM.Steam,
 				AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
-				ParaSiempre = true
-            };
+				ParaSiempre = true,
+				AdminAñadir = false
+			};
 
 			DateTime fechaHumbleMonthly = DateTime.Now;
 			fechaHumbleMonthly = fechaHumbleMonthly.AddMonths(1);

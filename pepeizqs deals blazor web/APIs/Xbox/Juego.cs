@@ -17,8 +17,15 @@ namespace APIs.Xbox
 			cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
 			HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://catalog.gamepass.com/products?market=US&language=en-US&hydration=MobileDetailsForConsole");
-			peticion.Content = new StringContent("{\r\n  \"Products\": [ \"" + id + "\" ]\r\n}",
+			peticion.Content = new StringContent($@"{{ ""Products"": [ ""{id}"" ]}}",
 												Encoding.UTF8, "application/json");
+			peticion.Headers.AcceptLanguage.Add(
+				new StringWithQualityHeaderValue("en-US")
+			);
+			peticion.Headers.Add("X-Ms-Client-Language", "en-US");
+			peticion.Headers.UserAgent.ParseAdd(
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+			);
 
 			HttpResponseMessage respuesta = await cliente.SendAsync(peticion);
 
@@ -38,40 +45,34 @@ namespace APIs.Xbox
 				{
 					JuegoXbox xbox = new JuegoXbox();
 
-					if (datos.Productos[id].Plataformas != null)
+					if (datos.Productos[id].Plataformas?.Count > 0)
 					{
-						if (datos.Productos[id].Plataformas.Count > 0)
+						foreach (var plataforma in datos.Productos[id].Plataformas)
 						{
-							foreach (var plataforma in datos.Productos[id].Plataformas)
+							if (plataforma == "Windows.Desktop")
 							{
-								if (plataforma == "Windows.Desktop")
-								{
-									xbox.Windows = true;
-								}
+								xbox.Windows = true;
 							}
 						}
 					}
 
-					if (datos.Productos[id].Atributos != null)
+					if (datos.Productos[id].Atributos?.Count > 0)
 					{
-						if (datos.Productos[id].Atributos.Count > 0)
+						foreach (var atributo in datos.Productos[id].Atributos)
 						{
-							foreach (var atributo in datos.Productos[id].Atributos)
+							if (atributo.Nombre == "XblAchievements")
 							{
-								if (atributo.Nombre == "XblAchievements")
-								{
-									xbox.Logros = true;
-								}
+								xbox.Logros = true;
+							}
 
-								if (atributo.Nombre == "XblCloudSaves")
-								{
-									xbox.GuardadoNube = true;
-								}
+							if (atributo.Nombre == "XblCloudSaves")
+							{
+								xbox.GuardadoNube = true;
+							}
 
-								if (atributo.Nombre == "GameStreaming")
-								{
-									xbox.Streaming = true;
-								}
+							if (atributo.Nombre == "GameStreaming")
+							{
+								xbox.Streaming = true;
 							}
 						}
 					}
