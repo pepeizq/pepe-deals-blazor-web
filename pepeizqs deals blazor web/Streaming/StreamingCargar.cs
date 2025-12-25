@@ -6,7 +6,8 @@ namespace Streaming2
     {
         GeforceNOW,
         AmazonLuna,
-		Boosteroid
+		Boosteroid,
+		Desconocido
 	}
 
     public class StreamingCargar
@@ -28,6 +29,19 @@ namespace Streaming2
 			foreach (var streaming in GenerarListado())
 			{
 				if (streaming.Id.ToString()?.ToLower() == streamingTexto?.ToLower())
+				{
+					return streaming;
+				}
+			}
+
+			return null;
+		}
+
+		public static Streaming DevolverStreaming(StreamingTipo streamingTipo)
+		{
+			foreach (var streaming in GenerarListado())
+			{
+				if (streaming.Id == streamingTipo)
 				{
 					return streaming;
 				}

@@ -356,6 +356,24 @@ namespace Juegos
 		public int Descuento { get; set; }
 	}
 
+	public class JuegoStreaming
+	{
+		public int Id { get; set; }
+		public string Nombre { get; set; }
+		public JuegoImagenes Imagenes { get; set; }
+		public string DRMs { get; set; }
+		public List<JuegoStreamingDRM> DRMs2 { get; set; }
+		public int IdSteam { get; set; }
+		public int IdGog { get; set; }
+	}
+
+	public class JuegoStreamingDRM
+	{
+		public JuegoDRM DRM { get; set; }
+		public bool UsuarioTiene { get; set; }
+		public bool UsuarioDesea { get; set; }
+	}
+
 	//-------------------------------------------------------
 
 	public enum JuegoTipo

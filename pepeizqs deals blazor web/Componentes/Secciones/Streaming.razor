@@ -1,0 +1,319 @@
+﻿@page "/streaming/"
+@page "/streaming/{streamingSeleccionadoTexto}/"
+
+@using Juegos
+@using System.Text.Json
+@using pepeizqs_deals_web.Data
+
+@inject IHttpContextAccessor Contexto
+@inject IJSRuntime JavaScript
+
+<script>
+    window.ChangeUrl = function (url) {
+        history.pushState(null, '', url);
+    }
+</script>
+
+<style>
+    .streaming-grid {
+        gap: 30px;
+    }
+
+    .streaming-grid {
+        padding: 30px;
+        gap: 30px;
+    }
+
+    @@media (max-width: 800px) {
+        .streaming-grid {
+            gap: 15px;
+        }
+
+        .streaming-grid {
+            padding: 15px;
+            gap: 15px;
+        }
+    }
+</style>
+
+<style>
+    .caja-streaming-contenido {
+        background-color: var(--fondoSubsubcabecera);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+    }
+
+    .caja-streaming-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        padding: 20px 30px;
+        border: 1px solid var(--fondoSubsubcabecera);
+    }
+</style>
+
+<div class="subcabecera">
+    <div class="cuerpo-ancho sub-subcabecera">
+        @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+        {
+            <button class="boton-pequeño" style="@CambiarEstilo(Streaming2.StreamingTipo.Desconocido) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => StreamingAbrir(e, Streaming2.StreamingTipo.Desconocido))">
+                <h1 style="font-size: 18px; margin: 0px; line-height: 24px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions")
+                </h1>
+            </button>
+
+            if (streamingSeleccionado == Streaming2.StreamingTipo.Desconocido)
+            {
+                foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+                {
+                    if (streaming.Id != Streaming2.StreamingTipo.Desconocido)
+                    {
+                        <button class="boton-pequeño" style="@CambiarEstilo(streaming.Id) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; box-shadow: none;" @onclick="@(e => StreamingAbrir(e, streaming.Id))" title="@streaming.Nombre">
+                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(streaming.ImagenIcono)" style="width: 20px; height: 20px;" alt="Store" />
+                        </button>
+                    }
+                }
+            }
+            else
+            {
+                var elegido = Streaming2.StreamingCargar.DevolverStreaming(streamingSeleccionado);
+
+                <button class="boton-pequeño" style="@CambiarEstilo(streamingSeleccionado) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => StreamingAbrir(e, streamingSeleccionado))" title="@elegido.Nombre">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(elegido.ImagenIcono)" style="width: 20px; height: 20px;" alt="@elegido.Nombre" />
+
+                        <div style="font-size: 16px;">
+                            @elegido.Nombre
+                        </div>
+                    </div>
+                </button>
+            }          
+        }
+        else
+        {
+            <h1 style="font-size: 18px; margin: 0px;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions")
+            </h1>
+        }
+    </div>
+</div>
+
+@if (streamingSeleccionado == Streaming2.StreamingTipo.Desconocido)
+{
+    <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 30px;">
+        <div class="streaming-grid caja-streaming-contenido" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 30px;">
+            @foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+            {
+                <button @onclick="@(e => StreamingAbrir(e, streaming.Id))" class="boton-pequeño suscripcion-grid" style="display: flex; flex-direction: column; align-items: center; padding: 20px;">
+                    <div style="width: 220px; height: 50px; display: flex; justify-content: center;">
+                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(streaming.ImagenLogo, 200, 50)" alt="@streaming.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                    </div>
+                </button>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
+        <div class="caja-streaming-contenido" style="padding: 10px 15px; display: flex; flex-direction: column; gap: 10px;">
+            @if (juegos?.Count > 0)
+            {
+                <Virtualize Context="juego" Items="@juegos">
+                    <a class="boton-pequeño" style="padding: 0px;" href="/game/@juego.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego.Nombre)/" target="_self">
+                        <div style="width: 100%; display: flex; align-items: center; gap: 20px;">
+                            <div style="width: 115px; height: 43px;">
+                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Capsule_231x87)" style="max-width: 100%; height: 100%;" alt="@juego.Nombre" />
+                            </div>
+
+                            <div>
+                                @juego.Nombre
+                            </div>
+
+                            @if (juego.DRMs2?.Count > 0)
+                            {
+                                <div style="margin-left: auto; margin-right: 10px; display: flex; align-items: center; gap: 5px;">
+                                    @foreach (var drm in juego.DRMs2)
+                                    {
+                                        string fondoColor = string.Empty;
+
+                                        if (drm.UsuarioTiene == true)
+                                        {
+                                            fondoColor = "background-color: var(--fondoBien);";
+                                        }
+
+                                        <div style="padding: 5px; @fondoColor">
+                                            <img src="@JuegoDRM2.SacarImagen(drm.DRM)" style="width: 20px; height: 20px;" />
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </a>
+                </Virtualize>
+            }
+        </div>
+    </div>
+}
+
+@code {
+
+    #nullable disable
+
+    private string idioma = "en";
+    private string usuarioId = null;
+    private string userAgent = null;
+    private string dominio = null;
+
+    [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+    [PersistentState] public Usuario deseadosUsuario { get; set; }
+
+    [Parameter] public string streamingSeleccionadoTexto { get; set; }
+    public Streaming2.StreamingTipo streamingSeleccionado { get; set; } = Streaming2.StreamingTipo.Desconocido;
+
+    [PersistentState] public List<JuegoStreaming> juegos { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+        idioma = datos.Idioma;
+        usuarioId = datos.UsuarioId;
+        userAgent = datos.UserAgent;
+        dominio = datos.Dominio;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+        }
+
+        if (string.IsNullOrEmpty(streamingSeleccionadoTexto) == false)
+        {
+            foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+            {
+                if (streaming.Id != Streaming2.StreamingTipo.Desconocido)
+                {
+                    if (Herramientas.EnlaceAdaptador.Nombre(streaming.Id.ToString().ToLower()) == streamingSeleccionadoTexto)
+                    {
+                        streamingSeleccionado = streaming.Id;
+                        break;
+                    }
+                }
+            }
+
+            if (streamingSeleccionado != Streaming2.StreamingTipo.Desconocido)
+            {
+                await StreamingAbrir(streamingSeleccionado);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            if (streamingSeleccionado != Streaming2.StreamingTipo.Desconocido)
+            {
+                await CambiarEnlace(streamingSeleccionado);
+            }
+        }
+    }
+
+    private async Task StreamingAbrir(MouseEventArgs e, Streaming2.StreamingTipo streaming)
+    {
+        streamingSeleccionado = streaming;
+
+        if (streaming != Streaming2.StreamingTipo.Desconocido)
+        {
+            await CambiarEnlace(streaming);
+            await StreamingAbrir(streaming);
+        }
+        else
+        {
+            await JavaScript.InvokeVoidAsync("ChangeUrl", "/streaming/"); 
+        }
+    }
+
+    private async Task StreamingAbrir(Streaming2.StreamingTipo streaming)
+    {
+        streamingSeleccionado = streaming;
+
+        juegos = await BaseDatos.Streaming.Buscar.BuscarJuegos("streaming" + Herramientas.EnlaceAdaptador.Nombre(streaming.ToString().ToLower()), 0);
+
+        if (juegos?.Count > 0)
+        {
+            foreach (var juego in juegos)
+            {
+                if (juego.DRMs.Contains("[") == true && juego.DRMs.Contains("]") == true)
+                {
+                    List<string> drms = JsonSerializer.Deserialize<List<string>>(juego?.DRMs ?? "") ?? new List<string>();
+
+                    if (drms?.Count > 0)
+                    {
+                        foreach (var drm in drms)
+                        {
+                            JuegoStreamingDRM nuevoDRM = new JuegoStreamingDRM();
+                            nuevoDRM.DRM = JuegoDRM2.Traducir(drm);
+
+                            if (juego.DRMs2 == null)
+                            {
+                                juego.DRMs2 = new List<JuegoStreamingDRM>();
+                            }
+
+                            if (string.IsNullOrEmpty(usuarioId) == false)
+                            {
+                                Juegos.Juego nuevoJuego = new Juegos.Juego();
+                                nuevoJuego.IdSteam = juego.IdSteam;
+                                nuevoJuego.IdGog = juego.IdGog;
+
+                                bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+
+                                nuevoDRM.UsuarioTiene = usuarioTieneJuego;
+                            }
+
+                            juego.DRMs2.Add(nuevoDRM);
+                        }
+                    }
+                }
+                else
+                {
+                    if (juego.DRMs2 == null)
+                    {
+                        juego.DRMs2 = new List<JuegoStreamingDRM>();
+                    }
+
+                    JuegoStreamingDRM nuevoDRM = new JuegoStreamingDRM();
+                    nuevoDRM.DRM = JuegoDRM2.Traducir(juego.DRMs);
+
+                    if (string.IsNullOrEmpty(usuarioId) == false)
+                    {
+                        Juegos.Juego nuevoJuego = new Juegos.Juego();
+                        nuevoJuego.IdSteam = juego.IdSteam;
+                        nuevoJuego.IdGog = juego.IdGog;
+
+                        bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+
+                        nuevoDRM.UsuarioTiene = usuarioTieneJuego;
+                    }
+
+                    juego.DRMs2.Add(nuevoDRM);
+                }
+            }
+        }
+    }
+
+    private async Task CambiarEnlace(Streaming2.StreamingTipo streaming)
+    {
+        await JavaScript.InvokeVoidAsync("ChangeUrl", $"/streaming/{Herramientas.EnlaceAdaptador.Nombre(streaming.ToString().ToLower())}/");
+    }
+
+    private string CambiarEstilo(Streaming2.StreamingTipo nuevoTipo)
+    {
+        if (nuevoTipo != streamingSeleccionado)
+        {
+            return "background-color: transparent;";
+        }
+        else
+        {
+            return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
+        }
+    }
+}

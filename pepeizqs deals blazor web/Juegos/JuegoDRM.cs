@@ -60,7 +60,7 @@ namespace Juegos
 			{
 				Id = JuegoDRM.DRMFree,
 				Nombre = "DRM Free",
-				Acepciones = new List<string> { "drm free" }
+				Acepciones = new List<string> { "drm free", "drm_free" }
 			};
 
 			drms.Add(drmfree);
@@ -84,7 +84,7 @@ namespace Juegos
 				Id = JuegoDRM.EA,
 				Nombre = "EA App",
 				Imagen = "/imagenes/drm/ea.webp",
-				Acepciones = new List<string> { "ea app", "electronic arts", "origin" }
+				Acepciones = new List<string> { "ea app", "electronic arts", "origin", "ea_app" }
 			};
 
 			drms.Add(ea);
@@ -96,7 +96,7 @@ namespace Juegos
 				Id = JuegoDRM.Rockstar,
 				Nombre = "Rockstar Games Launcher",
 				Imagen = "/imagenes/drm/rockstar.webp",
-				Acepciones = new List<string> { "rockstar social club", "rockstar" }
+				Acepciones = new List<string> { "rockstar social club", "rockstar", "rockstar launcher" }
 			};
 
 			drms.Add(rockstar);
@@ -108,7 +108,7 @@ namespace Juegos
 				Id = JuegoDRM.Microsoft,
 				Nombre = "Microsoft Store",
 				Imagen = "/imagenes/drm/microsoft.webp",
-				Acepciones = new List<string> { "microsoft store", "microsoft", "xbox" }
+				Acepciones = new List<string> { "microsoft store", "microsoft", "xbox", "msstore" }
 			};
 
 			drms.Add(microsoft);
@@ -310,6 +310,37 @@ namespace Juegos
 						drmFinal = JuegoDRM.DRMFree;
 					}
 				}
+			}
+
+			if (drmFinal == JuegoDRM.NoEspecificado)
+			{
+				bool añadirMensaje = true;
+
+				List<string> ignorados = [
+					"activation key",
+					"antstream arcade",
+					"audio-download",
+					"download",
+					"no",
+					"none",
+					"nv_bundle",
+					"oculus",
+					"other-",
+					"unknown",
+					"xbox-one",
+					"yes",
+					"zenimax"
+				];
+
+				if (ignorados.Contains(drmTexto.ToLower()))
+				{
+					añadirMensaje = false;
+				}
+
+				if (añadirMensaje == true)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("DRM No Especificado", "DRM: " + drmTexto);
+				}			
 			}
 
 			return drmFinal;

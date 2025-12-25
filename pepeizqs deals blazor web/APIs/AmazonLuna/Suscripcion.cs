@@ -2,8 +2,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
-using System.Data.SqlTypes;
 using System.Text.Json;
 
 namespace APIs.AmazonLuna

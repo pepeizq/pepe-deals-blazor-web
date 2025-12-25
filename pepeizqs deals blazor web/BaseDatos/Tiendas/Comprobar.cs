@@ -76,12 +76,7 @@ namespace BaseDatos.Tiendas
 
 										if (string.IsNullOrEmpty(datos.precioMinimosHistoricos) == false)
 										{
-											if (ofertasHistoricas == null)
-											{
-												ofertasHistoricas = new List<JuegoPrecio>();
-											}
-
-											ofertasHistoricas = JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos);
+											ofertasHistoricas = JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioMinimosHistoricos) ?? new List<JuegoPrecio>();
 
 											if (ofertasHistoricas.Count == 0)
 											{

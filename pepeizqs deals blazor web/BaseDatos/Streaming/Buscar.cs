@@ -69,5 +69,38 @@ namespace BaseDatos.Streaming
 
 			return false;
 		}
+
+		public static async Task<List<JuegoStreaming>> BuscarJuegos(string tabla, int orden)
+		{
+			if (string.IsNullOrEmpty(tabla) == false)
+			{
+				string busqueda = $@"SELECT
+  j.id,
+  j.nombre,
+  j.imagenes,
+  j.idSteam,
+  j.idGOG,
+  s.drms
+FROM {tabla} s
+INNER JOIN juegos j ON s.idJuego = j.id
+WHERE s.idJuego <> 0
+GROUP BY j.id, j.nombre, j.imagenes, j.idSteam, j.idGOG, j.analisis, s.drms";
+
+				if (orden == 0)
+				{
+					busqueda += $@"
+ORDER BY CASE
+WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
+END DESC";
+				}
+
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<JuegoStreaming>(busqueda)).ToList();
+				});
+			}
+
+			return null;
+		}
     }
 }

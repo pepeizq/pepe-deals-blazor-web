@@ -1,4 +1,4 @@
-﻿@page "/subscriptions"
+﻿@page "/subscriptions/"
 @page "/subscriptions/{suscripcionSeleccionadaTexto}/"
 
 @using APIs.Steam
@@ -267,7 +267,7 @@
         if (tipoSeleccionado == Suscripciones2.SuscripcionTipo.Desconocido)
         {
             <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 30px;">
-                <div class="caja-archivo-contenido" style="display: flex; align-items: center; padding: 20px; gap: 20px;">
+                <div class="caja-archivo-contenido" style="display: flex; align-items: center; padding: 30px; gap: 30px;">
                     <div style="max-width: 26px;">
                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                             <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
@@ -662,7 +662,7 @@ else
     private List<Juegos.JuegoSuscripcion> suscripcionSeleccionadaJuegosMostrar = new List<Juegos.JuegoSuscripcion>();
     private List<JuegoDRM> suscripcionSeleccionadaDRMs = new List<JuegoDRM>();
 
-    private async void SuscripcionAbrir(MouseEventArgs e, Suscripciones2.SuscripcionComponente componente)
+    private async Task SuscripcionAbrir(MouseEventArgs e, Suscripciones2.SuscripcionComponente componente)
     {
         await SuscripcionAbrir(componente);
     }
@@ -742,7 +742,6 @@ else
             suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosMostrar.AsParallel().OrderByDescending(x => int.Parse(x.Juego.Analisis.Cantidad.Replace(",", null))).ThenBy(x => x.Juego.Nombre).ToList();
 
             await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/" + suscripcionSeleccionadaTexto + "/");
-            await InvokeAsync(StateHasChanged);
         }
     }
 

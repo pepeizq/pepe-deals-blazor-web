@@ -120,18 +120,15 @@ namespace Herramientas
 
 					if (drmValidoSteam == true)
 					{
-						if (listados.Steam != null)
+						if (listados.Steam?.Count > 0)
 						{
-							if (listados.Steam.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Steam)
 								{
-									foreach (var juegoUsuario in listados.Steam)
+									if (juegoUsuario.Id == juego.IdSteam)
 									{
-										if (juegoUsuario.Id == juego.IdSteam)
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
@@ -150,18 +147,15 @@ namespace Herramientas
 
 					if (drmValidoGog == true)
 					{
-						if (listados.Gog != null)
+						if (listados.Gog?.Count > 0)
 						{
-							if (listados.Gog.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Gog)
 								{
-									foreach (var juegoUsuario in listados.Gog)
+									if (juegoUsuario.Id == juego.IdGog)
 									{
-										if (juegoUsuario.Id == juego.IdGog)
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
@@ -180,18 +174,15 @@ namespace Herramientas
 
 					if (drmValidoAmazon == true)
 					{
-						if (listados.Amazon != null)
+						if (listados.Amazon?.Count > 0)
 						{
-							if (listados.Amazon.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Amazon)
 								{
-									foreach (var juegoUsuario in listados.Amazon)
+									if (juegoUsuario == juego.IdAmazon.ToString())
 									{
-										if (juegoUsuario == juego.IdAmazon.ToString())
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
@@ -210,18 +201,15 @@ namespace Herramientas
 
 					if (drmValidoEpic == true)
 					{
-						if (listados.Epic != null)
+						if (listados.Epic?.Count > 0)
 						{
-							if (listados.Epic.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Epic)
 								{
-									foreach (var juegoUsuario in listados.Epic)
+									if (juegoUsuario == juego.ExeEpic)
 									{
-										if (juegoUsuario == juego.ExeEpic)
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
@@ -240,18 +228,15 @@ namespace Herramientas
 
 					if (drmValidoUbisoft == true)
 					{
-						if (listados.Ubisoft != null)
+						if (listados.Ubisoft?.Count > 0)
 						{
-							if (listados.Ubisoft.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Ubisoft)
 								{
-									foreach (var juegoUsuario in listados.Ubisoft)
+									if (juegoUsuario == juego.ExeUbisoft)
 									{
-										if (juegoUsuario == juego.ExeUbisoft)
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
@@ -270,18 +255,15 @@ namespace Herramientas
 
 					if (drmValidoEa == true)
 					{
-						if (listados.Ea != null)
+						if (listados.Ea?.Count > 0)
 						{
-							if (listados.Ea.Count > 0)
+							if (juego.Tipo == JuegoTipo.Game)
 							{
-								if (juego.Tipo == JuegoTipo.Game)
+								foreach (var juegoUsuario in listados.Ea)
 								{
-									foreach (var juegoUsuario in listados.Ea)
+									if (juegoUsuario == juego.ExeEA)
 									{
-										if (juegoUsuario == juego.ExeEA)
-										{
-											return true;
-										}
+										return true;
 									}
 								}
 							}
