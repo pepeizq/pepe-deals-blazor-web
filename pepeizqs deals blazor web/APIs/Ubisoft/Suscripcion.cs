@@ -4,6 +4,7 @@
 
 using Dapper;
 using Juegos;
+using Microsoft.VisualBasic;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -28,8 +29,9 @@ namespace APIs.Ubisoft
                 ParaSiempre = false,
                 Precio = 7.99,
                 AdminPendientes = true,
-                TablaPendientes = "tiendaubisoft"
-            };
+                TablaPendientes = "tiendaubisoft",
+				SitemapIncluir = true
+			};
 
             return ubisoft;
         }
@@ -50,8 +52,9 @@ namespace APIs.Ubisoft
                 Precio = 17.99,
                 IncluyeSuscripcion = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics,
                 AdminPendientes = true,
-                TablaPendientes = "tiendaubisoft"
-            };
+                TablaPendientes = "tiendaubisoft",
+				SitemapIncluir = true
+			};
 
             return ubisoft;
         }
@@ -168,6 +171,8 @@ namespace APIs.Ubisoft
 						{
 							await BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
 						}
+
+						await GestionarLuna(juego);
 					}
 				}
             }
@@ -274,6 +279,93 @@ namespace APIs.Ubisoft
 						{
                             await BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
                         }
+
+						await GestionarLuna(juego);
+					}
+				}
+			}
+		}
+
+		public static async Task GestionarLuna(UbisoftSuscripcionJuego juego)
+		{
+			if (juego.Luna?.Count > 0)
+			{
+				bool gestionar = false;
+
+				foreach (var plataforma in juego.Luna)
+				{
+					if (plataforma.ToLower().Contains("luna") == true)
+					{
+						gestionar = true;
+					}
+				}
+
+				if (gestionar == true)
+				{
+					DateTime fecha = DateTime.Now;
+					fecha = fecha + TimeSpan.FromDays(1);
+
+					bool? encontrado = false;
+
+					string sqlBuscar = "SELECT 1 FROM streamingamazonluna WHERE nombreCodigo=@nombreCodigo";
+
+					try
+					{
+						encontrado = await Herramientas.BaseDatos.Select(async conexion =>
+						{
+							var resultado = await conexion.QueryFirstOrDefaultAsync<bool?>(
+								sqlBuscar,
+								new { nombreCodigo = juego.Id }
+							);
+
+							return resultado ?? false;
+						});
+					}
+					catch (Exception ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 1", ex);
+					}
+
+					if (encontrado == true)
+					{
+						string sqlActualizar = "UPDATE streamingamazonluna " +
+															"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
+
+						try
+						{
+							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+							{
+								return await conexion.ExecuteAsync(sqlActualizar, new { nombreCodigo = juego.Id, fecha }, transaction: sentencia);
+							});
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 2", ex);
+						}
+					}
+					else
+					{
+						string sqlInsertar = "INSERT INTO streamingamazonluna " +
+														"(nombreCodigo, nombre, drms, fecha) VALUES " +
+														"(@nombreCodigo, @nombre, @drms, @fecha) ";
+
+						try
+						{
+							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+							{
+								return await conexion.ExecuteAsync(sqlInsertar, new
+								{
+									nombreCodigo = juego.Id,
+									nombre = juego.Nombre,
+									drms = "ubisoft",
+									fecha
+								}, transaction: sentencia);
+							});
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 3", ex);
+						}
 					}
 				}
 			}
@@ -296,5 +388,8 @@ namespace APIs.Ubisoft
 
         [JsonPropertyName("image_link")]
         public string Imagen { get; set; }
-    }
+
+		[JsonPropertyName("anywherePlatforms")]
+		public List<string> Luna { get; set; }
+	}
 }

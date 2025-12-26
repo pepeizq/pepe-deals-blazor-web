@@ -168,7 +168,7 @@ namespace Herramientas
 
 			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
 			{
-				if (suscripcion.AdminInteractuar == true)
+				if (suscripcion.SitemapIncluir == true)
 				{
 					string textoSuscripcion = "<url>" + Environment.NewLine +
 						"<loc>https://" + dominio + "/subscriptions/" + Herramientas.EnlaceAdaptador.Nombre(suscripcion.Nombre.ToLower()) + "/</loc>" + Environment.NewLine +
@@ -177,6 +177,23 @@ namespace Herramientas
 
 					sb.Append(textoSuscripcion);
 				}
+			}
+
+			string textoStreaming = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/streaming/</loc>" + Environment.NewLine +
+					"<changefreq>daily</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoStreaming);
+
+			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+			{
+				string textoStreaming2 = "<url>" + Environment.NewLine +
+						"<loc>https://" + dominio + "/streaming/" + Herramientas.EnlaceAdaptador.Nombre(streaming.Id.ToString().ToLower()) + "/</loc>" + Environment.NewLine +
+						"<changefreq>daily</changefreq>" + Environment.NewLine +
+						"</url>";
+
+				sb.Append(textoStreaming2);
 			}
 
 			string textoMinimos = "<url>" + Environment.NewLine +

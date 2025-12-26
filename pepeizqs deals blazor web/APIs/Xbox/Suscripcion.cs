@@ -29,7 +29,8 @@ namespace APIs.Xbox
                 Precio = 14.99,
 				AdminPendientes = true,
 				TablaPendientes = "tiendamicrosoftstore",
-				AdminAñadir = false
+				AdminAñadir = false,
+				SitemapIncluir = true
 			};
 
             return gamepass;

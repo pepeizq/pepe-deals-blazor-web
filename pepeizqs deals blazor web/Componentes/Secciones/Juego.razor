@@ -1068,6 +1068,16 @@
                                                     }
                                                 }
 
+                                                if (drm.Id == JuegoDRM.Ubisoft && juego.Tipo == JuegoTipo.Game)
+                                                {
+                                                    amazonLuna = amazonLunaUbisoft;
+
+                                                    if (amazonLuna == true)
+                                                    {
+                                                        añadirDiv = true;
+                                                    }
+                                                }
+
                                                 if (drmsGeforceNOW?.Count > 0)
                                                 {
                                                     foreach (var drmG in drmsGeforceNOW)
@@ -1390,7 +1400,7 @@
 
                                                         @if (amazonLuna == true)
                                                         {
-                                                            if (drm.Id == JuegoDRM.GOG && juego.Tipo == JuegoTipo.Game)
+                                                            if ((drm.Id == JuegoDRM.GOG || drm.Id == JuegoDRM.Ubisoft) && juego.Tipo == JuegoTipo.Game)
                                                             {
                                                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String87", "Game")">
                                                                     <img src="@APIs.GOG.Streaming.Generar().ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Amazon Luna"/>
@@ -3556,6 +3566,7 @@
     private Dictionary<int, Bundles2.Bundle> bundlesCache2 = new();
 
     private bool amazonLunaGOG = false;
+    private bool amazonLunaUbisoft = false;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -3614,7 +3625,7 @@
 
         #endregion
 
-        #region Bundles Cargar, DRMs Cuantos Tienen Desean, Amazon Luna GOG
+        #region Bundles Cargar, DRMs Cuantos Tienen Desean, Amazon Luna
 
         foreach (DRM drm in JuegoDRM2.GenerarListado())
         {
@@ -3634,7 +3645,12 @@
 
             if (drm.Id == JuegoDRM.GOG && juego.Tipo == JuegoTipo.Game)
             {
-                amazonLunaGOG = await global::BaseDatos.Streaming.Buscar.AmazonLuna(juego.Id);
+                amazonLunaGOG = await global::BaseDatos.Streaming.Buscar.AmazonLuna(juego.Id, "gog");
+            }
+
+            if (drm.Id == JuegoDRM.Ubisoft && juego.Tipo == JuegoTipo.Game)
+            {
+                amazonLunaUbisoft = await global::BaseDatos.Streaming.Buscar.AmazonLuna(juego.Id, "ubisoft");
             }
         }
 

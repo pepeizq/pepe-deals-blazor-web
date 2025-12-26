@@ -96,7 +96,7 @@ namespace Juegos
 				Id = JuegoDRM.Rockstar,
 				Nombre = "Rockstar Games Launcher",
 				Imagen = "/imagenes/drm/rockstar.webp",
-				Acepciones = new List<string> { "rockstar social club", "rockstar", "rockstar launcher" }
+				Acepciones = new List<string> { "rockstar social club", "rockstar", "rockstar launcher", "rockstarsocialclub" }
 			};
 
 			drms.Add(rockstar);
@@ -312,24 +312,40 @@ namespace Juegos
 				}
 			}
 
-			if (drmFinal == JuegoDRM.NoEspecificado)
+			if (drmFinal == JuegoDRM.NoEspecificado && string.IsNullOrEmpty(drmTexto) == false)
 			{
 				bool añadirMensaje = true;
 
 				List<string> ignorados = [
 					"activation key",
+					"all",
 					"antstream arcade",
 					"audio-download",
 					"download",
+					"download_drm",
+					"drivethrurpg",
+					"idw",
+					"mogstation",
+					"nintendo switch",
 					"no",
 					"none",
 					"nv_bundle",
 					"oculus",
 					"other-",
+					"other drm",
+					"platform &gt; linux",
+					"platform &gt; mac",
+					"platform &gt; windows",
 					"unknown",
+					"video-download",
+					"website",
+					"xbox-anywhere",
+					"xbox-live-cross-gen",
 					"xbox-one",
+					"xbox store",
 					"yes",
-					"zenimax"
+					"zenimax",
+					"zenva"
 				];
 
 				if (ignorados.Contains(drmTexto.ToLower()))

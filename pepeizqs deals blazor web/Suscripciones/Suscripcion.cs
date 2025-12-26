@@ -24,6 +24,7 @@ namespace Suscripciones2
 		public string TablaPendientes;
 		public bool SoloStreaming;
 		public bool AdminAñadir;
+		public bool SitemapIncluir;
 	}
 
     public class SuscripcionComponente

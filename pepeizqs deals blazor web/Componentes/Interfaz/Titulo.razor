@@ -391,6 +391,16 @@
 
 	#endregion
 
+	#region Parametros Streaming
+
+	[Parameter]
+	public string tituloStreaming { get; set; }
+
+	[Parameter]
+	public string enlaceStreaming { get; set; }
+
+	#endregion
+
 	#region Parametros Suscripciones
 
 	[Parameter]
@@ -446,6 +456,7 @@
 		Portada,
 		Privacidad,
 		RSS,
+		Streaming,
 		Suscripciones,
 		UltimasNoticias,
 		UltimosAñadidos,
@@ -610,6 +621,31 @@
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywordsVacias;
 		}
+		else if (tipo == Tipo.Streaming)
+		{
+			if (string.IsNullOrEmpty(tituloStreaming) == false)
+			{
+				titulo = tituloStreaming;
+			}
+			else
+			{
+				titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Streaming");
+			}
+
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Streaming");
+
+			if (string.IsNullOrEmpty(enlaceStreaming) == false)
+			{
+				enlace = "https://" + dominio + "/streaming/" + enlaceStreaming + "/";
+			}
+			else
+			{
+				enlace ??= "https://" + dominio + "/streaming/";
+			}
+
+			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
+			keywords2 ??= keywordsVacias;
+		}
 		else if (tipo == Tipo.Suscripciones)
 		{
 			if (string.IsNullOrEmpty(tituloAlternativoSuscripciones) == false)
@@ -691,8 +727,6 @@
 				descripcion = descripcion.Substring(0, 146) + " ...";
 			}
 		}
-
-		
 
 		#endregion
 	}

@@ -44,11 +44,11 @@ namespace BaseDatos.Streaming
 			return null;
         }
 
-        public static async Task<bool> AmazonLuna(int idJuego)
+        public static async Task<bool> AmazonLuna(int idJuego, string drm)
         {
 			if (idJuego > 0)
 			{
-				string busqueda = "SELECT 1 FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString();
+				string busqueda = "SELECT 1 FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString() + " AND drms = '" + drm + "'";
 
 				try
 				{
@@ -63,14 +63,14 @@ namespace BaseDatos.Streaming
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Amazon Luna", ex);
+					BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Existe", ex);
 				}
 			}
 
 			return false;
 		}
 
-		public static async Task<List<JuegoStreaming>> BuscarJuegos(string tabla, int orden)
+		public static async Task<List<JuegoStreaming>> BuscarJuegos(string tabla, int orden, string nombreBusqueda = null)
 		{
 			if (string.IsNullOrEmpty(tabla) == false)
 			{
@@ -83,8 +83,15 @@ namespace BaseDatos.Streaming
   s.drms
 FROM {tabla} s
 INNER JOIN juegos j ON s.idJuego = j.id
-WHERE s.idJuego <> 0
-GROUP BY j.id, j.nombre, j.imagenes, j.idSteam, j.idGOG, j.analisis, s.drms";
+WHERE s.idJuego <> 0 AND j.nombre IS NOT NULL AND LEN(LTRIM(RTRIM(j.nombre))) >= 1";
+
+				if (string.IsNullOrEmpty(nombreBusqueda) == false)
+				{
+					busqueda += $@"AND j.nombre COLLATE Latin1_General_CI_AI
+      LIKE '%{nombreBusqueda}%'";
+				}
+
+busqueda += $@"GROUP BY j.id, j.nombre, j.imagenes, j.idSteam, j.idGOG, j.analisis, s.drms";
 
 				if (orden == 0)
 				{
@@ -92,6 +99,16 @@ GROUP BY j.id, j.nombre, j.imagenes, j.idSteam, j.idGOG, j.analisis, s.drms";
 ORDER BY CASE
 WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
 END DESC";
+				}
+				else if (orden == 1)
+				{
+					busqueda += $@"
+ORDER BY j.Nombre";
+				}
+				else if (orden == 2)
+				{
+					busqueda += $@"
+ORDER BY j.Nombre DESC";
 				}
 
 				return await Herramientas.BaseDatos.Select(async conexion =>

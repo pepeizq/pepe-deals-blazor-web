@@ -3,10 +3,20 @@
 
 @using Juegos
 @using System.Text.Json
+@using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+
+@if (streamingSeleccionado != Streaming2.StreamingTipo.Desconocido)
+{
+    <Titulo tipo="@Titulo.Tipo.Streaming" idioma="@idioma" dominio="@dominio" tituloStreaming="@Streaming2.StreamingCargar.DevolverStreaming(streamingSeleccionado).Nombre" enlaceStreaming="@Herramientas.EnlaceAdaptador.Nombre(streamingSeleccionado.ToString().ToLower())" />
+}
+else
+{
+    <Titulo tipo="@Titulo.Tipo.Streaming" idioma="@idioma" dominio="@dominio" />
+}
 
 <script>
     window.ChangeUrl = function (url) {
@@ -55,7 +65,7 @@
         {
             <button class="boton-pequeño" style="@CambiarEstilo(Streaming2.StreamingTipo.Desconocido) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => StreamingAbrir(e, Streaming2.StreamingTipo.Desconocido))">
                 <h1 style="font-size: 18px; margin: 0px; line-height: 24px;">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions")
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Streaming")
                 </h1>
             </button>
 
@@ -84,12 +94,109 @@
                         </div>
                     </div>
                 </button>
+
+                <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                    @if (string.IsNullOrEmpty(usuarioId) == false)
+                    {
+                        <div class="menu-dropdown" style="width: auto; flex: 0 0 auto;">
+                            <button class="boton-pequeño" style="background-color: var(--buscadorSubcabecera); display: flex; align-items: center; width: 100%; padding: 8px 15px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
+                                <div style="font-size: 14px; padding-right: 5px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Streaming")
+                                </div>
+
+                                <div style="font-size: 14px; color: var(--colorEnlace); padding-right: 15px;">
+                                    @if (mostrar == 0)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Streaming")
+                                    }
+                                    else if (mostrar == 1)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Streaming")
+                                    }
+                                    else if (mostrar == 2)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Streaming")
+                                    }
+                                </div>
+
+                                <div style="max-width: 10px;">
+                                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                        <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+                                    </svg>
+                                </div>
+                            </button>
+
+                            <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--buscadorSubcabecera); z-index: 1001;">
+                                <button @onclick="@(e => Mostrar(e, 0))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Streaming")
+                                </button>
+                                <button @onclick="@(e => Mostrar(e, 1))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Streaming")
+                                </button>
+                                <button @onclick="@(e => Mostrar(e, 2))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Streaming")
+                                </button>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="menu-dropdown" style="width: auto; flex: 0 0 auto;">
+                        <button class="boton-pequeño" style="background-color: var(--buscadorSubcabecera); display: flex; align-items: center; width: 100%; padding: 8px 15px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
+                            <div style="font-size: 14px; padding-right: 5px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Streaming")
+                            </div>
+
+                            <div style="font-size: 14px; color: var(--colorEnlace); padding-right: 15px;">
+                                @if (ordenarPor == 0)
+                                {
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Streaming")
+                                }
+                                else if (ordenarPor == 1)
+                                {
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Streaming")
+                                }
+                                else if (ordenarPor == 2)
+                                {
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Streaming")
+                                }
+                            </div>
+
+                            <div style="max-width: 10px;">
+                                <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                    <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+                                </svg>
+                            </div>
+                        </button>
+
+                        <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--buscadorSubcabecera); z-index: 1001;">
+                            <button @onclick="@(e => OrdenarPor(e, 0))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Streaming")
+                            </button>
+                            <button @onclick="@(e => OrdenarPor(e, 1))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Streaming")
+                            </button>
+                            <button @onclick="@(e => OrdenarPor(e, 2))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Streaming")
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
+						<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Streaming")" />
+
+						<div style="max-width: 16px;">
+							<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+								<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+							</svg>
+						</div>
+					</div>
+                </div>
             }          
         }
         else
         {
             <h1 style="font-size: 18px; margin: 0px;">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions")
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Streaming")
             </h1>
         }
     </div>
@@ -98,6 +205,18 @@
 @if (streamingSeleccionado == Streaming2.StreamingTipo.Desconocido)
 {
     <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 30px;">
+        <div class="caja-streaming-contenido" style="padding: 30px; display: flex; align-items: center; gap: 30px;">
+            <div style="min-width: 30px; height: 30px;">
+                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                </svg>
+            </div>
+
+            <div>
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Streaming")
+            </div>
+        </div>
+
         <div class="streaming-grid caja-streaming-contenido" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 30px;">
             @foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
             {
@@ -169,6 +288,9 @@ else
     public Streaming2.StreamingTipo streamingSeleccionado { get; set; } = Streaming2.StreamingTipo.Desconocido;
 
     [PersistentState] public List<JuegoStreaming> juegos { get; set; }
+    public int ordenarPor { get; set; } = 0;
+    public int mostrar { get; set; } = 0;
+    public string textoBuscador { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -236,7 +358,7 @@ else
     {
         streamingSeleccionado = streaming;
 
-        juegos = await BaseDatos.Streaming.Buscar.BuscarJuegos("streaming" + Herramientas.EnlaceAdaptador.Nombre(streaming.ToString().ToLower()), 0);
+        juegos = await BaseDatos.Streaming.Buscar.BuscarJuegos("streaming" + Herramientas.EnlaceAdaptador.Nombre(streaming.ToString().ToLower()), ordenarPor, textoBuscador);
 
         if (juegos?.Count > 0)
         {
@@ -253,23 +375,26 @@ else
                             JuegoStreamingDRM nuevoDRM = new JuegoStreamingDRM();
                             nuevoDRM.DRM = JuegoDRM2.Traducir(drm);
 
-                            if (juego.DRMs2 == null)
+                            if (nuevoDRM.DRM != JuegoDRM.NoEspecificado)
                             {
-                                juego.DRMs2 = new List<JuegoStreamingDRM>();
+                                if (juego.DRMs2 == null)
+                                {
+                                    juego.DRMs2 = new List<JuegoStreamingDRM>();
+                                }
+
+                                if (string.IsNullOrEmpty(usuarioId) == false)
+                                {
+                                    Juegos.Juego nuevoJuego = new Juegos.Juego();
+                                    nuevoJuego.IdSteam = juego.IdSteam;
+                                    nuevoJuego.IdGog = juego.IdGog;
+
+                                    bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+
+                                    nuevoDRM.UsuarioTiene = usuarioTieneJuego;
+                                }
+
+                                juego.DRMs2.Add(nuevoDRM);
                             }
-
-                            if (string.IsNullOrEmpty(usuarioId) == false)
-                            {
-                                Juegos.Juego nuevoJuego = new Juegos.Juego();
-                                nuevoJuego.IdSteam = juego.IdSteam;
-                                nuevoJuego.IdGog = juego.IdGog;
-
-                                bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
-
-                                nuevoDRM.UsuarioTiene = usuarioTieneJuego;
-                            }
-
-                            juego.DRMs2.Add(nuevoDRM);
                         }
                     }
                 }
@@ -283,19 +408,49 @@ else
                     JuegoStreamingDRM nuevoDRM = new JuegoStreamingDRM();
                     nuevoDRM.DRM = JuegoDRM2.Traducir(juego.DRMs);
 
-                    if (string.IsNullOrEmpty(usuarioId) == false)
+                    if (nuevoDRM.DRM != JuegoDRM.NoEspecificado)
                     {
-                        Juegos.Juego nuevoJuego = new Juegos.Juego();
-                        nuevoJuego.IdSteam = juego.IdSteam;
-                        nuevoJuego.IdGog = juego.IdGog;
+                        if (string.IsNullOrEmpty(usuarioId) == false)
+                        {
+                            Juegos.Juego nuevoJuego = new Juegos.Juego();
+                            nuevoJuego.IdSteam = juego.IdSteam;
+                            nuevoJuego.IdGog = juego.IdGog;
 
-                        bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+                            bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
 
-                        nuevoDRM.UsuarioTiene = usuarioTieneJuego;
+                            nuevoDRM.UsuarioTiene = usuarioTieneJuego;
+                        }
+
+                        juego.DRMs2.Add(nuevoDRM);
                     }
-
-                    juego.DRMs2.Add(nuevoDRM);
                 }
+            }
+
+            juegos = juegos.GroupBy(j => j.Id).Select(grupo =>
+            {
+                var juegoBase = grupo.First();
+
+                juegoBase.DRMs2 = grupo
+                    .Where(j => j.DRMs2 != null)
+                    .SelectMany(j => j.DRMs2)
+                    .GroupBy(d => d.DRM)
+                    .Select(g => g.First())
+                    .ToList();
+
+                return juegoBase;
+            }).ToList();
+
+            if (mostrar == 1)
+            {
+                juegos = juegos
+                    .Where(j => j.DRMs2 != null && j.DRMs2.Any(d => d.UsuarioTiene))
+                    .ToList();
+            }
+            else if (mostrar == 2)
+            {
+                juegos = juegos
+                    .Where(j => j.DRMs2 != null && j.DRMs2.All(d => d.UsuarioTiene == false))
+                    .ToList();
             }
         }
     }
@@ -315,5 +470,24 @@ else
         {
             return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
         }
+    }
+
+    private async Task OrdenarPor(MouseEventArgs e, int nuevoOrdenar)
+    {
+        ordenarPor = nuevoOrdenar;
+
+        await StreamingAbrir(streamingSeleccionado);
+    }
+
+    private async Task Mostrar(MouseEventArgs e, int nuevoMostrar)
+    {
+        mostrar = nuevoMostrar;
+
+        await StreamingAbrir(streamingSeleccionado);
+    }
+
+    private async Task TextoCambiaBuscador()
+    {
+        await StreamingAbrir(streamingSeleccionado);
     }
 }

@@ -21,7 +21,8 @@ namespace APIs.EA
 				ParaSiempre = false,
 				Precio = 5.99,
 				AdminPendientes = true,
-				TablaPendientes = "tiendaea"
+				TablaPendientes = "tiendaea",
+				SitemapIncluir = true
 			};
 
 			return eaPlay;
@@ -43,8 +44,9 @@ namespace APIs.EA
 				IncluyeSuscripcion = Suscripciones2.SuscripcionTipo.EAPlay,
                 Precio = 16.99,
                 AdminPendientes = true,
-                TablaPendientes = "tiendaea"
-            };
+                TablaPendientes = "tiendaea",
+				SitemapIncluir = true
+			};
 
 			return eaPlayPro;
 		}

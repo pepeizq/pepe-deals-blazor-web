@@ -2,8 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Xml.Serialization;
 
