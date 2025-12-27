@@ -166,12 +166,26 @@ namespace Herramientas
 
 			sb.Append(textoSuscripciones);
 
+			string textoSuscripciones2 = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/subscriptions/archive/</loc>" + Environment.NewLine +
+					"<changefreq>daily</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoSuscripciones2);
+
+			string textoSuscripciones3 = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/subscriptions/last-added/</loc>" + Environment.NewLine +
+					"<changefreq>daily</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoSuscripciones3);
+
 			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
 			{
-				if (suscripcion.SitemapIncluir == true)
+				if (suscripcion.UsuarioPuedeAbrir == true)
 				{
 					string textoSuscripcion = "<url>" + Environment.NewLine +
-						"<loc>https://" + dominio + "/subscriptions/" + Herramientas.EnlaceAdaptador.Nombre(suscripcion.Nombre.ToLower()) + "/</loc>" + Environment.NewLine +
+						"<loc>https://" + dominio + "/subscriptions/" + Herramientas.EnlaceAdaptador.Nombre(suscripcion.Id.ToString().ToLower()) + "/</loc>" + Environment.NewLine +
 						"<changefreq>daily</changefreq>" + Environment.NewLine +
 						"</url>";
 

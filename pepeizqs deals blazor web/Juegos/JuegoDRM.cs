@@ -319,6 +319,7 @@ namespace Juegos
 				List<string> ignorados = [
 					"activation key",
 					"all",
+					"android",
 					"antstream arcade",
 					"audio-download",
 					"download",

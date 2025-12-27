@@ -22,7 +22,7 @@ namespace APIs.EA
 				Precio = 5.99,
 				AdminPendientes = true,
 				TablaPendientes = "tiendaea",
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
 			return eaPlay;
@@ -45,7 +45,7 @@ namespace APIs.EA
                 Precio = 16.99,
                 AdminPendientes = true,
                 TablaPendientes = "tiendaea",
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
 			return eaPlayPro;

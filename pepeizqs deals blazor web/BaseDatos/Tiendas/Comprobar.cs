@@ -84,14 +84,24 @@ namespace BaseDatos.Tiendas
 											}
 										}
 
-										List<JuegoPrecio> ofertasActuales = string.IsNullOrEmpty((string)datos.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioActualesTiendas);
+										List<JuegoPrecio> ofertasActuales = null;
 
-										if (ofertasActuales.Count == 0)
+										if (string.IsNullOrEmpty(datos.precioActualesTiendas) == false)
 										{
-											ofertasActuales.Add(oferta);
+											ofertasActuales = JsonSerializer.Deserialize<List<JuegoPrecio>>(datos.precioActualesTiendas) ?? new List<JuegoPrecio>();
+
+											if (ofertasActuales.Count == 0)
+											{
+												ofertasActuales.Add(oferta);
+											}
 										}
 
-										List<JuegoHistorico> historicos = string.IsNullOrEmpty((string)datos.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(datos.historicos);
+										List<JuegoHistorico> historicos = null;
+
+										if (string.IsNullOrEmpty(datos.historicos) == false)
+										{
+											historicos = JsonSerializer.Deserialize<List<JuegoHistorico>>(datos.historicos) ?? new List<JuegoHistorico>();
+										}
 
 										await Juegos.Precios.Actualizar(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis);
 									}

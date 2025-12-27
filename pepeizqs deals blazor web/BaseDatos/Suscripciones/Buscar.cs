@@ -8,28 +8,94 @@ namespace BaseDatos.Suscripciones
 {
     public static class Buscar
     {
-		public static async Task<List<JuegoSuscripcion>> Actuales(SuscripcionTipo tipo = SuscripcionTipo.Desconocido)
+		public static async Task<List<JuegoSuscripcion>> Actuales(SuscripcionTipo tipo = SuscripcionTipo.Desconocido, int orden = 0, string nombreBusqueda = null)
         {
 			string busqueda = @"
-SELECT sub.*
+SELECT 
+    sub.*,
+    j.*,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
 FROM (
     SELECT *, suscripcion AS Tipo
     FROM suscripciones
     WHERE GETDATE() BETWEEN fechaEmpieza AND fechaTermina
-) AS sub";
+) AS sub
+INNER JOIN juegos j ON j.id = sub.juegoid
+WHERE 1=1";
 
 			if (tipo != SuscripcionTipo.Desconocido)
 			{
-				busqueda += " WHERE sub.suscripcion = " + (int)tipo;
+				busqueda += " AND sub.suscripcion = " + (int)tipo;
 			}
 
-			busqueda += " ORDER BY DATEPART(MONTH, sub.fechaTermina), DATEPART(DAY, sub.fechaTermina)";
+			if (string.IsNullOrEmpty(nombreBusqueda) == false)
+			{
+				busqueda += $@"AND j.nombre COLLATE Latin1_General_CI_AI
+      LIKE '%{nombreBusqueda}%'";
+			}
+
+			if (orden == 0)
+			{
+				busqueda += $@"
+ORDER BY CASE
+WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
+END DESC";
+			}
+			else if (orden == 1)
+			{
+				busqueda += $@"
+ORDER BY j.Nombre";
+			}
+			else if (orden == 2)
+			{
+				busqueda += $@"
+ORDER BY j.Nombre DESC";
+			}
 
 			try
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda)).ToList();
+					var resultado = await conexion.QueryAsync<JuegoSuscripcion, Juego, JuegoSuscripcion>(
+						busqueda,
+						(suscripcion, juego) =>
+						{
+							suscripcion.Juego = juego;
+							return suscripcion;
+						},
+						splitOn: "Id"
+					);
+
+					return resultado.ToList();
 				});
 			}
 			catch (Exception ex)
@@ -120,19 +186,62 @@ FROM (
 		public static async Task<List<JuegoSuscripcion>> UltimasAñadidas()
 		{
 			string busqueda = @"
-SELECT sub.*
+SELECT 
+    sub.*,
+    j.*,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
 FROM (
     SELECT *, suscripcion AS Tipo
     FROM suscripciones
-    WHERE fechaEmpieza >= DATEADD(day, -7, GETDATE())
+    WHERE fechaEmpieza >= DATEADD(day, -30, GETDATE())
 ) AS sub
-ORDER BY fechaEmpieza DESC"; 
+INNER JOIN juegos j ON j.id = sub.juegoid
+ORDER BY fechaEmpieza DESC";
 			
 			try
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return (await conexion.QueryAsync<JuegoSuscripcion>(busqueda)).ToList();
+					var resultado = await conexion.QueryAsync<JuegoSuscripcion, Juego, JuegoSuscripcion>(
+						busqueda,
+						(suscripcion, juego) =>
+						{
+							suscripcion.Juego = juego;
+							return suscripcion;
+						},
+						splitOn: "Id"
+					);
+
+					return resultado.ToList();
 				});
 			}
 			catch (Exception ex)

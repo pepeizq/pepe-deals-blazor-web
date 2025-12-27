@@ -30,7 +30,7 @@ namespace APIs.Ubisoft
                 Precio = 7.99,
                 AdminPendientes = true,
                 TablaPendientes = "tiendaubisoft",
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
             return ubisoft;
@@ -53,7 +53,7 @@ namespace APIs.Ubisoft
                 IncluyeSuscripcion = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics,
                 AdminPendientes = true,
                 TablaPendientes = "tiendaubisoft",
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
             return ubisoft;

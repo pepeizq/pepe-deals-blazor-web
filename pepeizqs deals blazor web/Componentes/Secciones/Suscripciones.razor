@@ -14,71 +14,28 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-@{
-    string tituloSuscripcion = string.Empty;
-    string contenidoJson = string.Empty;
-
-    if (suscripcionesActuales?.Count > 0)
+@if (mostrarArchivo == false && mostrarUltimas == false)
+{
+    if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
     {
-        foreach (var componente in suscripcionesActuales)
-        {
-            if (Herramientas.EnlaceAdaptador.Nombre(componente.Tipo.Nombre.ToLower()) == suscripcionSeleccionadaTexto)
-            {
-                tituloSuscripcion = componente.Tipo.Nombre;
-
-                contenidoJson = @"{
-                    ""@context"": ""https://schema.org"",
-				    ""@type"": ""ItemList"",
-				    ""name"": ""@titulo"",
-				    ""numberOfItems"": ""@cantidad"",
-                    ""itemListOrder"": ""Descending"",
-                    ""itemListElement"": [";
-
-                contenidoJson = contenidoJson.Replace("@titulo", tituloSuscripcion);
-                contenidoJson = contenidoJson.Replace("@cantidad", componente.Juegos.Count.ToString());
-
-                int i = 0;
-                while (i < componente.Juegos.Count)
-                {
-                    if (i != 0)
-                    {
-                        contenidoJson = contenidoJson + ",";
-                    }
-
-                    contenidoJson = contenidoJson + "{" + Environment.NewLine +
-                        Strings.ChrW(34) + "@type" + Strings.ChrW(34) + ":" + Strings.ChrW(34) + "ListItem" + Strings.ChrW(34) + "," + Environment.NewLine +
-                        Strings.ChrW(34) + "position" + Strings.ChrW(34) + ":" + Strings.ChrW(34) + (i + 1).ToString() + Strings.ChrW(34) + "," + Environment.NewLine +
-                        Strings.ChrW(34) + "name" + Strings.ChrW(34) + ":" + Strings.ChrW(34) + componente.Juegos[i].Nombre + Strings.ChrW(34) + "," + Environment.NewLine +
-                        Strings.ChrW(34) + "url" + Strings.ChrW(34) + ":" + Strings.ChrW(34) + "https://" + dominio + "/game/" + componente.Juegos[i].JuegoId.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(componente.Juegos[i].Nombre) + "/" + Strings.ChrW(34) + "," + Environment.NewLine +
-                        Strings.ChrW(34) + "image" + Strings.ChrW(34) + ":" + Strings.ChrW(34) + componente.Juegos[i].Imagen + Strings.ChrW(34) + "}";
-
-                    i += 1;
-                }
-
-                contenidoJson = contenidoJson + "]" + Environment.NewLine + "}";
-            }
-        }
+        <Titulo tipo="@Titulo.Tipo.Suscripciones" idioma="@idioma" dominio="@dominio" tituloSuscripciones="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionSeleccionada).Nombre" enlaceSuscripciones="@Herramientas.EnlaceAdaptador.Nombre(suscripcionSeleccionada.ToString().ToLower())" />
+    }
+    else
+    {
+        <Titulo tipo="@Titulo.Tipo.Suscripciones" idioma="@idioma" dominio="@dominio" />
+    }
+}
+else
+{
+    if (mostrarArchivo == true)
+    {
+        <Titulo tipo="@Titulo.Tipo.Suscripciones" idioma="@idioma" dominio="@dominio" tituloSuscripciones="@(Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Subscriptions") + " (" + Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions") + ")")" enlaceSuscripciones="archive" />
     }
 
-    string keywords = "subscriptions";
-
-    foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
+    if (mostrarUltimas == true)
     {
-        string[] keywordsEnBruto = Herramientas.Buscador.LimpiarNombre(suscripcion.Nombre, false).Split(' ');
-        List<string> keywordsLista = new List<string>();
-        keywordsLista.AddRange(keywordsEnBruto);
-
-        foreach (var keyword in keywordsLista)
-        {
-            if (keywords.Contains(keyword) == false && keyword.Length > 3)
-            {
-                keywords = keywords + ", " + keyword;
-            }
-        }
+        <Titulo tipo="@Titulo.Tipo.Suscripciones" idioma="@idioma" dominio="@dominio" tituloSuscripciones="@(Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Subscriptions") + " (" + Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions") + ")")" enlaceSuscripciones="last-added" />
     }
-
-    <Titulo tipo="@Titulo.Tipo.Suscripciones" idioma="@idioma" dominio="@dominio" tituloAlternativoSuscripciones="@tituloSuscripcion" enlaceAlternativoSuscripciones="@suscripcionSeleccionadaTexto" 
-            keywords="@keywords" contenidoJsonSuscripciones="@contenidoJson"/>
 }
 
 <script>
@@ -120,12 +77,12 @@
 </style>
 
 <style>
-    .caja-archivo-contenido {
+    .caja-suscripciones-contenido {
         background-color: var(--fondoSubsubcabecera);
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
     }
 
-    .caja-archivo-titulo {
+    .caja-suscripciones-titulo {
         background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
         padding: 20px 30px;
         border: 1px solid var(--fondoSubsubcabecera);
@@ -136,82 +93,81 @@
     <div class="cuerpo-ancho sub-subcabecera">
         @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
         {
-            <button class="boton-pequeño" style="@CambiarEstilo(Suscripciones2.SuscripcionTipo.Desconocido, false, false) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, Suscripciones2.SuscripcionTipo.Desconocido, false, false))">
-                <h1 style="font-size: 18px; margin: 0px;">
+            <button class="boton-pequeño" style="@CambiarEstilo(Suscripciones2.SuscripcionTipo.Desconocido) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => SuscripcionAbrir(e, Suscripciones2.SuscripcionTipo.Desconocido))">
+                <h1 style="font-size: 18px; margin: 0px; line-height: 24px;">
                     @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Subscriptions")
                 </h1>
             </button>
 
-            @if (suscripcionesActuales?.Count > 0 && mostrarArchivo == false && mostrarUltimas == false)
+            if (mostrarArchivo == false && mostrarUltimas == false)
             {
-                if (tipoSeleccionado == Suscripciones2.SuscripcionTipo.Desconocido)
+                if (suscripcionSeleccionada == Suscripciones2.SuscripcionTipo.Desconocido)
                 {
-                    foreach (var suscripcionActual in suscripcionesActuales)
+                    foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
                     {
-                        if (suscripcionActual.Tipo.Id != Suscripciones2.SuscripcionTipo.Desconocido)
+                        if (suscripcion.UsuarioPuedeAbrir == true && suscripcion.Id != Suscripciones2.SuscripcionTipo.Desconocido)
                         {
-                            <button class="boton-pequeño" style="@CambiarEstilo(suscripcionActual.Tipo.Id, false, false) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; box-shadow: none;" @onclick="@(e => SuscripcionAbrir(e, suscripcionActual))" title="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionActual.Tipo.Id).Nombre">
-                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionActual.Tipo.Id).ImagenIcono)" style="width: 20px; height: 20px;" alt="Store" />
+                            <button class="boton-pequeño" style="@CambiarEstilo(suscripcion.Id) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; box-shadow: none;" @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" title="@suscripcion.Nombre">
+                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(suscripcion.ImagenIcono)" style="width: 20px; height: 20px;" alt="@suscripcion.Nombre" />
                             </button>
                         }
                     }
+
+                    <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
+                        <button class="boton-pequeño" style="background-color: transparent; width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CargarUltimas(e))">
+                            <div style="font-size: 16px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Subscriptions")
+                            </div>
+                        </button>
+
+                        <button class="boton-pequeño" style="background-color: transparent; width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CargarArchivo(e))">
+                            <div style="font-size: 16px;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Subscriptions")
+                            </div>
+                        </button>
+                    </div>
                 }
                 else
                 {
-                    foreach (var suscripcionActual in suscripcionesActuales)
+                    var elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionSeleccionada);
+
+                    <button class="boton-pequeño" style="@CambiarEstilo(suscripcionSeleccionada) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => SuscripcionAbrir(e, suscripcionSeleccionada))" title="@elegido.Nombre">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(elegido.ImagenIcono)" style="width: 20px; height: 20px;" alt="@elegido.Nombre" />
+
+                            <div style="font-size: 16px;">
+                                @elegido.Nombre
+                            </div>
+                        </div>
+                    </button>
+
+                    if (elegido.Precio > 0)
                     {
-                        if (suscripcionActual.Tipo.Id == tipoSeleccionado)
-                        {
-                            <button class="boton-pequeño" style="@CambiarEstilo(suscripcionActual.Tipo.Id, false, false) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => SuscripcionAbrir(e, suscripcionActual))" title="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionActual.Tipo.Id).Nombre">
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    @{
-                                        var elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionActual.Tipo.Id);
-                                    }
-
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(elegido.ImagenIcono)" style="width: 20px; height: 20px;" alt="@elegido.Nombre" />
-
-                                    <div style="font-size: 16px;">
-                                        @elegido.Nombre
-                                    </div>
-                                </div>
-                            </button>
-                        }
+                        <div style="font-size: 15px; padding: 8px 20px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Subscriptions"), Herramientas.Precios.Euro((decimal)elegido.Precio))
+                        </div>
                     }
-                }
-            }
 
-            @if (tipoSeleccionado == Suscripciones2.SuscripcionTipo.Desconocido)
-            {
-                <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
-                    <button class="boton-pequeño" style="@CambiarEstilo(Suscripciones2.SuscripcionTipo.Desconocido, false, true) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, Suscripciones2.SuscripcionTipo.Desconocido, false, true))">
-                        <div style="font-size: 16px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Subscriptions")
-                        </div>
-                    </button>
-
-                    <button class="boton-pequeño" style="@CambiarEstilo(Suscripciones2.SuscripcionTipo.Desconocido, true, false) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, Suscripciones2.SuscripcionTipo.Desconocido, true, false))">
-                        <div style="font-size: 16px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Subscriptions")
-                        </div>
-                    </button>
-                </div>
-            }
-            else
-            {
-                if (suscripcionSeleccionadaTipo.Precio > 0)
-                {
-                    <div style="font-size: 15px; padding: 8px 20px;">
-                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Subscriptions"), Herramientas.Precios.Euro((decimal)suscripcionSeleccionadaTipo.Precio))
-                    </div>
-                }
-
-                <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
-                    @if (suscripcionSeleccionadaDRMs.Count > 1)
-                    {
-                        <div class="menu-dropdown" style="width: auto; flex: 0 0 auto; margin: 0px 20px;">
+                    <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
+                        <div class="menu-dropdown" style="width: auto; flex: 0 0 auto;">
                             <button class="boton-pequeño" style="background-color: var(--buscadorSubcabecera); display: flex; align-items: center; width: 100%; padding: 8px 15px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
-                                <div style="font-size: 14px; padding-right: 15px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Subscriptions")
+                                <div style="font-size: 14px; padding-right: 5px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Subscriptions")
+                                </div>
+
+                                <div style="font-size: 14px; color: var(--colorEnlace); padding-right: 15px;">
+                                    @if (ordenarPor == 0)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Subscriptions")
+                                    }
+                                    else if (ordenarPor == 1)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Subscriptions")
+                                    }
+                                    else if (ordenarPor == 2)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Subscriptions")
+                                    }
                                 </div>
 
                                 <div style="max-width: 10px;">
@@ -222,33 +178,45 @@
                             </button>
 
                             <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--buscadorSubcabecera); z-index: 1001;">
-                                <button @onclick="@(e => FiltrarDRM(e))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Subscriptions")
+                                <button @onclick="@(e => OrdenarPor(e, 0))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Subscriptions")
                                 </button>
-                                <hr />
-                                @foreach (var drm in suscripcionSeleccionadaDRMs)
-                                {
-                                    <button @onclick="@(e => FiltrarDRM(e, drm))" class="texto-cabecera menu-dropdown-item" style="text-align: right; width: 100%; border: 0px;">
-                                        <div style="font-size: 14px; display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                            @Juegos.JuegoDRM2.DevolverDRM(drm)
-                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Juegos.JuegoDRM2.SacarImagen(drm), 22, 22)" style="max-width: 22px; max-height: 22px" />
-                                        </div>
-                                    </button>
-                                }
+                                <button @onclick="@(e => OrdenarPor(e, 1))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Subscriptions")
+                                </button>
+                                <button @onclick="@(e => OrdenarPor(e, 2))" class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: right; width: 100%; border: 0px;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Subscriptions")
+                                </button>
                             </div>
                         </div>
-                    }
+                    
+                        <div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
+                            <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Subscriptions")" />
 
-                    <div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
-                        <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Subscriptions")" />
-
-                        <div style="max-width: 16px;">
-                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-                            </svg>
+                            <div style="max-width: 16px;">
+                                <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+            }
+            else
+            {
+                if (mostrarArchivo == true)
+                {
+                    <div class="boton-pequeño" style="font-size: 16px; width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none; background-color: var(--botonSubcabecera);">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Subscriptions")
+                    </div>
+                }
+
+                if (mostrarUltimas == true)
+                {
+                    <div class="boton-pequeño" style="font-size: 16px; width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none; background-color: var(--botonSubcabecera);">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Subscriptions")
+                    </div>
+                }
             }
         }
         else
@@ -264,10 +232,10 @@
 {
     if (mostrarUltimas == false)
     {
-        if (tipoSeleccionado == Suscripciones2.SuscripcionTipo.Desconocido)
+        if (suscripcionSeleccionada == Suscripciones2.SuscripcionTipo.Desconocido)
         {
             <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 30px;">
-                <div class="caja-archivo-contenido" style="display: flex; align-items: center; padding: 30px; gap: 30px;">
+                <div class="caja-suscripciones-contenido" style="display: flex; align-items: center; padding: 30px; gap: 30px;">
                     <div style="min-width: 30px; height: 30px;">
                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                             <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -279,59 +247,20 @@
                     </div>
                 </div>
 
-                <div class="suscripciones-grid caja-archivo-contenido" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 30px;">
-                    @if (suscripcionesActuales?.Count > 0)
+                <div class="suscripciones-grid caja-suscripciones-contenido" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 30px;">
+                    @foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
                     {
-                        foreach (var suscripcionActual in suscripcionesActuales)
+                        if (suscripcion.UsuarioPuedeAbrir == true && suscripcion.Id != Suscripciones2.SuscripcionTipo.Desconocido)
                         {
-                            <button @onclick="@(e => SuscripcionAbrir(e, suscripcionActual))" class="boton-pequeño suscripcion-grid" style="display: flex; flex-direction: column; align-items: center;">
+                            <button @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" class="boton-pequeño suscripcion-grid" style="display: flex; align-items: center; gap: 20px; justify-content: space-evenly;">
                                 <div style="width: 200px; height: 70px; display: flex; justify-content: center;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(suscripcionActual.Tipo.ImagenLogo, 200, 70)" alt="@suscripcionActual.Tipo.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(suscripcion.ImagenLogo, 200, 70)" alt="@suscripcion.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                                 </div>
 
-                                @if (suscripcionActual.Juegos?.Count > 0)
+                                @if (suscripcion.Precio > 0)
                                 {
-                                    List<JuegoDRM> drms = new List<JuegoDRM>();
-
-                                    foreach (var juego in suscripcionActual.Juegos)
-                                    {
-                                        bool añadirDRM = true;
-
-                                        if (drms.Count > 0)
-                                        {
-                                            foreach (var drm in drms)
-                                            {
-                                                if (drm == juego.DRM)
-                                                {
-                                                    añadirDRM = false;
-                                                }
-                                            }
-                                        }
-
-                                        if (añadirDRM == true)
-                                        {
-                                            drms.Add(juego.DRM);
-                                        }
-                                    }
-
-                                    <div style="display: flex; align-items: center; gap: 20px;">
-                                        @if (suscripcionActual.Tipo.Precio > 0)
-                                        {
-                                            <div>
-                                                @Herramientas.Precios.Euro((decimal)suscripcionActual.Tipo.Precio)
-                                            </div>
-                                        }
-
-                                        <div>
-                                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Subscriptions"), suscripcionActual.Juegos.Count)
-                                        </div>
-
-                                        <div style="display: flex; align-items: center; gap: 10px;">
-                                            @foreach (var drm in drms)
-                                            {
-                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drm), 20, 20)" style="max-width: 20px; max-height: 20px;" />
-                                            }
-                                        </div>
+                                    <div style="font-size: 18px;">
+                                        @Herramientas.Precios.Euro((decimal)suscripcion.Precio)
                                     </div>
                                 }
                             </button>
@@ -342,19 +271,21 @@
         }
         else
         {
+            var elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcionSeleccionada);
+
             <div class="cuerpo-ancho" style="display: flex; flex-direction: column;">
-                @if (suscripcionSeleccionadaTipo.UsuarioEnlacesEspecificos == false)
+                @if (elegido.UsuarioEnlacesEspecificos == false)
                 {
                     <div style="position: sticky; top: var(--alturaCabecera); z-index: 1000;">
-                        <a href="@Herramientas.EnlaceAcortador.Generar(suscripcionSeleccionadaTipo.Enlace, suscripcionSeleccionadaTipo.Id, usuarioPatreon, false)" class="boton-pequeño" style="text-align: center; padding: 15px 20px; font-size: 18px;" target="_blank">
+                        <a href="@Herramientas.EnlaceAcortador.Generar(elegido.Enlace, elegido.Id, usuarioPatreon, false)" class="boton-pequeño" style="text-align: center; padding: 15px 20px; font-size: 18px;" target="_blank">
                             @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Subscriptions")
                         </a>
                     </div>
                 }
 
-                @if (suscripcionSeleccionadaTipo.SoloStreaming == true)
+                @if (elegido.SoloStreaming == true)
                 {
-                    <div class="caja-archivo-contenido" style="margin-top: 40px; padding: 30px; display: flex; align-items: center; gap: 30px;">
+                    <div class="caja-suscripciones-contenido" style="margin-top: 40px; padding: 30px; display: flex; align-items: center; gap: 30px;">
                         <div style="width: 30px; height: 30px;">
                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -367,17 +298,20 @@
                     </div>
                 }
 
-                <div class="caja-archivo-contenido" style="margin: 40px 0px; padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 30px;">
-                    @foreach (var juego in suscripcionSeleccionadaJuegosMostrar)
+                <div class="caja-suscripciones-contenido" style="margin: 40px 0px; padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 30px;">
+                    @if (juegosActuales?.Count > 0)
                     {
-                        string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
-
-                        if (suscripcionSeleccionadaTipo.UsuarioEnlacesEspecificos == false)
+                        foreach (var juego in juegosActuales)
                         {
-                            enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(suscripcionSeleccionadaTipo.Enlace, suscripcionSeleccionadaTipo.Id, usuarioPatreon, false);
-                        }
+                            string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
 
-                        <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@suscripcionSeleccionadaTipo.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                            if (elegido.UsuarioEnlacesEspecificos == false)
+                            {
+                                enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(elegido.Enlace, elegido.Id, usuarioPatreon, false);
+                            }
+
+                            <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                        }
                     }
                 </div>
             </div>
@@ -385,32 +319,79 @@
     }
     else
     {
-        <div class="caja-archivo-contenido cuerpo-ancho" style="padding: 30px; margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 20px;">
-            @if (suscripcionesUltimas.Count > 0)
+        <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 30px;">
+            @if (suscripcionesUltimas?.Count > 0)
             {
-                foreach (var juego in suscripcionesUltimas)
+                var gruposPorDia = suscripcionesUltimas.GroupBy(x => x.FechaEmpieza.Date).OrderByDescending(g => g.Key).Select(g => new
                 {
-                    string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
+                    Fecha = g.Key,
+                    GruposPorElegido = g
+                .Select(j => new
+                {
+                    Juego = j,
+                    Elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(j.Tipo)
+                })
+                .OrderBy(x => x.Elegido.Nombre)
+                .GroupBy(x => x.Elegido.Id)
+                .Select(eg => new
+                {
+                    Elegido = eg.First().Elegido,
+                    Juegos = eg
+                .Select(x => x.Juego)
+                .OrderBy(x => x.Juego.Nombre)
+                .ToList()
+                })
+                .ToList()
+                }).ToList();
 
-                    if (Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo).UsuarioEnlacesEspecificos == false)
-                    {
-                        enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo).Enlace, Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo).Id, usuarioPatreon, false);
-                    }
+                foreach (var grupo in gruposPorDia)
+                {
+                    DateTime dia = grupo.Fecha; 
 
-                    <div>
-                        <a href="@enlaceSuscripcion" target="_blank" class="boton-pequeño" style="text-decoration: none;">
-                            <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between; padding: 10px 20px;">
-                                <div style="display: flex; align-items: center; gap: 20px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo).ImagenIcono, 20, 20)" alt="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo).Nombre" style="width: 20px; height: 20px;"/>
-
-                                    <div>@juego.Nombre</div>
-                                </div>
-                            
-                                <div>
-                                    @Herramientas.Calculadora.DiferenciaTiempo(juego.FechaEmpieza, idioma)
-                                </div>
+                    <div class="caja-suscripciones-contenido">
+                        <div class="caja-suscripciones-titulo" style="display: flex; align-items: center; gap: 5px;">
+                            <div style="font-size: 18px;">
+                                @dia.Day.ToString()/@dia.Month.ToString()/@dia.Year.ToString()
                             </div>
-                        </a>
+
+                            <div>
+                                - @Herramientas.Calculadora.DiferenciaTiempo(dia, idioma)
+                            </div>
+                        </div>
+
+                        <div style="padding: 30px; display: flex; flex-direction: column; gap: 40px;">
+                            @foreach (var grupoElegido in grupo.GruposPorElegido)
+                            {
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div>
+                                            <img src="@grupoElegido.Elegido.ImagenIcono" style="width: 24px; height: 24px;"/>
+                                        </div>
+
+                                        <div>
+                                            @grupoElegido.Elegido.Nombre
+                                        </div>
+                                    </div>
+                                    
+                                    <hr />
+
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 30px;">
+                                        @foreach (var juego in grupoElegido.Juegos)
+                                        {
+                                            var elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juego.Tipo);
+                                            string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tipo, usuarioPatreon, false);
+
+                                            if (elegido.UsuarioEnlacesEspecificos == false)
+                                            {
+                                                enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(elegido.Enlace, elegido.Id, usuarioPatreon, false);
+                                            }
+
+                                            <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 }
             }
@@ -423,7 +404,7 @@
 }
 else
 {
-    <div class="caja-archivo-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; padding: 20px;">
+    <div class="caja-suscripciones-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px; padding: 20px;">
         <div style="display: flex; align-items: start; gap: 15px; flex-wrap: wrap;">
             @foreach (var año in años)
             {
@@ -497,8 +478,8 @@ else
 
                 if (suscripcionesAño.Count > 0)
                 {
-                    <div class="caja-archivo-contenido">
-                        <div id="pasado-@suscripcionPasada.Tipo.Id.ToString()" class="caja-archivo-titulo">
+                    <div class="caja-suscripciones-contenido">
+                        <div id="pasado-@suscripcionPasada.Tipo.Id.ToString()" class="caja-suscripciones-titulo">
                             <img src="@suscripcionPasada.Tipo.ImagenLogo" alt="@suscripcionPasada.Tipo.Nombre" style="max-width: 150px; max-height: 70px; object-fit: contain;" />
                         </div>
 
@@ -562,12 +543,15 @@ else
     private bool usuarioPatreon = false;
 
     [PersistentState] public List<Juegos.JuegoSuscripcion> juegosActuales { get; set; }
-    private List<Suscripciones2.SuscripcionComponente> suscripcionesActuales = new List<Suscripciones2.SuscripcionComponente>();
-    private List<Suscripciones2.SuscripcionComponente> suscripcionesPasadas = new List<Suscripciones2.SuscripcionComponente>();
     [PersistentState] public List<JuegoSuscripcion> suscripcionesUltimas { get; set; }
 
-    [Parameter]
-    public string suscripcionSeleccionadaTexto { get; set; }
+    [Parameter] public string suscripcionSeleccionadaTexto { get; set; }
+    private Suscripciones2.SuscripcionTipo suscripcionSeleccionada = Suscripciones2.SuscripcionTipo.Desconocido;
+    public int ordenarPor { get; set; } = 0;
+    public string textoBuscador { get; set; } = string.Empty;
+
+    private bool mostrarArchivo = false;
+    private bool mostrarUltimas = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -605,265 +589,129 @@ else
 
         //--------------------------------------------------------------------
 
-        juegosActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
-
-        if (juegosActuales?.Count > 0)
+        if (string.IsNullOrEmpty(suscripcionSeleccionadaTexto) == false)
         {
             foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
             {
-                List<Juegos.JuegoSuscripcion> juegos2 = new List<Juegos.JuegoSuscripcion>();
-
-                foreach (var juego in juegosActuales)
+                if (suscripcion.Id != Suscripciones2.SuscripcionTipo.Desconocido)
                 {
-                    if (juego.Tipo == suscripcion.Id)
+                    if (Herramientas.EnlaceAdaptador.Nombre(suscripcion.Id.ToString().ToLower()) == suscripcionSeleccionadaTexto)
                     {
-                        juegos2.Add(juego);
+                        suscripcionSeleccionada = suscripcion.Id;
+                        break;
                     }
                 }
+            }
 
-                if (juegos2.Count > 0)
-                {
-                    Suscripciones2.SuscripcionComponente componente = new Suscripciones2.SuscripcionComponente();
-                    componente.Juegos = juegos2;
-                    componente.Tipo = suscripcion;
+            if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
+            {
+                await SuscripcionAbrir(suscripcionSeleccionada);
+            }
 
-                    suscripcionesActuales.Add(componente);
-                }
+            if (suscripcionSeleccionadaTexto == "archive")
+            {
+                mostrarArchivo = true;
+                añoSeleccionado = DateTime.Now.Year.ToString();
+                await GenerarArchivo();
+            }
+
+            if (suscripcionSeleccionadaTexto == "last-added")
+            {
+                mostrarUltimas = true;
+                suscripcionesUltimas ??= await BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
             }
         }
-
-        //--------------------------------------------------------------------
-
-        suscripcionesUltimas ??= await BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
     }
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
-            if (string.IsNullOrEmpty(suscripcionSeleccionadaTexto) == false)
+            if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
             {
-                if (suscripcionesActuales?.Count > 0)
-                {
-                    foreach (var componente in suscripcionesActuales)
-                    {
-                        if (Herramientas.EnlaceAdaptador.Nombre(componente.Tipo.Nombre.ToLower()) == suscripcionSeleccionadaTexto)
-                        {
-                            await SuscripcionAbrir(componente);
-                        }
-                    }
-                }
+                await CambiarEnlace(suscripcionSeleccionada);
             }
         }
     }
 
-    private Suscripciones2.Suscripcion suscripcionSeleccionadaTipo = new Suscripciones2.Suscripcion();
-    private List<Juegos.JuegoSuscripcion> suscripcionSeleccionadaJuegosGestor = new List<Juegos.JuegoSuscripcion>();
-    private List<Juegos.JuegoSuscripcion> suscripcionSeleccionadaJuegosMostrar = new List<Juegos.JuegoSuscripcion>();
-    private List<JuegoDRM> suscripcionSeleccionadaDRMs = new List<JuegoDRM>();
-
-    private async Task SuscripcionAbrir(MouseEventArgs e, Suscripciones2.SuscripcionComponente componente)
+    private async Task SuscripcionAbrir(MouseEventArgs e, Suscripciones2.SuscripcionTipo suscripcion)
     {
-        await SuscripcionAbrir(componente);
-    }
+        suscripcionSeleccionada = suscripcion;
 
-    private async Task SuscripcionAbrir(Suscripciones2.SuscripcionComponente componente)
-    {
-        if (componente != null)
+        if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
         {
-            tipoSeleccionado = componente.Tipo.Id;
-
-            suscripcionSeleccionadaTexto = Herramientas.EnlaceAdaptador.Nombre(componente.Tipo.Nombre.ToLower());
-            suscripcionSeleccionadaTipo = componente.Tipo;
-            suscripcionSeleccionadaJuegosGestor.Clear();
-            suscripcionSeleccionadaDRMs.Clear();
-
-            foreach (var juegoActual in componente.Juegos)
-            {
-                Juegos.Juego juego2 = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
-
-                if (juego2 != null)
-                {
-                    bool añadirVacioAnalisis = false;
-
-                    if (juego2.Analisis == null)
-                    {
-                        añadirVacioAnalisis = true;
-                    }
-                    else
-                    {
-                        if (JsonSerializer.Serialize(juego2.Analisis) == "null" || JsonSerializer.Serialize(juego2.Analisis) == "[]")
-                        {
-                            añadirVacioAnalisis = true;
-                        }
-                        else
-                        {
-                            if (string.IsNullOrEmpty(juego2.Analisis.Cantidad) == true)
-                            {
-                                añadirVacioAnalisis = true;
-                            }
-                        }
-                    }
-
-                    if (añadirVacioAnalisis == true)
-                    {
-                        JuegoAnalisis analisis = new JuegoAnalisis();
-                        analisis.Cantidad = "0";
-                        analisis.Porcentaje = "0%";
-                        juego2.Analisis = analisis;
-                    }
-
-                    juegoActual.Juego = juego2;
-                    suscripcionSeleccionadaJuegosGestor.Add(juegoActual);
-                }
-
-                //------------------------------------
-
-                bool añadirDRM = true;
-
-                if (suscripcionSeleccionadaDRMs.Count > 0)
-                {
-                    foreach (var drm in suscripcionSeleccionadaDRMs)
-                    {
-                        if (drm == juegoActual.DRM)
-                        {
-                            añadirDRM = false;
-                        }
-                    }
-                }
-
-                if (añadirDRM == true)
-                {
-                    suscripcionSeleccionadaDRMs.Add(juegoActual.DRM);
-                }
-            }
-
-            suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosGestor;
-            suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosMostrar.AsParallel().OrderByDescending(x => int.Parse(x.Juego.Analisis.Cantidad.Replace(",", null))).ThenBy(x => x.Juego.Nombre).ToList();
-
-            await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/" + suscripcionSeleccionadaTexto + "/");
-        }
-    }
-
-    private void SuscripcionCerrar(MouseEventArgs e)
-    {
-        suscripcionSeleccionadaTexto = string.Empty;
-    }
-
-    private string textoBuscador = string.Empty;
-
-    private void TextoCambiaBuscador()
-    {
-        suscripcionSeleccionadaJuegosMostrar.Clear();
-
-        if (string.IsNullOrEmpty(textoBuscador) == false)
-        {
-            foreach (var resultadoBuscador in suscripcionSeleccionadaJuegosGestor)
-            {
-                if (Herramientas.Buscador.LimpiarNombre(resultadoBuscador.Nombre).Contains(Herramientas.Buscador.LimpiarNombre(textoBuscador)) == true)
-                {
-                    suscripcionSeleccionadaJuegosMostrar.Add(resultadoBuscador);
-                }
-            }
+            await CambiarEnlace(suscripcionSeleccionada);
+            await SuscripcionAbrir(suscripcionSeleccionada);
         }
         else
         {
-            suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosGestor;
-        }
+            mostrarArchivo = false;
+            mostrarUltimas = false;
 
-        suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosMostrar.AsParallel().OrderByDescending(x => int.Parse(x.Juego.Analisis.Cantidad.Replace(",", null))).ThenBy(x => x.Juego.Nombre).ToList();
+            juegosActuales?.Clear();
+            await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/");
+        }
     }
 
-    private void FiltrarDRM(MouseEventArgs e)
+    private async Task SuscripcionAbrir(Suscripciones2.SuscripcionTipo suscripcion)
     {
-        suscripcionSeleccionadaJuegosMostrar.Clear();
+        suscripcionSeleccionada = suscripcion;
 
-        foreach (var resultadoBuscador in suscripcionSeleccionadaJuegosGestor)
-        {
-            suscripcionSeleccionadaJuegosMostrar.Add(resultadoBuscador);
-        }
+        juegosActuales = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionada, ordenarPor, textoBuscador);
 
-        suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosMostrar.AsParallel().OrderByDescending(x => int.Parse(x.Juego.Analisis.Cantidad.Replace(",", null))).ThenBy(x => x.Juego.Nombre).ToList();
+
     }
 
-    private void FiltrarDRM(MouseEventArgs e, Juegos.JuegoDRM drm)
+    private async Task CambiarEnlace(Suscripciones2.SuscripcionTipo suscripcion)
     {
-        suscripcionSeleccionadaJuegosMostrar.Clear();
-
-        foreach (var resultadoBuscador in suscripcionSeleccionadaJuegosGestor)
-        {
-            if (resultadoBuscador.DRM == drm)
-            {
-                suscripcionSeleccionadaJuegosMostrar.Add(resultadoBuscador);
-            }
-        }
-
-        suscripcionSeleccionadaJuegosMostrar = suscripcionSeleccionadaJuegosMostrar.AsParallel().OrderByDescending(x => int.Parse(x.Juego.Analisis.Cantidad.Replace(",", null))).ThenBy(x => x.Juego.Nombre).ToList();
+        await JavaScript.InvokeVoidAsync("ChangeUrl", $"/subscriptions/{Herramientas.EnlaceAdaptador.Nombre(suscripcion.ToString().ToLower())}/");
     }
 
-    private Suscripciones2.SuscripcionTipo tipoSeleccionado = Suscripciones2.SuscripcionTipo.Desconocido;
-    private bool mostrarArchivo = false;
-    private bool mostrarUltimas = false;
-
-    private async Task CambiarTipo(MouseEventArgs e, Suscripciones2.SuscripcionTipo nuevoTipo, bool esArchivo, bool esUltimas)
+    private string CambiarEstilo(Suscripciones2.SuscripcionTipo suscripcion)
     {
-        mostrarArchivo = esArchivo;
-        mostrarUltimas = esUltimas;
-
-        if (esArchivo == false && esUltimas == false)
+        if (suscripcion != suscripcionSeleccionada || mostrarArchivo == true || mostrarUltimas == true)
         {
-            tipoSeleccionado = nuevoTipo;
-
-            if (nuevoTipo == Suscripciones2.SuscripcionTipo.Desconocido)
-            {
-                suscripcionSeleccionadaTexto = null;
-                await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/");
-            }
+            return "background-color: transparent;";
         }
         else
         {
-            añoSeleccionado = DateTime.Now.Year.ToString();
-            await GenerarArchivo();
+            return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
         }
     }
 
-    private string CambiarEstilo(Suscripciones2.SuscripcionTipo nuevoTipo, bool esArchivo, bool esUltimas)
+    private async Task OrdenarPor(MouseEventArgs e, int nuevoOrdenar)
     {
-        if (mostrarArchivo == true && esArchivo == true)
-        {
-            if (nuevoTipo != Suscripciones2.SuscripcionTipo.Desconocido)
-            {
-                return "background-color: transparent;";
-            }
-            else
-            {
-                return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
-            }
-        }
-        else
-        {
-            if (tipoSeleccionado == nuevoTipo && mostrarArchivo == false && esArchivo == false)
-            {
-                if (esUltimas == true && mostrarUltimas == true)
-                {
-                    return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
-                }
-                else if (esUltimas == false && mostrarUltimas == false)
-                {
-                    return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
-                }
+        ordenarPor = nuevoOrdenar;
 
-                return "background-color: transparent;";
-            }
-            else
-            {
-                return "background-color: transparent;";
-            }
-        }
+        await SuscripcionAbrir(suscripcionSeleccionada);
+    }
+
+    private async Task TextoCambiaBuscador()
+    {
+        await SuscripcionAbrir(suscripcionSeleccionada);
+    }
+
+    private async Task CargarArchivo(MouseEventArgs e)
+    {
+        mostrarArchivo = true;
+        añoSeleccionado = DateTime.Now.Year.ToString();
+
+        await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/archive/");
+        await GenerarArchivo();
+    }
+
+    private async Task CargarUltimas(MouseEventArgs e)
+    {
+        mostrarUltimas = true;
+
+        await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/last-added/");
+
+        suscripcionesUltimas = await BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
     }
 
     #region Archivo
 
+    private List<Suscripciones2.SuscripcionComponente> suscripcionesPasadas = new List<Suscripciones2.SuscripcionComponente>();
     private List<string> años = new List<string>();
     private string añoSeleccionado = string.Empty;
 

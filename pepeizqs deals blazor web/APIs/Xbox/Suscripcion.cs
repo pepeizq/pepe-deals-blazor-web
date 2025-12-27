@@ -30,7 +30,7 @@ namespace APIs.Xbox
 				AdminPendientes = true,
 				TablaPendientes = "tiendamicrosoftstore",
 				AdminAñadir = false,
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
             return gamepass;

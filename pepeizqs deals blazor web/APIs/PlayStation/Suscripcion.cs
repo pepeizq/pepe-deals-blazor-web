@@ -29,7 +29,7 @@ namespace APIs.PlayStation
 				TablaPendientes = "suscripcionplaystationplus",
 				SoloStreaming = true,
 				AdminAñadir = false,
-				SitemapIncluir = true
+				UsuarioPuedeAbrir = true
 			};
 
 			return ps;

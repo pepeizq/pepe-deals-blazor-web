@@ -190,15 +190,6 @@
 			</script>
 		}
 	}
-	else if (tipo == Tipo.Suscripciones)
-	{
-		if (string.IsNullOrEmpty(contenidoJsonSuscripciones) == false)
-		{
-			<script type="application/ld+json">
-				@((MarkupString)contenidoJsonSuscripciones)
-			</script>
-		}
-	}
 	else if (tipo == Tipo.UltimasNoticias)
 	{
 		<script type="application/ld+json">
@@ -404,13 +395,10 @@
 	#region Parametros Suscripciones
 
 	[Parameter]
-	public string tituloAlternativoSuscripciones { get; set; }
+	public string tituloSuscripciones { get; set; }
 
 	[Parameter]
-	public string enlaceAlternativoSuscripciones { get; set; }
-
-	[Parameter]
-	public string contenidoJsonSuscripciones { get; set; }
+	public string enlaceSuscripciones { get; set; }
 
 	#endregion
 
@@ -648,9 +636,9 @@
 		}
 		else if (tipo == Tipo.Suscripciones)
 		{
-			if (string.IsNullOrEmpty(tituloAlternativoSuscripciones) == false)
+			if (string.IsNullOrEmpty(tituloSuscripciones) == false)
 			{
-				titulo = tituloAlternativoSuscripciones;
+				titulo = tituloSuscripciones;
 			}
 			else
 			{
@@ -659,9 +647,9 @@
 
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Subscriptions");
 
-			if (string.IsNullOrEmpty(enlaceAlternativoSuscripciones) == false)
+			if (string.IsNullOrEmpty(enlaceSuscripciones) == false)
 			{
-				enlace = "https://" + dominio + "/subscriptions/" + enlaceAlternativoSuscripciones + "/";
+				enlace = "https://" + dominio + "/subscriptions/" + enlaceSuscripciones + "/";
 			}
 			else
 			{
