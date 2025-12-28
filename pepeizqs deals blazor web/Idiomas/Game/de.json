@@ -113,5 +113,7 @@
   "String112": "Dieses Spiel befindet sich in der Early-Access-Phase, was bedeutet, dass die Entwicklung noch nicht abgeschlossen ist und es noch an Features mangelt",
   "String113": "Nächste",
   "String114": "Zurück",
-  "String115": "Nur Streaming"
+  "String115": "Nur Streaming",
+  "String116": "Sie benötigen das Spiel {0}, um den DLC genießen zu können.",
+  "String117": "Dieser Inhalt besteht aus Musikdateien aus dem Spiel {0}."
 }

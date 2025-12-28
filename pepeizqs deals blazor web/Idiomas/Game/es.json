@@ -113,5 +113,7 @@
   "String112": "Este juego está en acceso anticipado, eso significa que su desarrollo no está completo y le faltarán características",
   "String113": "Siguiente",
   "String114": "Volver",
-  "String115": "Solo Streaming"
+  "String115": "Solo Streaming",
+  "String116": "Es necesario tener el juego {0} para disfrutar del DLC.",
+  "String117": "Este contenido son archivos musicales del juego {0}."
 }

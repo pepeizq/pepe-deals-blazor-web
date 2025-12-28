@@ -583,6 +583,7 @@
 
                                 if (juegoMaestro != null)
                                 {
+                                    string nombreMaestro = juegoMaestro.Nombre;
                                     string enlaceMaestro = "/game/" + juegoMaestro.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juegoMaestro.Nombre) + "/";
 
                                     string fondoBotonDlc = string.Empty;
@@ -597,35 +598,50 @@
                                     }
 
                                     <div style="margin-left: auto;">
-                                        <a class="boton-pequeño" style="text-align: center; padding: 10px 30px; text-decoration: none; @fondoBotonDlc" href="@enlaceMaestro" target="_self" @onclick="(e => AbrirEnlace(e, enlaceMaestro, false))">
-                                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                                <div style="width: 100%; height: 30px; display: flex; justify-content: center;">
-                                                    @if (juego.Tipo == JuegoTipo.DLC)
-                                                    {
-                                                        <svg style="fill: color-mix(in srgb, var(--fondoDlc) 50%, var(--colorTexto));" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                                            <path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM303 441L223 361C213.6 351.6 213.6 336.4 223 327.1C232.4 317.8 247.6 317.7 256.9 327.1L295.9 366.1L295.9 216C295.9 202.7 306.6 192 319.9 192C333.2 192 343.9 202.7 343.9 216L343.9 366.1L382.9 327.1C392.3 317.7 407.5 317.7 416.8 327.1C426.1 336.5 426.2 351.7 416.8 361L336.8 441C327.4 450.4 312.2 450.4 302.9 441z"/>
-                                                        </svg>
-                                                    }
-                                                    else if (juego.Tipo == JuegoTipo.Music)
-                                                    {
-                                                        <svg style="fill: color-mix(in srgb, var(--fondoBandaSonora) 50%, var(--colorTexto));" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                                            <path d="M532 71C539.6 77.1 544 86.3 544 96L544 400C544 444.2 501 480 448 480C395 480 352 444.2 352 400C352 355.8 395 320 448 320C459.2 320 470 321.6 480 324.6L480 207.9L256 257.7L256 464C256 508.2 213 544 160 544C107 544 64 508.2 64 464C64 419.8 107 384 160 384C171.2 384 182 385.6 192 388.6L192 160C192 145 202.4 132 217.1 128.8L505.1 64.8C514.6 62.7 524.5 65 532.1 71.1z"/>
-                                                        </svg>                                                      
-                                                    }
-                                                </div>
+                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-dlc')" style="width: fit-content;">
+                                            <a class="boton-pequeño" style="text-align: center; padding: 10px 30px; text-decoration: none; @fondoBotonDlc" href="@enlaceMaestro" target="_self" @onclick="(e => AbrirEnlace(e, enlaceMaestro, false))">
+                                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                                    <div style="width: 100%; height: 30px; display: flex; justify-content: center;">
+                                                        @if (juego.Tipo == JuegoTipo.DLC)
+                                                        {
+                                                            <svg style="fill: color-mix(in srgb, var(--fondoDlc) 50%, var(--colorTexto));" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                                <path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM303 441L223 361C213.6 351.6 213.6 336.4 223 327.1C232.4 317.8 247.6 317.7 256.9 327.1L295.9 366.1L295.9 216C295.9 202.7 306.6 192 319.9 192C333.2 192 343.9 202.7 343.9 216L343.9 366.1L382.9 327.1C392.3 317.7 407.5 317.7 416.8 327.1C426.1 336.5 426.2 351.7 416.8 361L336.8 441C327.4 450.4 312.2 450.4 302.9 441z"/>
+                                                            </svg>
+                                                        }
+                                                        else if (juego.Tipo == JuegoTipo.Music)
+                                                        {
+                                                            <svg style="fill: color-mix(in srgb, var(--fondoBandaSonora) 50%, var(--colorTexto));" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                                <path d="M532 71C539.6 77.1 544 86.3 544 96L544 400C544 444.2 501 480 448 480C395 480 352 444.2 352 400C352 355.8 395 320 448 320C459.2 320 470 321.6 480 324.6L480 207.9L256 257.7L256 464C256 508.2 213 544 160 544C107 544 64 508.2 64 464C64 419.8 107 384 160 384C171.2 384 182 385.6 192 388.6L192 160C192 145 202.4 132 217.1 128.8L505.1 64.8C514.6 62.7 524.5 65 532.1 71.1z"/>
+                                                            </svg>                                                      
+                                                        }
+                                                    </div>
 
-                                                <div style="font-size: 14px; text-align: center;">
+                                                    <div style="font-size: 14px; text-align: center;">
+                                                        @if (juego.Tipo == JuegoTipo.DLC)
+                                                        {
+                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String84", "Game")
+                                                        }
+                                                        else if (juego.Tipo == JuegoTipo.Music)
+                                                        {
+                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String93", "Game")
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </a>
+
+                                            <div id="tooltip-header-dlc" class="tooltip-relleno">
+                                                <div style="margin: 8px; max-width: 300px; font-size: 14px;">
                                                     @if (juego.Tipo == JuegoTipo.DLC)
                                                     {
-                                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String84", "Game")
+                                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String116", "Game"), nombreMaestro)
                                                     }
                                                     else if (juego.Tipo == JuegoTipo.Music)
                                                     {
-                                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String93", "Game")
+                                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String117", "Game"), nombreMaestro)
                                                     }
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     </div>
                                 }
                             }
@@ -861,74 +877,72 @@
                                                 }
                                             }
 
-                                            <div>
-                                                <div style="background-color: var(--fondoBien); padding: 15px 20px; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
-                                                    <div class="perfil-flexible-centrado" style="gap: 30px;">
-                                                        <div style="display: flex; align-items: center; justify-content: center; min-width: 40px; height: 26px;">
-                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
-                                                            </svg>
-                                                        </div>
-
-                                                        @if (usuarioTieneJuegoTiempoJugado > 0 || usuarioTieneJuegoUltimaVezJugado > 0)
-                                                        {
-                                                            <div style="display: flex; align-items: baseline; gap: 5px; width: 100%;">
-                                                                @if (usuarioTieneJuegoTiempoJugado > 0)
-                                                                {
-                                                                    TimeSpan tiempoJugado = TimeSpan.FromMinutes((long)usuarioTieneJuegoTiempoJugado);
-
-                                                                    string horasJugadas = tiempoJugado.TotalHours.ToString("N1");
-
-                                                                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Game"), horasJugadas, JuegoDRM2.DevolverDRM(drm.Id))</label>
-                                                                }
-
-                                                                @if (usuarioTieneJuegoUltimaVezJugado > 0 && usuarioTieneJuegoUltimaVezJugado != 86400)
-                                                                {
-                                                                    DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(usuarioTieneJuegoUltimaVezJugado);
-
-                                                                    string ultimaVezJugado = Herramientas.Calculadora.DiferenciaTiempo(fecha.UtcDateTime, idioma);
-
-                                                                    <label style="font-size: 14px;">(@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Game"), ultimaVezJugado))</label>
-                                                                }
-                                                            </div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <label style="text-align: left; width: 100%;">@mensaje</label>
-                                                        }
-
-                                                        @{
-                                                            string enlaceJugar = string.Empty;
-
-                                                            if (drm.Id == JuegoDRM.Steam && juego.IdSteam > 0)
-                                                            {
-                                                                enlaceJugar = "steam://rungameid/" + juego.IdSteam.ToString();
-                                                            }
-                                                            else if (drm.Id == JuegoDRM.Amazon && string.IsNullOrEmpty(juego.IdAmazon) == false)
-                                                            {
-                                                                enlaceJugar = "amazon-games://play/" + juego.IdAmazon;
-                                                            }
-                                                            else if (drm.Id == JuegoDRM.Ubisoft && string.IsNullOrEmpty(juego.ExeUbisoft) == false)
-                                                            {
-                                                                enlaceJugar = "uplay://launch/" + juego.ExeUbisoft + "/0";
-                                                            }
-                                                            else if (drm.Id == JuegoDRM.EA && string.IsNullOrEmpty(juego.ExeEA) == false)
-                                                            {
-                                                                enlaceJugar = "origin://LaunchGame/" + juego.ExeEA;
-                                                            }
-                                                            else if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.ExeEpic) == false)
-                                                            {
-                                                                enlaceJugar = "com.epicgames.launcher://apps/" + juego.ExeEpic + "?action=launch&silent=true";
-                                                            }
-
-                                                            if (string.IsNullOrEmpty(enlaceJugar) == false)
-                                                            {
-                                                                <a class="juego-boton-pequeño" href="@enlaceJugar" rel="nofollow" style="width: auto; min-width: 200px; text-align: center; backdrop-filter: brightness(60%); background-color: transparent; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-                                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String81", "Game")
-                                                                </a>
-                                                            }
-                                                        }
+                                            <div style="background-color: var(--fondoBien); padding: 15px 20px; box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
+                                                <div class="perfil-flexible-centrado" style="gap: 30px;">
+                                                    <div style="display: flex; align-items: center; justify-content: center; min-width: 40px; height: 26px;">
+                                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                            <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                                                        </svg>
                                                     </div>
+
+                                                    @if (usuarioTieneJuegoTiempoJugado > 0 || usuarioTieneJuegoUltimaVezJugado > 0)
+                                                    {
+                                                        <div style="display: flex; align-items: baseline; gap: 5px; width: 100%;">
+                                                            @if (usuarioTieneJuegoTiempoJugado > 0)
+                                                            {
+                                                                TimeSpan tiempoJugado = TimeSpan.FromMinutes((long)usuarioTieneJuegoTiempoJugado);
+
+                                                                string horasJugadas = tiempoJugado.TotalHours.ToString("N1");
+
+                                                                <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Game"), horasJugadas, JuegoDRM2.DevolverDRM(drm.Id))</label>
+                                                            }
+
+                                                            @if (usuarioTieneJuegoUltimaVezJugado > 0 && usuarioTieneJuegoUltimaVezJugado != 86400)
+                                                            {
+                                                                DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(usuarioTieneJuegoUltimaVezJugado);
+
+                                                                string ultimaVezJugado = Herramientas.Calculadora.DiferenciaTiempo(fecha.UtcDateTime, idioma);
+
+                                                                <label style="font-size: 14px;">(@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Game"), ultimaVezJugado))</label>
+                                                            }
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label style="text-align: left; width: 100%;">@mensaje</label>
+                                                    }
+
+                                                    @{
+                                                        string enlaceJugar = string.Empty;
+
+                                                        if (drm.Id == JuegoDRM.Steam && juego.IdSteam > 0)
+                                                        {
+                                                            enlaceJugar = "steam://rungameid/" + juego.IdSteam.ToString();
+                                                        }
+                                                        else if (drm.Id == JuegoDRM.Amazon && string.IsNullOrEmpty(juego.IdAmazon) == false)
+                                                        {
+                                                            enlaceJugar = "amazon-games://play/" + juego.IdAmazon;
+                                                        }
+                                                        else if (drm.Id == JuegoDRM.Ubisoft && string.IsNullOrEmpty(juego.ExeUbisoft) == false)
+                                                        {
+                                                            enlaceJugar = "uplay://launch/" + juego.ExeUbisoft + "/0";
+                                                        }
+                                                        else if (drm.Id == JuegoDRM.EA && string.IsNullOrEmpty(juego.ExeEA) == false)
+                                                        {
+                                                            enlaceJugar = "origin://LaunchGame/" + juego.ExeEA;
+                                                        }
+                                                        else if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.ExeEpic) == false)
+                                                        {
+                                                            enlaceJugar = "com.epicgames.launcher://apps/" + juego.ExeEpic + "?action=launch&silent=true";
+                                                        }
+
+                                                        if (string.IsNullOrEmpty(enlaceJugar) == false)
+                                                        {
+                                                            <a class="juego-boton-pequeño" href="@enlaceJugar" rel="nofollow" style="width: auto; min-width: 200px; text-align: center; backdrop-filter: brightness(60%); background-color: transparent; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+                                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String81", "Game")
+                                                            </a>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         }

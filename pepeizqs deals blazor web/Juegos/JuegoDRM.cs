@@ -322,6 +322,7 @@ namespace Juegos
 					"android",
 					"antstream arcade",
 					"audio-download",
+					"desura",
 					"download",
 					"download_drm",
 					"drivethrurpg",

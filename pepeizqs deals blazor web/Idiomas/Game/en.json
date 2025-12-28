@@ -113,5 +113,7 @@
   "String112": "This game is in early access, which means its development is not complete and it will lack features",
   "String113": "Next",
   "String114": "Back",
-  "String115": "Only Streaming"
+  "String115": "Only Streaming",
+  "String116": "You need to have the game {0} to enjoy the DLC.",
+  "String117": "This content consists of music files from the game {0}."
 }
