@@ -45,7 +45,7 @@ namespace BaseDatos.Bundles
 				BaseDatos.Errores.Insertar.Mensaje("Bundles Actuales", ex);
 			}
 
-			return new List<Bundle>();
+			return null;
 		}
 
 		public static async Task<List<Bundle>> Año(string año)
@@ -102,7 +102,7 @@ namespace BaseDatos.Bundles
 				BaseDatos.Errores.Insertar.Mensaje("Bundles Ultimos", ex);
 			}
 
-			return new List<Bundle>();
+			return null;
 		}
 
 		public static async Task<List<Bundle>> Aleatorios()
@@ -121,7 +121,7 @@ namespace BaseDatos.Bundles
 				BaseDatos.Errores.Insertar.Mensaje("Bundles Aleatorios", ex);
 			}
 
-			return new List<Bundle>();
+			return null;
 		}
 	}
 }

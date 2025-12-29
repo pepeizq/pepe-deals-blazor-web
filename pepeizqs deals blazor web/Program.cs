@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
@@ -325,6 +326,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddBlazorNotification();
 
+builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy()); ;
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -523,5 +526,7 @@ Disallow: /_blazor/
 });
 
 #endregion
+
+app.MapHealthChecks("/vida");
 
 app.Run();

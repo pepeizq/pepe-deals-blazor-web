@@ -2953,7 +2953,7 @@
 @if (juego != null && bundleId > 0)
 {
     <div class="opciones-panel">
-        <div style="max-width: 1320px; margin: 20px auto; overflow-y: scroll; padding: 10px; scrollbar-color: var(--fondoCodigo) var(--fondoBotonPequeño);">
+        <div class="cuerpo-ancho" style="width: 100%; margin: 20px auto; overflow-y: scroll; padding: 10px; scrollbar-color: var(--fondoCodigo) var(--fondoBotonPequeño);">
             @{
                 Bundles2.Bundle bundleSeleccionado = bundleSeleccionadoCache;
 
@@ -3611,15 +3611,6 @@
         {
             var bundle = await BaseDatos.Bundles.Buscar.UnBundle(id);
             bundlesCache1[id] = bundle;
-        }
-
-        #endregion
-
-        #region Bundle Seleccionado
-
-        if (bundleId > 0)
-        {
-            bundleSeleccionadoCache = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
         }
 
         #endregion
@@ -4647,9 +4638,14 @@
 
     private int bundleId = 0;
 
-    private void BundleAbrir(MouseEventArgs e, int nuevoBundleId)
+    private async Task BundleAbrir(MouseEventArgs e, int nuevoBundleId)
     {
         bundleId = nuevoBundleId;
+
+        if (bundleId > 0)
+        {
+            bundleSeleccionadoCache = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
+        }
     }
 
     private void BundleCerrar(MouseEventArgs e)
@@ -5375,16 +5371,16 @@
     #region Abrir Enlace
 
     private async void AbrirEnlace(MouseEventArgs e, string enlace, bool nuevaVentana = true)
-	{
-		string comando = "_blank";
+    {
+        string comando = "_blank";
 
-		if (nuevaVentana == false)
-		{
-			comando = "_self";
-		}
+        if (nuevaVentana == false)
+        {
+            comando = "_self";
+        }
 
-		await JavaScript.InvokeVoidAsync("open", enlace, comando);
-	}
+        await JavaScript.InvokeVoidAsync("open", enlace, comando);
+    }
 
     #endregion
 
@@ -5447,21 +5443,24 @@
 
     private async void CopiarAlClipboard(MouseEventArgs e, string texto)
     {
-        enseñarAlerta = true;
-        await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", texto);
-
-        cronometroContador = 0;
-        cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
-
-        while (await cronometro.WaitForNextTickAsync())
+        if (enseñarAlerta == false)
         {
-            cronometroContador += 1;
+            enseñarAlerta = true;
+            await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", texto);
 
-            if (cronometroContador > cronometroLimite)
+            cronometroContador = 0;
+            cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+            while (await cronometro.WaitForNextTickAsync())
             {
-                enseñarAlerta = false;
-                cronometro.Dispose();
-                await InvokeAsync(StateHasChanged);
+                cronometroContador += 1;
+
+                if (cronometroContador > cronometroLimite)
+                {
+                    enseñarAlerta = false;
+                    cronometro.Dispose();
+                    await InvokeAsync(StateHasChanged);
+                }
             }
         }
     }

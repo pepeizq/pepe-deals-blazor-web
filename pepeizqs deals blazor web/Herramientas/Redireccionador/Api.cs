@@ -96,7 +96,7 @@ namespace Herramientas.Redireccionador
 		{
 			List<Bundle> bundles = await global::BaseDatos.Bundles.Buscar.Ultimos(5);
 
-			if (bundles != null)
+			if (bundles?.Count > 0)
 			{
 				return Ok(bundles);
 			}
@@ -122,7 +122,7 @@ namespace Herramientas.Redireccionador
 
 			List<Bundle> bundles = await global::BaseDatos.Bundles.Buscar.Ultimos(cantidadFinal);
 
-			if (bundles != null)
+			if (bundles?.Count > 0)
 			{
 				return Ok(bundles);
 			}
