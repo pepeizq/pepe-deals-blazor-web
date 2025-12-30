@@ -1,10 +1,9 @@
-﻿@using BlazorNotification
-@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
 @using pepeizqs_deals_web.Data
 
-@inject IBlazorNotificationService ServicioNotificaciones
+@inject NotificacionesPush Push
 
 <style>
 	.caja-admin-noticia {
@@ -173,12 +172,12 @@
 					Discord
 				</button>
 
-				<button @onclick="(e => EnviarNotificacionesPush(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
-					Notificaciones Push
-				</button>
-
 				<button @onclick="(e => EnviarReddit(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
 					Reddit
+				</button>
+
+				<button @onclick="(e => EnviarNotificacionesPush(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
+					Notificaciones Push
 				</button>
 			</div>
 		</div>
@@ -381,13 +380,13 @@
 		await Herramientas.RedesSociales.Discord.Postear(noticia, dominio);
 	}
 
-	private async void EnviarNotificacionesPush(MouseEventArgs e)
-	{
-		await Herramientas.NotificacionesPush.EnviarNoticia(ServicioNotificaciones, noticia);
-	}
-
 	private async void EnviarReddit(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Reddit.Postear(noticia, dominio);
+	}
+
+	private async Task EnviarNotificacionesPush(MouseEventArgs e)
+	{
+		await Push.SendNotificationToAllAsync(noticia.TituloEn, "Mensaje", noticia.Enlace);
 	}
 }

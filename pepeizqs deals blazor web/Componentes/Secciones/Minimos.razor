@@ -804,7 +804,7 @@ else
 				</Virtualize>
 			</div>
 
-			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && string.IsNullOrEmpty(textoBuscador) == true)
 			{
 				<div style="margin-top: 20px; width: 100%; display: flex; align-items: center; gap: 20px; justify-content: center;">
 					@if (cargandoMas == false)
@@ -1317,7 +1317,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1353,7 +1353,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1389,7 +1389,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1425,7 +1425,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1461,7 +1461,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1497,7 +1497,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1533,7 +1533,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1569,7 +1569,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosMostrar.Count > 0)
 			{
@@ -1611,11 +1611,6 @@ else
 		cargado = false;
 
 		List<JuegoMostrar> listaMostrar = new List<JuegoMostrar>();
-
-		if (string.IsNullOrEmpty(textoBuscador) == false)
-		{
-			lista = lista.Where(j => Herramientas.Buscador.LimpiarNombre(j.Nombre, true).Contains(Herramientas.Buscador.LimpiarNombre(textoBuscador, true)) == true).ToList();
-		}
 
 		if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
 		{
@@ -1815,7 +1810,7 @@ else
 
 	private async Task TextoCambiaBuscador()
 	{
-		await ElegirOrdenamiento(false);
+		await ElegirOrdenamiento(true);
 	}
 
 	private string ocultarJuegosUsuarioSteam = null;

@@ -788,25 +788,6 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static async Task<NotificacionSuscripcion> UnUsuarioNotificacionesPush(string usuarioId)
-		{
-			try
-			{
-				string busqueda = "SELECT * FROM usuariosNotificaciones WHERE usuarioId=@usuarioId";
-
-				return await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return await conexion.QueryFirstOrDefaultAsync<NotificacionSuscripcion>(busqueda, new { usuarioId });
-				});
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Notificaciones Push", ex);
-			}
-
-			return null;
-		}
-
 		public static async Task<bool> UsuarioNombreRepetido(string nombre)
 		{
 			if (string.IsNullOrEmpty(nombre) == true)

@@ -1,5 +1,4 @@
 ﻿using ApexCharts;
-using BlazorNotification;
 using Herramientas;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +11,9 @@ using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
-using System.Text;
 using System.Text.Json.Serialization;
 
 ClasesDapper.Registrar();
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -324,9 +321,9 @@ builder.Services.AddHttpContextAccessor();
 
 #endregion
 
-builder.Services.AddBlazorNotification();
+builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
 
-builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy()); ;
+builder.Services.AddScoped<NotificacionesPush>();
 
 var app = builder.Build();
 

@@ -1,5 +1,4 @@
-﻿@using BlazorNotification
-@using Bundles2
+﻿@using Bundles2
 @using Gratis2
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
@@ -11,7 +10,6 @@
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
-@inject IBlazorNotificationService ServicioNotificaciones
 
 <style>
     .caja-admin-noticias {
@@ -879,8 +877,6 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         enviandoDiscord = false;
 
         await InvokeAsync(StateHasChanged);
-
-        await Herramientas.NotificacionesPush.EnviarNoticia(ServicioNotificaciones, noticiaAñadir);
 
         enviandoReddit = true;
 

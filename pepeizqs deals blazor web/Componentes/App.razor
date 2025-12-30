@@ -83,7 +83,7 @@
         <div id="reconnect-modal" style="display: none;"></div>
         <script src="@Assets["/_framework/blazor.web.js"]" autostart="false"></script>
         <script src="@Assets["/inicio.js"]"></script>
-        <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
+        <script src="@Assets["/push-notifications.js"]"></script>
     }
     else
     {

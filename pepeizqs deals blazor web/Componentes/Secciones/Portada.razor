@@ -1,6 +1,5 @@
 ﻿@page "/"
 
-@using BlazorNotification
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
@@ -14,7 +13,6 @@
 @using System.Text.Json
 
 @inject IHttpContextAccessor Contexto
-@inject IBlazorNotificationService ServicioNotificaciones
 
 @{
 	#nullable disable
@@ -925,7 +923,7 @@
 	{
 		if (primerRender == true)
 		{
-			await ServicioNotificaciones.RequestPermissionAsync();
+			
 		}
 	}
 

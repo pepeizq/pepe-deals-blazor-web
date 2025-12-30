@@ -1,94 +1,110 @@
-﻿#nullable disable
+﻿
+using pepeizqs_deals_web.Data;
+using System.Text.Json;
+using WebPush;
 
-using BlazorNotification;
-using Juegos;
-using Microsoft.VisualBasic;
-
-namespace Herramientas
+public class PushSubscription
 {
-	public class NotificacionesPush
+	public int Id { get; set; }
+	public string UserId { get; set; }
+	public string SubscriptionJson { get; set; }
+	public DateTime FechaCreacion { get; set; }
+	public bool Activa { get; set; }
+	public virtual Usuario User { get; set; }
+}
+
+public class NotificacionesPush
+{
+	private readonly pepeizqs_deals_webContext _db;
+	private readonly IConfiguration _config;
+
+	public NotificacionesPush(pepeizqs_deals_webContext db, IConfiguration config)
 	{
-		public async static Task<bool> EnviarNoticia(IBlazorNotificationService servicio, Noticias.Noticia noticia)
+		_db = db;
+		_config = config;
+	}
+
+	public async Task<bool> SendNotificationAsync(
+	   string userId,
+	   string titulo,
+	   string mensaje,
+	   string enlace)
+	{
+		try
 		{
-			string enlace = string.Empty;
+			var subscription = _db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
 
-			if (noticia.Id == 0)
+			if (subscription == null)
 			{
-				enlace = "https://pepe.deals/link/news/" + noticia.IdMaestra.ToString() + "/";
-			}
-			else
-			{
-				enlace = "https://pepe.deals/link/news/" + noticia.Id.ToString() + "/";
-			}
-
-			string titulo = noticia.TituloEn;
-			titulo = titulo.Replace("'", null);
-
-			NotificationOptions opciones = new NotificationOptions
-			{
-				Icon = "https://pepe.deals/logo/logo6.png",
-				Image = noticia.Imagen,
-				Data = "url: " + Strings.ChrW(34) + noticia.Enlace + Strings.ChrW(34) + ", " + Environment.NewLine + "status: " + Strings.ChrW(34) + "open"
-			};
-
-			try
-			{
-				await servicio.SendAsync(titulo, opciones);
-			}
-			catch (Exception ex)
-			{
-				global::BaseDatos.Errores.Insertar.Mensaje("Notificaciones Push", ex);
+				Console.WriteLine($"No hay suscripción activa para el usuario {userId}");
 				return false;
 			}
 
-			return true;
-		}
-
-		public static void EnviarMinimo(string usuarioId, Juego juego, JuegoPrecio minimo, JuegoDRM drm)
-		{
-			if (juego != null)
+			using (JsonDocument doc = JsonDocument.Parse(subscription.SubscriptionJson))
 			{
-				//WebApplicationBuilder builder = WebApplication.CreateBuilder();
-				//string publicKey = builder.Configuration.GetValue<string>("NotificacionesPush:PublicKey");
-				//string privateKey = builder.Configuration.GetValue<string>("NotificacionesPush:PrivateKey");
+				JsonElement root = doc.RootElement;
 
-				//VapidDetails vapidDetalles = new VapidDetails("https://pepe.deals", publicKey, privateKey);
-				//WebPushClient webPushCliente = new WebPushClient();
+				var endpoint = root.GetProperty("endpoint").GetString();
+				var p256dh = root.GetProperty("keys").GetProperty("p256dh").GetString();
+				var auth = root.GetProperty("keys").GetProperty("auth").GetString();
 
-				//NotificacionSuscripcion usuario = global::BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuarioId);
+				var pushSubscription = new WebPush.PushSubscription(endpoint, p256dh, auth);
 
-				//if (usuario != null)
-				//{
-				//	string titulo = minimo.Nombre + " - " + Herramientas.Precios.Euro(minimo.Precio);
+				var vapidPublicKey = _config["NotificacionesPush:PublicKey"];
+				var vapidPrivateKey = _config["NotificacionesPush:PrivateKey"];
+				var vapidSubject = _config["NotificacionesPush:Subject"];
 
-				//	PushSubscription suscripcion = new PushSubscription(usuario.Url, usuario.P256dh, usuario.Auth);
+				var vapidDetails = new VapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 
-				//	try
-				//	{
-				//		var payload = JsonSerializer.Serialize(new
-				//		{
-				//			message = titulo,
-				//			url = $"/game/{juego.Id.ToString()}/{Herramientas.EnlaceAdaptador.Nombre(juego.Nombre)}/"
-				//		});
+				var payload = JsonSerializer.Serialize(new
+				{
+					title = titulo,
+					body = mensaje,
+					icon = "/logo/logo6.png",
+					url = enlace
+				});
 
-				//		await webPushCliente.SendNotificationAsync(suscripcion, payload, vapidDetalles);
-				//	}
-				//	catch (Exception ex)
-				//	{
-				//		global::BaseDatos.Errores.Insertar.Mensaje("Notificaciones Push", ex);
-				//	}
-				//}
+				var webPushClient = new WebPushClient();
+				await webPushClient.SendNotificationAsync(pushSubscription, payload, vapidDetails);
+
+				return true;
 			}
+		}
+		catch (Exception ex)
+		{
+			BaseDatos.Errores.Insertar.Mensaje("Enviar Notificaciones Push", ex, false);
+			return false;
 		}
 	}
 
-	public class NotificacionSuscripcion
+	public async Task<int> SendNotificationToAllAsync(
+		string titulo,
+		string mensaje,
+		string enlace)
 	{
-		public int NotificationSubscriptionId { get; set; }
-		public string UserId { get; set; }
-		public string Url { get; set; }
-		public string P256dh { get; set; }
-		public string Auth { get; set; }
-		public string UserAgent { get; set; }
+		try
+		{
+			var subscriptions = _db.PushSubscriptions
+				.Where(s => s.Activa)
+				.GroupBy(s => s.UserId)
+				.ToList();
+
+			int enviadas = 0;
+
+			foreach (var userGroup in subscriptions)
+			{
+				var userId = userGroup.Key;
+				var success = await SendNotificationAsync(userId, titulo, mensaje, enlace);
+				if (success) enviadas++;
+			}
+
+			Console.WriteLine($"✓ {enviadas} notificaciones enviadas");
+			return enviadas;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"❌ Error: {ex.Message}");
+			return 0;
+		}
 	}
 }

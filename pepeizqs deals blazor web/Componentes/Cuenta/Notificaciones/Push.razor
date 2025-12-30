@@ -1,425 +1,162 @@
-﻿@using BlazorNotification
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.JSInterop
+﻿@page "/push-setup"
+
 @using pepeizqs_deals_web.Data
 
-@inject UserManager<Usuario> UserManager
-@inject IHttpContextAccessor Contexto
-@inject IJSRuntime JavaScript
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject IConfiguration Config
+@inject pepeizqs_deals_webContext Db
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div style="display: flex; flex-direction: column; gap: 20px;">
-	<div class="caja-diseño" style="padding: 30px;">
-		<div style="display: flex; flex-direction: column; gap: 15px;">
-			@respuesta
+<h3>Configurar Notificaciones Push</h3>
 
-			@if (string.IsNullOrEmpty(userAgentRegistrado) == false)
-			{
-				<div>
-					<div>
-						@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush12", "Account")
-					</div>
 
-					<div>
-						@userAgentRegistrado
-					</div>
-
-					@if (usuarioAdmin == true)
-					{
-						<div style="margin-top: 10px;">
-							@idSuscripcionRegistrada.ToString()
-						</div>
-
-						<div style="margin-top: 10px;">
-							@enlaceRegistrado
-						</div>
-					}
-				</div>
-
-				<button @onclick="@(e => QuitarUsuario(e))" class="boton-pequeño" style="padding: 10px 15px; width: fit-content;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush14", "Account")
-				</button>
-			}
-			else
-			{
-				<button @onclick="@(e => AñadirUsuario(e))" class="boton-pequeño" style="padding: 10px 15px; width: fit-content;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush13", "Account")
-				</button>
-			}
-		</div>
-	</div>
-
-	@if (string.IsNullOrEmpty(userAgentRegistrado) == false)
-	{
-		<div class="caja-diseño" style="padding: 30px;">
-			<div style="display: flex; align-items: start; gap: 30px;">
-				<div class="checkbox-caja">
-					<input type="checkbox" class="checkbox-interior" checked="@estadoMinimos" @onchange="ClickearCambioMinimos" style="margin-top: 20px;">
-				</div>
-
-				<div style="display: flex; flex-direction: column; gap: 10px;">
-					<div>
-						@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush1", "Account")
-					</div>
-
-					<div>
-						@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush2", "Account")
-					</div>
-
-					<hr style="margin: 10px 0px" />
-
-					<div style="font-size: 14px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush11", "Account")
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="caja-diseño" style="display: flex; align-items: center; padding: 30px;">
-			<div class="checkbox-caja">
-				<input type="checkbox" class="checkbox-interior" checked="@estadoBundles" @onchange="ClickearCambioBundles">
-			</div>
-
-			<div style="padding-left: 30px;">
-				<div style="margin-bottom: 10px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush3", "Account")
-				</div>
-
-				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush4", "Account")
-				</div>
-			</div>
-		</div>
-
-		<div class="caja-diseño" style="display: flex; align-items: center; padding: 30px;">
-			<div class="checkbox-caja">
-				<input type="checkbox" class="checkbox-interior" checked="@estadoGratis" @onchange="ClickearCambioGratis">
-			</div>
-
-			<div style="padding-left: 30px;">
-				<div style="margin-bottom: 10px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush5", "Account")
-				</div>
-
-				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush6", "Account")
-				</div>
-			</div>
-		</div>
-
-		<div class="caja-diseño" style="display: flex; align-items: center; padding: 30px;">
-			<div class="checkbox-caja">
-				<input type="checkbox" class="checkbox-interior" checked="@estadoSuscripciones" @onchange="ClickearCambioSuscripciones">
-			</div>
-
-			<div style="padding-left: 30px;">
-				<div style="margin-bottom: 10px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush7", "Account")
-				</div>
-
-				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush8", "Account")
-				</div>
-			</div>
-		</div>
-
-		<div class="caja-diseño" style="display: flex; align-items: center; padding: 30px;">
-			<div class="checkbox-caja">
-				<input type="checkbox" class="checkbox-interior" checked="@estadoOtros" @onchange="ClickearCambioOtros">
-			</div>
-
-			<div style="padding-left: 30px;">
-				<div style="margin-bottom: 10px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush9", "Account")
-				</div>
-
-				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "NotificationsPush10", "Account")
-				</div>
-			</div>
-		</div>
-	}
-</div>
+@if (!supportsNotifications)
+{
+    <p style="color: red;">Tu navegador no soporta notificaciones push.</p>
+}
+else
+{
+    @if (!isSubscribed)
+    {
+        <button class="btn btn-primary" @onclick="ActivarNotificaciones">
+            Activar Notificaciones
+        </button>
+    }
+    else
+    {
+        <p style="color: green;">✓ Notificaciones activadas</p>
+        <button class="btn btn-danger" @onclick="DesactivarNotificaciones">
+            Desactivar Notificaciones
+        </button>
+    }
+}
 
 @code {
 
-	#nullable disable
 
-	[Parameter]
-	public string idioma { get; set; }
+    private bool supportsNotifications = true;
+    private bool isSubscribed = false;
+    private bool isInitialized = false;
+    private string userId = null;
 
-	[Parameter]
-	public string userAgent { get; set; }
-
-	private Usuario usuario = new Usuario();
-	private bool usuarioAdmin = false;
-
-	private string userAgentRegistrado = string.Empty;
-	private int idSuscripcionRegistrada = 0;
-	private string enlaceRegistrado = string.Empty;
-
-	private string estadoMinimos = null;
-
-	private string estadoBundles = null;
-	private string estadoGratis = null;
-	private string estadoSuscripciones = null;
-	private string estadoOtros = null;
-
-	[Inject] IBlazorNotificationService NotificationService { get; set; }
-
-	protected override async Task OnInitializedAsync()
-	{
-		usuario = await UserManager.GetUserAsync(Contexto.HttpContext.User);
-
-		if (string.IsNullOrEmpty(usuario.Id) == false)
-		{
-			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuario.Id);
-
-			Herramientas.NotificacionSuscripcion suscripcion = await BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
-
-			if (suscripcion != null)
-			{
-				userAgentRegistrado = suscripcion.UserAgent;
-				idSuscripcionRegistrada = suscripcion.NotificationSubscriptionId;
-				enlaceRegistrado = suscripcion.Url;
-
-				if (usuario.NotificationPushLows == null)
-				{
-					estadoMinimos = null;
-				}
-				else
-				{
-					if (usuario.NotificationPushLows == true)
-					{
-						estadoMinimos = "checked";
-					}
-					else
-					{
-						estadoMinimos = null;
-					}
-				}
-
-				if (usuario.NotificationPushBundles == null)
-				{
-					estadoBundles = null;
-				}
-				else
-				{
-					if (usuario.NotificationPushBundles == true)
-					{
-						estadoBundles = "checked";
-					}
-					else
-					{
-						estadoBundles = null;
-					}
-				}
-
-				if (usuario.NotificationPushFree == null)
-				{
-					estadoGratis = null;
-				}
-				else
-				{
-					if (usuario.NotificationPushFree == true)
-					{
-						estadoGratis = "checked";
-					}
-					else
-					{
-						estadoGratis = null;
-					}
-				}
-
-				if (usuario.NotificationPushSubscriptions == null)
-				{
-					estadoSuscripciones = null;
-				}
-				else
-				{
-					if (usuario.NotificationPushSubscriptions == true)
-					{
-						estadoSuscripciones = "checked";
-					}
-					else
-					{
-						estadoSuscripciones = null;
-					}
-				}
-
-				if (usuario.NotificationPushOthers == null)
-				{
-					estadoOtros = null;
-				}
-				else
-				{
-					if (usuario.NotificationPushOthers == true)
-					{
-						estadoOtros = "checked";
-					}
-					else
-					{
-						estadoOtros = null;
-					}
-				}
-			}
-		}
-	}
-
-	private string respuesta = string.Empty;
-
-	protected override async Task OnAfterRenderAsync(bool primerRender)
+    protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
-            NotificationPermissionType permission = await NotificationService.RequestPermissionAsync();
-			respuesta = permission.ToString();
+            try
+            {
+                supportsNotifications = await JS.InvokeAsync<bool>("supportsNotifications");
+
+                if (supportsNotifications == true)
+                {
+                    var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                    userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                    if (!string.IsNullOrEmpty(userId))
+                    {
+                        var existingSubscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
+
+                        if (existingSubscription != null)
+                        {
+                            isSubscribed = true;
+                        }
+                    }
+                }
+
+                isInitialized = true;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error supportsNotifications: {ex.Message}");
+            }
         }
     }
 
-	private async Task AñadirUsuario(MouseEventArgs e)
-	{
-		Herramientas.NotificacionSuscripcion suscripcion = await JavaScript.InvokeAsync<Herramientas.NotificacionSuscripcion>("blazorPushNotifications.requestSubscription");
+    private async Task ActivarNotificaciones()
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            // errorMessage = "Usuario no autenticado";
+            return;
+        }
 
-		if (suscripcion != null)
-		{
-			suscripcion.UserId = usuario.Id;
-			suscripcion.UserAgent = userAgent;
+        try
+        {
+            var publicKey = Config["NotificacionesPush:PublicKey"];
 
-			await BaseDatos.Usuarios.Insertar.NotificacionesPush(suscripcion);
+            if (string.IsNullOrEmpty(publicKey) == false)
+            {
+                var subscriptionJson = await JS.InvokeAsync<string>("registerServiceWorker", publicKey);
 
-			Herramientas.NotificacionSuscripcion suscripcion2 = await BaseDatos.Usuarios.Buscar.UnUsuarioNotificacionesPush(usuario.Id);
+                if (string.IsNullOrEmpty(subscriptionJson))
+                {
+                    // errorMessage = "El usuario rechazó las notificaciones";
+                    return;
+                }
 
-			if (suscripcion2 != null)
-			{
-				userAgentRegistrado = suscripcion.UserAgent;
+                if (subscriptionJson != null)
+                {
+                    var existingSubscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId);
 
-				await InvokeAsync(() =>
-				{
-					StateHasChanged();
-				});
-			}
-		}
-	}
+                    if (existingSubscription != null)
+                    {
+                        existingSubscription.SubscriptionJson = subscriptionJson;
+                        existingSubscription.FechaCreacion = DateTime.UtcNow;
+                        existingSubscription.Activa = true;
+                        Db.PushSubscriptions.Update(existingSubscription);
+                    }
+                    else
+                    {
+                        // Crea una nueva
+                        var subscription = new PushSubscription
+                        {
+                            UserId = userId,
+                            SubscriptionJson = subscriptionJson,
+                            FechaCreacion = DateTime.UtcNow,
+                            Activa = true
+                        };
 
-	private async Task QuitarUsuario(MouseEventArgs e)
-	{
-		await BaseDatos.Usuarios.Borrar.NotificacionesPush(usuario.Id);
-		userAgentRegistrado = null;
-	}
+                        Db.PushSubscriptions.Add(subscription);
+                    }
 
-	private async void ClickearCambioMinimos()
-	{
-		if (usuario != null)
-		{
-			bool boolMinimos = false;
+                    await Db.SaveChangesAsync();
+                    isSubscribed = true;
+                }
+            }  
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Activar Notificaciones Push", ex, false);
+        }
+    }
 
-			if (estadoMinimos == null)
-			{
-				estadoMinimos = "checked";
-				boolMinimos = true;
-			}
-			else
-			{
-				estadoMinimos = null;
-				boolMinimos = false;
-			}
+    private async Task DesactivarNotificaciones()
+    {
+        if (string.IsNullOrEmpty(userId))
+        {
+            // errorMessage = "Usuario no autenticado";
+            return;
+        }
 
-			usuario.NotificationPushLows = boolMinimos;
+        try
+        {
+            var subscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
 
-			await UserManager.UpdateAsync(usuario);
-		}
-	}
+            if (subscription != null)
+            {
+                Db.PushSubscriptions.Remove(subscription);
+                await Db.SaveChangesAsync();
+            }
 
-	private async void ClickearCambioBundles()
-	{
-		if (usuario != null)
-		{
-			bool estado = false;
-
-			if (estadoBundles == null)
-			{
-				estadoBundles = "checked";
-				estado = true;
-			}
-			else
-			{
-				estadoBundles = null;
-				estado = false;
-			}
-
-			usuario.NotificationPushBundles = estado;
-
-			await UserManager.UpdateAsync(usuario);
-		}
-	}
-
-	private async void ClickearCambioGratis()
-	{
-		if (usuario != null)
-		{
-			bool estado = false;
-
-			if (estadoGratis == null)
-			{
-				estadoGratis = "checked";
-				estado = true;
-			}
-			else
-			{
-				estadoGratis = null;
-				estado = false;
-			}
-
-			usuario.NotificationPushFree = estado;
-
-			await UserManager.UpdateAsync(usuario);
-		}
-	}
-
-	private async void ClickearCambioSuscripciones()
-	{
-		if (usuario != null)
-		{
-			bool estado = false;
-
-			if (estadoSuscripciones == null)
-			{
-				estadoSuscripciones = "checked";
-				estado = true;
-			}
-			else
-			{
-				estadoSuscripciones = null;
-				estado = false;
-			}
-
-			usuario.NotificationPushSubscriptions = estado;
-
-			await UserManager.UpdateAsync(usuario);
-		}
-	}
-
-	private async void ClickearCambioOtros()
-	{
-		if (usuario != null)
-		{
-			bool estado = false;
-
-			if (estadoOtros == null)
-			{
-				estadoOtros = "checked";
-				estado = true;
-			}
-			else
-			{
-				estadoOtros = null;
-				estado = false;
-			}
-
-			usuario.NotificationPushOthers = estado;
-
-			await UserManager.UpdateAsync(usuario);
-		}
-	}
+            isSubscribed = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            BaseDatos.Errores.Insertar.Mensaje("Desactivar Notificaciones Push", ex, false);
+        }
+    
+    }
 }

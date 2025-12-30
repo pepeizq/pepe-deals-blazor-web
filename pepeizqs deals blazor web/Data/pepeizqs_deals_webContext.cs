@@ -16,6 +16,8 @@ namespace pepeizqs_deals_web.Data
 
 		public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+		public DbSet<PushSubscription> PushSubscriptions { get; set; }
+
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			base.OnModelCreating(builder);
