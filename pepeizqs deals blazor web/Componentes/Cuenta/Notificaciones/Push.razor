@@ -1,44 +1,242 @@
-﻿@page "/push-setup"
-
+﻿@using pepeizqs_deals_blazor_web.Componentes.Admin
 @using pepeizqs_deals_web.Data
 
-@inject IJSRuntime JS
+@inject IJSRuntime JavaScript
 @inject HttpClient Http
 @inject IConfiguration Config
 @inject pepeizqs_deals_webContext Db
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Configurar Notificaciones Push</h3>
+<style>
+    .caja-cuenta-contenido {
+        background-color: var(--fondoSubsubcabecera);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+    }
 
+    .caja-cuenta-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        font-size: 16px;
+        padding: 20px 30px;
+        border: 1px solid var(--fondoSubsubcabecera);
+    }
+</style>
 
-@if (!supportsNotifications)
+<script>
+    function enseñarTooltip(e, id) {
+        var x = e.clientX,
+            y = e.clientY;
+
+        var tooltip = document.getElementById(id);
+
+        if (screen.width / 2 > x) {
+            tooltip.style.top = (y + 10) + 'px';
+            tooltip.style.left = (x + 20) + 'px';
+        }
+        else {
+            tooltip.style.top = (y - 10) + 'px';
+            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+        };
+    }
+</script>
+
+@if (navegadorSoportaNotificaciones == false)
 {
-    <p style="color: red;">Tu navegador no soporta notificaciones push.</p>
+    <div style="margin: 40px auto; background-color: var(--fondoPeligro); padding: 15px 20px;">
+        @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountNotificationsPush")
+    </div>
 }
 else
 {
-    @if (!isSubscribed)
-    {
-        <button class="btn btn-primary" @onclick="ActivarNotificaciones">
-            Activar Notificaciones
-        </button>
-    }
-    else
-    {
-        <p style="color: green;">✓ Notificaciones activadas</p>
-        <button class="btn btn-danger" @onclick="DesactivarNotificaciones">
-            Desactivar Notificaciones
-        </button>
-    }
+    <div style="margin: 40px auto;">
+        @if (usuarioSuscrito == false)
+        {
+            <button class="boton-pequeño" @onclick="ActivarNotificaciones" style="width: fit-content; padding: 10px 15px;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountNotificationsPush")
+            </button>
+        }
+        else
+        {
+            <div style="display: flex; flex-direction: column; gap: 40px;">
+                <div class="caja-cuenta-contenido" style="padding: 30px; display: flex; align-items: center; gap: 30px;">
+                    <div style="background-color: var(--fondoBien); color: var(--colorTexto); padding: 10px 20px; display: flex; align-items: center; gap: 15px; width: fit-content; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);">
+                        <svg class="svg-boton" style="width: 24px; height: 24px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+                        </svg>
+
+                        <div>
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "AccountNotificationsPush")
+                        </div>
+                    </div>
+
+                    <button class="boton-pequeño" @onclick="DesactivarNotificaciones" style="width: fit-content; padding: 10px 15px; background-color: var(--fondoPeligro); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 1px 0px rgba(0, 0, 0, 0.1);">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountNotificationsPush")
+                    </button>
+                </div>
+
+                @if (usuarioSuscrito == true)
+                {
+                    <div class="caja-cuenta-contenido">
+                        <div class="caja-cuenta-titulo" style="font-size: 18px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "AccountNotificationsPush")
+                        </div>
+
+                        <div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoBundles" @onchange="ClickearCambioBundles">
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <div>
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "AccountNotificationsPush")
+                                    </div>
+
+                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push1')">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                            </svg>
+                                        </div>
+
+                                        <div id="tooltip-push1" class="tooltip-relleno">
+                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountNotificationsPush")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoGratis" @onchange="ClickearCambioGratis">
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <div>
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountNotificationsPush")
+                                    </div>
+
+                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push2')">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                            </svg>
+                                        </div>
+
+                                        <div id="tooltip-push2" class="tooltip-relleno">
+                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AccountNotificationsPush")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoSuscripciones" @onchange="ClickearCambioSuscripciones">
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <div>
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountNotificationsPush")
+                                    </div>
+
+                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push3')">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                            </svg>
+                                        </div>
+
+                                        <div id="tooltip-push3" class="tooltip-relleno">
+                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountNotificationsPush")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoWeb" @onchange="ClickearCambioWeb">
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <div>
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountNotificationsPush")
+                                    </div>
+
+                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push4')">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                            </svg>
+                                        </div>
+
+                                        <div id="tooltip-push4" class="tooltip-relleno">
+                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String13", "AccountNotificationsPush")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoOtros" @onchange="ClickearCambioOtros">
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <div>
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String14", "AccountNotificationsPush")
+                                    </div>
+
+                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push5')">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                            </svg>
+                                        </div>
+
+                                        <div id="tooltip-push5" class="tooltip-relleno">
+                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String15", "AccountNotificationsPush")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 }
 
 @code {
 
+    #nullable disable
 
-    private bool supportsNotifications = true;
-    private bool isSubscribed = false;
-    private bool isInitialized = false;
-    private string userId = null;
+    [Parameter]
+    public string idioma { get; set; }
+
+    private bool navegadorSoportaNotificaciones = true;
+    private bool usuarioSuscrito = false;
+    private string usuarioId = null;
+
+    private Usuario usuario = new Usuario();
+
+    private string estadoBundles = null;
+    private string estadoGratis = null;
+    private string estadoSuscripciones = null;
+    private string estadoWeb = null;
+    private string estadoOtros = null;
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
@@ -46,39 +244,126 @@ else
         {
             try
             {
-                supportsNotifications = await JS.InvokeAsync<bool>("supportsNotifications");
+                navegadorSoportaNotificaciones = await JavaScript.InvokeAsync<bool>("supportsNotifications");
 
-                if (supportsNotifications == true)
+                if (navegadorSoportaNotificaciones == true)
                 {
                     var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-                    userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                    usuarioId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-                    if (!string.IsNullOrEmpty(userId))
+                    if (string.IsNullOrEmpty(usuarioId) == false)
                     {
-                        var existingSubscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
+                        var suscripcionExiste = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == usuarioId && s.Activa);
 
-                        if (existingSubscription != null)
+                        if (suscripcionExiste != null)
                         {
-                            isSubscribed = true;
+                            usuarioSuscrito = true;
                         }
                     }
                 }
 
-                isInitialized = true;
+                if (usuarioSuscrito == true)
+                {
+                    usuario = await BaseDatos.Usuarios.Buscar.OpcionesNotificacionesPush(usuarioId);
+
+                    if (usuario != null)
+                    {
+                        if (usuario.NotificationPushBundles == null)
+			            {
+				            estadoBundles = null;
+			            }
+			            else
+			            {
+				            if (usuario.NotificationPushBundles == true)
+				            {
+					            estadoBundles = "checked";
+				            }
+				            else
+				            {
+					            estadoBundles = null;
+				            }
+			            }
+
+                        if (usuario.NotificationPushFree == null)
+                        {
+                            estadoGratis = null;
+                        }
+                        else
+                        {
+                            if (usuario.NotificationPushFree == true)
+                            {
+                                estadoGratis = "checked";
+                            }
+                            else
+                            {
+                                estadoGratis = null;
+                            }
+                        }
+
+                        if (usuario.NotificationPushSubscriptions == null)
+                        {
+                            estadoSuscripciones = null;
+                        }
+                        else
+                        {
+                            if (usuario.NotificationPushSubscriptions == true)
+                            {
+                                estadoSuscripciones = "checked";
+                            }
+                            else
+                            {
+                                estadoSuscripciones = null;
+                            }
+                        }
+
+                        if (usuario.NotificationPushWeb == null)
+                        {
+                            estadoWeb = null;
+                        }
+                        else
+                        {
+                            if (usuario.NotificationPushWeb == true)
+                            {
+                                estadoWeb = "checked";
+                            }
+                            else
+                            {
+                                estadoWeb = null;
+                            }
+                        }
+
+                        if (usuario.NotificationPushOthers == null)
+                        {
+                            estadoOtros = null;
+                        }
+                        else
+                        {
+                            if (usuario.NotificationPushOthers == true)
+                            {
+                                estadoOtros = "checked";
+                            }
+                            else
+                            {
+                                estadoOtros = null;
+                            }
+                        }
+
+                    }
+                }
+
                 StateHasChanged();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error supportsNotifications: {ex.Message}");
+                BaseDatos.Errores.Insertar.Mensaje("AfterRender Notificaciones Push", ex, false);
             }
         }
     }
 
     private async Task ActivarNotificaciones()
     {
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(usuarioId))
         {
-            // errorMessage = "Usuario no autenticado";
             return;
         }
 
@@ -88,7 +373,7 @@ else
 
             if (string.IsNullOrEmpty(publicKey) == false)
             {
-                var subscriptionJson = await JS.InvokeAsync<string>("registerServiceWorker", publicKey);
+                var subscriptionJson = await JavaScript.InvokeAsync<string>("registerServiceWorker", publicKey);
 
                 if (string.IsNullOrEmpty(subscriptionJson))
                 {
@@ -98,7 +383,7 @@ else
 
                 if (subscriptionJson != null)
                 {
-                    var existingSubscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId);
+                    var existingSubscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == usuarioId);
 
                     if (existingSubscription != null)
                     {
@@ -109,10 +394,9 @@ else
                     }
                     else
                     {
-                        // Crea una nueva
                         var subscription = new PushSubscription
                         {
-                            UserId = userId,
+                            UserId = usuarioId,
                             SubscriptionJson = subscriptionJson,
                             FechaCreacion = DateTime.UtcNow,
                             Activa = true
@@ -122,7 +406,7 @@ else
                     }
 
                     await Db.SaveChangesAsync();
-                    isSubscribed = true;
+                    usuarioSuscrito = true;
                 }
             }  
         }
@@ -134,7 +418,7 @@ else
 
     private async Task DesactivarNotificaciones()
     {
-        if (string.IsNullOrEmpty(userId))
+        if (string.IsNullOrEmpty(usuarioId))
         {
             // errorMessage = "Usuario no autenticado";
             return;
@@ -142,21 +426,135 @@ else
 
         try
         {
-            var subscription = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
+            var suscripcion = Db.PushSubscriptions.FirstOrDefault(s => s.UserId == usuarioId && s.Activa);
 
-            if (subscription != null)
+            if (suscripcion != null)
             {
-                Db.PushSubscriptions.Remove(subscription);
+                Db.PushSubscriptions.Remove(suscripcion);
                 await Db.SaveChangesAsync();
             }
 
-            isSubscribed = false;
+            usuarioSuscrito = false;
             StateHasChanged();
         }
         catch (Exception ex)
         {
             BaseDatos.Errores.Insertar.Mensaje("Desactivar Notificaciones Push", ex, false);
         }
-    
+    }
+
+    private async void ClickearCambioBundles()
+    {
+        if (usuario != null)
+        {
+            bool estado = false;
+
+            if (estadoBundles == null)
+            {
+                estadoBundles = "checked";
+                estado = true;
+            }
+            else
+            {
+                estadoBundles = null;
+                estado = false;
+            }
+
+            usuario.NotificationPushBundles = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushBundles", estado, usuarioId);
+        }
+    }
+
+    private async void ClickearCambioGratis()
+    {
+        if (usuario != null)
+        {
+            bool estado = false;
+
+            if (estadoGratis == null)
+            {
+                estadoGratis = "checked";
+                estado = true;
+            }
+            else
+            {
+                estadoGratis = null;
+                estado = false;
+            }
+
+            usuario.NotificationPushFree = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushFree", estado, usuarioId);
+        }
+    }
+
+    private async void ClickearCambioSuscripciones()
+    {
+        if (usuario != null)
+        {
+            bool estado = false;
+
+            if (estadoSuscripciones == null)
+            {
+                estadoSuscripciones = "checked";
+                estado = true;
+            }
+            else
+            {
+                estadoSuscripciones = null;
+                estado = false;
+            }
+
+            usuario.NotificationPushSubscriptions = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushSubscriptions", estado, usuarioId);
+        }
+    }
+
+    private async void ClickearCambioWeb()
+    {
+        if (usuario != null)
+        {
+            bool estado = false;
+
+            if (estadoWeb == null)
+            {
+                estadoWeb = "checked";
+                estado = true;
+            }
+            else
+            {
+                estadoWeb = null;
+                estado = false;
+            }
+
+            usuario.NotificationPushWeb = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushWeb", estado, usuarioId);
+        }
+    }
+
+    private async void ClickearCambioOtros()
+    {
+        if (usuario != null)
+        {
+            bool estado = false;
+
+            if (estadoOtros == null)
+            {
+                estadoOtros = "checked";
+                estado = true;
+            }
+            else
+            {
+                estadoOtros = null;
+                estado = false;
+            }
+
+            usuario.NotificationPushOthers = estado;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushOthers", estado, usuarioId);
+        }
     }
 }

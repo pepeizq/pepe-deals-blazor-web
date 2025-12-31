@@ -1,0 +1,17 @@
+{
+  "String1": "Your browser does not support push notifications.",
+  "String2": "Activate Notifications",
+  "String3": "Notifications enabled",
+  "String4": "Disable Notifications",
+  "String5": "News",
+  "String6": "Bundles",
+  "String7": "You will be notified with a push notification when a new bundle appears.",
+  "String8": "Free",
+  "String9": "You will be notified with a push notification when a new paid game is temporarily available for free.",
+  "String10": "Subscriptions",
+  "String11": "You will be notified with a push notification when new games appear on subscription services that can be redeemed on platforms such as Steam or GOG.",
+  "String12": "Web",
+  "String13": "You will be notified with a push notification when there is any new news related to the website such as updates or changes.",
+  "String14": "Others",
+  "String15": "You will be notified with a push notification when relevant news appears on the website and these are not from the previous categories."
+}

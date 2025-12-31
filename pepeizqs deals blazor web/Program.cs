@@ -323,7 +323,11 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
 
+#region Notificaciones Push
+
 builder.Services.AddScoped<NotificacionesPush>();
+
+#endregion
 
 var app = builder.Build();
 
@@ -373,8 +377,6 @@ app.UseCors("Extension");
 app.MapControllers();
 
 #endregion
-
-app.UseStatusCodePagesWithRedirects("/error");
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
@@ -525,5 +527,7 @@ Disallow: /_blazor/
 #endregion
 
 app.MapHealthChecks("/vida");
+
+app.UseStatusCodePagesWithRedirects("/error");
 
 app.Run();

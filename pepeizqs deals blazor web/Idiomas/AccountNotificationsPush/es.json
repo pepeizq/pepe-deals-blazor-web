@@ -1,0 +1,17 @@
+{
+  "String1": "Tu navegador no soporta notificaciones push.",
+  "String2": "Activar Notificaciones",
+  "String3": "Notificaciones activadas",
+  "String4": "Desactivar Notificaciones",
+  "String5": "Noticias",
+  "String6": "Bundles",
+  "String7": "Se te notificará con una notificación push cuando un nuevo bundle aparezca.",
+  "String8": "Gratis",
+  "String9": "Se te notificará con una notificación push cuando un nuevo juego de pago se pueda adquirir gratis temporalmente.",
+  "String10": "Suscripciones",
+  "String11": "Se te notificará con una notificación push cuando nuevos juegos aparezcan en servicios de suscripción que se puedan canjear en plataformas como Steam o GOG.",
+  "String12": "Web",
+  "String13": "Se te notificará con una notificación push cuando haya alguna noticia nueva relacionada con la web como actualizaciones o cambios.",
+  "String14": "Otros",
+  "String15": "Se te notificará con una notificación push cuando noticias relevantes aparezcan en la web y estas no sean de las categorías anteriores."
+}

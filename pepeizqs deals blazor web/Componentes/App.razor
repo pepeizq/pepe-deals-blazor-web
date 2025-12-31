@@ -1,5 +1,6 @@
 ﻿@using APIs.Steam
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 
@@ -129,12 +130,11 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-        usuarioId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+        usuarioId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         if (contexto != null)
         {
             idioma = contexto?.Request?.Headers["Accept-Language"].ToString().Split(";").FirstOrDefault()?.Split(",").FirstOrDefault();
-            usuarioId = contexto?.User?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             userAgent = contexto?.Request?.Headers.UserAgent.ToString();
             dominio = contexto?.Request?.Host.Value;
 
@@ -191,7 +191,7 @@
 
                         if (tiempo == true)
                         {
-                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "Steam");
+                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "Steam");
                         }
                     }
 
@@ -206,7 +206,7 @@
 
                         if (tiempo == true)
                         {
-                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuario.Id, "GOG");
+                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "GOG");
                         }
                     }
 
@@ -217,7 +217,7 @@
                             await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
                             await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", 2, usuarioId);
 
-                            await BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                            await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
                         }
                         else
                         {
@@ -230,7 +230,7 @@
                                         await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
                                         await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", (int)usuario.PatreonCoins + 2, usuarioId);
 
-                                        await BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                                        await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
                                     }
                                 }
                             }
@@ -243,7 +243,7 @@
                                         await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
                                         await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", (int)usuario.PatreonCoins + 2, usuarioId);
 
-                                        await BaseDatos.Recompensas.Historial.Insertar(usuario.Id, 2, "Daily", DateTime.Now);
+                                        await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
                                     }
                                 }
                             }

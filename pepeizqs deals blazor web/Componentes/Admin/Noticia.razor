@@ -3,7 +3,7 @@
 @using Microsoft.Data.SqlClient
 @using pepeizqs_deals_web.Data
 
-@inject NotificacionesPush Push
+@inject Herramientas.NotificacionesPush Push
 
 <style>
 	.caja-admin-noticia {
@@ -387,6 +387,6 @@
 
 	private async Task EnviarNotificacionesPush(MouseEventArgs e)
 	{
-		await Push.SendNotificationToAllAsync(noticia.TituloEn, "Mensaje", noticia.Enlace);
+		await Push.EnviarNoticia(noticia, dominio);
 	}
 }

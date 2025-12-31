@@ -36,13 +36,12 @@ namespace Tareas
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.FromMinutes(30);
 
-						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("usuariosActualizar", siguienteComprobacion) == true && 
-							(await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)))?.Count == 0)
+						if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("usuariosActualizar", siguienteComprobacion) == true)
 						{
 							await BaseDatos.Admin.Actualizar.TareaUso("usuariosActualizar", DateTime.Now);
 
 							List<BaseDatos.UsuariosActualizar.UsuarioActualizar> usuarios = await BaseDatos.UsuariosActualizar.Buscar.Todos();
-
+					
 							if (usuarios?.Count > 0)
 							{
 								foreach (var usuario2 in usuarios)
@@ -50,11 +49,12 @@ namespace Tareas
 									if (usuario2.Metodo == "Steam")
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuario2.IdUsuario);
+										usuario.Id = usuario2.IdUsuario;
 
 										if (string.IsNullOrEmpty(usuario?.SteamAccount) == false)
 										{
 											SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
-
+											
 											if (datos != null)
 											{
 												bool actualizarJuegos = true;
@@ -96,6 +96,7 @@ namespace Tareas
 									if (usuario2.Metodo == "GOG")
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesGOG(usuario2.IdUsuario);
+										usuario.Id = usuario2.IdUsuario;
 
 										if (usuario != null)
 										{

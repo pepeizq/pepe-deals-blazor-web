@@ -387,6 +387,32 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
+		public static async Task<Usuario> OpcionesNotificacionesPush(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT Language, LanguageOverride, NotificationPushBundles, NotificationPushFree, 
+								NotificationPushSubscriptions, NotificationPushOthers, NotificationPushWeb
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Notificaciones Push", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<Usuario> OpcionesSteam(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)

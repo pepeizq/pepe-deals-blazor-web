@@ -1,4 +1,5 @@
-﻿
+﻿#nullable disable
+
 using pepeizqs_deals_web.Data;
 using System.Text.Json;
 using WebPush;
@@ -13,98 +14,162 @@ public class PushSubscription
 	public virtual Usuario User { get; set; }
 }
 
-public class NotificacionesPush
+namespace Herramientas
 {
-	private readonly pepeizqs_deals_webContext _db;
-	private readonly IConfiguration _config;
-
-	public NotificacionesPush(pepeizqs_deals_webContext db, IConfiguration config)
+	public class NotificacionesPush
 	{
-		_db = db;
-		_config = config;
-	}
+		private readonly pepeizqs_deals_webContext _db;
+		private readonly IConfiguration _config;
 
-	public async Task<bool> SendNotificationAsync(
-	   string userId,
-	   string titulo,
-	   string mensaje,
-	   string enlace)
-	{
-		try
+		public NotificacionesPush(pepeizqs_deals_webContext db, IConfiguration config)
 		{
-			var subscription = _db.PushSubscriptions.FirstOrDefault(s => s.UserId == userId && s.Activa);
+			_db = db;
+			_config = config;
+		}
 
-			if (subscription == null)
+		public async Task<bool> EnviarNotificacion(string usuarioId, string titulo, string enlace)
+		{
+			try
 			{
-				Console.WriteLine($"No hay suscripción activa para el usuario {userId}");
+				var subscription = _db.PushSubscriptions.FirstOrDefault(s => s.UserId == usuarioId && s.Activa);
+
+				if (subscription == null)
+				{
+					Console.WriteLine($"No hay suscripción activa para el usuario {usuarioId}");
+					return false;
+				}
+
+				using (JsonDocument doc = JsonDocument.Parse(subscription.SubscriptionJson))
+				{
+					JsonElement root = doc.RootElement;
+
+					var endpoint = root.GetProperty("endpoint").GetString();
+					var p256dh = root.GetProperty("keys").GetProperty("p256dh").GetString();
+					var auth = root.GetProperty("keys").GetProperty("auth").GetString();
+
+					WebPush.PushSubscription pushSuscripcion = new WebPush.PushSubscription(endpoint, p256dh, auth);
+
+					var vapidPublicKey = _config["NotificacionesPush:PublicKey"];
+					var vapidPrivateKey = _config["NotificacionesPush:PrivateKey"];
+					var vapidSubject = _config["NotificacionesPush:Subject"];
+
+					VapidDetails vapidDetails = new VapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+
+					string payload = JsonSerializer.Serialize(new
+					{
+						title = titulo,
+						icon = "/logo/logo6.png",
+						url = enlace
+					});
+
+					WebPushClient webPushClient = new WebPushClient();
+					await webPushClient.SendNotificationAsync(pushSuscripcion, payload, vapidDetails);
+
+					return true;
+				}
+			}
+			catch (Exception ex)
+			{
+				global::BaseDatos.Errores.Insertar.Mensaje("Enviar Notificaciones Push", ex, false);
 				return false;
 			}
+		}
 
-			using (JsonDocument doc = JsonDocument.Parse(subscription.SubscriptionJson))
+		public async Task<bool> EnviarNoticia(Noticias.Noticia noticia, string dominio)
+		{
+			if (noticia != null)
 			{
-				JsonElement root = doc.RootElement;
+				string enlace = string.Empty;
 
-				var endpoint = root.GetProperty("endpoint").GetString();
-				var p256dh = root.GetProperty("keys").GetProperty("p256dh").GetString();
-				var auth = root.GetProperty("keys").GetProperty("auth").GetString();
-
-				var pushSubscription = new WebPush.PushSubscription(endpoint, p256dh, auth);
-
-				var vapidPublicKey = _config["NotificacionesPush:PublicKey"];
-				var vapidPrivateKey = _config["NotificacionesPush:PrivateKey"];
-				var vapidSubject = _config["NotificacionesPush:Subject"];
-
-				var vapidDetails = new VapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
-
-				var payload = JsonSerializer.Serialize(new
+				if (noticia.Id == 0)
 				{
-					title = titulo,
-					body = mensaje,
-					icon = "/logo/logo6.png",
-					url = enlace
-				});
+					enlace = "/link/news/" + noticia.IdMaestra.ToString() + "/";
+				}
+				else
+				{
+					enlace = "/link/news/" + noticia.Id.ToString() + "/";
+				}
 
-				var webPushClient = new WebPushClient();
-				await webPushClient.SendNotificationAsync(pushSubscription, payload, vapidDetails);
+				if (string.IsNullOrEmpty(enlace) == false)
+				{
+					if (enlace.Contains("https://" + dominio) == false)
+					{
+						enlace = "https://" + dominio + enlace;
+					}
+				}
 
-				return true;
+				var suscripciones = _db.PushSubscriptions
+					.Where(s => s.Activa)
+					.GroupBy(s => s.UserId)
+					.ToList();
+
+				int enviadas = 0;
+
+				foreach (var usuario in suscripciones)
+				{
+					string usuarioId = usuario.Key;
+
+					if (string.IsNullOrEmpty(usuarioId) == false)
+					{
+						Usuario usuarioOpciones = await global::BaseDatos.Usuarios.Buscar.OpcionesNotificacionesPush(usuarioId);
+
+						string idioma = usuarioOpciones.Language;
+
+						if (string.IsNullOrEmpty(usuarioOpciones.LanguageOverride) == false)
+						{
+							idioma = usuarioOpciones.LanguageOverride;
+						}
+
+						bool enviar = false;
+
+						if (usuarioOpciones.NotificationPushBundles == true && noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
+						{
+							enviar = true;
+						}
+						else if (usuarioOpciones.NotificationPushFree == true && noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
+						{
+							enviar = true;
+						}
+						else if (usuarioOpciones.NotificationPushSubscriptions == true && noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
+						{
+							enviar = true;
+						}
+						else if (usuarioOpciones.NotificationPushWeb == true && noticia.NoticiaTipo == Noticias.NoticiaTipo.Web)
+						{
+							enviar = true;
+						}
+						else
+						{
+							if (usuarioOpciones.NotificationPushOthers == true && (noticia.NoticiaTipo != Noticias.NoticiaTipo.Bundles &&
+																					noticia.NoticiaTipo != Noticias.NoticiaTipo.Gratis &&
+																					noticia.NoticiaTipo != Noticias.NoticiaTipo.Suscripciones &&
+																					noticia.NoticiaTipo != Noticias.NoticiaTipo.Web))
+							{
+								enviar = true;
+							}
+						}
+
+						if (enviar == true)
+						{
+							string titulo = Herramientas.Idiomas.ElegirTexto(idioma, noticia.TituloEn, noticia.TituloEs);
+
+							var exito = await EnviarNotificacion(usuarioId, titulo, enlace);
+
+							if (exito == true)
+							{
+								enviadas += 1;
+							}
+						}
+					}
+				}
+
+				if (enviadas > 0)
+				{
+					return true;
+				}
 			}
-		}
-		catch (Exception ex)
-		{
-			BaseDatos.Errores.Insertar.Mensaje("Enviar Notificaciones Push", ex, false);
+
 			return false;
-		}
-	}
-
-	public async Task<int> SendNotificationToAllAsync(
-		string titulo,
-		string mensaje,
-		string enlace)
-	{
-		try
-		{
-			var subscriptions = _db.PushSubscriptions
-				.Where(s => s.Activa)
-				.GroupBy(s => s.UserId)
-				.ToList();
-
-			int enviadas = 0;
-
-			foreach (var userGroup in subscriptions)
-			{
-				var userId = userGroup.Key;
-				var success = await SendNotificationAsync(userId, titulo, mensaje, enlace);
-				if (success) enviadas++;
-			}
-
-			Console.WriteLine($"✓ {enviadas} notificaciones enviadas");
-			return enviadas;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"❌ Error: {ex.Message}");
-			return 0;
 		}
 	}
 }

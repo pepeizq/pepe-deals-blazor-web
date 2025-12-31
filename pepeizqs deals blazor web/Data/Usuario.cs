@@ -256,6 +256,10 @@ public class Usuario : IdentityUser
 
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
+	public bool? NotificationPushWeb { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
 	public bool? NotificationPushOthers { get; set; }
 
 	[PersonalData]

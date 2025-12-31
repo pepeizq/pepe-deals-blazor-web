@@ -199,6 +199,8 @@
 
         if (usuario != null)
         {
+            usuario.Id = usuarioId;
+
             idiomaWeb = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(usuario.Language), "Languages");
 
             if (string.IsNullOrEmpty(usuario.LanguageOverride) == true)

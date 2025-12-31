@@ -1,19 +1,15 @@
-﻿// v1.0.2
-
-self.addEventListener('fetch', () => { });
+﻿// v1.0.8
 
 self.addEventListener('push', function (event) {
-    console.log('========== PUSH RECIBIDO ==========');
-    console.log('Event:', event);
-    console.log('Event data:', event.data);
-
     const data = event.data ? JSON.parse(event.data.text()) : {};
 
+    const icono = data.icon ? `https://pepe.deals${data.icon}` : 'https://pepe.deals/favicon.ico';
+
     const options = {
-        body: data.body || 'New Notification',
-        icon: '/logos/logo6.png',
-        badge: '/logos/logo6.png',
+        body: " ",
+        icon: icono,
         tag: 'notification', 
+        requireInteraction: false,
         data: {
             url: data.url || '/' 
         }

@@ -38,8 +38,8 @@
 			@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountNotificationsMail")
 		</div>
 
-		<div style="padding: 30px;">
-			<div style="display: flex; align-items: start; gap: 30px;">
+		<div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px; align-items: baseline;">
+			<div style="display: flex; align-items: start; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoDeseadosMinimos" @onchange="ClickearCambioDeseadosMinimos">
 				</div>
@@ -70,10 +70,8 @@
 					</div>
 				</div>
 			</div>
-			
-			<hr style="margin: 25px 0;"/>
 
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoDeseadosBundles" @onchange="ClickearCambioDeseadosBundles">
 				</div>
@@ -106,8 +104,8 @@
 			@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountNotificationsMail")
 		</div>
 
-		<div style="padding: 30px;">
-			<div style="display: flex; align-items: center; gap: 30px;">
+		<div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoBundles" @onchange="ClickearCambioBundles">
 				</div>
@@ -133,9 +131,7 @@
 				</div>
 			</div>
 
-			<hr style="margin: 25px 0;"/>
-
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoGratis" @onchange="ClickearCambioGratis">
 				</div>
@@ -161,9 +157,7 @@
 				</div>
 			</div>
 
-			<hr style="margin: 25px 0;"/>
-
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoSuscripciones" @onchange="ClickearCambioSuscripciones">
 				</div>
@@ -189,9 +183,7 @@
 				</div>
 			</div>
 
-			<hr style="margin: 25px 0;" />
-
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoWeb" @onchange="ClickearCambioWeb">
 				</div>
@@ -217,9 +209,7 @@
 				</div>
 			</div>
 
-			<hr style="margin: 25px 0;" />
-
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoDesvendido" @onchange="ClickearCambioDesvendido">
 				</div>
@@ -245,9 +235,7 @@
 				</div>
 			</div>
 
-			<hr style="margin: 25px 0;" />
-
-			<div style="display: flex; align-items: center; gap: 30px;">
+			<div style="display: flex; align-items: center; gap: 20px;">
 				<div class="checkbox-caja">
 					<input type="checkbox" class="checkbox-interior" checked="@estadoOtros" @onchange="ClickearCambioOtros">
 				</div>
@@ -301,6 +289,8 @@
 
 		if (usuario != null)
 		{
+			usuario.Id = usuarioId;
+
 			if (usuario.NotificationLows == null)
 			{
 				estadoDeseadosMinimos = null;
