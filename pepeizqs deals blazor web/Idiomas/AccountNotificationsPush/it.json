@@ -1,0 +1,21 @@
+{
+  "String1": "Il tuo browser non supporta le notifiche push.",
+  "String2": "Attiva le notifiche",
+  "String3": "Notifiche abilitate",
+  "String4": "Disabilita notifiche",
+  "String5": "Notizia",
+  "String6": "Fasci",
+  "String7": "Riceverai una notifica push quando viene visualizzato un nuovo pacchetto.",
+  "String8": "Gratuito",
+  "String9": "Riceverai una notifica push quando un nuovo gioco a pagamento sarà temporaneamente disponibile gratuitamente.",
+  "String10": "Abbonamenti",
+  "String11": "Riceverai una notifica push quando compaiono nuovi giochi sui servizi in abbonamento che possono essere riscattati su piattaforme come Steam o GOG.",
+  "String12": "Rete",
+  "String13": "Verrai avvisato con una notifica push quando ci sono nuove novità relative al sito web come aggiornamenti o modifiche.",
+  "String14": "Altri",
+  "String15": "Verrai avvisato con una notifica push quando sul sito appariranno notizie rilevanti e queste non appartengono alle categorie precedenti.",
+  "String16": "Lista dei desideri",
+  "String17": "Riceverai una notifica push quando un gioco nella tua lista dei desideri raggiunge un nuovo prezzo minimo storico.",
+  "String18": "Nota: Per evitare spam, le notifiche push vengono inviate solo quando il nuovo prezzo storico presenta una differenza di almeno 10 centesimi di euro rispetto al prezzo precedente.",
+  "String19": "Minimi storici"
+}

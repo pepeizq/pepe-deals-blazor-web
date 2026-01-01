@@ -13,5 +13,9 @@
   "String12": "Web",
   "String13": "Se te notificará con una notificación push cuando haya alguna noticia nueva relacionada con la web como actualizaciones o cambios.",
   "String14": "Otros",
-  "String15": "Se te notificará con una notificación push cuando noticias relevantes aparezcan en la web y estas no sean de las categorías anteriores."
+  "String15": "Se te notificará con una notificación push cuando noticias relevantes aparezcan en la web y estas no sean de las categorías anteriores.",
+  "String16": "Deseados",
+  "String17": "Se te notificará con una notificación push cuando un juego de tus deseados tenga un nuevo precio mínimo histórico.",
+  "String18": "Nota: Para evitar spam, sólo se envían notificaciones push cuando el nuevo precio mínimo histórico tiene una diferencia de al menos 10 céntimos de euro respecto al anterior precio.",
+  "String19": "Mínimos Históricos"
 }

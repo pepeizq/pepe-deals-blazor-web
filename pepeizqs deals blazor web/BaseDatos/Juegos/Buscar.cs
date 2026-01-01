@@ -17,12 +17,25 @@ namespace BaseDatos.Juegos
 
 		public static async Task<Juego> UnJuego(string id = null, string idSteam = null, string idGog = null, string idEpic = null)
 		{
-			string sqlBuscar = string.Empty;
-
 			if (id == "descartado")
 			{
 				return null;
 			}
+
+			string sqlBuscar = @"SELECT *,
+(
+    SELECT g.gratis AS Tipo, g.enlace AS Enlace, g.drm AS DRM, g.FechaEmpieza AS FechaEmpieza, g.FechaTermina AS FechaTermina, g.id AS id
+    FROM gratis g
+    WHERE g.juegoId = j.id
+    FOR JSON PATH
+) as gratis, 
+(
+    SELECT s.*, s.suscripcion AS Tipo
+    FROM suscripciones s
+    WHERE s.juegoId = j.id
+    FOR JSON PATH
+) as suscripciones
+FROM juegos j";
 
 			if (string.IsNullOrEmpty(id) == false)
 			{
@@ -30,7 +43,7 @@ namespace BaseDatos.Juegos
 				{
 					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE id=@id", new { id });
+						return await conexion.QueryFirstOrDefaultAsync<Juego>(sqlBuscar + " WHERE id=@id", new { id });
 					});
 				}
 				catch (Exception ex)
@@ -46,7 +59,7 @@ namespace BaseDatos.Juegos
 					{
 						return await Herramientas.BaseDatos.Select(async conexion =>
 						{
-							return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE idSteam=@idSteam", new { idSteam });
+							return await conexion.QueryFirstOrDefaultAsync<Juego>(sqlBuscar + " WHERE idSteam=@idSteam", new { idSteam });
 						});
 					}
 					catch (Exception ex)
@@ -62,7 +75,7 @@ namespace BaseDatos.Juegos
 						{
 							return await Herramientas.BaseDatos.Select(async conexion =>
 							{
-								return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugGog=@slugGog", new { slugGog = idGog });
+								return await conexion.QueryFirstOrDefaultAsync<Juego>(sqlBuscar + " WHERE slugGog=@slugGog", new { slugGog = idGog });
 							});
 						}
 						catch (Exception ex)
@@ -78,7 +91,7 @@ namespace BaseDatos.Juegos
 							{
 								return await Herramientas.BaseDatos.Select(async conexion =>
 								{
-									return await conexion.QueryFirstOrDefaultAsync<Juego>("SELECT * FROM juegos WHERE slugEpic=@slugEpic", new { slugEpic = idEpic });
+									return await conexion.QueryFirstOrDefaultAsync<Juego>(sqlBuscar + " WHERE slugEpic=@slugEpic", new { slugEpic = idEpic });
 								});
 							}
 							catch (Exception ex)
@@ -1169,7 +1182,6 @@ FROM seccionMinimos j";
 		{
 			List<string> etiquetas = new List<string>();
 			List<string> categorias = new List<string>();
-			List<string> generos = new List<string>();
 			List<string> decks = new List<string>();
 			List<string> sistemas = new List<string>();
 			List<string> tipos = new List<string>();
@@ -1186,11 +1198,6 @@ FROM seccionMinimos j";
 					if (id.Contains("c") == true || id.Contains("a") == true)
 					{
 						categorias.Add(id);
-					}
-
-					if (id.Contains("g") == true)
-					{
-						generos.Add(id);
 					}
 
 					if (id.Contains("d") == true)
@@ -1272,38 +1279,6 @@ FROM seccionMinimos j";
 				if (string.IsNullOrEmpty(categoriasTexto) == false)
 				{
 					categoriasTexto = " AND ISJSON(j.categorias) > 0 AND (" + categoriasTexto + ")";
-				}
-			}
-
-			string generosTexto = string.Empty;
-
-			if (generos.Count > 0)
-			{
-				int i = 0;
-
-				foreach (var genero in generos)
-				{
-					string genero2 = genero;
-					genero2 = genero2.Replace("g", null);
-
-					if (generosTexto.Contains(genero2) == false)
-					{
-						if (i == 0)
-						{
-							generosTexto = "j.generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
-						}
-						else
-						{
-							generosTexto = generosTexto + " AND j.generos LIKE '%" + Strings.ChrW(34) + genero2 + Strings.ChrW(34) + "%'";
-						}
-
-						i += 1;
-					}
-				}
-
-				if (string.IsNullOrEmpty(generosTexto) == false)
-				{
-					generosTexto = " AND ISJSON(j.generos) > 0 AND (" + generosTexto + ")";
 				}
 			}
 
@@ -1439,7 +1414,7 @@ FROM seccionMinimos j";
           AND s.FechaTermina < GETDATE()
         FOR JSON PATH
     ) AS SuscripcionesPasados, CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) AS Cantidad FROM juegos j " + Environment.NewLine +
-				"WHERE ISJSON(analisis) > 0 " + etiquetasTexto + " " + categoriasTexto + " " + generosTexto + " " + deckTexto + " " + sistemasTexto + " " + tiposTexto +
+				"WHERE ISJSON(analisis) > 0 " + etiquetasTexto + " " + categoriasTexto + " " + deckTexto + " " + sistemasTexto + " " + tiposTexto +
 				" ORDER BY Cantidad DESC";
 
 			if (string.IsNullOrEmpty(busqueda) == false)

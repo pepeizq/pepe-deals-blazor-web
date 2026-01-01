@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using BaseDatos.Usuarios;
+using Herramientas;
 using Juegos;
 using System.Text.Json;
 
@@ -231,7 +232,7 @@ namespace BaseDatos.Juegos
 										{
 											DeseadosDatos datosDeseados = null;
 
-											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.Opcion(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
 
 											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 											{
@@ -268,20 +269,21 @@ namespace BaseDatos.Juegos
 												}
 											}
 
-											//bool enviarPush = Usuarios.Buscar.UsuarioQuiereNotificacionesPushMinimos(usuarioInteresado);
+											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
 
-											//if (enviarPush == true)
-											//{
-											//	try
-											//	{
-											//		Herramientas.NotificacionesPush.EnviarMinimo(usuarioInteresado, id, minimo, nuevaOferta.DRM);
-											//	}
-											//	catch (Exception ex)
-											//	{
-											//		BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
-											//	}
-											//}
-										}
+                                            if (enviarPush == true)
+                                            {
+                                                try
+                                                {
+													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
+													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre, minimo.Enlace);
+												}
+                                                catch (Exception ex)
+                                                {
+                                                    BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
+                                                }
+                                            }
+                                        }
 									}
 								}
 							}
@@ -448,4 +450,9 @@ namespace BaseDatos.Juegos
             return historicos;
 		}
 	}
+}
+
+public static class ServiciosGlobales
+{
+	public static IServiceProvider ServiceProvider { get; set; }
 }

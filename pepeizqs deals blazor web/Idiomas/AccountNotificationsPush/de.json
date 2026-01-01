@@ -1,0 +1,21 @@
+{
+  "String1": "Ihr Browser unterstützt keine Push-Benachrichtigungen.",
+  "String2": "Aktivieren Sie Benachrichtigungen",
+  "String3": "Benachrichtigungen aktiviert",
+  "String4": "Deaktivieren Sie Benachrichtigungen",
+  "String5": "Nachricht",
+  "String6": "Bündel",
+  "String7": "Sie werden per Push-Benachrichtigung benachrichtigt, wenn ein neues Bundle erscheint.",
+  "String8": "Frei",
+  "String9": "Sie werden per Push-Benachrichtigung benachrichtigt, wenn ein neues kostenpflichtiges Spiel vorübergehend kostenlos verfügbar ist.",
+  "String10": "Abonnements",
+  "String11": "Sie werden per Push-Benachrichtigung benachrichtigt, wenn bei Abo-Diensten neue Spiele erscheinen, die auf Plattformen wie Steam oder GOG eingelöst werden können.",
+  "String12": "Web",
+  "String13": "Sie werden per Push-Benachrichtigung benachrichtigt, wenn es neue Neuigkeiten zur Website gibt, wie z. B. Aktualisierungen oder Änderungen.",
+  "String14": "Andere",
+  "String15": "Sie werden mit einer Push-Benachrichtigung benachrichtigt, wenn relevante Nachrichten auf der Website erscheinen und diese nicht aus den vorherigen Kategorien stammen.",
+  "String16": "Wunschliste",
+  "String17": "Sie werden per Push-Benachrichtigung benachrichtigt, wenn ein Spiel auf Ihrer Wunschliste einen neuen historischen Tiefstpreis erreicht.",
+  "String18": "Hinweis: Um Spam zu vermeiden, werden Push-Benachrichtigungen nur dann versendet, wenn der neue historische Preis eine Differenz von mindestens 10 Eurocent zum vorherigen Preis aufweist.",
+  "String19": "Historische Tiefststände"
+}

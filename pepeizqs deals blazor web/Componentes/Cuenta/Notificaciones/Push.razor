@@ -77,6 +77,46 @@ else
                 {
                     <div class="caja-cuenta-contenido">
                         <div class="caja-cuenta-titulo" style="font-size: 18px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String16", "AccountNotificationsPush")
+                        </div>
+
+                        <div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(500px, 1fr)); gap: 30px; align-items: baseline;">
+                            <div style="display: flex; align-items: start; gap: 20px;">
+                                <div class="checkbox-caja">
+                                    <input type="checkbox" class="checkbox-interior" checked="@estadoDeseadosMinimos" @onchange="ClickearCambioDeseadosMinimos">
+                                </div>
+
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    <div style="display: flex; align-items: center; gap: 20px;">
+                                        <div>
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountNotificationsPush")
+                                        </div>
+
+                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-push6')">
+                                            <div style="width: 24px; height: 24px;">
+                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                    <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                                </svg>
+                                            </div>
+
+                                            <div id="tooltip-push6" class="tooltip-relleno">
+                                                <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "AccountNotificationsPush")
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="font-size: 14px; background: color-mix(in srgb, var(--fondoSubcabecera) 95%, var(--fondoBotonPequeño)); padding: 10px 15px;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "AccountNotificationsPush")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="caja-cuenta-contenido">
+                        <div class="caja-cuenta-titulo" style="font-size: 18px;">
                             @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "AccountNotificationsPush")
                         </div>
 
@@ -232,6 +272,7 @@ else
 
     private Usuario usuario = new Usuario();
 
+    private string estadoDeseadosMinimos = null;
     private string estadoBundles = null;
     private string estadoGratis = null;
     private string estadoSuscripciones = null;
@@ -268,6 +309,22 @@ else
 
                     if (usuario != null)
                     {
+                        if (usuario.NotificationPushLows == null)
+                        {
+                            estadoDeseadosMinimos = null;
+                        }
+                        else
+                        {
+                            if (usuario.NotificationPushLows == true)
+                            {
+                                estadoDeseadosMinimos = "checked";
+                            }
+                            else
+                            {
+                                estadoDeseadosMinimos = null;
+                            }
+                        }
+
                         if (usuario.NotificationPushBundles == null)
 			            {
 				            estadoBundles = null;
@@ -440,6 +497,29 @@ else
         catch (Exception ex)
         {
             BaseDatos.Errores.Insertar.Mensaje("Desactivar Notificaciones Push", ex, false);
+        }
+    }
+
+    private async void ClickearCambioDeseadosMinimos()
+    {
+        if (usuario != null)
+        {
+            bool boolMinimos = false;
+
+            if (estadoDeseadosMinimos == null)
+            {
+                estadoDeseadosMinimos = "checked";
+                boolMinimos = true;
+            }
+            else
+            {
+                estadoDeseadosMinimos = null;
+                boolMinimos = false;
+            }
+
+            usuario.NotificationPushLows = boolMinimos;
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("NotificationPushLows", boolMinimos, usuario.Id);
         }
     }
 

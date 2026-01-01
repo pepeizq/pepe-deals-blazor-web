@@ -13,5 +13,9 @@
   "String12": "Web",
   "String13": "You will be notified with a push notification when there is any new news related to the website such as updates or changes.",
   "String14": "Others",
-  "String15": "You will be notified with a push notification when relevant news appears on the website and these are not from the previous categories."
+  "String15": "You will be notified with a push notification when relevant news appears on the website and these are not from the previous categories.",
+  "String16": "Wishlist",
+  "String17": "You will be notified with a push notification when a game on your wishlist reaches a new historical low price.",
+  "String18": "Note: To avoid spam, push notifications are only sent when the new historical price has a difference of at least 10 euro cents compared to the previous price.",
+  "String19": "Historical Lows"
 }

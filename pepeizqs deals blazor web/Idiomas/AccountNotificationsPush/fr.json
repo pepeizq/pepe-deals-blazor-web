@@ -1,0 +1,21 @@
+{
+  "String1": "Votre navigateur ne prend pas en charge les notifications push.",
+  "String2": "Activer les notifications",
+  "String3": "Notifications activées",
+  "String4": "Désactiver les notifications",
+  "String5": "Nouvelles",
+  "String6": "Forfaits",
+  "String7": "Vous serez averti par une notification push lorsqu'un nouveau bundle apparaît.",
+  "String8": "Gratuit",
+  "String9": "Vous serez averti par une notification push lorsqu'un nouveau jeu payant sera temporairement disponible gratuitement.",
+  "String10": "Abonnements",
+  "String11": "Vous serez averti par une notification push lorsque de nouveaux jeux apparaîtront sur des services d'abonnement pouvant être utilisés sur des plateformes telles que Steam ou GOG.",
+  "String12": "Web",
+  "String13": "Vous serez averti par une notification push lorsqu'il y aura de nouvelles nouvelles liées au site Web, telles que des mises à jour ou des modifications.",
+  "String14": "Autres",
+  "String15": "Vous serez averti par une notification push lorsque des nouvelles pertinentes apparaîtront sur le site Web et qu'elles ne appartiennent pas aux catégories précédentes.",
+  "String16": "Liste de souhaits",
+  "String17": "Vous serez averti par une notification push lorsqu'un jeu de votre liste de souhaits atteint un nouveau prix historiquement bas.",
+  "String18": "Remarque : Pour éviter le spam, les notifications push ne sont envoyées que lorsque le nouveau prix historique présente une différence d'au moins 10 centimes d'euro par rapport au prix précédent.",
+  "String19": "Des plus bas historiques"
+}

@@ -331,6 +331,12 @@ builder.Services.AddScoped<NotificacionesPush>();
 
 var app = builder.Build();
 
+#region Guardo Service Provider para notificaciones push
+
+ServiciosGlobales.ServiceProvider = app.Services;
+
+#endregion
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
