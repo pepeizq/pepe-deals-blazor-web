@@ -952,7 +952,7 @@
 
         if (lista?.Count > 0)
         {
-            var idsJuegos = new HashSet<int>(resultados.Select(j => j.Id));
+            var idsJuegos = new HashSet<int>(resultados?.Select(j => j.Id));
 
             var noExistentes = lista.Where(id => !idsJuegos.Contains(int.Parse(id))).ToList();
 

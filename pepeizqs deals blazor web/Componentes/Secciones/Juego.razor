@@ -1130,7 +1130,7 @@
 
                                                 if (añadirDiv == true)
                                                 {
-                                                    <div style="display: flex; align-items: center; flex-direction: row; gap: 20px; padding-left: 2px; flex-wrap: wrap;">
+                                                    <div style="display: flex; align-items: center; flex-direction: row; gap: 15px; padding-left: 2px; flex-wrap: wrap;">
                                                         @if (drm.Id == JuegoDRM.Steam)
                                                         {
                                                             if (juego.Caracteristicas != null)
@@ -1174,7 +1174,7 @@
 
                                                                         if (añadirDiv2 == true)
                                                                         {
-                                                                            <div style="display: flex; align-items: center; gap: 8px; height: 18px;">
+                                                                            <div style="display: flex; align-items: center; gap: 8px; height: 18px; margin: 0px 5px;">
                                                                                 @foreach (var categoria in juego.Categorias)
                                                                                 {
                                                                                     if (categoria == "22")
@@ -1229,7 +1229,7 @@
                                                                 {
                                                                     if (juego.GalaxyGOG.Logros == true || juego.GalaxyGOG.GuardadoNube == true)
                                                                     {
-                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 20px;">
+                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 20px; margin: 0px 5px;">
                                                                             <img src="/imagenes/otros/goggalaxy.ico" title="GOG Galaxy" style="width: 20px; height: 20px;"  />
 
                                                                             @if (juego.GalaxyGOG.Logros == true)
@@ -1282,7 +1282,7 @@
                                                                 {
                                                                     if (juego.EpicGames.Logros == true || juego.EpicGames.GuardadoNube == true)
                                                                     {
-                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 18px;">
+                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 18px; margin: 0px 5px;">
                                                                             @if (juego.EpicGames.Logros == true)
                                                                             {
                                                                                 <div title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String75", "Game"), "Epic Games")" style="width: 100%; height: 100%;">
@@ -1319,7 +1319,7 @@
                                                                 {
                                                                     if (juego.Xbox.Logros == true || juego.Xbox.GuardadoNube == true)
                                                                     {
-                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 18px;">
+                                                                        <div style="display: flex; align-items: center; gap: 8px; height: 18px; margin: 0px 5px;">
                                                                             @if (juego.Xbox.Logros == true)
                                                                             {
                                                                                 <div title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String75", "Game"), "Xbox")" style="width: 100%; height: 100%;">
@@ -1392,9 +1392,11 @@
                                                             {
                                                                 if (drmG == drm.Id)
                                                                 {
-                                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Geforce NOW")">
-                                                                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.GeforceNOW.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Geforce NOW" />
-                                                                    </div>
+                                                                    <a href="/streaming/geforcenow/" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Geforce NOW")">
+                                                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.GeforceNOW.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Geforce NOW" />
+                                                                        </div>
+                                                                    </a>
                                                                 }
                                                             }
                                                         }
@@ -1405,9 +1407,11 @@
                                                             {
                                                                 if (drmB == drm.Id)
                                                                 {
-                                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Boosteroid")">
-                                                                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.Boosteroid.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Boosteroid" />
-                                                                    </div>
+                                                                    <a href="/streaming/boosteroid/" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Boosteroid")">
+                                                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.Boosteroid.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Boosteroid" />
+                                                                        </div>
+                                                                    </a>
                                                                 }
                                                             }
                                                         }
@@ -1416,9 +1420,11 @@
                                                         {
                                                             if ((drm.Id == JuegoDRM.GOG || drm.Id == JuegoDRM.Ubisoft) && juego.Tipo == JuegoTipo.Game)
                                                             {
-                                                                <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String87", "Game")">
-                                                                    <img src="@APIs.GOG.Streaming.Generar().ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Amazon Luna"/>
-                                                                </div>
+                                                                <a href="/streaming/amazonluna/" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String87", "Game")">
+                                                                        <img src="@APIs.GOG.Streaming.Generar().ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Amazon Luna"/>
+                                                                    </div>
+                                                                </a>
                                                             }
                                                         }
 
@@ -1590,7 +1596,7 @@
 
                                                         @if (cuantosLoTienen > 0 || cuantosLoDesean > 0)
                                                         {
-                                                            <div style="display: flex; align-items: center; gap: 5px; justify-content: center;">
+                                                            <div style="display: flex; align-items: center; gap: 5px; justify-content: center; margin: 0px 5px;">
                                                                 <div style="width: 20px; margin-right: 10px;">
                                                                     <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                                         <path d="M320 80C377.4 80 424 126.6 424 184C424 241.4 377.4 288 320 288C262.6 288 216 241.4 216 184C216 126.6 262.6 80 320 80zM96 152C135.8 152 168 184.2 168 224C168 263.8 135.8 296 96 296C56.2 296 24 263.8 24 224C24 184.2 56.2 152 96 152zM0 480C0 409.3 57.3 352 128 352C140.8 352 153.2 353.9 164.9 357.4C132 394.2 112 442.8 112 496L112 512C112 523.4 114.4 534.2 118.7 544L32 544C14.3 544 0 529.7 0 512L0 480zM521.3 544C525.6 534.2 528 523.4 528 512L528 496C528 442.8 508 394.2 475.1 357.4C486.8 353.9 499.2 352 512 352C582.7 352 640 409.3 640 480L640 512C640 529.7 625.7 544 608 544L521.3 544zM472 224C472 184.2 504.2 152 544 152C583.8 152 616 184.2 616 224C616 263.8 583.8 296 544 296C504.2 296 472 263.8 472 224zM160 496C160 407.6 231.6 336 320 336C408.4 336 480 407.6 480 496L480 512C480 529.7 465.7 544 448 544L192 544C174.3 544 160 529.7 160 512L160 496z" />
@@ -3165,9 +3171,8 @@
 
                                 string icono = string.Empty;
                                 string nombre = string.Empty;
-                                List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
 
-                                foreach (var tienda in tiendas)
+                                foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
                                 {
                                     if (tienda.Id == puntosDatos.Items.FirstOrDefault()?.Tienda)
                                     {

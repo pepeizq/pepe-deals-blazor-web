@@ -21,7 +21,8 @@ namespace Juegos
 		PearlAbyss,
 		SquareEnix,
 		AmazonLuna,
-		PlayStation
+		PlayStation,
+		Stove
 	}
 
 	public static class JuegoDRM2
@@ -220,6 +221,18 @@ namespace Juegos
 			};
 
 			drms.Add(ps);
+
+			//----------------------------
+
+			DRM stove = new DRM
+			{
+				Id = JuegoDRM.Stove,
+				Nombre = "Stove",
+				Imagen = "/imagenes/drm/stove.webp",
+				Acepciones = new List<string> { "stove" }
+			};
+
+			drms.Add(stove);
 
 			//----------------------------
 

@@ -12,7 +12,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using System.Net;
 using System.Text.Json;
@@ -50,7 +49,8 @@ namespace APIs.Steam
 				ImagenIcono = "/imagenes/tiendas/steam_icono.webp",
 				Color = "#2e4460",
 				AdminEnseñar = false,
-				AdminInteractuar = true
+				AdminInteractuar = false,
+				UsuarioInteractuar = false
 			};
 
 			return tienda;

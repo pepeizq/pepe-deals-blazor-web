@@ -180,11 +180,6 @@ namespace APIs.EpicGames
 												}
 
 												idsBorrar.Add(fila.id);
-
-												if (juegos2 > 12000)
-												{
-													break;
-												}
 											}
 										}
 									}

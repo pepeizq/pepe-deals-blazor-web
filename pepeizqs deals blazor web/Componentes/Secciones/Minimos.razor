@@ -2023,30 +2023,33 @@ else
 
 		foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 		{
-			MostrarJuegoTienda nuevaTienda = new MostrarJuegoTienda();
-			nuevaTienda.TiendaId = tienda.Id;
-
-			if (viejaLista != null)
+			if (tienda.UsuarioInteractuar == true)
 			{
-				nuevaTienda.Estado = false;
-				nuevaTienda.Checkbox = null;
+				MostrarJuegoTienda nuevaTienda = new MostrarJuegoTienda();
+				nuevaTienda.TiendaId = tienda.Id;
 
-				foreach (var viejaTienda in viejaLista)
+				if (viejaLista != null)
 				{
-					if (viejaTienda.TiendaId == tienda.Id)
+					nuevaTienda.Estado = false;
+					nuevaTienda.Checkbox = null;
+
+					foreach (var viejaTienda in viejaLista)
 					{
-						nuevaTienda.Estado = viejaTienda.Estado;
-						nuevaTienda.Checkbox = viejaTienda.Checkbox;
+						if (viejaTienda.TiendaId == tienda.Id)
+						{
+							nuevaTienda.Estado = viejaTienda.Estado;
+							nuevaTienda.Checkbox = viejaTienda.Checkbox;
+						}
 					}
 				}
-			}
-			else
-			{
-				nuevaTienda.Estado = true;
-				nuevaTienda.Checkbox = "checked";
-			}
+				else
+				{
+					nuevaTienda.Estado = true;
+					nuevaTienda.Checkbox = "checked";
+				}
 
-			nuevaLista.Add(nuevaTienda);
+				nuevaLista.Add(nuevaTienda);
+			}
 		}
 
 		return nuevaLista;

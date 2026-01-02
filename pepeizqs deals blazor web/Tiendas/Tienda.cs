@@ -17,5 +17,6 @@ namespace Tiendas2
 		public string Color;
 		public bool AdminEnseñar;
 		public bool AdminInteractuar;
+		public bool UsuarioInteractuar = true;
 	}
 }

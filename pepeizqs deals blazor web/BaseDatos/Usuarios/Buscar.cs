@@ -1158,8 +1158,8 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 
 					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await conexion.QueryFirstOrDefaultAsync<bool>(busqueda, new { Id = usuarioId });
-					});
+						return await conexion.QueryFirstOrDefaultAsync<bool?>(busqueda, new { Id = usuarioId });
+					}) ?? false;
 				}
 				catch (Exception ex)
 				{
