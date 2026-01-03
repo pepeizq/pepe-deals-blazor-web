@@ -109,8 +109,27 @@ namespace APIs.Playsum
 							{
 								if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
 								{
-									decimal precioBase = decimal.Parse(juego.PrecioBase);
-									decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
+									string DosDecimalesDesdeString(string valor)
+									{
+										if (string.IsNullOrEmpty(valor) == true)
+										{
+											return valor;
+										}
+
+										valor = valor.Replace(',', '.');
+
+										int punto = valor.IndexOf('.');
+										if (punto == -1)
+										{
+											return valor;
+										}
+
+										int longitudMaxima = Math.Min(valor.Length, punto + 3);
+										return valor.Substring(0, longitudMaxima);
+									}
+
+									decimal precioBase = decimal.Parse(DosDecimalesDesdeString(juego.PrecioBase));
+									decimal precioRebajado = decimal.Parse(DosDecimalesDesdeString(juego.PrecioRebajado));
 
 									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 

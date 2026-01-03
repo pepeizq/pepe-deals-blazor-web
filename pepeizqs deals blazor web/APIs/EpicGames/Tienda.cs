@@ -70,11 +70,6 @@ namespace APIs.EpicGames
 						BaseDatos.Errores.Insertar.Mensaje("Epic Games Tienda Id: " + fila.id.ToString(), ex, false);
 					}
 
-					if (juegos2 > 10000)
-					{
-						break;
-					}
-
 					if (principal?.Datos?.Catalogo?.Busqueda?.Juegos?.Count > 0)
 					{
 						foreach (var juego in principal?.Datos?.Catalogo?.Busqueda?.Juegos)
@@ -179,7 +174,19 @@ namespace APIs.EpicGames
 													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 												}
 
-												idsBorrar.Add(fila.id);
+												string limpieza = "DELETE FROM temporalepictienda WHERE id=@id";
+
+												try
+												{
+													await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+													{
+														return await conexion.ExecuteAsync(limpieza, new { fila.id }, transaction: sentencia);
+													});
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+												}
 											}
 										}
 									}
@@ -187,27 +194,6 @@ namespace APIs.EpicGames
 							}
 						}
 					}
-				}
-			}
-			
-
-			if (idsBorrar.Count > 0)
-			{
-				string limpieza = "DELETE FROM temporalepictienda WHERE id=@id"; 
-				
-				foreach (var id in idsBorrar) 
-				{
-					try 
-					{
-						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-						{
-							return await conexion.ExecuteAsync(limpieza, new { id }, transaction: sentencia);
-						});
-					} 
-					catch (Exception ex) 
-					{ 
-						BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex); 
-					} 
 				}
 			}
 		}

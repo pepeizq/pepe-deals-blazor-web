@@ -597,7 +597,7 @@
                                         fondoBotonDlc = "background-color: var(--fondoBandaSonora);";                                                    
                                     }
 
-                                    <div style="margin-left: auto;">
+                                    <div style="margin-left: auto; margin-right: 5px;">
                                         <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-dlc')" style="width: fit-content;">
                                             <a class="boton-pequeño" style="text-align: center; padding: 10px 30px; text-decoration: none; @fondoBotonDlc" href="@enlaceMaestro" target="_self" @onclick="(e => AbrirEnlace(e, enlaceMaestro, false))">
                                                 <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -5335,7 +5335,7 @@
             },
             Markers = new Markers { Shape = MarkerShape.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
             Stroke = new Stroke { Curve = Curve.Smooth },
-            Colors = new List<string> { "#132434", "#091018" },
+            Colors = new List<string> { "#132434", "#091018", "#101c2b" },
             Legend = new Legend
             {
                 Position = LegendPosition.Top,
