@@ -75,15 +75,11 @@
     @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
     {
         <script async src="@Assets["~/superjs.js"]"></script>
-
-        if (enlace.Contains("/game/") == true)
-        {
-            <script async src="@Assets["/video.js"]"></script>
-        }
         
         <div id="reconnect-modal" style="display: none;"></div>
         <script src="@Assets["/_framework/blazor.web.js"]" autostart="false"></script>
         <script src="@Assets["/inicio.js"]"></script>
+        <script src="@Assets["/video.js"]"></script>
         <script src="@Assets["/push-notifications.js"]"></script>
     }
     else

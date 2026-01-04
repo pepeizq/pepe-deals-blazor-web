@@ -16,7 +16,8 @@ namespace Gratis2
 		BundleStars,
 		IndieGala,
 		Behavior,
-		SquareEnix
+		SquareEnix,
+		Stove
 	}
 
 	public class GratisCargar
@@ -37,7 +38,8 @@ namespace Gratis2
 				APIs.Fanatical.Gratis.GenerarAntiguo(),
 				APIs.IndieGala.Gratis.Generar(),
 				APIs.Behavior.Gratis.Generar(),
-				APIs.SquareEnix.Gratis.Generar()
+				APIs.SquareEnix.Gratis.Generar(),
+				APIs.Stove.Gratis.Generar()
 			};
 
 			return gratis;
