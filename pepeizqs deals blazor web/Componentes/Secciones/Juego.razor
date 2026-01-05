@@ -321,7 +321,7 @@
                     }                    
                 }
                             
-                if (mostrar == true)
+                if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && mostrar == true)
                 {
                     <img class="juego-fondo" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_1920x620, 1536, 496)" alt="@juego.Nombre" fetchpriority="high" />
                 }
