@@ -33,8 +33,6 @@
     <PackageReference Include="czf.RedditSharp" Version="3.0.0" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Discord.Net" Version="3.18.0" />
-    <PackageReference Include="ImageProcessor" Version="2.9.0" />
-    <PackageReference Include="ImageProcessor.Plugins.WebP" Version="1.3.0" />
     <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.477" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="MailKit" Version="4.14.1" />
@@ -51,9 +49,10 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Patreon.Net" Version="1.0.3" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
     <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="10.0.1" />
-    <PackageReference Include="Telegram.Bot" Version="22.7.6" />
+    <PackageReference Include="Telegram.Bot" Version="22.8.1" />
     <PackageReference Include="TweetinviAPI" Version="5.0.4" />
     <PackageReference Include="WebPush" Version="1.0.12" />
     <PackageReference Include="X.Bluesky" Version="2.0.7" />

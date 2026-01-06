@@ -42,6 +42,35 @@ namespace Tareas
 						{
 							await BaseDatos.Admin.Actualizar.TareaUso("mantenimiento", DateTime.Now);
 
+							#region Limpiar Imagenes
+
+							string directorio = Path.Combine(AppContext.BaseDirectory, "imagenes", "noticias");
+
+							if (Directory.Exists(directorio) == true)
+							{
+								var ficheros = Directory.GetFiles(directorio, "*.jpeg");
+								DateTime limiteFecha = DateTime.Now.AddDays(-30);
+
+								foreach (var fichero in ficheros)
+								{
+									var ficheroInfo = new FileInfo(fichero);
+
+									if (ficheroInfo.LastWriteTime < limiteFecha)
+									{
+										try
+										{
+											File.Delete(fichero);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje($"Error al eliminar {ficheroInfo.Name}", ex);
+										}
+									}
+								}
+							}
+
+							#endregion
+
 							await BaseDatos.Reseñas.Limpiar.Ejecutar();
 							await BaseDatos.Juegos.Limpiar.Minimos();
 							await BaseDatos.Portapapeles.Borrar.Limpieza();

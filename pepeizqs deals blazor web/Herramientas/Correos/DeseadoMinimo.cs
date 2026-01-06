@@ -149,10 +149,10 @@ namespace Herramientas.Correos
 			json.JuegoId = juego.Id;
 			json.JuegoDRM = (int)juego.Tipo;
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo, JsonSerializer.Serialize(json));
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo, JsonSerializer.Serialize(json));
 		}
 
-		public static void Nuevos(List<CorreoMinimoJson> jsons, string correoHacia, DateTime horaOriginal)
+		public static async Task Nuevos(List<CorreoMinimoJson> jsons, string correoHacia, DateTime horaOriginal)
 		{
 			decimal ParsePrecio(string precio)
 			{
@@ -257,7 +257,7 @@ namespace Herramientas.Correos
 				html = html.Replace("{{año}}", DateTime.Now.Year.ToString());
 				html = html.Replace("{{mensaje}}", Herramientas.Idiomas.BuscarTexto(idioma, "Message", "Mails"));
 
-				global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, horaOriginal, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos, JsonSerializer.Serialize(jsons));
+				await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, horaOriginal, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos, JsonSerializer.Serialize(jsons));
 			}
 		}
 	}

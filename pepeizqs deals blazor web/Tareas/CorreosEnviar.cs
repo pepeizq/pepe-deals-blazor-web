@@ -149,7 +149,7 @@ namespace Tareas
 								{
 									if (correoMinimoFinal.Jsons.Count > 1)
 									{
-										Herramientas.Correos.DeseadoMinimo.Nuevos(correoMinimoFinal.Jsons, correoMinimoFinal.CorreoHacia, correoMinimoFinal.HoraOriginal);
+										await Herramientas.Correos.DeseadoMinimo.Nuevos(correoMinimoFinal.Jsons, correoMinimoFinal.CorreoHacia, correoMinimoFinal.HoraOriginal);
 
 										foreach (var pendiente2 in pendientes.ToList())
 										{
@@ -188,7 +188,7 @@ namespace Tareas
 								{
 									if (correoDeseadoBundle.Jsons.Count > 1)
 									{
-										Herramientas.Correos.DeseadoBundle.Nuevos(correoDeseadoBundle.Jsons, correoDeseadoBundle.CorreoHacia, correoDeseadoBundle.HoraOriginal);
+										await Herramientas.Correos.DeseadoBundle.Nuevos(correoDeseadoBundle.Jsons, correoDeseadoBundle.CorreoHacia, correoDeseadoBundle.HoraOriginal);
 
 										foreach (var pendiente2 in pendientes.ToList())
 										{

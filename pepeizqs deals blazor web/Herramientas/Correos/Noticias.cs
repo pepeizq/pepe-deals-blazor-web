@@ -7,7 +7,7 @@ namespace Herramientas.Correos
 
 	public static class Noticias
 	{
-		public static bool Enviar(Noticia noticia, string correoHacia, string idioma, string dominio)
+		public static async Task<bool> Enviar(Noticia noticia, string correoHacia, string idioma, string dominio)
 		{
 			try
 			{
@@ -87,7 +87,7 @@ namespace Herramientas.Correos
 					html = html.Replace("<ul>", @"<ul style=""line-height: 22px;"">");
 				}
 
-				global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Noticia);
+				await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.Noticia);
 
 				return true;
 			}

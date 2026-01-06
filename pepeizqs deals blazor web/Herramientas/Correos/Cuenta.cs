@@ -5,7 +5,7 @@ namespace Herramientas.Correos
 
 	public static class Cuenta
 	{
-		public static void ContraseñaReseteada(string idioma, string correoHacia)
+		public static async Task ContraseñaReseteada(string idioma, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(idioma) == true)
 			{
@@ -42,10 +42,10 @@ namespace Herramientas.Correos
 
 			string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Reset1", "Mails");
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaReseteada);
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaReseteada);
 		}
 
-		public static void ContraseñaOlvidada(string idioma, string codigo, string correoHacia)
+		public static async Task ContraseñaOlvidada(string idioma, string codigo, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(idioma) == true)
 			{
@@ -84,10 +84,10 @@ namespace Herramientas.Correos
 
 			string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Reset2", "Mails");
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaOlvidada);
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaOlvidada);
 		}
 
-		public static void CambioContraseña(string idioma, string correoHacia)
+		public static async Task CambioContraseña(string idioma, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(idioma) == true)
 			{
@@ -124,10 +124,10 @@ namespace Herramientas.Correos
 
 			string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Change1", "Mails");
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaCambio);
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.ContraseñaCambio);
 		}
 
-		public static void CambioCorreo(string idioma, string codigo, string correoHacia)
+		public static async Task CambioCorreo(string idioma, string codigo, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(idioma) == true)
 			{
@@ -166,10 +166,10 @@ namespace Herramientas.Correos
 
 			string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Mails");
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.CorreoCambio);
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.CorreoCambio);
 		}
 
-		public static void ConfirmacionCorreo(string idioma, string codigo, string correoHacia)
+		public static async Task ConfirmacionCorreo(string idioma, string codigo, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(idioma) == true)
 			{
@@ -208,7 +208,7 @@ namespace Herramientas.Correos
 
 			string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Confirm1", "Mails");
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.CorreoConfirmacion);
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.CorreoConfirmacion);
 		}
 	}
 }

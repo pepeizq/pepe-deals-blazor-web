@@ -159,7 +159,7 @@
         }
     }
 
-    private async void ClickearCambiarContraseña()
+    private async Task ClickearCambiarContraseña()
     {
         mensajeExito = null;
         mensajeError = null;
@@ -179,7 +179,7 @@
                 if (resultado2.Succeeded == true)
                 {
                     mensajeExito = Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword14", "Account");
-                    Herramientas.Correos.Cuenta.CambioContraseña(idioma, usuario.Email);
+                    await Herramientas.Correos.Cuenta.CambioContraseña(idioma, usuario.Email);
                 }
                 else
                 {

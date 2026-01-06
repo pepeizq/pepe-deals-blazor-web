@@ -106,7 +106,7 @@
         }
     }
 
-    private async void ClickearConfirmacionCorreo()
+    private async Task ClickearConfirmacionCorreo()
     {
         if (usuario != null)
         {
@@ -118,7 +118,7 @@
 
             string enlaceFinal = "https://" + dominio + "/account/confirm-email?userId=" + usuarioId + "&code=" + codigo;
 
-            Herramientas.Correos.Cuenta.ConfirmacionCorreo(usuario.Language, HtmlEncoder.Default.Encode(enlaceFinal), correo);
+            await Herramientas.Correos.Cuenta.ConfirmacionCorreo(usuario.Language, HtmlEncoder.Default.Encode(enlaceFinal), correo);
             correoConfirmadoEnviado = true;
         }
     }
@@ -145,7 +145,7 @@
 
                     string enlaceFinal = "https://" + dominio + "/account/confirm-email-change?userId=" + usuarioId + "&email=" + correoNuevo + "&code=" + codigo;
 
-                    Herramientas.Correos.Cuenta.CambioCorreo(usuario.Language, HtmlEncoder.Default.Encode(enlaceFinal), correoNuevo);
+                    await Herramientas.Correos.Cuenta.CambioCorreo(usuario.Language, HtmlEncoder.Default.Encode(enlaceFinal), correoNuevo);
                     correoCambioEnviado = true;
                 }
                 else

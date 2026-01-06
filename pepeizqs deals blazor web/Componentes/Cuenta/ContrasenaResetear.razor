@@ -169,7 +169,7 @@
         }
     }
 
-    private async void ResetearContraseña()
+    private async Task ResetearContraseña()
     {
         mensajeExito = null;
         mensajeError = null;
@@ -185,7 +185,7 @@
                 if (resultado.Succeeded == true)
                 {
                     mensajeExito = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "ResetPassword");
-                    Herramientas.Correos.Cuenta.ContraseñaReseteada(usuario.Language, usuario.Email);
+                    await Herramientas.Correos.Cuenta.ContraseñaReseteada(usuario.Language, usuario.Email);
                 }
                 else
                 {

@@ -28,46 +28,80 @@ namespace Herramientas.Correos
 			}
 
 			string html = @"<!DOCTYPE html>
-							<html>
-							<head>
-								<meta charset=""utf-8"" />
-								<title></title>
-							</head>
-							<body>
-								<div style=""min-width: 0; word-wrap: break-word; background-color: #222b44; background-clip: border-box; border: 0px; padding: 40px; font-family: Roboto, Helevtica, Arial, sans-serif, serif, EmojiFont; font-size: 16px; color: #f5f5f5;"">
-									<div style=""display: flex; align-items: center; gap: 20px; color: #f5f5f5; background-color: #293751; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-										<img src=""{{imagenJuego}}"" style=""max-width: 200px;""/>
-				        
-										<div style=""padding: 10px; line-height: 25px;"">
-											{{mensajeAviso}}
-										</div>
-									</div>
+<html>
+<head>
+	<meta charset=""utf-8"" />
+	<title></title>
+</head>
+<body style=""margin:0; padding:0; background-color:#222b44;"">
 
-									<div style=""margin-top: 40px;"">
-										<a href=""{{enlace}}"" style=""color: #f5f5f5; background-color: #293751; display: inline-block; user-select: none; width: 100%; text-align: left; font-size: 16px; border: 0px; text-decoration: none; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-											<img src=""{{imagenBundle}}"" style=""max-width: 100%; max-height: 100%;"" />
-										</a>
-									</div>
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""background-color:#222b44;"">
+<tr>
+<td align=""center"">
 
-									<div style=""margin-top: 20px;"">
-										<a href=""{{enlace}}"" style=""color: #95c0fe; background-color: #293751; display: inline-block; user-select: none; width: 100%; text-align: center; border: 0px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-											<div style=""display: flex; align-content: center; align-items: center; justify-content: center; font-size: 17px; margin: 15px;"">
-												{{mensajeAbrir}}
-											</div>
-										</a>
-									</div>
+<table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#f5f5f5;"">
+<tr>
+<td style=""padding:40px;"">
 
-									<div style=""margin-top: 40px;"">
-										<div>
-											&copy; {{año}} • <a href=""https://pepeizqapps.com/"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">pepeizq's apps</a> • <a href=""https://pepe.deals/"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">pepe's deals</a>
-										</div>
-										<div style=""margin-top: 20px; font-size: 14px;"">
-											{{mensaje}} <a href=""https://pepe.deals/contact"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">/contact/</a>
-										</div>
-									</div>
-								</div>
-							</body>
-							</html>";
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""background-color:#293751;"">
+<tr>
+<td width=""200"" style=""padding:20px;"">
+<img src=""{{imagenJuego}}"" width=""200"" style=""display:block; max-width:200px; border:0;"" />
+</td>
+
+<td style=""padding:20px; line-height:25px;"">
+{{mensajeAviso}}
+</td>
+</tr>
+</table>
+
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:40px;"">
+<tr>
+<td>
+<a href=""{{enlace}}"" target=""_blank"">
+<img src=""{{imagenBundle}}"" width=""100%"" style=""display:block; border:0; max-width:100%;"" />
+</a>
+</td>
+</tr>
+</table>
+
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:20px;"">
+<tr>
+<td align=""center"" style=""background-color:#293751;"">
+<a href=""{{enlace}}"" target=""_blank"" style=""display:block; padding:15px; color:#95c0fe; text-decoration:none; font-size:17px;"">
+{{mensajeAbrir}}
+</a>
+</td>
+</tr>
+</table>
+
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:40px; font-size:14px;"">
+<tr>
+<td>
+&copy; {{año}} • 
+<a href=""https://pepeizqapps.com/"" target=""_blank"" style=""color:#95c0fe;"">pepeizq's apps</a> • 
+<a href=""https://pepe.deals/"" target=""_blank"" style=""color:#95c0fe;"">pepe's deals</a>
+</td>
+</tr>
+
+<tr>
+<td style=""padding-top:20px;"">
+{{mensaje}} 
+<a href=""https://pepe.deals/contact"" target=""_blank"" style=""color:#95c0fe;"">/contact/</a>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>";
 
 			string enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, false, false);
 			html = html.Replace("{{enlace}}", enlace);
@@ -99,10 +133,10 @@ namespace Herramientas.Correos
 			json.ImagenJuego = juego.Imagen;
 			json.Idioma = idioma;
 
-			global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, mensajeAviso, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle, JsonSerializer.Serialize(json));
+			await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, mensajeAviso, "mail@pepe.deals", correoHacia, DateTime.Now, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle, JsonSerializer.Serialize(json));
 		}
 
-		public static void Nuevos(List<CorreoDeseadoBundleJson> jsons, string correoHacia, DateTime horaOriginal)
+		public static async Task Nuevos(List<CorreoDeseadoBundleJson> jsons, string correoHacia, DateTime horaOriginal)
 		{
 			if (jsons?.Count > 0)
 			{
@@ -116,24 +150,42 @@ namespace Herramientas.Correos
 				string titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Mails"), jsons.Count, jsons[0].BundleNombre);
 
 				string html = @"<!DOCTYPE html>
-							<html>
-							<head>
-								<meta charset=""utf-8"" />
-								<title></title>
-							</head>
-							<body>
-								<div style=""min-width: 0; word-wrap: break-word; background-color: #222b44; background-clip: border-box; border: 0px; padding: 40px; font-family: Roboto, Helevtica, Arial, sans-serif, serif, EmojiFont; font-size: 16px; color: #f5f5f5;"">
-									<div style=""font-size: 18px; line-height: 25px;"">
-										{{descripcion}}
-									</div>";
+<html>
+<head>
+	<meta charset=""utf-8"" />
+	<title></title>
+</head>
+<body style=""margin:0; padding:0; background-color:#222b44;"">
+
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""background-color:#222b44;"">
+<tr>
+<td align=""center"">
+
+<table width=""600"" cellpadding=""0"" cellspacing=""0"" style=""font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#f5f5f5;"">
+<tr>
+<td style=""padding:40px;"">
+
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"">
+<tr>
+<td style=""font-size:18px; line-height:25px;"">
+{{descripcion}}
+</td>
+</tr>
+</table>";
 
 				foreach (var json in jsons)
 				{
-					string htmlJson = @"<div style=""margin-top: 20px; display: flex; align-content: center; align-items: center; justify-content: center; gap: 20px; color: #f5f5f5; background-color: #293751; padding: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-											<img src=""{{imagenJuego}}"" style=""max-width: 100%; max-height: 200px;"" />
+					string htmlJson = @"<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:20px; background-color:#293751;"">
+<tr>
+<td width=""200"" style=""padding:20px;"">
+<img src=""{{imagenJuego}}"" width=""200"" style=""display:block; max-width:200px; border:0;"" />
+</td>
 
-											<div>{{nombreJuego}}</div>
-										</div>";
+<td style=""padding:20px;"">
+{{nombreJuego}}
+</td>
+</tr>
+</table>";
 
 					htmlJson = htmlJson.Replace("{{imagenJuego}}", json.ImagenJuego);
 					htmlJson = htmlJson.Replace("{{nombreJuego}}", json.NombreJuego);
@@ -141,31 +193,53 @@ namespace Herramientas.Correos
 					html = html + htmlJson;
 				}
 
-				html = html + @"<div style=""margin-top: 30px;"">
-									<a href=""{{enlaceBundle}}"" style=""color: #f5f5f5; background-color: #293751; display: inline-block; user-select: none; width: 100%; padding: 6px; text-align: left; font-size: 16px; border: 0px; text-decoration: none; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-										<img src=""{{imagenBundle}}"" style=""max-width: 100%; max-height: 100%;"" />
-									</a>
-								</div>
+				html = html + @"<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:30px;"">
+<tr>
+<td>
+<a href=""{{enlaceBundle}}"" target=""_blank"">
+<img src=""{{imagenBundle}}"" width=""100%"" style=""display:block; border:0; max-width:100%;"" />
+</a>
+</td>
+</tr>
+</table>
 
-								<div style=""margin-top: 20px;"">
-									<a href=""{{enlaceBundle}}"" style=""color: #95c0fe; background-color: #293751; display: inline-block; user-select: none; width: 100%; text-align: center; border: 0px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);"">
-										<div style=""display: flex; align-content: center; align-items: center; justify-content: center; font-size: 17px; margin: 15px;"">
-											{{mensajeAbrir}}
-										</div>
-									</a>
-								</div>
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:20px;"">
+<tr>
+<td align=""center"" style=""background-color:#293751;"">
+<a href=""{{enlaceBundle}}"" target=""_blank"" style=""display:block; padding:15px; color:#95c0fe; text-decoration:none; font-size:17px;"">
+{{mensajeAbrir}}
+</a>
+</td>
+</tr>
+</table>
 
-								<div style=""margin-top: 40px;"">
-									<div>
-										&copy; {{año}} • <a href=""https://pepeizqapps.com/"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">pepeizq's apps</a> • <a href=""https://pepe.deals/"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">pepe's deals</a>
-									</div>
-									<div style=""margin-top: 20px; font-size: 14px;"">
-										{{mensaje}} <a href=""https://pepe.deals/contact"" style=""color: #95c0fe; user-select: none; width: 100%; text-align: left; font-size: 16px;"" target=""_blank"">/contact/</a>
-									</div>
-								</div>
-							</div>
-							</body>
-							</html>";
+<table width=""100%"" cellpadding=""0"" cellspacing=""0"" style=""margin-top:40px; font-size:14px;"">
+<tr>
+<td>
+&copy; {{año}} • 
+<a href=""https://pepeizqapps.com/"" target=""_blank"" style=""color:#95c0fe;"">pepeizq's apps</a> • 
+<a href=""https://pepe.deals/"" target=""_blank"" style=""color:#95c0fe;"">pepe's deals</a>
+</td>
+</tr>
+
+<tr>
+<td style=""padding-top:20px;"">
+{{mensaje}} 
+<a href=""https://pepe.deals/contact"" target=""_blank"" style=""color:#95c0fe;"">/contact/</a>
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>";
 
 
 				string descripcion = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Mails"), jsons[0].TiendaNombre, jsons.Count);
@@ -178,7 +252,7 @@ namespace Herramientas.Correos
 				html = html.Replace("{{año}}", DateTime.Now.Year.ToString());
 				html = html.Replace("{{mensaje}}", Herramientas.Idiomas.BuscarTexto(idioma, "Message", "Mails"));
 
-				global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, horaOriginal, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle, JsonSerializer.Serialize(jsons));
+				await global::BaseDatos.CorreosEnviar.Insertar.Ejecutar(html, titulo, "mail@pepe.deals", correoHacia, horaOriginal, global::BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle, JsonSerializer.Serialize(jsons));
 			}
 		}
 	}

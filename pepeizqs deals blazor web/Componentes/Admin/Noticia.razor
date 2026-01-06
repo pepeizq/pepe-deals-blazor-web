@@ -4,6 +4,7 @@
 @using pepeizqs_deals_web.Data
 
 @inject Herramientas.NotificacionesPush Push
+@inject IConfiguration Configuracion
 
 <style>
 	.caja-admin-noticia {
@@ -350,37 +351,37 @@
 		await BaseDatos.Noticias.Actualizar.SuscripcionesIds(noticiaId.ToString(), nuevoTexto);
 	}
 
-	private void EnviarCorreoPruebaMsn(MouseEventArgs e)
+	private async Task EnviarCorreoPruebaMsn(MouseEventArgs e)
 	{
-		Herramientas.Correos.Noticias.Enviar(noticia, "pepeizq@msn.com", "es-ES", dominio);
+		await Herramientas.Correos.Noticias.Enviar(noticia, Configuracion["CorreosPersonales:Msn"], "es-ES", dominio);
 	}
 
-	private void EnviarCorreoPruebaGmail(MouseEventArgs e)
+	private async Task EnviarCorreoPruebaGmail(MouseEventArgs e)
 	{
-		Herramientas.Correos.Noticias.Enviar(noticia, "joseluis.izquierdo.gomez@gmail.com", "es-ES", dominio);
+		await Herramientas.Correos.Noticias.Enviar(noticia, Configuracion["CorreosPersonales:Gmail"], "es-ES", dominio);
 	}
 
-	private async void EnviarTwitter(MouseEventArgs e)
+	private async Task EnviarTwitter(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Twitter.Twitear(noticia, dominio);
 	}
 
-	private async void EnviarBlueSky(MouseEventArgs e)
+	private async Task EnviarBlueSky(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Bluesky.Postear(noticia, dominio);
 	}
 
-	private async void EnviarTelegram(MouseEventArgs e)
+	private async Task EnviarTelegram(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Telegram.Postear(noticia, dominio);
 	}
 
-	private async void EnviarDiscord(MouseEventArgs e)
+	private async Task EnviarDiscord(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Discord.Postear(noticia, dominio);
 	}
 
-	private async void EnviarReddit(MouseEventArgs e)
+	private async Task EnviarReddit(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Reddit.Postear(noticia, dominio);
 	}

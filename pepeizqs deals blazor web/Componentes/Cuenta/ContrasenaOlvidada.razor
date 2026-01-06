@@ -79,7 +79,7 @@
         correo = texto.Value.ToString();
     }
 
-    private async void EnviarCorreo()
+    private async Task EnviarCorreo()
     {
         mensajeExito = null;
 
@@ -98,7 +98,7 @@
 
                     string enlaceFinal = "https://" + dominio + "/account/reset-password?code=" + codigo;
 
-                    Herramientas.Correos.Cuenta.ContraseñaOlvidada(idioma, enlaceFinal, correo);
+                    await Herramientas.Correos.Cuenta.ContraseñaOlvidada(idioma, enlaceFinal, correo);
                     mensajeExito = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "ForgotPassword");
                 }
             }

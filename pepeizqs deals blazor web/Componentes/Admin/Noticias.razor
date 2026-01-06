@@ -11,6 +11,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject Herramientas.NotificacionesPush Push
+@inject HttpClient Cliente
 
 <style>
     .caja-admin-noticias {
@@ -287,7 +288,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
             @if (string.IsNullOrEmpty(noticia.Imagen) == false)
             {
                 <div style="margin-top: 10px;">
-                    <img src="@noticia.Imagen" style="max-width: 300px; max-height: 300px;" />
+                    <img src="@noticia.Imagen" style="max-width: 100%;" />
                 </div>
             }
         </div>
@@ -721,7 +722,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         dominio = datos.Dominio;
     }
 
-    private void CambiarNoticiaTipo(ChangeEventArgs texto)
+    private async Task CambiarNoticiaTipo(ChangeEventArgs texto)
     {
         plantillaCargada = false;
 
@@ -738,7 +739,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         }
         else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
         {
-            suscripcionSeleccionadaNoticias = SuscripcionesCargar.GenerarListado()[0].Id;
+            await CambiarSuscripcionNoticias(SuscripcionesCargar.GenerarListado()[0].Id);
         }
         else if (noticiaTipoSeleccionada == NoticiaTipo.Web)
         {
@@ -811,27 +812,27 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 {
                     if (usuario.NotificationBundles == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Bundles)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
 
                     if (usuario.NotificationFree == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Gratis)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
 
                     if (usuario.NotificationSubscriptions == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Suscripciones)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
 
                     if (usuario.NotificationWeb == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Web)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
 
                     if (usuario.NotificationDelisted == true && noticiaAñadir.NoticiaTipo == NoticiaTipo.Despedidas)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
 
                     if (usuario.NotificationOthers == true &&
@@ -839,7 +840,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                         noticiaAñadir.NoticiaTipo != NoticiaTipo.Suscripciones && noticiaAñadir.NoticiaTipo != NoticiaTipo.Web &&
                         noticiaAñadir.NoticiaTipo != NoticiaTipo.Despedidas)
                     {
-                        Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
+                        await Herramientas.Correos.Noticias.Enviar(noticiaAñadir, usuario.Email, usuario.Language, dominio);
                     }
                 }
                 catch (Exception ex)
@@ -1015,6 +1016,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
     private async Task CambiarSuscripcionNoticias(MouseEventArgs e, SuscripcionTipo nuevoTipo)
     {
+        await CambiarSuscripcionNoticias(nuevoTipo);
+    }
+
+    private async Task CambiarSuscripcionNoticias(SuscripcionTipo nuevoTipo)
+    {
         suscripcionSeleccionadaNoticias = nuevoTipo;
         suscripciones = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionadaNoticias);
 
@@ -1049,6 +1055,27 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 }
 
                 noticia.Enlace = enlace;
+
+                List<string> imagenes = new List<string>();
+                string encabezadoImagen = string.Empty;
+
+                foreach (var id2 in cantidadIds)
+                {
+                    var suscripcion = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(id2));
+
+                    encabezadoImagen = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenLogo;
+                    imagenes.Add(suscripcion.Imagen);
+                }
+
+                if (imagenes?.Count > 0)
+                {
+                    var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://pepe.deals/" + encabezadoImagen, Herramientas.Ficheros.Constructor.LayoutModo.Vertical);
+
+                    if (resultado.Exito == true)
+                    {
+                        noticia.Imagen = "https://pepe.deals/" + resultado.DirectorioFichero;
+                    }
+                }
             }
         }
     }

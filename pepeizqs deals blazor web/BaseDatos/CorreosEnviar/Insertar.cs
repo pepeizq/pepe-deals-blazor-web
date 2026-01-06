@@ -7,7 +7,7 @@ namespace BaseDatos.CorreosEnviar
 {
 	public static class Insertar
 	{
-		public static async void Ejecutar(string html, string titulo, string correoDesde, string correoHacia, DateTime fecha, CorreoPendienteTipo tipo, string json = null, SqlConnection conexion = null)
+		public static async Task Ejecutar(string html, string titulo, string correoDesde, string correoHacia, DateTime fecha, CorreoPendienteTipo tipo, string json = null, SqlConnection conexion = null)
 		{
 			string columnasExtra = string.IsNullOrEmpty(json) ? "" : ", json";
 			string valoresExtra = string.IsNullOrEmpty(json) ? "" : ", @json";
