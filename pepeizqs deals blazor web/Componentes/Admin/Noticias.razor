@@ -1069,11 +1069,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
                 if (imagenes?.Count > 0)
                 {
-                    var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://pepe.deals/" + encabezadoImagen, Herramientas.Ficheros.Constructor.LayoutModo.Vertical);
+                    var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://pepe.deals/" + encabezadoImagen);
 
                     if (resultado.Exito == true)
                     {
-                        noticia.Imagen = "https://pepe.deals/" + resultado.DirectorioFichero;
+                        noticia.Imagen = "https://pepe.deals" + resultado.DirectorioFichero;
                     }
                 }
             }

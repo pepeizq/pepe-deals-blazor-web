@@ -1,10 +1,34 @@
 ﻿@using Noticias
 
+<script>
+	function enseñarTooltip(e, id) {
+		var x = e.clientX,
+			y = e.clientY;
+
+		var tooltip = document.getElementById(id);
+
+		if (screen.width / 2 > x) {
+			tooltip.style.top = (y + 10) + 'px';
+			tooltip.style.left = (x + 20) + 'px';
+		}
+		else {
+			tooltip.style.top = (y - 10) + 'px';
+			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+		};
+	}
+</script>
+
 <style>
 	.cnoticia-expandir {
 		transition: transform .2s;
 		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
-		padding: 1px;
+		border: 1px solid var(--fondoBotonPequeño);
+		height: 100%;
+		width: 100%;
+		background-color: var(--fondoOscuro);
+		display: flex;
+		align-items: center;
+		flex-direction: column;
 	}
 
 	.cnoticia-expandir:hover {
@@ -13,74 +37,64 @@
 	}
 </style>
 
-<div style="margin-top: 30px;">
-	<a href="/news/@noticia.Id/@Herramientas.EnlaceAdaptador.Nombre(titulo)/" style="cursor: pointer; text-decoration: none; color: var(--colorTexto);">
-		<div class="cnoticia-expandir" style="background-color: var(--fondoBotonPequeño); display: flex; align-items: center;" title="@titulo">
-			@{
-				string tamañoFuente = "16px;";
-				string gapCaja = "10px;";
+<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-news-@noticia.Id.ToString()')" style="height: 100%; width: 100%; display: flex; align-items: center;">
+	<a href="/news/@noticia.Id/@Herramientas.EnlaceAdaptador.Nombre(titulo)/" style="cursor: pointer; text-decoration: none; color: var(--colorTexto); height: 100%;">
+		<div class="cnoticia-expandir" title="@titulo">
+			<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(noticia.Imagen)" style="width: 100%; height: 100%; object-fit: contain;" alt="@titulo" />
 
-				int anchoImagen = 200;
-				int altoImagen = 110;
+			<div style="display: flex; align-items: center; gap: 15px; background-color: var(--fondoBotonPequeño); padding: 15px 20px; width: 100%;">
+				@{
+					string icono = string.Empty;
+					string etiqueta = string.Empty;
 
-				if (tipo == Tipo.Portada)
-				{
-					if (DateTime.Now.Subtract(noticia.FechaEmpieza).TotalDays < 1)
+					if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 					{
-						tamañoFuente = "18px;";
-						gapCaja = "15px;";
+						icono = Bundles2.BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
+						etiqueta = Herramientas.Idiomas.BuscarTexto(idioma, "Type2", "News");
+					}
+					else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
+					{
+						icono = Gratis2.GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
+						etiqueta = Herramientas.Idiomas.BuscarTexto(idioma, "Type3", "News");
+					}
+					else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
+					{
+						icono = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
+						etiqueta = Herramientas.Idiomas.BuscarTexto(idioma, "Type4", "News");
+					}
+					else if (noticia.NoticiaTipo == NoticiaTipo.Web)
+					{
+						icono = "/favicons/favicon-96x96.png";
+						etiqueta = Herramientas.Idiomas.BuscarTexto(idioma, "Type9", "News");
+					}
 
-						anchoImagen = 250;
-						altoImagen = 140;
+					if (string.IsNullOrEmpty(icono) == false)
+					{
+						<div style="display: flex;">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(icono, 18, 18)" style="width: 18px; height: 18px;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)" />
+						</div>
+					}
+
+					if (string.IsNullOrEmpty(etiqueta) == false)
+					{
+						<div style="font-size: 14px;">
+							@etiqueta
+						</div>
 					}
 				}
 
-				string estiloImagen = "width: " + anchoImagen.ToString() + "px; height: " + altoImagen.ToString() + "px;";
-			}
-			
-			<div>
-				<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(noticia.Imagen, anchoImagen, anchoImagen)" style="@estiloImagen object-fit: cover; opacity: 0.8;" alt="@titulo"  />
-			</div>
-
-			<div style="padding: 10px 20px; display: flex; flex-direction: column; gap: @gapCaja">
-				<div style="font-size: @tamañoFuente">@titulo</div>
-
-				<div style="display: flex; align-items: center; gap: 15px;">
-					@{
-						string icono = string.Empty;
-
-						if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
-						{
-							icono = Bundles2.BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
-						}
-						else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
-						{
-							icono = Gratis2.GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
-						}
-						else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
-						{
-							icono = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
-						}
-						else if (noticia.NoticiaTipo == NoticiaTipo.Web)
-						{
-							icono = "/favicons/favicon-96x96.png";
-						}
-
-						if (string.IsNullOrEmpty(icono) == false)
-						{
-							<div style="display: flex;">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(icono, 18, 18)" style="width: 18px; height: 18px;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)"  />
-							</div>
-						}
-					}
-
-					<div style="font-size: 14px;">
-						@mensajeTiempo
-					</div>
+				<div style="font-size: 14px; margin-left: auto;">
+					@mensajeTiempo
 				</div>
 			</div>
 		</div>
 	</a>
+
+	<div id="tooltip-news-@noticia.Id.ToString()" class="tooltip-relleno">
+		<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+			@titulo
+		</div>
+	</div>
 </div>
 
 @code {

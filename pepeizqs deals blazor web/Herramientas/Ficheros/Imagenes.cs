@@ -3,6 +3,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using static Herramientas.Ficheros.Constructor;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Herramientas.Ficheros
@@ -65,8 +66,15 @@ namespace Herramientas.Ficheros
 			Horizontal 
 		}
 
-		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, string encabezadoEnlace = null, LayoutModo modo = LayoutModo.Vertical)
+		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, string encabezadoEnlace = null)
 		{
+			LayoutModo modo = LayoutModo.Vertical;
+
+			if (imagenesEnlaces?.Count <= 4)
+			{
+				modo = LayoutModo.Horizontal;
+			}
+
 			try
 			{
 				Image encabezadoImagen = null;
@@ -150,8 +158,9 @@ namespace Herramientas.Ficheros
 				int padding = 30;
 				int columnasPorFila = 4;
 
-				int filas = (int)Math.Ceiling((double)imagenes.Count / columnasPorFila);
-				int gridAncho = (imagenAncho * columnasPorFila) + (padding * (columnasPorFila + 1));
+				int actualColumns = modo == LayoutModo.Horizontal ? Math.Min(imagenes.Count, columnasPorFila) : columnasPorFila;
+				int filas = (int)Math.Ceiling((double)imagenes.Count / actualColumns);
+				int gridAncho = (imagenAncho * actualColumns) + (padding * (actualColumns + 1));
 				int gridAltura = (imagenAltura * filas) + (padding * (filas + 1));
 
 				int totalAncho = modo == LayoutModo.Vertical ? gridAncho : gridAncho + encabezadoAncho;
@@ -217,7 +226,7 @@ namespace Herramientas.Ficheros
 					xPosicion += imagenAncho + padding;
 					imagenRedimensionada.Dispose();
 
-					if ((i + 1) % columnasPorFila == 0)
+					if ((i + 1) % actualColumns == 0)
 					{
 						xPosicion = gridArranqueX + padding;
 						yPosicion += imagenAltura + padding;
