@@ -6,6 +6,8 @@
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
+@inject IConfiguration Configuracion
+
 <style>
 	.caja-admin-juego {
 		background-color: var(--fondoSubsubcabecera);
@@ -666,8 +668,7 @@
 
     protected override void OnParametersSet()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+        claveExtension = Configuracion.GetValue<string>("Extension:Clave");
 
         if (juego.Bundles != null)
         {

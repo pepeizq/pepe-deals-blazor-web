@@ -7,14 +7,12 @@ namespace Herramientas
 {
 	public static class Patreon
 	{
-		public static async Task Leer()
+		public static async Task Leer(IConfiguration configuracion)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-
 			PatreonClient cliente = new PatreonClient(
-				builder.Configuration.GetValue<string>("Patreon:CreatorAccessToken"),
-				builder.Configuration.GetValue<string>("Patreon:CreatorRefreshToken"),
-				builder.Configuration.GetValue<string>("Patreon:ClientID")
+				configuracion.GetValue<string>("Patreon:CreatorAccessToken"),
+				configuracion.GetValue<string>("Patreon:CreatorRefreshToken"),
+				configuracion.GetValue<string>("Patreon:ClientID")
 			);
 
 			PatreonResourceArray<Campaign, CampaignRelationships> campañas = await cliente.GetCampaignsAsync(Includes.All);

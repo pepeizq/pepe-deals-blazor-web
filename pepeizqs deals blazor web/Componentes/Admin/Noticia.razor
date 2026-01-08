@@ -363,27 +363,27 @@
 
 	private async Task EnviarTwitter(MouseEventArgs e)
 	{
-		await Herramientas.RedesSociales.Twitter.Twitear(noticia, dominio);
+		await Herramientas.RedesSociales.Twitter.Twitear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarBlueSky(MouseEventArgs e)
 	{
-		await Herramientas.RedesSociales.Bluesky.Postear(noticia, dominio);
+		await Herramientas.RedesSociales.Bluesky.Postear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarTelegram(MouseEventArgs e)
 	{
-		await Herramientas.RedesSociales.Telegram.Postear(noticia, dominio);
+		await Herramientas.RedesSociales.Telegram.Postear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarDiscord(MouseEventArgs e)
 	{
-		await Herramientas.RedesSociales.Discord.Postear(noticia, dominio);
+		await Herramientas.RedesSociales.Discord.Postear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarReddit(MouseEventArgs e)
 	{
-		await Herramientas.RedesSociales.Reddit.Postear(noticia, dominio);
+		await Herramientas.RedesSociales.Reddit.Postear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarNotificacionesPush(MouseEventArgs e)

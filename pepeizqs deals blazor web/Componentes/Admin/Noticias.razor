@@ -12,6 +12,7 @@
 @inject IHttpContextAccessor Contexto
 @inject Herramientas.NotificacionesPush Push
 @inject HttpClient Cliente
+@inject IConfiguration Configuracion
 
 <style>
     .caja-admin-noticias {
@@ -854,7 +855,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         try
         {
-            enviadoTwitter = await Herramientas.RedesSociales.Twitter.Twitear(noticiaAñadir, dominio);
+            enviadoTwitter = await Herramientas.RedesSociales.Twitter.Twitear(Configuracion, noticiaAñadir, dominio);
         }
         catch (Exception ex)
         {
@@ -869,7 +870,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         try
         {
-            enviadoBluesky = await Herramientas.RedesSociales.Bluesky.Postear(noticiaAñadir, dominio);
+            enviadoBluesky = await Herramientas.RedesSociales.Bluesky.Postear(Configuracion, noticiaAñadir, dominio);
         }
         catch (Exception ex)
         {
@@ -884,7 +885,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         try
         {
-            enviadoTelegram = await Herramientas.RedesSociales.Telegram.Postear(noticiaAñadir, dominio);
+            enviadoTelegram = await Herramientas.RedesSociales.Telegram.Postear(Configuracion, noticiaAñadir, dominio);
         }
         catch (Exception ex)
         {
@@ -899,7 +900,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         try
         {
-            enviadoDiscord = await Herramientas.RedesSociales.Discord.Postear(noticiaAñadir, dominio);
+            enviadoDiscord = await Herramientas.RedesSociales.Discord.Postear(Configuracion, noticiaAñadir, dominio);
         }
         catch (Exception ex)
         {
@@ -929,7 +930,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
         try
         {
-            enviadoReddit = await Herramientas.RedesSociales.Reddit.Postear(noticiaAñadir, dominio);
+            enviadoReddit = await Herramientas.RedesSociales.Reddit.Postear(Configuracion, noticiaAñadir, dominio);
         }
         catch (Exception ex)
         {
@@ -974,7 +975,26 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         plantillaCargada = true;
 
         var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
-        noticia.Enlace = bundle.Enlace;
+
+        if (bundle != null)
+        {
+            noticia.Enlace = bundle.Enlace;
+
+            List<string> imagenes = new List<string>();
+            imagenes.Add(bundle.ImagenNoticia);
+
+            string encabezadoImagen = Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenTienda;
+
+            if (imagenes?.Count > 0)
+            {
+                var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://" + dominio + "/" + encabezadoImagen, Herramientas.Ficheros.Constructor.ImagenModo.Bundle);
+
+                if (resultado.Exito == true)
+                {
+                    noticia.Imagen = "https://" + dominio + resultado.DirectorioFichero;
+                }
+            }
+        }
     }
 
     private List<global::Juegos.JuegoGratis> gratis { get; set; }
@@ -1008,6 +1028,27 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
             else if (cantidadIds.Count > 0)
             {
                 noticia.Enlace = null;
+            }
+
+            List<string> imagenes = new List<string>();
+            string encabezadoImagen = string.Empty;
+
+            foreach (var id2 in cantidadIds)
+            {
+                var gratis = await BaseDatos.Gratis.Buscar.UnGratis(id2);
+
+                encabezadoImagen = Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).ImagenLogo;
+                imagenes.Add(gratis.Imagen);
+            }
+
+            if (imagenes?.Count > 0)
+            {
+                var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://" + dominio + "/" + encabezadoImagen, Herramientas.Ficheros.Constructor.ImagenModo.Juego);
+
+                if (resultado.Exito == true)
+                {
+                    noticia.Imagen = "https://" + dominio + resultado.DirectorioFichero;
+                }
             }
         }
     }
@@ -1069,11 +1110,11 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
 
                 if (imagenes?.Count > 0)
                 {
-                    var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://pepe.deals/" + encabezadoImagen);
+                    var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://" + dominio + "/" + encabezadoImagen, Herramientas.Ficheros.Constructor.ImagenModo.Juego);
 
                     if (resultado.Exito == true)
                     {
-                        noticia.Imagen = "https://pepe.deals" + resultado.DirectorioFichero;
+                        noticia.Imagen = "https://" + dominio + resultado.DirectorioFichero;
                     }
                 }
             }

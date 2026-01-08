@@ -9,12 +9,14 @@ namespace Tareas
         private readonly ILogger<RedesSociales> _logger;
         private readonly IServiceScopeFactory _factoria;
         private readonly IDecompiladores _decompilador;
+		private readonly IConfiguration _configuracion;
 
-        public RedesSociales(ILogger<RedesSociales> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public RedesSociales(ILogger<RedesSociales> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
         {
             _logger = logger;
             _factoria = factory;
             _decompilador = decompilador;
+            _configuracion = configuracion;
         }
 
         protected override async Task ExecuteAsync(CancellationToken tokenParar)
@@ -23,8 +25,7 @@ namespace Tareas
 
             while (await timer.WaitForNextTickAsync(tokenParar))
             {
-                WebApplicationBuilder builder = WebApplication.CreateBuilder();
-                string piscinaApp = builder.Configuration.GetValue<string>("PoolTiendas:Contenido");
+                string piscinaApp = _configuracion.GetValue<string>("PoolTiendas:Contenido");
                 string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
                 if (piscinaApp == piscinaUsada)
@@ -47,7 +48,7 @@ namespace Tareas
 
 							if (juegosDia?.Count > 0)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(juegosDia);
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDia);
 							}
 						}
 						catch (Exception ex)

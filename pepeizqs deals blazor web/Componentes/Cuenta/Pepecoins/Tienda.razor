@@ -5,6 +5,7 @@
 @using pepeizqs_deals_web.Data
 
 @inject UserManager<Usuario> UserManager
+@inject IConfiguration Configuracion
 
 <style>
 	.caja-cuenta-contenido {
@@ -366,8 +367,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		WebApplicationBuilder builder = WebApplication.CreateBuilder();
-		enlacePatreon = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
+		enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
 
 		juegos = await BaseDatos.Recompensas.Juegos.Disponibles();
 

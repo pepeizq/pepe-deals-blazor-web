@@ -359,12 +359,20 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 
-app.UseStaticFiles(new StaticFileOptions
+#region Carpeta Imagenes
+
+string imagenesRuta = Path.Combine(AppContext.BaseDirectory, "imagenes");
+
+if (Directory.Exists(imagenesRuta) == true)
 {
-	FileProvider = new PhysicalFileProvider(
-		Path.Combine(AppContext.BaseDirectory, "imagenes")),
-	RequestPath = "/imagenes"
-});
+	app.UseStaticFiles(new StaticFileOptions
+	{
+		FileProvider = new PhysicalFileProvider(imagenesRuta),
+		RequestPath = "/imagenes"
+	});
+}
+
+#endregion
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {

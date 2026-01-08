@@ -9,18 +9,19 @@ namespace Tareas
 		private readonly ILogger<Mantenimiento> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
+		private readonly IConfiguration _configuracion;
 
-		public Mantenimiento(ILogger<Mantenimiento> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public Mantenimiento(ILogger<Mantenimiento> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;
 			_decompilador = decompilador;
+			_configuracion = configuracion;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string piscinaWeb = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+			string piscinaWeb = _configuracion.GetValue<string>("PoolWeb:Contenido");
 			string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
 			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
@@ -76,7 +77,7 @@ namespace Tareas
 							await BaseDatos.Portapapeles.Borrar.Limpieza();
 							await Divisas.ActualizarDatos();
 
-							await BaseDatos.Mantenimiento.Encoger.Ejecutar();
+							await BaseDatos.Mantenimiento.Encoger.Ejecutar(_configuracion);
 						}
 					}
 					catch (Exception ex)

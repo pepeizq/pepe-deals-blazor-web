@@ -11,12 +11,14 @@ namespace Tareas.Tiendas
 		private readonly ILogger<Fanatical> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
+		private readonly IConfiguration _configuracion;
 
-		public Fanatical(ILogger<Fanatical> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public Fanatical(ILogger<Fanatical> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;
 			_decompilador = decompilador;
+			_configuracion = configuracion;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
@@ -26,8 +28,7 @@ namespace Tareas.Tiendas
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{
-				WebApplicationBuilder builder = WebApplication.CreateBuilder();
-				string piscinaTiendas = builder.Configuration.GetValue<string>("PoolTiendas:Contenido");
+				string piscinaTiendas = _configuracion.GetValue<string>("PoolTiendas:Contenido");
 				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
 				if (piscinaTiendas == piscinaUsada)

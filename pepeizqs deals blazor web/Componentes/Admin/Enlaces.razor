@@ -1,4 +1,6 @@
-﻿<style>
+﻿@inject IConfiguration Configuracion
+
+<style>
     .caja-admin-enlaces {
         background-color: var(--fondoSubsubcabecera);
         border: 2px solid var(--fondoSubcabecera);
@@ -139,18 +141,16 @@
 
     protected override void OnInitialized()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        dealsGoogleSearch = Configuracion.GetValue<string>("WebmasterDeals:GoogleSearch");
+        dealsVisitas = Configuracion.GetValue<string>("WebmasterDeals:Visitas");
+        dealsBing = Configuracion.GetValue<string>("WebmasterDeals:Bing");
 
-        dealsGoogleSearch = builder.Configuration.GetValue<string>("WebmasterDeals:GoogleSearch");
-        dealsVisitas = builder.Configuration.GetValue<string>("WebmasterDeals:Visitas");
-        dealsBing = builder.Configuration.GetValue<string>("WebmasterDeals:Bing");
+        appsGoogleSearch = Configuracion.GetValue<string>("WebmasterApps:GoogleSearch");
+        appsVisitas = Configuracion.GetValue<string>("WebmasterApps:Visitas");
+        appsBing = Configuracion.GetValue<string>("WebmasterApps:Bing");
 
-        appsGoogleSearch = builder.Configuration.GetValue<string>("WebmasterApps:GoogleSearch");
-        appsVisitas = builder.Configuration.GetValue<string>("WebmasterApps:Visitas");
-        appsBing = builder.Configuration.GetValue<string>("WebmasterApps:Bing");
-
-        extensionChrome = builder.Configuration.GetValue<string>("ExtensionDeals:Chrome");
-        extensionEdge = builder.Configuration.GetValue<string>("ExtensionDeals:Edge");
-        extensionFirefox = builder.Configuration.GetValue<string>("ExtensionDeals:Firefox");
+        extensionChrome = Configuracion.GetValue<string>("ExtensionDeals:Chrome");
+        extensionEdge = Configuracion.GetValue<string>("ExtensionDeals:Edge");
+        extensionFirefox = Configuracion.GetValue<string>("ExtensionDeals:Firefox");
     }
 }

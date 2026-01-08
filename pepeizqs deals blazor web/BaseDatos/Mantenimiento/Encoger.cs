@@ -6,10 +6,9 @@ namespace BaseDatos.Mantenimiento
 {
 	public static class Encoger
 	{
-		public static async Task Ejecutar()
+		public static async Task Ejecutar(IConfiguration configuracion)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string baseDatos = builder.Configuration.GetValue<string>("Mantenimiento:BaseDatos");
+			string baseDatos = configuracion.GetValue<string>("Mantenimiento:BaseDatos");
 
 			string sqlEncoger = $"DBCC SHRINKDATABASE ({baseDatos}, 10)";
 

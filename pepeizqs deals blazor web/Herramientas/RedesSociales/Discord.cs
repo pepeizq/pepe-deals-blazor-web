@@ -8,12 +8,10 @@ namespace Herramientas.RedesSociales
 {
 	public static class Discord
 	{
-		public static async Task<bool> Postear(Noticias.Noticia noticia, string dominio)
+		public static async Task<bool> Postear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-
-			string ingles = builder.Configuration.GetValue<string>("Discord:Ingles");
-			string español = builder.Configuration.GetValue<string>("Discord:Español");
+			string ingles = configuracion.GetValue<string>("Discord:Ingles");
+			string español = configuracion.GetValue<string>("Discord:Español");
 
 			string enlace = string.Empty;
 

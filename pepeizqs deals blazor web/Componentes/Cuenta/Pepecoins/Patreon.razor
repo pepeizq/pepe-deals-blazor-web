@@ -5,6 +5,7 @@
 
 @inject UserManager<Usuario> UserManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IConfiguration Configuracion
 
 <style>
     .caja-cuenta-contenido {
@@ -32,8 +33,7 @@
 
                     <div>
                         @{
-                            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-                            string? patreonEnlace = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
+                            string? patreonEnlace = Configuracion.GetValue<string>("RedesSociales:Patreon");
 
                             if (string.IsNullOrEmpty(patreonEnlace) == false)
                             {
@@ -61,8 +61,7 @@
 
                         <div>
                             @{
-                                WebApplicationBuilder builder = WebApplication.CreateBuilder();
-                                string? patreonEnlace = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
+                                string? patreonEnlace = Configuracion.GetValue<string>("RedesSociales:Patreon");
 
                                 if (string.IsNullOrEmpty(patreonEnlace) == false)
                                 {

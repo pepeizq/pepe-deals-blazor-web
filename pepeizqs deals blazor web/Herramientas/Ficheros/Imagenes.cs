@@ -66,13 +66,24 @@ namespace Herramientas.Ficheros
 			Horizontal 
 		}
 
-		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, string encabezadoEnlace = null)
+		public enum ImagenModo
+		{
+			Juego,
+			Bundle
+		}
+
+		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, string encabezadoEnlace = null, ImagenModo modoImagen = ImagenModo.Juego)
 		{
 			LayoutModo modo = LayoutModo.Vertical;
 
 			if (imagenesEnlaces?.Count <= 4)
 			{
 				modo = LayoutModo.Horizontal;
+			}
+
+			if (modoImagen == ImagenModo.Bundle)
+			{
+				modo = LayoutModo.Vertical;
 			}
 
 			try
@@ -85,6 +96,14 @@ namespace Herramientas.Ficheros
 				int encabezadoAnchoMaximo = 250;
 				int separadorAltura = 2;
 				int separadorAncho = 2;
+
+				if (modoImagen == ImagenModo.Bundle)
+				{
+					encabezadoAlturaMaxima = 75;
+					encabezadoAnchoMaximo = 150;
+					separadorAltura = 0; 
+					separadorAncho = 0;
+				}
 
 				if (string.IsNullOrEmpty(encabezadoEnlace) == false)
 				{
@@ -101,7 +120,8 @@ namespace Herramientas.Ficheros
 						if (modo == LayoutModo.Vertical)
 						{
 							int finalEncabezadoAltura = Math.Min(encabezadoImagen.Height, encabezadoAlturaMaxima);
-							encabezadoAltura = finalEncabezadoAltura + (encabezadoPadding * 2) + separadorAltura;
+							int paddingExtra = modoImagen == ImagenModo.Bundle ? (int)(encabezadoPadding * 1.25) : encabezadoPadding * 2;
+							encabezadoAltura = finalEncabezadoAltura + paddingExtra + separadorAltura;
 						}
 						else
 						{
@@ -158,9 +178,16 @@ namespace Herramientas.Ficheros
 				int padding = 30;
 				int columnasPorFila = 4;
 
-				int actualColumns = modo == LayoutModo.Horizontal ? Math.Min(imagenes.Count, columnasPorFila) : columnasPorFila;
-				int filas = (int)Math.Ceiling((double)imagenes.Count / actualColumns);
-				int gridAncho = (imagenAncho * actualColumns) + (padding * (actualColumns + 1));
+				if (modoImagen == ImagenModo.Bundle)
+				{
+					imagenAncho = 720;
+					imagenAltura = 405;
+					columnasPorFila = 1;
+				}
+
+				int actualesColumnas = modo == LayoutModo.Horizontal ? Math.Min(imagenes.Count, columnasPorFila) : columnasPorFila;
+				int filas = (int)Math.Ceiling((double)imagenes.Count / actualesColumnas);
+				int gridAncho = (imagenAncho * actualesColumnas) + (padding * (actualesColumnas + 1));
 				int gridAltura = (imagenAltura * filas) + (padding * (filas + 1));
 
 				int totalAncho = modo == LayoutModo.Vertical ? gridAncho : gridAncho + encabezadoAncho;
@@ -171,10 +198,10 @@ namespace Herramientas.Ficheros
 				var startColorRgba = new Rgba32(0, 32, 51, 255); // #002033
 				var endColorRgba = new Rgba32(0, 44, 71, 255);   // #002c47
 
-				double angleRadians = 66 * Math.PI / 180;
-				double cosAngle = Math.Cos(angleRadians);
-				double sinAngle = Math.Sin(angleRadians);
-				double maxDistance = Math.Sqrt(totalAncho * totalAncho + totalAltura * totalAltura);
+				double anguloRadianes = 66 * Math.PI / 180;
+				double cosAngulo = Math.Cos(anguloRadianes);
+				double sinAngulo = Math.Sin(anguloRadianes);
+				double distanciaMaxima = Math.Sqrt(totalAncho * totalAncho + totalAltura * totalAltura);
 
 				imagenCombinada.Mutate(ctx =>
 				{
@@ -182,17 +209,17 @@ namespace Herramientas.Ficheros
 					{
 						for (int x = 0; x < totalAncho; x++)
 						{
-							double distance = (x * cosAngle) + (y * sinAngle);
-							float ratio = (float)Math.Clamp(distance / maxDistance, 0, 1);
+							double distancia = (x * cosAngulo) + (y * sinAngulo);
+							float ratio = (float)Math.Clamp(distancia / distanciaMaxima, 0, 1);
 
-							var blendedColor = new Rgba32(
+							var colorFondo = new Rgba32(
 								(byte)((1 - ratio) * startColorRgba.R + ratio * endColorRgba.R),
 								(byte)((1 - ratio) * startColorRgba.G + ratio * endColorRgba.G),
 								(byte)((1 - ratio) * startColorRgba.B + ratio * endColorRgba.B),
 								255
 							);
 
-							imagenCombinada[x, y] = blendedColor;
+							imagenCombinada[x, y] = colorFondo;
 						}
 					}
 				});
@@ -201,7 +228,7 @@ namespace Herramientas.Ficheros
 				{
 					if (modo == LayoutModo.Vertical)
 					{
-						ProcesarEncabezadoVertical(ref imagenCombinada, encabezadoImagen, totalAncho, encabezadoPadding, encabezadoAlturaMaxima, separadorAltura);
+						ProcesarEncabezadoVertical(ref imagenCombinada, encabezadoImagen, totalAncho, encabezadoPadding, encabezadoAlturaMaxima, separadorAltura, modoImagen);
 					}
 					else
 					{
@@ -226,7 +253,7 @@ namespace Herramientas.Ficheros
 					xPosicion += imagenAncho + padding;
 					imagenRedimensionada.Dispose();
 
-					if ((i + 1) % actualColumns == 0)
+					if ((i + 1) % actualesColumnas == 0)
 					{
 						xPosicion = gridArranqueX + padding;
 						yPosicion += imagenAltura + padding;
@@ -281,57 +308,60 @@ namespace Herramientas.Ficheros
 			}
 		}
 
-		private static void ProcesarEncabezadoVertical(ref Image<Rgba32> imagenCombinada, Image encabezadoImagen, int totalWidth, int padding, int alturaMaxima, int separadorAltura)
+		private static void ProcesarEncabezadoVertical(ref Image<Rgba32> imagenCombinada, Image encabezadoImagen, int totalAncho, int padding, int alturaMaxima, int separadorAltura, ImagenModo modoImagen)
 		{
-			int headerMaxWidth = totalWidth - (padding * 2);
-			double aspectRatio = (double)encabezadoImagen.Width / encabezadoImagen.Height;
+			int encabezadoMaximoAncho = totalAncho - (padding * 2);
+			double ratio = (double)encabezadoImagen.Width / encabezadoImagen.Height;
 
-			int newHeaderWidth = headerMaxWidth;
-			int newHeaderHeight = (int)(headerMaxWidth / aspectRatio);
+			int nuevoEncabezadoAncho = encabezadoMaximoAncho;
+			int nuevoEncabezadoAltura = (int)(encabezadoMaximoAncho / ratio);
 
-			if (newHeaderHeight > alturaMaxima)
+			if (nuevoEncabezadoAltura > alturaMaxima)
 			{
-				newHeaderHeight = alturaMaxima;
-				newHeaderWidth = (int)(alturaMaxima * aspectRatio);
+				nuevoEncabezadoAltura = alturaMaxima;
+				nuevoEncabezadoAncho = (int)(alturaMaxima * ratio);
 			}
 
-			var resizedHeader = encabezadoImagen.Clone(x => x.Resize(newHeaderWidth, newHeaderHeight));
-			int offsetX = (totalWidth - newHeaderWidth) / 2;
+			var encabezadoRedimensionado = encabezadoImagen.Clone(x => x.Resize(nuevoEncabezadoAncho, nuevoEncabezadoAltura));
+			int offsetX = (totalAncho - nuevoEncabezadoAncho) / 2;
 			int offsetY = padding;
 
-			imagenCombinada.Mutate(ctx => ctx.DrawImage(resizedHeader, new SixLabors.ImageSharp.Point(offsetX, offsetY), 1));
+			imagenCombinada.Mutate(ctx => ctx.DrawImage(encabezadoRedimensionado, new SixLabors.ImageSharp.Point(offsetX, offsetY), 1));
 
-			int separatorY = offsetY + newHeaderHeight + padding;
-			int separatorMargin = 40;
-			for (int x = separatorMargin; x < totalWidth - separatorMargin; x++)
+			if (modoImagen == ImagenModo.Juego)
 			{
-				imagenCombinada[x, separatorY] = new Rgba32(100, 100, 100, 255);
+				int separadorY = offsetY + nuevoEncabezadoAltura + padding;
+				int separadorMargin = 30;
+				for (int x = separadorMargin; x < totalAncho - separadorMargin; x++)
+				{
+					imagenCombinada[x, separadorY] = new Rgba32(100, 100, 100, 255);
+				}
 			}
 
-			resizedHeader.Dispose();
+			encabezadoRedimensionado.Dispose();
 		}
 
-		private static void ProcesarEncabezadoHorizontal(ref Image<Rgba32> imagenCombinada, Image encabezadoImagen, int gridHeight, int padding, int anchoMaximo, int separadorAncho)
+		private static void ProcesarEncabezadoHorizontal(ref Image<Rgba32> imagenCombinada, Image encabezadoImagen, int gridAltura, int padding, int anchoMaximo, int separadorAncho)
 		{
-			int headerMaxHeight = gridHeight - (padding * 2);
-			double aspectRatio = (double)encabezadoImagen.Width / encabezadoImagen.Height;
+			int encabezadoMaximaAltura = gridAltura - (padding * 2);
+			double ratio = (double)encabezadoImagen.Width / encabezadoImagen.Height;
 
-			int newHeaderWidth = (int)(headerMaxHeight * aspectRatio);
-			int newHeaderHeight = headerMaxHeight;
+			int nuevoEncabezadoAncho = (int)(encabezadoMaximaAltura * ratio);
+			int nuevoEncabezadoAltura = encabezadoMaximaAltura;
 
-			if (newHeaderWidth > anchoMaximo)
+			if (nuevoEncabezadoAncho > anchoMaximo)
 			{
-				newHeaderWidth = anchoMaximo;
-				newHeaderHeight = (int)(anchoMaximo / aspectRatio);
+				nuevoEncabezadoAncho = anchoMaximo;
+				nuevoEncabezadoAltura = (int)(anchoMaximo / ratio);
 			}
 
-			var resizedHeader = encabezadoImagen.Clone(x => x.Resize(newHeaderWidth, newHeaderHeight));
+			var encabezadoRedimensionado = encabezadoImagen.Clone(x => x.Resize(nuevoEncabezadoAncho, nuevoEncabezadoAltura));
 			int offsetX = padding;
-			int offsetY = (gridHeight - newHeaderHeight) / 2;
+			int offsetY = (gridAltura - nuevoEncabezadoAltura) / 2;
 
-			imagenCombinada.Mutate(ctx => ctx.DrawImage(resizedHeader, new SixLabors.ImageSharp.Point(offsetX, offsetY), 1));
+			imagenCombinada.Mutate(ctx => ctx.DrawImage(encabezadoRedimensionado, new SixLabors.ImageSharp.Point(offsetX, offsetY), 1));
 
-			resizedHeader.Dispose();
+			encabezadoRedimensionado.Dispose();
 		}
 	}
 

@@ -1,4 +1,6 @@
-﻿<div style="display: flex; align-items: center; justify-content: center; text-align: center; gap: 15px; flex-wrap: wrap;">
+﻿@inject IConfiguration Configuracion
+
+<div style="display: flex; align-items: center; justify-content: center; text-align: center; gap: 15px; flex-wrap: wrap;">
     <div>
         <a href="@discord" target="_blank" title="Discord">
             <div style="max-width: 24px; max-height: 24px;">
@@ -67,13 +69,12 @@
 
     protected override void OnInitialized()
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        discord = builder.Configuration.GetValue<string>("RedesSociales:Discord");
-        telegram = builder.Configuration.GetValue<string>("RedesSociales:Telegram");
-        twitter = builder.Configuration.GetValue<string>("RedesSociales:Twitter");
-        steam = builder.Configuration.GetValue<string>("RedesSociales:Steam");
+        discord = Configuracion.GetValue<string>("RedesSociales:Discord");
+        telegram = Configuracion.GetValue<string>("RedesSociales:Telegram");
+        twitter = Configuracion.GetValue<string>("RedesSociales:Twitter");
+        steam = Configuracion.GetValue<string>("RedesSociales:Steam");
         rss = "/rss";
-        bluesky = builder.Configuration.GetValue<string>("RedesSociales:Bluesky");
-        reddit = builder.Configuration.GetValue<string>("RedesSociales:Reddit");
+        bluesky = Configuracion.GetValue<string>("RedesSociales:Bluesky");
+        reddit = Configuracion.GetValue<string>("RedesSociales:Reddit");
     }
 }

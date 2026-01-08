@@ -70,8 +70,8 @@ JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = 0 AND
 CONVERT(datetime2, JSON_VALUE(precioMinimosHistoricos, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
 bundles IS NULL AND 
-gratis IS NULL AND 
-(suscripciones IS NULL OR (suscripciones IS NOT NULL AND NOT suscripciones LIKE '%,""DRM"":0,%')) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
+NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = seccionMinimos.idMaestra AND gratis.DRM = 0) AND 
+NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = seccionMinimos.idMaestra AND suscripciones.DRM = 0) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
 ORDER BY NEWID()";
 

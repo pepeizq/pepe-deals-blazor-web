@@ -3023,7 +3023,7 @@
 {
     <div class="opciones-panel">
         <div class="caja-juego-contenido" style="max-width: 900px; overflow-y: scroll;">
-            <div class="caja-juego-titulo" style="display: flex; align-items: center; flex-direction: row; gap: 30px;">
+            <div class="caja-juego-titulo" style="display: flex; align-items: center; flex-direction: row; gap: 30px; background: color-mix(in srgb, var(--fondoSubsubcabecera) 65%, var(--fondoBotonPequeño));">
                 <button @onclick="@(e => DeckCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
                     <div style="width: 24px;">
                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -3271,7 +3271,7 @@
 {
     <div class="opciones-panel">
         <div class="caja-juego-contenido" style="width: 600px;">
-            <div class="caja-juego-titulo" style="display: flex; align-items: center; gap: 30px;">
+            <div class="caja-juego-titulo" style="display: flex; align-items: center; gap: 30px; background: color-mix(in srgb, var(--fondoSubsubcabecera) 65%, var(--fondoBotonPequeño));">
                 <button @onclick="@(e => IdiomasCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
                     <div style="width: 24px; height: 24px;">
                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -3285,7 +3285,7 @@
                 </div>
             </div>
 
-            <div style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
+            <div style="padding: 30px; display: flex; flex-direction: column; gap: 30px;">
                 @if (juego.Idiomas?.Count > 0)
                 {
                     bool enseñarAudio = juego.Idiomas.Any(idioma => idioma.DRM == idiomaDrmSeleccionado && idioma.Audio == true);
@@ -3293,8 +3293,8 @@
 
                     if (enseñarAudio == true)
                     {
-                        <div>
-                            <div class="caja-juego-titulo" style="padding: 5px 10px; display: flex; align-items: center; gap: 15px;">
+                        <div style="border: 1px solid var(--fondoBotonPequeño);">
+                            <div class="caja-juego-titulo" style="padding: 10px 15px; display: flex; align-items: center; gap: 15px; background: color-mix(in srgb, var(--fondoSubsubcabecera) 65%, var(--fondoBotonPequeño));">
                                 <div style="width: 16px; height: 16px;">
                                     <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                         <path d="M533.6 96.5C523.3 88.1 508.2 89.7 499.8 100C491.4 110.3 493 125.4 503.3 133.8C557.5 177.8 592 244.8 592 320C592 395.2 557.5 462.2 503.3 506.3C493 514.7 491.5 529.8 499.8 540.1C508.1 550.4 523.3 551.9 533.6 543.6C598.5 490.7 640 410.2 640 320C640 229.8 598.5 149.2 533.6 96.5zM473.1 171C462.8 162.6 447.7 164.2 439.3 174.5C430.9 184.8 432.5 199.9 442.8 208.3C475.3 234.7 496 274.9 496 320C496 365.1 475.3 405.3 442.8 431.8C432.5 440.2 431 455.3 439.3 465.6C447.6 475.9 462.8 477.4 473.1 469.1C516.3 433.9 544 380.2 544 320.1C544 260 516.3 206.3 473.1 171.1zM412.6 245.5C402.3 237.1 387.2 238.7 378.8 249C370.4 259.3 372 274.4 382.3 282.8C393.1 291.6 400 305 400 320C400 335 393.1 348.4 382.3 357.3C372 365.7 370.5 380.8 378.8 391.1C387.1 401.4 402.3 402.9 412.6 394.6C434.1 376.9 448 350.1 448 320C448 289.9 434.1 263.1 412.6 245.5zM80 416L128 416L262.1 535.2C268.5 540.9 276.7 544 285.2 544C304.4 544 320 528.4 320 509.2L320 130.8C320 111.6 304.4 96 285.2 96C276.7 96 268.5 99.1 262.1 104.8L128 224L80 224C53.5 224 32 245.5 32 272L32 368C32 394.5 53.5 416 80 416z"/>
@@ -3306,7 +3306,7 @@
                                 </div>
                             </div>
 
-                            <div style="padding: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div style="padding: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                                 @foreach (var idioma in juego.Idiomas)
                                 {
                                     if (idioma.DRM == idiomaDrmSeleccionado && idioma.Audio == true)
@@ -3329,8 +3329,8 @@
 
                     if (enseñarTexto == true)
                     {
-                        <div>
-                            <div class="caja-juego-titulo" style="padding: 5px 10px; display: flex; align-items: center; gap: 15px;">
+                        <div style="border: 1px solid var(--fondoBotonPequeño);">
+                            <div class="caja-juego-titulo" style="padding: 10px 15px; display: flex; align-items: center; gap: 15px; background: color-mix(in srgb, var(--fondoSubsubcabecera) 65%, var(--fondoBotonPequeño));">
                                 <div style="width: 16px; height: 16px;">
                                     <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                         <path d="M349.1 114.7C343.9 103.3 332.5 96 320 96C307.5 96 296.1 103.3 290.9 114.7L123.5 480L112 480C94.3 480 80 494.3 80 512C80 529.7 94.3 544 112 544L200 544C217.7 544 232 529.7 232 512C232 494.3 217.7 480 200 480L193.9 480L215.9 432L424.2 432L446.2 480L440.1 480C422.4 480 408.1 494.3 408.1 512C408.1 529.7 422.4 544 440.1 544L528.1 544C545.8 544 560.1 529.7 560.1 512C560.1 494.3 545.8 480 528.1 480L516.6 480L349.2 114.7zM394.8 368L245.2 368L320 204.8L394.8 368z"/>
@@ -3342,7 +3342,7 @@
                                 </div>
                             </div>
 
-                            <div style="padding: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <div style="padding: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
                                 @foreach (var idioma in juego.Idiomas)
                                 {
                                     if (idioma.DRM == idiomaDrmSeleccionado && idioma.Texto == true)
@@ -4991,7 +4991,7 @@
 
     private bool enseñarDeck = false;
 
-    private async void DeckEnseñar(MouseEventArgs e)
+    private async Task DeckEnseñar(MouseEventArgs e)
     {
         if (enseñarDeck == false)
         {

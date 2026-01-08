@@ -7,13 +7,12 @@ namespace Herramientas.RedesSociales
 {
 	public static class Reddit
 	{
-		public static async Task<bool> Postear(Noticias.Noticia noticia, string dominio)
+		public static async Task<bool> Postear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string cuenta = builder.Configuration.GetValue<string>("Reddit:Cuenta");
-			string contraseña = builder.Configuration.GetValue<string>("Reddit:Contraseña");
-			string clientId = builder.Configuration.GetValue<string>("Reddit:ClientID");
-			string clientSecret = builder.Configuration.GetValue<string>("Reddit:ClientSecret");
+			string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
+			string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
+			string clientId = configuracion.GetValue<string>("Reddit:ClientID");
+			string clientSecret = configuracion.GetValue<string>("Reddit:ClientSecret");
 
             var webAgent = new Reddit2.BotWebAgent(cuenta, contraseña, clientId, clientSecret, "https://" + dominio + "/");          
             var reddit = new RedditSharp.Reddit(webAgent, false);
@@ -280,13 +279,12 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static async Task PostearOfertasDia(List<Juego> juegos)
+        public static async Task PostearOfertasDia(IConfiguration configuracion, List<Juego> juegos)
         {
-            WebApplicationBuilder builder = WebApplication.CreateBuilder();
-            string cuenta = builder.Configuration.GetValue<string>("Reddit:Cuenta");
-            string contraseña = builder.Configuration.GetValue<string>("Reddit:Contraseña");
-            string clientId = builder.Configuration.GetValue<string>("Reddit:ClientID");
-            string clientSecret = builder.Configuration.GetValue<string>("Reddit:ClientSecret");
+            string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
+            string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
+            string clientId = configuracion.GetValue<string>("Reddit:ClientID");
+            string clientSecret = configuracion.GetValue<string>("Reddit:ClientSecret");
 
             var webAgent = new Reddit2.BotWebAgent(cuenta, contraseña, clientId, clientSecret, "https://pepeizqdeals.com/");
             var reddit = new RedditSharp.Reddit(webAgent, false);

@@ -362,7 +362,7 @@
 	</div>
 }
 
-<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera));">
+<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera)); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);">
 	<div class="cuerpo-ancho portada-sub-subcabecera" style="font-size: 18px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
 		@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 		{
@@ -401,15 +401,21 @@
 </div>
 
 <div style="background-color: color-mix(in srgb, var(--fondoOscuro) 15%, var(--fondoPortadaNoticias) 100%);">
-    <div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; flex-direction: column; gap: 40px;">
+    <div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; flex-direction: column; gap: 30px;">
 		@{
 			string marginAbajo = string.Empty;
+			string paddingBottom = string.Empty;
 
 			if (noticias?.Count > 0)
 			{
 				marginAbajo = "margin-bottom: 20px;";
 
-				<div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
+				if (noticias.Count > 3)
+				{
+					paddingBottom = "padding-bottom: 30px;";					
+				}
+
+				<div style="margin-top: 20px; display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); @paddingBottom" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
 					@foreach (var noticia in noticias)
 					{
 						<CajaNoticia idioma="@idioma" noticia="@noticia" tipo="@CajaNoticia.Tipo.Portada" />
@@ -428,7 +434,7 @@
 
 @if (juegosMinimosMostrar?.Count > 0)
 {
-	<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera));">
+	<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera)); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);">
 		<div class="cuerpo-ancho portada-sub-subcabecera" style="font-size: 18px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
 			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 			{
@@ -600,7 +606,7 @@
 {
 	<div class="opciones-panel">
 		<div style="max-width: 800px; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 				<button class="boton-pequeño" @onclick="OcultarFiltrado" style="width: fit-content; padding: 10px 15px;">
 					<div style="max-width: 24px; max-height: 24px;">
 						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -1130,14 +1136,7 @@
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
 			{
-				if (fusionar == false)
-				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Proximamente(posicionJuegosMinimos, categoriasNumeros, drmsNumeros);
-				}
-				else
-				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Proximamente(posicionJuegosMinimos, categoriasNumeros, drmsNumeros));
-				}
+				juegosMinimosGestor = await BaseDatos.Portada.Buscar.Proximamente(50, categoriasNumeros, drmsNumeros);
 			}
 		}
 		catch (Exception ex)

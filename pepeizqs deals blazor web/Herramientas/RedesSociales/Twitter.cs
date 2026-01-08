@@ -10,14 +10,14 @@ namespace Herramientas.RedesSociales
 {
 	public static class Twitter
 	{
-		public static async Task<bool> Twitear(Noticias.Noticia noticia, string dominio)
+		public static async Task<bool> Twitear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
 			WebApplicationBuilder builder = WebApplication.CreateBuilder();
 
-			TwitterClient cliente = new TwitterClient(builder.Configuration.GetValue<string>("Twitter:ConsumerKey"),
-				builder.Configuration.GetValue<string>("Twitter:ConsumerSecret"),
-				builder.Configuration.GetValue<string>("Twitter:AccessToken"),
-				builder.Configuration.GetValue<string>("Twitter:AccessSecret"));
+			TwitterClient cliente = new TwitterClient(configuracion.GetValue<string>("Twitter:ConsumerKey"),
+				configuracion.GetValue<string>("Twitter:ConsumerSecret"),
+				configuracion.GetValue<string>("Twitter:AccessToken"),
+				configuracion.GetValue<string>("Twitter:AccessSecret"));
 			
 			string enlace = string.Empty;
 

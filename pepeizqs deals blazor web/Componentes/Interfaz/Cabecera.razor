@@ -13,6 +13,7 @@
 
 @inject NavigationManager NavManager
 @inject IJSRuntime JavaScript
+@inject IConfiguration Configuracion
 
 <script>
     window.clipboardCopy = {
@@ -575,8 +576,7 @@
             }
         }
 
-        WebApplicationBuilder builder = WebApplication.CreateBuilder();
-        enlacePatreon = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
+        enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
     }
 
     protected override void OnParametersSet()

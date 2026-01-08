@@ -4,17 +4,15 @@ namespace Herramientas.Correos
 {
 	public static class Enviar
 	{
-		public static async Task<bool> Ejecutar(string html, string titulo, string correoDesde, string correoHacia)
+		public static async Task<bool> Ejecutar(IConfiguration configuracion, string html, string titulo, string correoDesde, string correoHacia)
 		{
 			if (string.IsNullOrEmpty(html) == false &&
 				string.IsNullOrEmpty(titulo) == false &&
 				string.IsNullOrEmpty(correoDesde) == false &&
 				string.IsNullOrEmpty(correoHacia) == false)
 			{
-				WebApplicationBuilder builder = WebApplication.CreateBuilder();
-
-				string host = builder.Configuration.GetValue<string>("WebmasterDeals:CorreoBot");
-				string contraseña = builder.Configuration.GetValue<string>("WebmasterDeals:CorreoBotContraseña");
+				string host = configuracion.GetValue<string>("WebmasterDeals:CorreoBot");
+				string contraseña = configuracion.GetValue<string>("WebmasterDeals:CorreoBotContraseña");
 
 				System.Net.Mail.MailMessage mensaje = new System.Net.Mail.MailMessage();
 				mensaje.From = new System.Net.Mail.MailAddress(correoDesde, "pepe's deals");

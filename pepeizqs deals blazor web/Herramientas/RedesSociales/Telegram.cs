@@ -8,11 +8,10 @@ namespace Herramientas.RedesSociales
 {
 	public static class Telegram
 	{
-		public static async Task<bool> Postear(Noticias.Noticia noticia, string dominio)
+		public static async Task<bool> Postear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string token = builder.Configuration.GetValue<string>("Telegram:Token");
-			string chatId = builder.Configuration.GetValue<string>("Telegram:ChatID");
+			string token = configuracion.GetValue<string>("Telegram:Token");
+			string chatId = configuracion.GetValue<string>("Telegram:ChatID");
 
 			if (string.IsNullOrEmpty(token) == false)
 			{

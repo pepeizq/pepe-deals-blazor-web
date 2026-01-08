@@ -7,12 +7,10 @@ namespace Herramientas.RedesSociales
 {
 	public static class Bluesky
 	{
-		public static async Task<bool> Postear(Noticias.Noticia noticia, string dominio)
+		public static async Task<bool> Postear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-
-			string correo = builder.Configuration.GetValue<string>("Bluesky:Correo");
-			string contraseña = builder.Configuration.GetValue<string>("Bluesky:Contraseña");
+			string correo = configuracion.GetValue<string>("Bluesky:Correo");
+			string contraseña = configuracion.GetValue<string>("Bluesky:Contraseña");
 
 			if (string.IsNullOrEmpty(correo) == false && string.IsNullOrEmpty(contraseña) == false)
 			{

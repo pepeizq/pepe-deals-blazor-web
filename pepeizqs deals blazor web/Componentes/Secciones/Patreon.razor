@@ -6,6 +6,7 @@
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
+@inject IConfiguration Configuracion
 
 <Titulo tipo="@Titulo.Tipo.Patreon" idioma="@idioma" dominio="@dominio"/>
 
@@ -43,8 +44,7 @@
 <div class="cuerpo-ancho">
 	<div style="position: sticky; top: var(--alturaCabecera); z-index: 1000; background-color: var(--fondoBotonPequeño); padding: 20px 45px; width: fit-content;">
 		@{
-			WebApplicationBuilder builder = WebApplication.CreateBuilder();
-			string? patreonEnlace = builder.Configuration.GetValue<string>("RedesSociales:Patreon");
+			string? patreonEnlace = Configuracion.GetValue<string>("RedesSociales:Patreon");
 		}
 
 		<a href="@patreonEnlace" target="_blank">@patreonEnlace</a>

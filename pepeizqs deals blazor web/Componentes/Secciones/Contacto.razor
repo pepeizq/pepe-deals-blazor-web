@@ -4,6 +4,7 @@
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 
 @inject IHttpContextAccessor Contexto
+@inject IConfiguration Configuracion
 
 <Titulo tipo="@Titulo.Tipo.Contacto" idioma="@idioma" dominio="@dominio"/>
 
@@ -153,7 +154,7 @@
 
 	private async Task EnviarmeCorreo()
 	{
-		formularioEnviado = await Herramientas.Correos.Enviar.Ejecutar(formularioContenido, formularioTitulo, formularioCorreo, "admin@pepe.deals");
+		formularioEnviado = await Herramientas.Correos.Enviar.Ejecutar(Configuracion, formularioContenido, formularioTitulo, formularioCorreo, "admin@pepe.deals");
 
 		if (formularioEnviado == true)
 		{

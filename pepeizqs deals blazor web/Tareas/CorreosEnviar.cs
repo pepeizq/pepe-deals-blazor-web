@@ -11,12 +11,14 @@ namespace Tareas
 		private readonly ILogger<CorreosEnviar> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
+		private readonly IConfiguration _configuracion;
 
-		public CorreosEnviar(ILogger<CorreosEnviar> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public CorreosEnviar(ILogger<CorreosEnviar> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;
 			_decompilador = decompilador;
+			_configuracion = configuracion;
 		}
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
@@ -25,8 +27,7 @@ namespace Tareas
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{
-				WebApplicationBuilder builder = WebApplication.CreateBuilder();
-				string piscinaApp = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+				string piscinaApp = _configuracion.GetValue<string>("PoolWeb:Contenido");
 				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
 				if (piscinaApp == piscinaUsada)
@@ -130,7 +131,7 @@ namespace Tareas
 									}
 									else
 									{
-										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(_configuracion, pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{
@@ -167,7 +168,7 @@ namespace Tareas
 								{
 									if (pendiente.Fecha.AddMinutes(15) < DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimo || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.Minimos))
 									{
-										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(_configuracion, pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{
@@ -206,7 +207,7 @@ namespace Tareas
 								{
 									if (pendiente.Fecha.AddMinutes(5) < DateTime.Now && (pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadoBundle || pendiente.Tipo == BaseDatos.CorreosEnviar.CorreoPendienteTipo.DeseadosBundle))
 									{
-										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
+										bool enviado = await Herramientas.Correos.Enviar.Ejecutar(_configuracion, pendiente.Html, pendiente.Titulo, pendiente.CorreoDesde, pendiente.CorreoHacia);
 
 										if (enviado == true)
 										{

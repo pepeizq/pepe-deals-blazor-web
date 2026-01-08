@@ -9,6 +9,13 @@ namespace Herramientas.Redireccionador
 
 	public class MotoresBusqueda : Controller
 	{
+		private readonly IConfiguration _configuracion;
+
+		public MotoresBusqueda(IConfiguration configuracion)
+		{
+			_configuracion = configuracion;
+		}
+
 		[HttpGet("BingSiteAuth.xml")]
 		public IActionResult BingVerificacion()
 		{
@@ -16,8 +23,7 @@ namespace Herramientas.Redireccionador
 
 			if (dominio == "pepe.deals")
 			{
-				WebApplicationBuilder builder = WebApplication.CreateBuilder();
-				string clave = builder.Configuration.GetValue<string>("WebmasterDeals:BingWebmasterTools");
+				string clave = _configuracion.GetValue<string>("WebmasterDeals:BingWebmasterTools");
 
 				XmlWriterSettings opciones = new XmlWriterSettings
 				{

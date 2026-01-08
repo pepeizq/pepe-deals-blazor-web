@@ -9,12 +9,14 @@ namespace Tareas
         private readonly ILogger<Pings> _logger;
         private readonly IServiceScopeFactory _factoria;
         private readonly IDecompiladores _decompilador;
+		private readonly IConfiguration _configuracion;
 
-        public Pings(ILogger<Pings> logger, IServiceScopeFactory factory, IDecompiladores decompilador)
+		public Pings(ILogger<Pings> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
         {
             _logger = logger;
             _factoria = factory;
             _decompilador = decompilador;
+            _configuracion = configuracion;
         }
 
         protected override async Task ExecuteAsync(CancellationToken tokenParar)
@@ -23,8 +25,7 @@ namespace Tareas
 
             while (await timer.WaitForNextTickAsync(tokenParar))
             {
-                WebApplicationBuilder builder = WebApplication.CreateBuilder();
-                string piscinaApp = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+                string piscinaApp = _configuracion.GetValue<string>("PoolWeb:Contenido");
                 string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
                 if (piscinaApp == piscinaUsada)
