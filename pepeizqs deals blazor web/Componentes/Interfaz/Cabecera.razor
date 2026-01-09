@@ -42,6 +42,16 @@
     };
 </script>
 
+<script>
+    window.toggleBodyScroll = (disable) => {
+        if (disable) {
+            document.body.classList.add('no-scroll');
+        } else {
+            document.body.classList.remove('no-scroll');
+        }
+    }
+</script>
+
 @if (enseñarAlerta == true)
 {
     <div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
@@ -437,7 +447,7 @@
 
                 @if (resultadosMostrar?.Count > 0)
                 {
-                    <div style="height: calc(100% - var(--alturaCabecera)); width: 100%; top: 0; left: 0; overflow-x: auto; position: fixed; z-index: 1000; margin-top: var(--alturaCabecera); display: flex; align-items: start; flex-direction: column; background: color-mix(in srgb, var(--fondoCuerpo) 95%, transparent);">
+                    <div style="height: calc(100% - var(--alturaCabecera)); width: 100%; top: 0; left: 0; overflow-x: auto; position: fixed; z-index: 1000; margin-top: var(--alturaCabecera); display: flex; align-items: start; flex-direction: column; background: color-mix(in srgb, var(--fondoCuerpo) 95%, transparent); scrollbar-color: var(--fondoCodigo) var(--fondoOscuro);">
                         <div style="margin-left: auto; margin-right: auto; margin-bottom: 30px; max-width: var(--anchoCuerpo); width: 100%;">
                             @foreach (var juego in resultadosMostrar)
                             {
@@ -651,14 +661,16 @@
 
         bool usuarioLogeado = string.IsNullOrEmpty(usuarioId) == false;
         resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(texto, 20);
+        await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
         await InvokeAsync(StateHasChanged);
     }
 
-    private void LimpiarBusqueda(MouseEventArgs e)
+    private async Task LimpiarBusqueda(MouseEventArgs e)
     {
         textoBuscador = string.Empty;
         resultadosMostrar?.Clear();
         fondoBuscador = "background-color: var(--fondoEntrada); border-bottom: 1px solid transparent;";
+        await JavaScript.InvokeVoidAsync("toggleBodyScroll", false);
     }
 
     #endregion

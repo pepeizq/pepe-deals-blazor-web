@@ -192,8 +192,18 @@ namespace Herramientas.Bundles
 								}
 							}
 
-							texto = texto + "Game | DRM | Historical Price | Reviews | DLCs" + Environment.NewLine;
-							texto = texto + "---- | ---- | ------------- | ----- | -----" + Environment.NewLine;
+							bool hayDLCsEnTier = juegosTier.Any(j => j.DLCs != null && j.DLCs.Count > 0);
+
+							if (hayDLCsEnTier == true)
+							{
+								texto += "Game | DRM | Historical Price | Reviews | DLCs" + Environment.NewLine;
+								texto += "---- | ---- | ------------- | ----- | -----" + Environment.NewLine;
+							}
+							else
+							{
+								texto += "Game | DRM | Historical Price | Reviews" + Environment.NewLine;
+								texto += "---- | ---- | ------------- | -----" + Environment.NewLine;
+							}
 
 							foreach (var juego in juegosTier)
 							{
@@ -321,7 +331,21 @@ namespace Herramientas.Bundles
 										}
 									}
 
-									texto = texto + nombre + " | " + Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + " | " + precioMinimo + " | " + reseñas + " | " + dlcs + Environment.NewLine;
+									if (hayDLCsEnTier == true)
+									{
+										texto += nombre + " | "
+											+ Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + " | "
+											+ precioMinimo + " | "
+											+ reseñas + " | "
+											+ dlcs + Environment.NewLine;
+									}
+									else
+									{
+										texto += nombre + " | "
+											+ Juegos.JuegoDRM2.DevolverDRM(juego.DRM) + " | "
+											+ precioMinimo + " | "
+											+ reseñas + Environment.NewLine;
+									}
 								}
 							}
 

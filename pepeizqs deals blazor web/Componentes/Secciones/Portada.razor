@@ -65,20 +65,38 @@
 		padding: 20px 0px;
 	}
 
-	.destacado-fondo {
-		display: block;
+	.destacado-mostrar {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 96/31; 
+		overflow: hidden; 
 	}
 
-	.destacado-video {
-		display: none;
+	.destacado-fondo img {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: 0; 
 	}
 
-	.destacado-mostrar:hover .destacado-fondo {
-		display: none;
+	.destacado-video video {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		opacity: 0;
+		transition: opacity 0.1s ease;
+		z-index: 1; 
+		pointer-events: none;
 	}
 
-	.destacado-mostrar:hover .destacado-video {
-		display: block;
+	.destacado-mostrar:hover .destacado-video video {
+		opacity: 1;
 	}
 
 	.destacados-galeria-cursor {
@@ -87,11 +105,9 @@
 
 	.destacados-galeria-fila {
 		display: flex;
-		overflow: auto;
 		padding: 5px 0px;
 		gap: 10px;
-		flex-wrap: wrap;
-		justify-content: center;
+		flex-wrap: nowrap;
 		margin-top: 5px;
 	}
 
@@ -124,7 +140,16 @@
 	}
 
 	.destacado-hueco {
-		padding: 80px 60px 30px 60px;
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: flex-end;
+		padding: 0px 80px 30px 80px;
+		z-index: 2; 
 	}
 
 	.destacado-logo-medidas {
@@ -234,7 +259,7 @@
 							</div>
 
 							<div class="destacado-video">
-								<video onloadedmetadata="this.muted=true" playsinline autoplay loop muted style="height: 100%; width: 100%; overflow: hidden; aspect-ratio: 3.145/1; object-fit: cover;">
+								<video onloadedmetadata="this.muted=true" playsinline autoplay loop muted>
 									<source src="@videoDestacado" type="video/mp4" />
 									<source src="@videoDestacado.Replace(".mp4", ".webm")" type="video/webm" />
 								</video>
@@ -245,8 +270,7 @@
 							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Imagenes.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Nombre">
 						}
 
-						<div style="position: absolute; left: 0; bottom: 0; background-image: linear-gradient(to bottom, rgba(255,0,0,0), @juegosDestacadosMostrar[posicionMostrarDestacados].Color);
-									display: flex; align-items: end; justify-content: space-between; width: 100%;" class="destacado-hueco">
+						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @juegosDestacadosMostrar[posicionMostrarDestacados].Color);" class="destacado-hueco">
 
 							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Imagenes.Logo)" class="destacado-logo-medidas" alt="@juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Nombre">
 

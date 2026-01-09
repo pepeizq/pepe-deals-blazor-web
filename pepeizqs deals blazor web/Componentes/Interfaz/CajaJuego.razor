@@ -601,7 +601,7 @@
 					}
 
 					<div style="text-align: center;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%; height: 100%;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%;" alt="@juego.Nombre" />
 					</div>
 
 					<div style="display: flex; align-items: center; flex-wrap: wrap;">
@@ -745,17 +745,15 @@
 
 		@if (tipo == Tipo.Gratis)
 		{
+			Gratis2.Gratis gratis = Gratis2.GratisCargar.DevolverGratis(tipoGratis);
+
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceGratis" target="@enlaceNuevaPestaña">
 				<div style="width: 100%; text-align: center;">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 100%; height: 100%;" alt="@juego.Nombre" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 100%;" alt="@juego.Nombre" />
 
 					<div style="margin: 10px 0px; text-align: center; padding: 5px;">
-						@{
-							Gratis2.Gratis gratis = Gratis2.GratisCargar.DevolverGratis(tipoGratis);
-						}
-
 						<div style="display: flex; align-items: center; justify-content: center; gap: 20px; height: 40px;">
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(gratis.ImagenLogo)" style="max-width: 140px; max-width: 140px;" alt="Store" />
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(gratis.ImagenLogo)" style="max-width: 140px; max-width: 140px;" alt="@gratis.Nombre" />
 
 							@if (gratis.DRMEnseñar == true)
 							{
