@@ -468,6 +468,113 @@ namespace APIs.Steam
 			}
 		}
 
+		public static async Task BuscarOfertas2()
+		{
+			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+
+			int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional");
+			int tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional2");
+
+			int juegos2 = 0;
+			bool rapido = false;
+
+			if (DateTime.Now.Hour == 19 && DateTime.Now.Minute >= 0 && DateTime.Now.Minute < 10)
+			{
+				arranque = 0;
+				rapido = true;
+			}
+			else if (DateTime.Now.Hour == 20)
+			{
+				rapido = true;
+			}
+
+			if (arranque >= tope - 50)
+			{
+				arranque = 0;
+			}
+
+			while (arranque < tope)
+			{
+				string html = await Decompiladores.Estandar("https://api.steampowered.com/IStoreQueryService/Query/v1/?input_json={%22query%22:{%22start%22:" + arranque + ",%22count%22:1000,%22filters%22:{%22released_only%22:true,%22type_filters%22:{%22include_apps%22:true,%22include_packages%22:true,%22include_bundles%22:true,%22include_games%22:true,%22include_dlc%22:true,%22include_software%22:true,%22include_music%22:true},%22price_filters%22:[{%22min_discount_percent%22:%221%22}]}},%22context%22:{%22language%22:%22english%22,%22country_code%22:%22ES%22,%22steam_realm%22:%221%22},%22data_request%22:{%22include_all_purchase_options%22:true,%22include_reviews%22:true}}");
+
+				if (string.IsNullOrEmpty(html) == false)
+				{
+					var resultado = JsonSerializer.Deserialize<SteamStoreQueryRoot>(html);
+					var juegos = resultado?.Respuesta?.TiendaResultados;
+
+					tope = (int)resultado?.Respuesta?.Metadata?.CantidadTotal;
+
+					await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional2", tope);
+
+					if (juegos?.Count > 0)
+					{
+						foreach (var juego in juegos)
+						{
+							if (juego.OpcionCompraMejor != null)
+							{
+								SteamPurchaseOption opcionCompra = juego.OpcionCompraMejor;
+
+								if (opcionCompra.Descuento != null)
+								{
+									if (opcionCompra.Descuento > 0 && opcionCompra.PackageId > 0 && juego.Reseñas.SumarioFiltrado.ReseñasCantidad > 9)
+									{
+										string precioString = opcionCompra.PrecioFormateado;
+										precioString = precioString.Replace(",", ".");
+										precioString = precioString.Replace("€", null);
+
+										decimal precio = decimal.Parse(precioString);
+
+										JuegoAnalisis reseñas = new JuegoAnalisis
+										{
+											Cantidad = juego.Reseñas.SumarioFiltrado.ReseñasCantidad.ToString(),
+											Porcentaje = juego.Reseñas.SumarioFiltrado.ReseñasPorcentaje.ToString()
+										};
+
+										JuegoPrecio oferta = new JuegoPrecio
+										{
+											Nombre = juego.Nombre,
+											Tienda = Generar().Id,
+											DRM = JuegoDRM.Steam,
+											Descuento = (int)opcionCompra.Descuento,
+											Precio = precio,
+											Moneda = JuegoMoneda.Euro,
+											Enlace = "https://store.steampowered.com/app/" + juego.AppId.ToString(),
+											FechaDetectado = DateTime.Now,
+											FechaActualizacion = DateTime.Now,
+											FechaTermina = DateTime.UnixEpoch.AddSeconds(juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate ?? 0).ToLocalTime()
+										};
+
+										try
+										{
+											BaseDatos.Tiendas.Comprobar.Steam(oferta, reseñas, rapido);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
+
+										juegos2 += 1;
+
+										try
+										{
+											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				arranque += 1000;
+				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", arranque);
+			}
+		}
+
 		public static string IdsEspeciales(string id)
 		{
 			#region Total War: SHOGUN 2 DLC es juego
@@ -508,5 +615,154 @@ namespace APIs.Steam
 
 		[JsonPropertyName("total_count")]
 		public int Total { get; set; }
+	}
+
+	//----------------------------------------------------------------------
+
+	public class SteamStoreQueryRoot
+	{
+		[JsonPropertyName("response")]
+		public SteamStoreQueryResponse Respuesta { get; set; }
+	}
+
+	public class SteamStoreQueryResponse
+	{
+		[JsonPropertyName("metadata")]
+		public SteamQueryMetadata Metadata { get; set; }
+
+		[JsonPropertyName("store_items")]
+		public List<SteamStoreItem> TiendaResultados { get; set; }
+	}
+
+	public class SteamQueryMetadata
+	{
+		[JsonPropertyName("total_matching_records")]
+		public int CantidadTotal { get; set; }
+	}
+
+	public class SteamStoreItem
+	{
+		[JsonPropertyName("id")]
+		public uint Id { get; set; }
+
+		[JsonPropertyName("appid")]
+		public uint? AppId { get; set; }
+
+		[JsonPropertyName("success")]
+		public int Success { get; set; }
+
+		[JsonPropertyName("visible")]
+		public bool Visible { get; set; }
+
+		[JsonPropertyName("name")]
+		public string Nombre { get; set; }
+
+		[JsonPropertyName("store_url_path")]
+		public string StoreUrlPath { get; set; }
+
+		[JsonPropertyName("type")]
+		public int Tipo { get; set; }
+
+		[JsonPropertyName("is_free")]
+		public bool? IsFree { get; set; }
+
+		[JsonPropertyName("reviews")]
+		public SteamReviews Reseñas { get; set; }
+
+		[JsonPropertyName("best_purchase_option")]
+		public SteamPurchaseOption OpcionCompraMejor { get; set; }
+
+		[JsonPropertyName("purchase_options")]
+		public List<SteamPurchaseOption> OpcionesCompra { get; set; }
+	}
+
+	public class SteamReviews
+	{
+		[JsonPropertyName("summary_filtered")]
+		public SteamReviewSummary SumarioFiltrado { get; set; }
+
+		[JsonPropertyName("summary_language_specific")]
+		public SteamReviewSummary SummaryLanguageSpecific { get; set; }
+	}
+
+	public class SteamReviewSummary
+	{
+		[JsonPropertyName("review_count")]
+		public int ReseñasCantidad { get; set; }
+
+		[JsonPropertyName("percent_positive")]
+		public int ReseñasPorcentaje { get; set; }
+
+		[JsonPropertyName("review_score")]
+		public int ReviewScore { get; set; }
+
+		[JsonPropertyName("review_score_label")]
+		public string ReviewScoreLabel { get; set; }
+	}
+
+	public class SteamPurchaseOption
+	{
+		[JsonPropertyName("packageid")]
+		public uint? PackageId { get; set; }
+
+		[JsonPropertyName("bundleid")]
+		public uint? BundleId { get; set; }
+
+		[JsonPropertyName("purchase_option_name")]
+		public string PurchaseOptionName { get; set; }
+
+		[JsonPropertyName("final_price_in_cents")]
+		public string FinalPriceInCents { get; set; }
+
+		[JsonPropertyName("original_price_in_cents")]
+		public string OriginalPriceInCents { get; set; }
+
+		[JsonPropertyName("formatted_final_price")]
+		public string PrecioFormateado { get; set; }
+
+		[JsonPropertyName("formatted_original_price")]
+		public string FormattedOriginalPrice { get; set; }
+
+		[JsonPropertyName("discount_pct")]
+		public int? Descuento { get; set; }
+
+		[JsonPropertyName("bundle_discount_pct")]
+		public int? BundleDiscountPct { get; set; }
+
+		[JsonPropertyName("included_game_count")]
+		public int IncludedGameCount { get; set; }
+
+		[JsonPropertyName("must_purchase_as_set")]
+		public bool MustPurchaseAsSet { get; set; }
+
+		[JsonPropertyName("user_can_purchase_as_gift")]
+		public bool UserCanPurchaseAsGift { get; set; }
+
+		[JsonPropertyName("active_discounts")]
+		public List<SteamDiscount> ActiveDiscounts { get; set; }
+	}
+
+	public class SteamDiscount
+	{
+		[JsonPropertyName("discount_amount")]
+		public string DiscountAmount { get; set; }
+
+		[JsonPropertyName("discount_description")]
+		public string DiscountDescription { get; set; }
+
+		[JsonPropertyName("discount_end_date")]
+		public long DiscountEndDate { get; set; }
+	}
+
+	public class SteamRelatedItems
+	{
+		[JsonPropertyName("parent_appid")]
+		public uint? ParentAppId { get; set; }
+
+		[JsonPropertyName("demo_appid")]
+		public List<uint> DemoAppId { get; set; }
+
+		[JsonPropertyName("standalone_demo_appid")]
+		public List<uint> StandaloneDemoAppId { get; set; }
 	}
 }

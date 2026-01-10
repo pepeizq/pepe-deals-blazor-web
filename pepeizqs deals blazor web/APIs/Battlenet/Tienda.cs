@@ -47,8 +47,7 @@ namespace APIs.Battlenet
 				"sea-of-thieves",
 				"the-outer-worlds-2",
 				"tony-hawks-pro-skater-3-4",
-				"warcraft-orcs-and-humans",
-				"warcraft-ii-battle-net-edition"];
+				"warcraft-orcs-and-humans"];
 
             return slugs;
         }

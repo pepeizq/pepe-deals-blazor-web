@@ -275,8 +275,15 @@ namespace BaseDatos.Juegos
                                             {
                                                 try
                                                 {
+                                                    decimal precioNotificar = minimo.Precio;
+
+                                                    if (minimo.PrecioCambiado > 0)
+                                                    {
+                                                        precioNotificar = minimo.PrecioCambiado;
+                                                    }
+
 													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre, minimo.Enlace);
+													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
 												}
                                                 catch (Exception ex)
                                                 {

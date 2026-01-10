@@ -425,21 +425,27 @@
 </div>
 
 <div style="background-color: color-mix(in srgb, var(--fondoOscuro) 15%, var(--fondoPortadaNoticias) 100%);">
-    <div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; flex-direction: column; gap: 30px;">
+    <div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; flex-direction: column;">
 		@{
+			string marginArriba = string.Empty;
 			string marginAbajo = string.Empty;
 			string paddingBottom = string.Empty;
 
 			if (noticias?.Count > 0)
 			{
+				marginArriba = "margin-top: 20px;";
 				marginAbajo = "margin-bottom: 20px;";
 
 				if (noticias.Count > 3)
 				{
 					paddingBottom = "padding-bottom: 30px;";					
 				}
+				else
+				{
+					paddingBottom = "padding-bottom: 10px;";
+				}
 
-				<div style="margin-top: 20px; display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); @paddingBottom" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
+				<div style="margin-top: 20px; display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); overflow-y: hidden; justify-content: space-around; @paddingBottom" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
 					@foreach (var noticia in noticias)
 					{
 						<CajaNoticia idioma="@idioma" noticia="@noticia" tipo="@CajaNoticia.Tipo.Portada" />
@@ -448,7 +454,7 @@
 			}
 		}
 
-		<div style="display: flex; align-items: center; gap: 40px; justify-content: center; @marginAbajo">
+		<div style="display: flex; align-items: center; gap: 40px; justify-content: center; @marginArriba @marginAbajo">
 			<a class="boton-pequeño" style="padding: 15px 30px; width: fit-content;" href="/last-news">
 				@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Index")
 			</a>

@@ -19,12 +19,12 @@ namespace Herramientas
 	public class NotificacionesPush
 	{
 		private readonly pepeizqs_deals_webContext _db;
-		private readonly IConfiguration _config;
+		private readonly IConfiguration _configuracion;
 
-		public NotificacionesPush(pepeizqs_deals_webContext db, IConfiguration config)
+		public NotificacionesPush(pepeizqs_deals_webContext db, IConfiguration configuracion)
 		{
 			_db = db;
-			_config = config;
+			_configuracion = configuracion;
 		}
 
 		public async Task<bool> EnviarNotificacion(string usuarioId, string titulo, string enlace)
@@ -35,7 +35,6 @@ namespace Herramientas
 
 				if (subscription == null)
 				{
-					Console.WriteLine($"No hay suscripción activa para el usuario {usuarioId}");
 					return false;
 				}
 
@@ -49,9 +48,9 @@ namespace Herramientas
 
 					WebPush.PushSubscription pushSuscripcion = new WebPush.PushSubscription(endpoint, p256dh, auth);
 
-					var vapidPublicKey = _config["NotificacionesPush:PublicKey"];
-					var vapidPrivateKey = _config["NotificacionesPush:PrivateKey"];
-					var vapidSubject = _config["NotificacionesPush:Subject"];
+					var vapidPublicKey = _configuracion["NotificacionesPush:PublicKey"];
+					var vapidPrivateKey = _configuracion["NotificacionesPush:PrivateKey"];
+					var vapidSubject = _configuracion["NotificacionesPush:Subject"];
 
 					VapidDetails vapidDetails = new VapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
 

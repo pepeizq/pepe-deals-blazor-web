@@ -46,47 +46,44 @@ namespace Herramientas
         }
 	}
 
-    public static class Decompiladores
-    {
-		//private static readonly HttpClient cliente = new HttpClient(new SocketsHttpHandler
-		//{
-		//	AutomaticDecompression = DecompressionMethods.GZip,
-		//	PooledConnectionLifetime = TimeSpan.FromMinutes(15),
-		//	PooledConnectionIdleTimeout = TimeSpan.FromMinutes(10),
-		//	MaxConnectionsPerServer = 2
-		//}, false);
+	public static class Decompiladores
+	{
+		private static readonly HttpClient _cliente;
+
+		static Decompiladores()
+		{
+			var handler = new SocketsHttpHandler
+			{
+				AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+				PooledConnectionLifetime = TimeSpan.FromMinutes(15),
+				PooledConnectionIdleTimeout = TimeSpan.FromMinutes(10),
+				MaxConnectionsPerServer = 2
+			};
+
+			_cliente = new HttpClient(handler, disposeHandler: false);
+			_cliente.DefaultRequestHeaders.UserAgent.ParseAdd(
+				"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0");
+			_cliente.Timeout = TimeSpan.FromSeconds(30);
+		}
 
 		public static async Task<string> Estandar(string enlace)
-        {
-			string contenido = null;
-
-			ServiceProvider servicio = new ServiceCollection().AddHttpClient().BuildServiceProvider();
-			IHttpClientFactory factoria = servicio.GetService<IHttpClientFactory>() ?? throw new InvalidOperationException();
-			HttpClient cliente = factoria.CreateClient("Decompilador");
-
-			using (cliente)
+		{
+			try
 			{
-				cliente.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0");
+				using var respuesta = await _cliente.GetAsync(
+					enlace,
+					HttpCompletionOption.ResponseHeadersRead);
 
-                try
-				{
-					using (HttpResponseMessage respuesta = await cliente.GetAsync(enlace, HttpCompletionOption.ResponseContentRead))
-					{
-						contenido = await respuesta.Content.ReadAsStringAsync();
-						respuesta.Dispose();
-					}
-				}
-				catch (Exception ex) 
-				{
-					global::BaseDatos.Errores.Insertar.Mensaje("Decompilador", ex.StackTrace, enlace);
-				}
+				respuesta.EnsureSuccessStatusCode();
+
+				return await respuesta.Content.ReadAsStringAsync();
 			}
-
-			servicio.Dispose();
-			cliente.Dispose();
-
-			return contenido;
-        }
+			catch (Exception ex)
+			{
+				global::BaseDatos.Errores.Insertar.Mensaje("Decompilador", ex.StackTrace, enlace);
+				return null;
+			}
+		}
 
 		public static async Task<string> GZipFormato(string enlace) 
         {
