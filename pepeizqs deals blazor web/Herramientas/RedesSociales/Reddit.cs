@@ -153,7 +153,9 @@ namespace Herramientas.RedesSociales
                                 }
                             }
 
-                            if (bundlesViejunos.Count > 0)
+							List<string> bundlesViejunosTabla = new List<string>();
+
+							if (bundlesViejunos.Count > 0)
                             {
                                 foreach (var bundle in bundlesViejunos)
                                 {
@@ -161,15 +163,26 @@ namespace Herramientas.RedesSociales
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It was in the bundle: " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                    }
+										bundlesViejunosTabla.Add($"| {bundle2.Nombre} | {bundle2.Tienda} | {Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en")} |");
+									}
                                 }
                             }
+
+                            if (bundlesViejunosTabla.Count > 0)
+                            {
+								texto += Environment.NewLine + "**Old Bundles:**" + Environment.NewLine;
+								texto += "| Name | Store | Time |" + Environment.NewLine + "|---|---|---|" + Environment.NewLine;
+								texto += string.Join(Environment.NewLine, bundlesViejunosTabla) + Environment.NewLine;
+							}
                         }
+
+
 
                         if (juego.Suscripciones?.Count > 0)
                         {
-                            foreach (var suscripcion in juego.Suscripciones)
+							List<string> suscripcionesViejunasTabla = new List<string>();
+
+							foreach (var suscripcion in juego.Suscripciones)
                             {
                                 if (suscripcion.FechaEmpieza <= DateTime.Now && suscripcion.FechaTermina >= DateTime.Now)
                                 {
@@ -177,10 +190,17 @@ namespace Herramientas.RedesSociales
                                 }
                                 else
                                 {
-                                    texto = texto + "* It was in the subscription: " + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre + " (" + Calculadora.DiferenciaTiempo(suscripcion.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                }
+									suscripcionesViejunasTabla.Add($"| {Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre} | {suscripcion.Enlace} | {Calculadora.DiferenciaTiempo(suscripcion.FechaEmpieza, "en")} |");
+								}
                             }
-                        }
+
+							if (suscripcionesViejunasTabla.Count > 0)
+							{
+								texto += Environment.NewLine + "**Old Subscriptions:**" + Environment.NewLine;
+								texto += "| Name | Link | Time |" + Environment.NewLine + "|---|---|---|" + Environment.NewLine;
+								texto += string.Join(Environment.NewLine, suscripcionesViejunasTabla) + Environment.NewLine;
+							}
+						}
 
 						texto = texto + Environment.NewLine + Environment.NewLine;
 					}
@@ -198,7 +218,7 @@ namespace Herramientas.RedesSociales
             {
                 foreach (var suscripcion2 in suscripciones)
                 {
-                    texto = texto + "[" + suscripcion2.Nombre + "](" + suscripcion2.Enlace + ")" + Environment.NewLine + Environment.NewLine;
+                    texto = texto + "[" + suscripcion2.Nombre + "](" + suscripcion2.Enlace + ") - " + JuegoDRM2.DevolverDRM(suscripcion2.DRM) + Environment.NewLine + Environment.NewLine;
 
                     if (suscripcion2.FechaTermina >= DateTime.Now)
                     {
@@ -206,9 +226,13 @@ namespace Herramientas.RedesSociales
 
                         if (juego != null)
                         {
-                            if (juego.Analisis != null)
+                            if (juego.Analisis?.Porcentaje.Length > 1)
                             {
-                                texto = texto + "* It has an " + juego.Analisis.Porcentaje + "% rating on Steam with " + juego.Analisis.Cantidad + " reviews." + Environment.NewLine;
+                                string reseñasTemp = juego.Analisis?.Cantidad;
+                                reseñasTemp = reseñasTemp.Replace(",", null);
+                                int reseñasTemp2 = int.Parse(reseñasTemp);
+
+                                texto = texto + "> It has an " + juego.Analisis.Porcentaje + "% rating on Steam with " + reseñasTemp2.ToString("N0").Replace(",", ".") + " reviews." + Environment.NewLine;
                             }
 
                             List<int> bundlesActivos = new List<int>();
@@ -244,21 +268,32 @@ namespace Herramientas.RedesSociales
 
                             if (bundlesViejunos.Count > 0)
                             {
-                                foreach (var bundle in bundlesViejunos)
+								List<string> bundlesViejunosTabla = new List<string>();
+
+								foreach (var bundle in bundlesViejunos)
                                 {
                                     Bundles2.Bundle bundle2 = await global::BaseDatos.Bundles.Buscar.UnBundle(bundle);
 
                                     if (bundle2 != null)
                                     {
-                                        texto = texto + "* It was in the bundle: " + bundle2.Nombre + " • " + bundle2.Tienda + " (" + Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                    }
+										bundlesViejunosTabla.Add($"{bundle2.Nombre}|{bundle2.Tienda}|{Calculadora.DiferenciaTiempo(bundle2.FechaEmpieza, "en")}");
+									}
                                 }
-                            }
+
+								if (bundlesViejunosTabla.Count > 0)
+								{
+									texto += Environment.NewLine + "**Old Bundles:**" + Environment.NewLine + Environment.NewLine;
+									texto += "Name|Store|Time" + Environment.NewLine + "---|---|---" + Environment.NewLine;
+									texto += string.Join(Environment.NewLine, bundlesViejunosTabla) + Environment.NewLine;
+								}
+							}
                         }
 
                         if (juego.Gratis?.Count > 0)
                         {
-                            foreach (var gratis in juego.Gratis)
+							List<string> gratisViejunosTabla = new List<string>();
+
+							foreach (var gratis in juego.Gratis)
                             {
                                 if (gratis.FechaEmpieza <= DateTime.Now && gratis.FechaTermina >= DateTime.Now)
                                 {
@@ -266,11 +301,42 @@ namespace Herramientas.RedesSociales
                                 }
                                 else
                                 {
-                                    texto = texto + "* It was free in: " + Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre + " (" + Calculadora.DiferenciaTiempo(gratis.FechaEmpieza, "en") + ")" + Environment.NewLine;
-                                }
+									gratisViejunosTabla.Add($"{Gratis2.GratisCargar.DevolverGratis(gratis.Tipo).Nombre}|{Calculadora.DiferenciaTiempo(gratis.FechaEmpieza, "en")}");
+								}
                             }
-                        }
-                    }
+
+							if (gratisViejunosTabla.Count > 0)
+							{
+								texto += Environment.NewLine + "**Old Free:**" + Environment.NewLine + Environment.NewLine;
+								texto += "Name|Time" + Environment.NewLine + "---|---" + Environment.NewLine;
+								texto += string.Join(Environment.NewLine, gratisViejunosTabla) + Environment.NewLine;
+							}
+						}
+
+						if (juego.Suscripciones?.Count > 0)
+						{
+							List<string> suscripcionesViejunasTabla = new List<string>();
+
+							foreach (var suscripcion in juego.Suscripciones)
+							{
+								if (suscripcion.FechaEmpieza <= DateTime.Now && suscripcion.FechaTermina >= DateTime.Now)
+								{
+									texto = texto + "* It's in the subscription: [" + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre + "](" + suscripcion.Enlace + ")" + Environment.NewLine;
+								}
+								else if (suscripcion.FechaEmpieza != DateTime.MinValue)
+								{
+									suscripcionesViejunasTabla.Add($"{Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).Nombre}|{Calculadora.DiferenciaTiempo(suscripcion.FechaEmpieza, "en")}");
+								}
+							}
+
+							if (suscripcionesViejunasTabla.Count > 0)
+							{
+								texto += Environment.NewLine + "**Old Subscriptions:**" + Environment.NewLine + Environment.NewLine;
+								texto += "Name|Time" + Environment.NewLine + "---|---" + Environment.NewLine;
+								texto += string.Join(Environment.NewLine, suscripcionesViejunasTabla) + Environment.NewLine;
+							}
+						}
+					}
 
                     texto = texto + Environment.NewLine + Environment.NewLine;
                 }
@@ -325,7 +391,7 @@ namespace Herramientas.RedesSociales
 
                         if (string.IsNullOrEmpty(listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto) == false)
                         {
-                            codigo = " - Code: " + listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto;
+                            codigo = Environment.NewLine + ">Code: **" + listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto + "**";
 						}
 
                         texto = texto + tienda + codigo + Environment.NewLine;

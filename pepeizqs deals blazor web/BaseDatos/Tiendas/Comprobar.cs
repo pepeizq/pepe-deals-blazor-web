@@ -8,7 +8,7 @@ namespace BaseDatos.Tiendas
 {
 	public static class Comprobar
 	{
-		public static async void Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido)
+		public static async Task Steam(JuegoPrecio oferta, JuegoAnalisis reseñas, bool rapido)
 		{
 			string idSteam2 = APIs.Steam.Juego.LimpiarID(oferta.Enlace);
 
