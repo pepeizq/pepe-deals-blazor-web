@@ -757,7 +757,7 @@
 
 	private async Task GenerarReddit(MouseEventArgs e)
 	{
-		contenidoCajaClipboard = await Herramientas.Bundles.Reddit.Generar(bundle);
+		contenidoCajaClipboard = await Herramientas.RedesSociales.Reddit.Bundle(bundle);
 	}
 
 	private async Task GenerarMarkdown(MouseEventArgs e)

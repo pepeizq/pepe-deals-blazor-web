@@ -58,7 +58,7 @@ namespace APIs.Xbox
 
                     List<XboxGamePassJuego> juegos = JsonSerializer.Deserialize<List<XboxGamePassJuego>>(html);
 
-                    if (juegos != null)
+                    if (juegos?.Count > 0)
                     {
                         foreach (var juego in juegos)
                         {
@@ -142,6 +142,10 @@ namespace APIs.Xbox
 							}
                         }
                     }
+					else
+					{
+						BaseDatos.Errores.Insertar.Mensaje("Error GamePass", html);
+					}
                 }
             }
         }

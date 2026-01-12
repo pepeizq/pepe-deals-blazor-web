@@ -32,7 +32,7 @@ namespace Tareas.Suscripciones
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					TimeSpan siguienteComprobacion = TimeSpan.FromHours(4);
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(3);
 
 					bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, id);
 

@@ -23,8 +23,7 @@ namespace Tareas.Tiendas
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
 		{
-			Random azar = new Random();
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(azar.Next(5, 30)));
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{

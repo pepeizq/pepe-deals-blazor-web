@@ -2,7 +2,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 
 namespace BaseDatos.RedesSociales
 {
