@@ -1,0 +1,22 @@
+﻿@page "/link"
+@page "/link/{id2:regex(^[a-zA-Z0-9]+$)}"
+
+@rendermode InteractiveServer
+
+Not found @id2
+
+@code {
+
+    //Borrar cuando Google Search Console decida
+
+    #nullable disable
+
+    [Parameter]
+    public string id2 { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+       
+    }
+
+}

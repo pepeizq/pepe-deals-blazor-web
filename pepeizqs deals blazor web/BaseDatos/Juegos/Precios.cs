@@ -66,11 +66,16 @@ namespace BaseDatos.Juegos
                 }
             }
 
-            #endregion
+			#endregion
 
-            #region Aplicar Codigo Descuento
+			#region Aplicar Codigo Descuento
 
-            if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
+			decimal RedondearHaciaAbajo(decimal valor)
+			{
+				return Math.Floor(valor * 100) / 100;
+			}
+
+			if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
             {
                 nuevaOferta.PrecioCambiado = Herramientas.Divisas.Cambio(nuevaOferta.Precio, nuevaOferta.Moneda);
 
@@ -78,6 +83,7 @@ namespace BaseDatos.Juegos
                 {
                     decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
                     nuevaOferta.PrecioCambiado = nuevaOferta.PrecioCambiado - (nuevaOferta.PrecioCambiado * descuento);
+                    nuevaOferta.PrecioCambiado = RedondearHaciaAbajo(nuevaOferta.PrecioCambiado);
                 }
             }
             else
@@ -86,7 +92,8 @@ namespace BaseDatos.Juegos
                 {
                     decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
                     nuevaOferta.Precio = nuevaOferta.Precio - (nuevaOferta.Precio * descuento);
-                }
+					nuevaOferta.Precio = RedondearHaciaAbajo(nuevaOferta.Precio);
+				}
             }
 
             #endregion

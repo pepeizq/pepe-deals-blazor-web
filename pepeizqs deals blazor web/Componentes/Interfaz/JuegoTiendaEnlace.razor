@@ -1,0 +1,310 @@
+﻿@using APIs.Steam
+@using Juegos
+@using Tiendas2
+
+@inject IJSRuntime JavaScript
+
+<script>
+    window.clipboardCopy = {
+        copyText: function(text) {
+            navigator.clipboard.writeText(text);
+        }
+    };
+</script>
+
+@if (enseñarAlerta == true)
+{
+    <div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div>
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Clipboard")
+            </div>
+
+            <button @onclick="CerrarAvisoClipboard" class="boton-pequeño" style="display: flex; padding: 0px; background-color: transparent; width: fit-content; box-shadow: none;">
+                <div style="width: 20px; height: 20px;">
+                    <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+                    </svg>
+                </div>
+            </button>
+        </div>
+    </div>
+}
+
+<div>
+    @if (string.IsNullOrEmpty(precio.CodigoTexto) == false)
+    {
+        <div style="width: 100%; display: flex; justify-content: right;">
+            <button @onclick="(e => CopiarAlClipboard(e, precio.CodigoTexto))" class="juego-boton-pequeño" style="width: fit-content; padding: 10px 15px; display: flex; justify-content: right;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <div>@Herramientas.Idiomas.BuscarTexto(idioma, "String90", "Game")</div>
+                    <div>@precio.CodigoTexto</div>
+                </div>
+            </button>
+        </div>
+    }
+
+    <a class="boton-pequeño" title="@Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre" href="@enlace" target="_blank" style="width: 100%;">
+        <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+            <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda" />
+
+            <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                    @ComprobarEdicion(juegoNombre, precio.Nombre)
+                </div>
+
+                @if (string.IsNullOrEmpty(usuarioId) == false)
+                {
+                    if (precio.BundleSteam != null)
+                    {
+                        if (precio.BundleSteam.Junto == true && juegosUsuario != null)
+                        {
+                            int cuantosJuegos = 0;
+
+                            List<int> juegosBundle = BaseDatos.Juegos.Buscar.BundleSteam(precio.Enlace);
+
+                            if (juegosBundle.Count > 0)
+                            {
+                                List<SteamUsuarioJuego> juegosSteam = juegosUsuario.Steam;
+
+                                foreach (var juegoBundle in juegosBundle)
+                                {
+                                    foreach (var juegoSteam in juegosSteam)
+                                    {
+                                        if (juegoSteam.Id == juegoBundle)
+                                        {
+                                            cuantosJuegos += 1;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (cuantosJuegos > 0)
+                            {
+                                <div style="font-size: 14px; background-color: var(--fondoBien); padding: 5px 10px; border-radius: 5px; width: fit-content;">
+                                    @if (cuantosJuegos == 1)
+                                    {
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String45", "Game")
+                                    }
+                                    else
+                                    {
+                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String46", "Game"), cuantosJuegos)
+                                    }
+                                </div>
+                            }
+                        }
+                    }
+                }
+            </div>
+
+            <div class="juego-descuento-precio">
+                <div class="juego-hacetiempo" style="font-size: 14px; margin: 20px;">
+                    @Herramientas.Calculadora.DiferenciaTiempo(precio.FechaDetectado, idioma, 0)
+                </div>
+
+                <div class="juego-descuento" style="width: 75px; text-align: center;">
+                    @precio.Descuento.ToString()%
+                </div>
+
+                <div class="juego-precio">
+                    @if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
+                    {
+                        <div style="text-align: center;">@Herramientas.Precios.Euro(precio.PrecioCambiado)</div>
+                        <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precio.Precio, precio.Moneda)</div>
+                    }
+                    else
+                    {
+                        <div style="text-align: center;">@Herramientas.Precios.Euro(precio.Precio)</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public JuegoPrecio precio { get; set; }
+
+    [Parameter]
+    public string usuarioId { get; set; }
+
+    [Parameter]
+    public string idioma { get; set; }
+
+    [Parameter]
+    public string userAgent { get; set; }
+
+    [Parameter]
+    public bool usuarioPatreon { get; set; }
+
+    [Parameter]
+    public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+
+    [Parameter]
+    public string juegoNombre { get; set; }
+
+    public string enlace = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        enlace = precio.Enlace;
+
+        if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+        {
+            enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, usuarioPatreon, false);
+        }
+    }
+
+    public static string SacarImagenTienda(string codigo)
+    {
+        return TiendasCargar.GenerarListado().Find(t => t.Id == codigo)?.Imagen300x80 ?? string.Empty;
+    }
+
+    private static string ComprobarEdicion(string juego, string oferta)
+    {
+        if (string.IsNullOrEmpty(oferta) == false)
+        {
+            if (Herramientas.Buscador.LimpiarNombre(juego) != Herramientas.Buscador.LimpiarNombre(oferta))
+            {
+                string nuevoTexto = oferta.Replace(juego, null);
+                nuevoTexto = nuevoTexto.Trim();
+
+                int i = 0;
+                while (i < 10)
+                {
+                    if (nuevoTexto.Contains("-") == true)
+                    {
+                        int int1 = nuevoTexto.IndexOf("-");
+
+                        if (int1 == 0)
+                        {
+                            nuevoTexto = nuevoTexto.Remove(0, 1);
+                            nuevoTexto = nuevoTexto.Trim();
+                        }
+                    }
+                    i += 1;
+                }
+
+                i = 0;
+                while (i < 10)
+                {
+                    if (nuevoTexto.Contains(":") == true)
+                    {
+                        int int1 = nuevoTexto.IndexOf(":");
+
+                        if (int1 == 0)
+                        {
+                            nuevoTexto = nuevoTexto.Remove(0, 1);
+                            nuevoTexto = nuevoTexto.Trim();
+                        }
+                    }
+                    i += 1;
+                }
+
+                if (nuevoTexto.Contains("??") == true)
+                {
+                    nuevoTexto = nuevoTexto.Replace("/", null);
+                    nuevoTexto = nuevoTexto.Replace("?", null);
+                }
+
+                nuevoTexto = nuevoTexto.Replace("(Steam)", null);
+                nuevoTexto = nuevoTexto.Replace("(STEAM)", null);
+                nuevoTexto = nuevoTexto.Replace("(Epic)", null);
+                nuevoTexto = nuevoTexto.Replace("(EPIC)", null);
+                nuevoTexto = nuevoTexto.Replace("(GOG)", null);
+                nuevoTexto = nuevoTexto.Replace("(Giants)", null);
+                nuevoTexto = nuevoTexto.Replace("(Microsoft Store)", null);
+                nuevoTexto = nuevoTexto.Replace("(ROW)", null);
+                nuevoTexto = nuevoTexto.Replace("(DLC)", null);
+
+                if (nuevoTexto.Length > 1)
+                {
+                    nuevoTexto = Herramientas.Buscador.LimpiarNombre(nuevoTexto, true);
+                    nuevoTexto = nuevoTexto.Trim();
+                }
+
+                if (Herramientas.Buscador.LimpiarNombre(juego, true) != nuevoTexto)
+                {
+                    string ofertaLimpiada = Herramientas.Buscador.LimpiarNombre(oferta, false);
+                    string juegoLimpiado = Herramientas.Buscador.LimpiarNombre(juego, false);
+
+                    if (ofertaLimpiada.Contains(juegoLimpiado) == true)
+                    {
+                        ofertaLimpiada = ofertaLimpiada.Replace(juegoLimpiado, null);
+                        ofertaLimpiada = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(ofertaLimpiada);
+
+                        nuevoTexto = ofertaLimpiada;
+
+                        nuevoTexto = nuevoTexto.Replace("Steam", null);
+                        nuevoTexto = nuevoTexto.Replace("Epic", null);
+                        nuevoTexto = nuevoTexto.Replace("Gog", null);
+                        nuevoTexto = nuevoTexto.Replace("Giants", null);
+                        nuevoTexto = nuevoTexto.Replace("Microsoft Store", null);
+                        nuevoTexto = nuevoTexto.Replace("Row", null);
+                        nuevoTexto = nuevoTexto.Replace("Mac", null);
+                    }
+                    else
+                    {
+                        nuevoTexto = oferta;
+                    }
+
+                    if (nuevoTexto.Length > 4)
+                    {
+                        return nuevoTexto;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    #region Portapapeles
+
+    bool enseñarAlerta = false;
+    private PeriodicTimer cronometro = null;
+    private int cronometroContador = 0;
+    private int cronometroLimite = 10;
+
+    private async void CopiarAlClipboard(MouseEventArgs e, string texto)
+    {
+        if (enseñarAlerta == false)
+        {
+            enseñarAlerta = true;
+            await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", texto);
+
+            cronometroContador = 0;
+            cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
+
+            while (await cronometro.WaitForNextTickAsync())
+            {
+                cronometroContador += 1;
+
+                if (cronometroContador > cronometroLimite)
+                {
+                    enseñarAlerta = false;
+                    cronometro.Dispose();
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+    }
+
+    private void CerrarAvisoClipboard()
+    {
+        enseñarAlerta = false;
+        cronometroContador = 0;
+
+        if (cronometro != null)
+        {
+            cronometro.Dispose();
+        }
+    }
+
+    #endregion
+}

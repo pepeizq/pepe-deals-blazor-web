@@ -587,9 +587,9 @@ namespace APIs.Steam
 										}
 
 										if (opcionCompra.BundleId.HasValue == false ||
-											opcionCompra.BundleDiscountPct.HasValue == false ||
+											opcionCompra.BundleDescuento.HasValue == false ||
 											opcionCompra.BundleId.Value <= 0 ||
-											opcionCompra.BundleDiscountPct.Value <= 0 ||
+											opcionCompra.BundleDescuento.Value <= 0 ||
 											opcionCompra.MustPurchaseAsSet == true)
 										{
 											continue;
@@ -599,7 +599,7 @@ namespace APIs.Steam
 										{
 											JuegoSteamBundle bundle = new JuegoSteamBundle();
 											bundle.Junto = false;
-											bundle.Descuento = opcionCompra.BundleDiscountPct.Value;
+											bundle.Descuento = opcionCompra.BundleDescuento.GetValueOrDefault();
 
 											string precioString = opcionCompra.PrecioFormateado;
 
@@ -614,10 +614,10 @@ namespace APIs.Steam
 
 											JuegoPrecio oferta = new JuegoPrecio
 											{
-												Nombre = juego.Nombre,
+												Nombre = opcionCompra.BundleNombre,
 												Tienda = GenerarBundles().Id,
 												DRM = JuegoDRM.Steam,
-												Descuento = opcionCompra.BundleDiscountPct.GetValueOrDefault(),
+												Descuento = opcionCompra.Descuento.GetValueOrDefault(),
 												Precio = precio,
 												Moneda = JuegoMoneda.Euro,
 												Enlace = "https://store.steampowered.com/bundle/" + opcionCompra.BundleId.ToString(),
@@ -792,7 +792,7 @@ namespace APIs.Steam
 		public uint? BundleId { get; set; }
 
 		[JsonPropertyName("purchase_option_name")]
-		public string PurchaseOptionName { get; set; }
+		public string BundleNombre { get; set; }
 
 		[JsonPropertyName("final_price_in_cents")]
 		public string FinalPriceInCents { get; set; }
@@ -810,7 +810,7 @@ namespace APIs.Steam
 		public int? Descuento { get; set; }
 
 		[JsonPropertyName("bundle_discount_pct")]
-		public int? BundleDiscountPct { get; set; }
+		public int? BundleDescuento { get; set; }
 
 		[JsonPropertyName("included_game_count")]
 		public int IncludedGameCount { get; set; }

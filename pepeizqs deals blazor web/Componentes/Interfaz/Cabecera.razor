@@ -653,7 +653,6 @@
         if (string.IsNullOrWhiteSpace(texto) || texto.Length < 3)
         {
             resultadosMostrar?.Clear();
-            fondoBuscador = "background-color: var(--fondoEntrada);";
 
             await InvokeAsync(StateHasChanged);
             return;

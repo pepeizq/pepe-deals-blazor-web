@@ -17,6 +17,7 @@ FROM juegos j
 CROSS APPLY OPENJSON(j.PrecioMinimosHistoricos)
 WITH (
     FechaActualizacion DATETIME2 '$.FechaActualizacion',
+    FechaTermina DATETIME2 '$.FechaTermina',
     DRM INT '$.DRM',
     Tienda NVARCHAR(50) '$.Tienda'
 ) AS pmh
@@ -38,7 +39,12 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
         (pmh.FechaActualizacion >= DATEADD(hour, -25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
         (pmh.FechaActualizacion >= DATEADD(hour, -48, GETDATE()) AND pmh.Tienda = 'epicgamesstore') OR
         (pmh.FechaActualizacion >= DATEADD(hour, -12, GETDATE()))    
-      )";
+      )
+AND (
+	pmh.FechaTermina IS NULL
+	OR pmh.FechaTermina = '0001-01-01'
+	OR pmh.FechaTermina > GETDATE()
+)";
 
 			if (string.IsNullOrEmpty(tienda) == false)
 			{

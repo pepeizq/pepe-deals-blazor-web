@@ -8,6 +8,18 @@ namespace Herramientas
 	{
 		public static bool Verificar(JuegoPrecio precio)
 		{
+			if (precio.FechaTermina > DateTime.MinValue)
+			{
+				if (precio.FechaTermina > DateTime.Now)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+
 			TimeSpan actualizado = DateTime.Now.Subtract(precio.FechaActualizacion);
 
 			if (precio.Tienda == APIs.Steam.Tienda.Generar().Id || precio.Tienda == APIs.Steam.Tienda.GenerarBundles().Id)
