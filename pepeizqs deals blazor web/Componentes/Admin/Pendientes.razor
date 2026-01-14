@@ -409,7 +409,7 @@
 
         foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
         {
-            if (tienda.Id != APIs.Steam.Tienda.Generar().Id)
+            if (tienda.Id != APIs.Steam.Tienda.Generar().Id && tienda.Id != APIs.Steam.Tienda.GenerarBundles().Id)
             {
                 PendientesTienda pendienteTienda = new PendientesTienda();
                 pendienteTienda.Tienda = tienda;
@@ -428,14 +428,7 @@
             imagenPendiente = pendientesTiendas[0].Pendientes[0].Imagen;
             enlacePendiente = pendientesTiendas[0].Pendientes[0].Enlace;
 
-            if (pendientesTiendas[0].Tienda.Id == APIs.Steam.Tienda.GenerarBundles().Id)
-            {
-                idsPendiente = await APIs.Steam.Bundle.CargarDatosBundle(pendientesTiendas[0].Pendientes[0].Enlace);
-            }
-            else
-            {
-                idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesTiendas[0].Pendientes[0].Nombre);
-            }
+            idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(pendientesTiendas[0].Pendientes[0].Nombre);
         }
 
         #endregion
@@ -572,37 +565,8 @@
 
                 enlacePendiente = juego.Enlace;
 
-                if (id == APIs.Steam.Tienda.GenerarBundles().Id)
-                {
-                    await InvokeAsync(() =>
-                    {
-                        StateHasChanged();
-                    });
-
-                    idsPendiente = await APIs.Steam.Bundle.CargarDatosBundle(enlacePendiente);
-
-                    if (string.IsNullOrEmpty(idsPendiente) == false)
-                    {
-                        await Task.Delay(1000);
-
-                        await BaseDatos.Pendientes.Actualizar.Tienda(idTiendaPendiente, enlacePendiente, idsPendiente);
-
-                        foreach (var pendiente in pendientesTiendas)
-                        {
-                            if (pendiente.Tienda.Id == idTiendaPendiente)
-                            {
-                                pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Tienda(idTiendaPendiente);
-                            }
-                        }
-
-                        await ClickearTiendaPendientes(idTiendaPendiente);
-                    }
-                }
-                else
-                {
-                    idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(nombrePendiente);
-                    await AñadirResultados();
-                }
+                idsPendiente = await BaseDatos.Pendientes.Buscar.IDs(nombrePendiente);
+                await AñadirResultados();
             }
         }
 

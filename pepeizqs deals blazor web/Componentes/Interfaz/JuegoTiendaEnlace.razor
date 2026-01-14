@@ -45,55 +45,51 @@
     }
 
     <a class="boton-pequeño" title="@Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre" href="@enlace" target="_blank" style="width: 100%;">
-        <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;">
+        <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
             <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda" />
 
-            <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 8px;">
-                <div>
+            <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; padding-top: 10px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
                     @ComprobarEdicion(juegoNombre, precio.Nombre)
+
+                    @if (cuantosJuegosBundle > 0)
+                    {
+                        <div style="font-size: 14px; background-color: var(--fondoBien); padding: 4px 8px; border-radius: 5px; width: fit-content;">
+                            @if (cuantosJuegosBundle == 1)
+                            {
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String45", "Game")
+                            }
+                            else
+                            {
+                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String46", "Game"), cuantosJuegosBundle)
+                            }
+                        </div>
+                    }
                 </div>
 
                 @if (string.IsNullOrEmpty(usuarioId) == false)
                 {
-                    if (precio.BundleSteam != null)
+                    if (juegosBundle?.Count > 0)
                     {
-                        if (precio.BundleSteam.Junto == true && juegosUsuario != null)
-                        {
-                            int cuantosJuegos = 0;
-
-                            List<int> juegosBundle = BaseDatos.Juegos.Buscar.BundleSteam(precio.Enlace);
-
-                            if (juegosBundle.Count > 0)
+                        <div style="display: flex; align-items: center; gap: 6px; overflow-x: visible; overflow-y: hidden; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); padding-bottom: 15px;">
+                            @foreach (var juegoBundle in juegosBundle)
                             {
-                                List<SteamUsuarioJuego> juegosSteam = juegosUsuario.Steam;
+                                bool usuarioTieneJuego = juegosUsuarioBundle.Any(js => js == juegoBundle.IdSteam);
 
-                                foreach (var juegoBundle in juegosBundle)
+                                string fondoBien = string.Empty;
+                                string opacidad = string.Empty;
+
+                                if (usuarioTieneJuego == true)
                                 {
-                                    foreach (var juegoSteam in juegosSteam)
-                                    {
-                                        if (juegoSteam.Id == juegoBundle)
-                                        {
-                                            cuantosJuegos += 1;
-                                            break;
-                                        }
-                                    }
+                                    fondoBien = "background-color: var(--fondoBien);";
+                                    opacidad = "opacity: 0.5;";
                                 }
-                            }
 
-                            if (cuantosJuegos > 0)
-                            {
-                                <div style="font-size: 14px; background-color: var(--fondoBien); padding: 5px 10px; border-radius: 5px; width: fit-content;">
-                                    @if (cuantosJuegos == 1)
-                                    {
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String45", "Game")
-                                    }
-                                    else
-                                    {
-                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String46", "Game"), cuantosJuegos)
-                                    }
+                                <div style="width: fit-content; @fondoBien">
+                                    <img src="@juegoBundle.Imagenes.Capsule_231x87" style="height: 50px; width: auto; flex-shrink: 0; @opacidad" />
                                 </div>
                             }
-                        }
+                        </div>
                     }
                 }
             </div>
@@ -149,6 +145,9 @@
     public string juegoNombre { get; set; }
 
     public string enlace = string.Empty;
+    public List<Juegos.Juego> juegosBundle = new List<Juegos.Juego>();
+    public List<int> juegosUsuarioBundle = new List<int>();
+    public int cuantosJuegosBundle { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,6 +156,25 @@
         if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
         {
             enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, usuarioPatreon, false);
+        }
+
+        if (precio.BundleSteam?.Junto == false && juegosUsuario != null)
+        {
+            juegosBundle = await BaseDatos.Juegos.Buscar.BundleSteam(precio.Enlace);
+
+            if (juegosBundle?.Count > 0)
+            {
+                foreach (var juegoBundle in juegosBundle)
+                {
+                    bool usuarioTieneJuego = juegosUsuario.Steam.Any(js => js.Id == juegoBundle.IdSteam);                    
+
+                    if (usuarioTieneJuego == true)
+                    {
+                        juegosUsuarioBundle.Add(juegoBundle.IdSteam);
+                        cuantosJuegosBundle += 1;
+                    }
+                }
+            }
         }
     }
 

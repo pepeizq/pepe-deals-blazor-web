@@ -144,6 +144,7 @@ builder.Services.AddSingleton<Tareas.Duplicados>();
 builder.Services.AddSingleton<Tareas.UsuariosActualizar>();
 builder.Services.AddSingleton<Tareas.RedesSociales>();
 builder.Services.AddSingleton<Tareas.IndexNow>();
+builder.Services.AddSingleton<Tareas.SteamBundles>();
 
 builder.Services.AddSingleton<Tareas.Tiendas.Steam>();
 builder.Services.AddSingleton<Tareas.Tiendas.HumbleStore>();
@@ -196,6 +197,7 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.UsuariosActualizar>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.RedesSociales>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.IndexNow>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.SteamBundles>());
 
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Tiendas.Steam>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Tiendas.HumbleStore>());
@@ -547,6 +549,24 @@ Disallow: /_blazor/
 ";
 
 	return Results.Text(texto, "text/plain; charset=utf-8");
+});
+
+#endregion
+
+#region Links muertos para Google Search Console (13/01/2026)
+
+app.Use(async (context, next) =>
+{
+	var path = context.Request.Path.Value;
+
+	if (path != null && path.StartsWith("/link/", StringComparison.OrdinalIgnoreCase) && path.Contains("/news/") == false)
+	{
+		context.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		context.Response.Headers.Location = "/";
+		return;
+	}
+
+	await next();
 });
 
 #endregion

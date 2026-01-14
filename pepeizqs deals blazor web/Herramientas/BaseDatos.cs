@@ -83,39 +83,6 @@ namespace Herramientas
 			}
 		}
 
-		public static T EjecutarConConexion<T>(Func<SqlTransaction, T> sentencia, SqlConnection conexion = null)
-		{
-			bool cerrar = conexion == null;
-
-			if (conexion == null || conexion.State != ConnectionState.Open)
-			{
-				conexion = Conectar();
-			}
-
-			using (SqlTransaction transaccion = conexion.BeginTransaction())
-			{
-				try
-				{
-					T resultado = sentencia(transaccion);
-					transaccion.Commit();
-
-					return resultado;
-				}
-				catch
-				{
-					try { transaccion.Rollback(); } catch { }
-					throw;
-				}
-				finally
-				{
-					if (cerrar == true)
-					{
-						conexion.Close();
-					}
-				}
-			}
-		}
-
 		public static async Task<T> Select<T>(Func<SqlConnection, Task<T>> accion, SqlConnection conexion = null)
 		{
 			bool cerrar = conexion == null;

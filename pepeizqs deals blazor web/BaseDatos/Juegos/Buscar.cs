@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using APIs.AmazonLuna;
 using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
@@ -1463,15 +1464,15 @@ FROM seccionMinimos j";
 			return new List<Juego>();
 		}
 
-		public static List<int> BundleSteam(string id)
+		public static async Task<List<Juego>> BundleSteam(string id)
 		{
-			if (string.IsNullOrEmpty(id))
+			if (string.IsNullOrEmpty(id) == true)
 			{
-				return new List<int>();
+				return null;
 			}
 
 			string sql = @"
-				SELECT j.idSteam
+				SELECT j.idSteam, j.imagenes
 				FROM juegos j
 				WHERE j.id IN (
 					SELECT value 
@@ -1483,9 +1484,9 @@ FROM seccionMinimos j";
 
 			try
 			{
-				return Herramientas.BaseDatos.EjecutarConConexion(sentencia =>
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return sentencia.Connection.Query<int>(sql, new { enlaceSteam = id }, transaction: sentencia).ToList();
+					return (await conexion.QueryAsync<Juego>(sql, new { enlaceSteam = id })).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -1493,7 +1494,7 @@ FROM seccionMinimos j";
 				BaseDatos.Errores.Insertar.Mensaje("Juego Bundle Steam", ex);
 			}
 
-			return new List<int>();
+			return null;
 		}
 
         public static async Task<List<Juego>> Aleatorios(bool fechaAPISteam = false)

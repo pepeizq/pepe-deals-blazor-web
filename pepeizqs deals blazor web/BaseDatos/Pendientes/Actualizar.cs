@@ -1,9 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Herramientas.Redireccionador;
-using Microsoft.Data.SqlClient;
-using Org.BouncyCastle.Crypto;
 
 namespace BaseDatos.Pendientes
 {

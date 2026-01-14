@@ -63,7 +63,7 @@ namespace BaseDatos.Pendientes
 
 			foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 			{
-				if (tienda.Id != "steam")
+				if (tienda.Id != APIs.Steam.Tienda.Generar().Id && tienda.Id != APIs.Steam.Tienda.GenerarBundles().Id)
 				{
 					string tabla = $"tienda{tienda.Id}";
 					sentencias.Add($"SELECT COUNT(*) FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'");
@@ -100,7 +100,7 @@ namespace BaseDatos.Pendientes
 
 			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
 			{
-				if (suscripcion.AdminPendientes)
+				if (suscripcion.AdminPendientes == true)
 				{
 					string tabla = $"temporal{suscripcion.Id}";
 					sentencias.Add($"SELECT COUNT(*) FROM {tabla}");

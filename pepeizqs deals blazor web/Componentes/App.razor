@@ -97,6 +97,12 @@
         </script>
     }
 
+    @if (usuarioPatreon == false)
+    {
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8367196321891178"
+                crossorigin="anonymous"></script>
+    }
+
     <script>
         function moverScroll(id) {
             const element = document.getElementById(id);
@@ -123,6 +129,7 @@
     private string usuarioId = null;
     private string userAgent = null;
     private string dominio = null;
+    private bool usuarioPatreon = false;
     private bool usuarioAdmin = false;
 
     private string enlaceEnNoticia = null;
@@ -139,6 +146,7 @@
             idioma = contexto?.Request?.Headers["Accept-Language"].ToString().Split(";").FirstOrDefault()?.Split(",").FirstOrDefault();
             userAgent = contexto?.Request?.Headers.UserAgent.ToString();
             dominio = contexto?.Request?.Host.Value;
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 
             var path = contexto?.Request?.Path.ToString();
             enlace = "https://" + dominio + path;
