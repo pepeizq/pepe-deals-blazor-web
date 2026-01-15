@@ -145,6 +145,7 @@ builder.Services.AddSingleton<Tareas.UsuariosActualizar>();
 builder.Services.AddSingleton<Tareas.RedesSociales>();
 builder.Services.AddSingleton<Tareas.IndexNow>();
 builder.Services.AddSingleton<Tareas.SteamBundles>();
+builder.Services.AddSingleton<Tareas.SteamDLCs>();
 
 builder.Services.AddSingleton<Tareas.Tiendas.Steam>();
 builder.Services.AddSingleton<Tareas.Tiendas.HumbleStore>();
@@ -198,6 +199,7 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.RedesSociales>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.IndexNow>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.SteamBundles>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.SteamDLCs>());
 
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Tiendas.Steam>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Tiendas.HumbleStore>());

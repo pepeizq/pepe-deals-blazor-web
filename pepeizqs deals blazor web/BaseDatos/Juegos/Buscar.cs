@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using APIs.AmazonLuna;
 using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
@@ -24,18 +23,48 @@ namespace BaseDatos.Juegos
 			}
 
 			string sqlBuscar = @"SELECT *,
-(
-    SELECT g.gratis AS Tipo, g.enlace AS Enlace, g.drm AS DRM, g.FechaEmpieza AS FechaEmpieza, g.FechaTermina AS FechaTermina, g.id AS id
-    FROM gratis g
-    WHERE g.juegoId = j.id
-    FOR JSON PATH
-) as gratis, 
-(
-    SELECT s.*, s.suscripcion AS Tipo
-    FROM suscripciones s
-    WHERE s.juegoId = j.id
-    FOR JSON PATH
-) as suscripciones
+	(
+		SELECT g.gratis AS Tipo, g.enlace AS Enlace, g.drm AS DRM, g.FechaEmpieza AS FechaEmpieza, g.FechaTermina AS FechaTermina, g.id AS id
+		FROM gratis g
+		WHERE g.juegoId = j.id
+		FOR JSON PATH
+	) as gratis, 
+	(
+		SELECT s.*, s.suscripcion AS Tipo
+		FROM suscripciones s
+		WHERE s.juegoId = j.id
+		FOR JSON PATH
+	) as suscripciones,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
 FROM juegos j";
 
 			if (string.IsNullOrEmpty(id) == false)

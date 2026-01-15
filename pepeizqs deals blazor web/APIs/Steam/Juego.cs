@@ -4,6 +4,7 @@
 #nullable disable
 
 using Herramientas;
+using Herramientas.Redireccionador;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -758,6 +759,36 @@ namespace APIs.Steam
 			}	
 				
 			return null;
+		}
+
+		public static async Task<int> CargarDLCMaestro(string enlace)
+		{
+			string id = LimpiarID(enlace);
+
+			if (string.IsNullOrEmpty(id) == true)
+			{
+				return 0;
+			}
+
+			string html2 = await Decompiladores.Estandar(@"https://api.steampowered.com/IStoreBrowseService/GetItems/v1?input_json={""ids"":[{""appid"":" + id + @"}],""context"":{""language"":""english"",""country_code"":""ES"",""steam_realm"":1},""data_request"":{""include_reviews"":true,""include_basic_info"":true, ""include_assets"": true, ""include_links"": true, ""include_tag_count"": 20, ""include_release"": true, ""include_platforms"": true, ""include_screenshots"": true, ""include_trailers"": true, ""include_supported_languages"": true}}");
+
+			if (string.IsNullOrEmpty(html2) == false)
+			{
+				SteamJuegoAPI2 datos2 = null;
+
+				try
+				{
+					datos2 = JsonSerializer.Deserialize<SteamJuegoAPI2>(html2);
+				}
+				catch { }
+
+				if (datos2 != null)
+				{
+					return datos2?.Respuesta?.Juegos[0]?.Cosas?.MaestroId ?? 0;
+				}
+			}
+
+			return 0;
 		}
 
 		public static async Task<int> CargarCantidadJugadores(string id)
