@@ -21,7 +21,7 @@ namespace Tareas
 
         protected override async Task ExecuteAsync(CancellationToken tokenParar)
         {
-            using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+            using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
 
             while (await timer.WaitForNextTickAsync(tokenParar))
             {
@@ -34,21 +34,28 @@ namespace Tareas
 
 					if (DateTime.Now.Hour == 21)
 					{
-						tiempoSiguiente = TimeSpan.FromMinutes(120);
+						tiempoSiguiente = TimeSpan.FromSeconds(60);
 					}
 
 					if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", tiempoSiguiente) == true &&
 						(await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)))?.Count == 0)
                     {
-						await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now);
+						await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now.AddMinutes(70));
 
 						try
 						{
-							List<Juegos.Juego> juegosDia = await BaseDatos.RedesSociales.Buscar.OfertasDelDia();
+							List<Juegos.Juego> juegosDiaSteam = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.Steam);
 
-							if (juegosDia?.Count > 0)
+							if (juegosDiaSteam?.Count > 0)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDia);
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaSteam, Juegos.JuegoDRM.Steam);
+							}
+
+							List<Juegos.Juego> juegosDiaGog = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.GOG);
+
+							if (juegosDiaGog?.Count > 0)
+							{
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaGog, Juegos.JuegoDRM.GOG);
 							}
 						}
 						catch (Exception ex)

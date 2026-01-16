@@ -548,9 +548,13 @@ namespace APIs.Steam
 											Moneda = JuegoMoneda.Euro,
 											Enlace = "https://store.steampowered.com/app/" + juego.AppId.ToString(),
 											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now,
-											FechaTermina = DateTime.UnixEpoch.AddSeconds(juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate ?? 0).ToLocalTime()
+											FechaActualizacion = DateTime.Now
 										};
+
+										if (juego.OpcionCompraMejor?.ActiveDiscounts?.Count > 0)
+										{
+											oferta.FechaTermina = DateTime.UnixEpoch.AddSeconds(juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate ?? 0).ToLocalTime();
+										}
 
 										try
 										{

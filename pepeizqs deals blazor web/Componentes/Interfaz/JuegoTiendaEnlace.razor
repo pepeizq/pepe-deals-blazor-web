@@ -48,48 +48,59 @@
         <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
             <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda" />
 
-            <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; padding-top: 10px;">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    @ComprobarEdicion(juegoNombre, precio.Nombre)
-
-                    @if (cuantosJuegosBundle > 0)
-                    {
-                        <div style="font-size: 14px; background-color: var(--fondoBien); padding: 4px 8px; border-radius: 5px; width: fit-content;">
-                            @if (cuantosJuegosBundle == 1)
-                            {
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String45", "Game")
-                            }
-                            else
-                            {
-                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String46", "Game"), cuantosJuegosBundle)
-                            }
-                        </div>
-                    }
-                </div>
-
-                @if (string.IsNullOrEmpty(usuarioId) == false)
+            <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
+                @if (juegosBundle == null || juegosBundle?.Count == 0)
                 {
-                    if (juegosBundle?.Count > 0)
-                    {
-                        <div style="display: flex; align-items: center; gap: 6px; overflow-x: visible; overflow-y: hidden; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); padding-bottom: 15px;">
-                            @foreach (var juegoBundle in juegosBundle)
-                            {
-                                bool usuarioTieneJuego = juegosUsuarioBundle.Any(js => js == juegoBundle.IdSteam);
-
-                                string fondoBien = string.Empty;
-                                string opacidad = string.Empty;
-
-                                if (usuarioTieneJuego == true)
-                                {
-                                    fondoBien = "background-color: var(--fondoBien);";
-                                    opacidad = "opacity: 0.5;";
-                                }
-
-                                <div style="width: fit-content; @fondoBien">
-                                    <img src="@juegoBundle.Imagenes.Capsule_231x87" style="height: 50px; width: auto; flex-shrink: 0; @opacidad" />
-                                </div>
-                            }
+                    <div>
+                        @ComprobarEdicion(juegoNombre, precio.Nombre)
+                    </div>
+                }
+                else if (juegosBundle?.Count > 0)
+                {
+                    <div style="display: flex; align-items: center; gap: 15px; padding-top: 10px;">
+                        <div>
+                            @precio.Nombre
                         </div>
+
+                        @if (cuantosJuegosBundle > 0)
+                        {
+                            <div style="font-size: 14px; background-color: var(--fondoBien); padding: 4px 8px; border-radius: 5px; width: fit-content;">
+                                @if (cuantosJuegosBundle == 1)
+                                {
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String45", "Game")
+                                }
+                                else
+                                {
+                                    @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String46", "Game"), cuantosJuegosBundle)
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    @if (string.IsNullOrEmpty(usuarioId) == false)
+                    {
+                        if (juegosBundle?.Count > 0)
+                        {
+                            <div style="display: flex; align-items: center; gap: 6px; overflow-x: visible; overflow-y: hidden; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); padding-bottom: 15px;">
+                                @foreach (var juegoBundle in juegosBundle)
+                                {
+                                    bool usuarioTieneJuego = juegosUsuarioBundle.Any(js => js == juegoBundle.IdSteam);
+
+                                    string fondoBien = string.Empty;
+                                    string opacidad = string.Empty;
+
+                                    if (usuarioTieneJuego == true)
+                                    {
+                                        fondoBien = "background-color: var(--fondoBien);";
+                                        opacidad = "opacity: 0.5;";
+                                    }
+
+                                    <div style="width: fit-content; @fondoBien">
+                                        <img src="@juegoBundle.Imagenes.Capsule_231x87" style="height: 50px; width: auto; flex-shrink: 0; @opacidad" />
+                                    </div>
+                                }
+                            </div>
+                        }
                     }
                 }
             </div>

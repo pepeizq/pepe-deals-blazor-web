@@ -15,7 +15,7 @@ namespace BaseDatos.Admin
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryFirstOrDefaultAsync<int>("SELECT contenido FROM adminDatos WHERE id=@id OPTION (MAXDOP 8)", new { id });
+					return await conexion.QueryFirstOrDefaultAsync<int>("SELECT contenido FROM adminDatos WHERE id=@id", new { id });
 				});
 			}
 			catch (Exception ex)
@@ -24,6 +24,23 @@ namespace BaseDatos.Admin
 			}
 
 			return 0;
+		}
+
+		public static async Task<DateTime> Tarea(string id)
+		{
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<DateTime>("SELECT fecha FROM adminTareas WHERE id=@id", new { id });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Buscar Tarea", ex);
+			}
+
+			return new DateTime();
 		}
 
 		public static async Task<bool> TiendasPosibleUsar(TimeSpan tiempo, string tiendaId)

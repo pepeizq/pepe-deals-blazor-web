@@ -47,7 +47,9 @@ namespace Herramientas.RedesSociales
 
                             if (gratis != null)
                             {
-                                juegosGratis.Add(gratis);
+								gratis.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
+
+								juegosGratis.Add(gratis);
                             }
                         }
                     }
@@ -70,7 +72,9 @@ namespace Herramientas.RedesSociales
 
                             if (suscripcion != null)
                             {
-                                juegosSuscripciones.Add(suscripcion);
+								suscripcion.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
+
+								juegosSuscripciones.Add(suscripcion);
                             }
                         }
                     }
@@ -723,7 +727,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static async Task PostearOfertasDia(IConfiguration configuracion, List<Juego> juegos)
+        public static async Task PostearOfertasDia(IConfiguration configuracion, List<Juego> juegos, JuegoDRM drm)
         {
             string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
             string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
@@ -735,7 +739,7 @@ namespace Herramientas.RedesSociales
 
             RedditSharp.Things.Subreddit subreddit = await reddit.GetSubredditAsync("gamedealsue");
 
-            string titulo = "Today's Deals [" + DateTime.Now.Day.ToString() + "/" + DateTime.Now.Month.ToString() + "/" + DateTime.Now.Year.ToString() + "]";
+            string titulo = "Today's Deals for " + JuegoDRM2.DevolverDRM(drm) + " [" + DateTime.Now.Day.ToString() + "/" + DateTime.Now.Month.ToString() + "/" + DateTime.Now.Year.ToString() + "]";
             string texto = null;
 
             if (juegos?.Count > 0)

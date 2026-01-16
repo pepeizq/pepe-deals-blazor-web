@@ -19,6 +19,13 @@
         <button @onclick="DescartarDlcMaestro" class="boton-pequeño" style="padding: 10px 30px; width: fit-content;">
             Descartar
         </button>
+
+        @if (dlcsComprobacionUltimaVez > DateTime.MinValue)
+        {
+            <div>
+                Última comprobación: @Herramientas.Calculadora.DiferenciaTiempo(dlcsComprobacionUltimaVez, "es")
+            </div>
+        }
     </div>
 
     @if (dlcsPendientes?.Count > 0)
@@ -50,11 +57,13 @@
 
     private List<global::Juegos.Juego> dlcsPendientes = new List<global::Juegos.Juego>();
     private global::Juegos.Juego dlcMostrar = new global::Juegos.Juego();
+    private DateTime dlcsComprobacionUltimaVez = DateTime.MinValue;
 
     protected override async Task OnInitializedAsync()
     {
         dlcsPendientes = await BaseDatos.Juegos.Buscar.DLCs(null, global::Juegos.JuegoTipo.DLC);
-		dlcMostrar = dlcsPendientes.FirstOrDefault();
+        dlcMostrar = dlcsPendientes.FirstOrDefault();
+        dlcsComprobacionUltimaVez = await BaseDatos.Admin.Buscar.Tarea("steamDLCs");
     }
 
     private bool noEncontrado = false;

@@ -213,21 +213,24 @@ namespace Herramientas
 					{
 						if (Herramientas.OfertaActiva.Verificar(oferta) == true)
 						{
-							decimal tempPrecio = oferta.Precio;
-
-							if (oferta.PrecioCambiado > 0)
+							if (oferta.Descuento > 0)
 							{
-								tempPrecio = oferta.PrecioCambiado;
-                            }
+								decimal tempPrecio = oferta.Precio;
 
-                            if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
-							{
-								tempPrecio = Herramientas.Divisas.Cambio(tempPrecio, oferta.Moneda);
-							}
+								if (oferta.PrecioCambiado > 0)
+								{
+									tempPrecio = oferta.PrecioCambiado;
+								}
 
-							if (tempPrecio < minimoCantidad)
-							{
-								minimoCantidad = tempPrecio;
+								if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
+								{
+									tempPrecio = Herramientas.Divisas.Cambio(tempPrecio, oferta.Moneda);
+								}
+
+								if (tempPrecio < minimoCantidad)
+								{
+									minimoCantidad = tempPrecio;
+								}
 							}
 						}
 					}
