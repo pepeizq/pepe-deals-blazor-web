@@ -105,27 +105,30 @@
                 }
             </div>
 
-            <div class="juego-descuento-precio">
-                <div class="juego-hacetiempo" style="font-size: 14px; margin: 20px;">
-                    @Herramientas.Calculadora.DiferenciaTiempo(precio.FechaDetectado, idioma, 0)
-                </div>
+            @if (sePuedeComprar == true)
+            {
+                <div class="juego-descuento-precio">
+                    <div class="juego-hacetiempo" style="font-size: 14px; margin: 20px;">
+                        @Herramientas.Calculadora.DiferenciaTiempo(precio.FechaDetectado, idioma, 0)
+                    </div>
 
-                <div class="juego-descuento" style="width: 75px; text-align: center;">
-                    @precio.Descuento.ToString()%
-                </div>
+                    <div class="juego-descuento" style="width: 75px; text-align: center;">
+                        @precio.Descuento.ToString()%
+                    </div>
 
-                <div class="juego-precio">
-                    @if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
-                    {
-                        <div style="text-align: center;">@Herramientas.Precios.Euro(precio.PrecioCambiado)</div>
-                        <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precio.Precio, precio.Moneda)</div>
-                    }
-                    else
-                    {
-                        <div style="text-align: center;">@Herramientas.Precios.Euro(precio.Precio)</div>
-                    }
+                    <div class="juego-precio">
+                        @if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
+                        {
+                            <div style="text-align: center;">@Herramientas.Precios.Euro(precio.PrecioCambiado)</div>
+                            <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precio.Precio, precio.Moneda)</div>
+                        }
+                        else
+                        {
+                            <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
+                        }
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </a>
 </div>
@@ -156,9 +159,17 @@
     public string juegoNombre { get; set; }
 
     public string enlace = string.Empty;
+    public bool sePuedeComprar = true;
+
     public List<Juegos.Juego> juegosBundle = new List<Juegos.Juego>();
     public List<int> juegosUsuarioBundle = new List<int>();
     public int cuantosJuegosBundle { get; set; }
+
+    [PersistentState]
+    public decimal precioFinal { get; set; }    
+
+    [Parameter] 
+    public EventCallback<decimal> OnPrecioFinalCalculado { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -177,16 +188,61 @@
             {
                 foreach (var juegoBundle in juegosBundle)
                 {
-                    bool usuarioTieneJuego = juegosUsuario.Steam.Any(js => js.Id == juegoBundle.IdSteam);                    
+                    bool usuarioTieneJuego = juegosUsuario.Steam.Any(js => js.Id == juegoBundle.IdSteam);
 
                     if (usuarioTieneJuego == true)
                     {
                         juegosUsuarioBundle.Add(juegoBundle.IdSteam);
                         cuantosJuegosBundle += 1;
+
+                        if (juegoBundle.PrecioActualesTiendas?.Count > 0)
+                        {
+                            foreach (var precioJuego in juegoBundle.PrecioActualesTiendas)
+                            {
+                                if (precioJuego.Tienda == APIs.Steam.Tienda.Generar().Id)
+                                {
+                                    if (precioJuego.Enlace.Contains("/app/") == true && Herramientas.OfertaActiva.Verificar(precioJuego) == true)
+                                    {
+                                        var precioRebajar = precioJuego.Precio - (precioJuego.Precio * (precio.BundleSteam.Descuento / 100m));
+
+                                        if (precioFinal == 0)
+                                        {
+                                            precioFinal = precio.Precio - precioRebajar;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+
+                if (cuantosJuegosBundle == juegosBundle.Count)
+                {
+                    sePuedeComprar = false;
                 }
             }
         }
+
+        if (precioFinal == 0)
+        {
+            if (precio.Moneda == Herramientas.JuegoMoneda.Euro)
+            {
+                precioFinal = precio.Precio;
+            }
+            else
+            {
+                if (precio.PrecioCambiado > 0)
+                {
+                    precioFinal = precio.PrecioCambiado;
+                }
+                else
+                {
+                    precioFinal = precio.Precio;
+                }
+            }
+        }
+
+        await OnPrecioFinalCalculado.InvokeAsync(precioFinal);
     }
 
     public static string SacarImagenTienda(string codigo)

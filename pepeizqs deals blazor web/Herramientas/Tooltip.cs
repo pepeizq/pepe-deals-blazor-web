@@ -149,9 +149,12 @@ namespace Herramientas
 				{
 					bool añadir = true;
 
-					if (GratisCargar.DevolverGratis(juego.GratisActuales[0].gratis).Tipo == gratisTipoActual)
+					if (gratisTipoActual != GratisTipo.Desconocido)
 					{
-						añadir = false;
+						if (GratisCargar.DevolverGratis(gratis2.gratis).Tipo == gratisTipoActual)
+						{
+							añadir = false;
+						}
 					}
 
 					if (añadir == true)
@@ -193,9 +196,12 @@ namespace Herramientas
 				{
 					bool añadir = true;
 
-					if (SuscripcionesCargar.DevolverSuscripcion(juego.SuscripcionesActuales[0].suscripcion).Id == suscripcionTipoActual)
+					if (suscripcionTipoActual != SuscripcionTipo.Desconocido)
 					{
-						añadir = false;
+						if (SuscripcionesCargar.DevolverSuscripcion(suscripcion2.suscripcion).Id == suscripcionTipoActual)
+						{
+							añadir = false;
+						}
 					}
 
 					if (añadir == true)

@@ -902,7 +902,7 @@
 	public JuegoDRM drmGratis { get; set; }
 
 	[Parameter]
-	public Gratis2.GratisTipo tipoGratis { get; set; }
+    public Gratis2.GratisTipo tipoGratis { get; set; } = Gratis2.GratisTipo.Desconocido;
 
 	[Parameter]
 	public int idSuscripcion { get; set; }
@@ -914,7 +914,7 @@
 	public JuegoDRM drmSuscripcion { get; set; }
 
 	[Parameter]
-	public Suscripciones2.SuscripcionTipo tipoSuscripcion { get; set; }
+	public Suscripciones2.SuscripcionTipo tipoSuscripcion { get; set; } = Suscripciones2.SuscripcionTipo.Desconocido;
 
 	public enum Tipo
 	{

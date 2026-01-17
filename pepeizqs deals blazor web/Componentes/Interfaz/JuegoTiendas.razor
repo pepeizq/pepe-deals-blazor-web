@@ -1,0 +1,214 @@
+﻿@using Juegos
+
+@if (preciosActualesDRM.Count > 0)
+{
+    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+        @if (preciosMostrar?.Count > 0)
+        {
+            foreach (JuegoPrecio precio in preciosMostrar.OrderBy(p => p.Precio))
+            {
+                <JuegoTiendasEnlace @key="precio.Enlace" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                    usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" 
+                                    OnPrecioFinalCalculado="pf => precio.Precio = pf"/>
+            }
+        }
+
+        @if (preciosBajos?.Count > 0)
+        {
+            <button class="juego-boton-pequeño" style="display: block;" @onclick="(e => DescuentosBajosMostrar(e))">
+                <div style="display: flex; align-items: center; padding: 5px;">
+                    @if (mostrarDescuentosBajos == true)
+                    {
+                        <div style="max-width: 12px;">
+                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
+                            </svg>
+                        </div>
+
+                        <div style="width: 100%; text-align: center; font-size: 14px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String43", "Game")
+                        </div>
+
+                        <div style="max-width: 12px;">
+                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
+                            </svg>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="max-width: 12px;">
+                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z" />
+                            </svg>
+                        </div>
+
+                        <div style="width: 100%; text-align: center; font-size: 14px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String42", "Game")
+                        </div>
+
+                        <div style="max-width: 12px;">
+                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                <path d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z" />
+                            </svg>
+                        </div>
+                    }
+                </div>
+            </button>
+
+            if (mostrarDescuentosBajos == true)
+            {
+                foreach (var precioBajo in preciosBajos)
+                {
+                    <JuegoTiendasEnlace @key="precioBajo.Enlace" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                        usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
+                }
+            }
+        }
+    </div>
+}
+else
+{
+    if (string.IsNullOrEmpty(mensajeMinimoDRM) == false)
+    {
+        <div style="padding: 30px 40px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Game")</div>
+    }
+}
+
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public List<JuegoPrecio> preciosActualesDRM { get; set; }
+
+    [Parameter]
+    public string mensajeMinimoDRM { get; set; }
+
+    [Parameter]
+    public string usuarioId { get; set; }
+
+    [Parameter]
+    public string idioma { get; set; }
+
+    [Parameter]
+    public string userAgent { get; set; }
+
+    [Parameter]
+    public bool usuarioPatreon { get; set; }
+
+    [Parameter]
+    public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+
+    [Parameter]
+    public string juegoNombre { get; set; }
+
+    private bool mostrarDescuentosBajos = false;
+
+    [PersistentState] public List<JuegoPrecio> preciosMostrar { get; set; }
+    [PersistentState] public List<JuegoPrecio> preciosBajos { get; set; }
+
+    protected override void OnInitialized()
+    {
+        preciosMostrar = new List<JuegoPrecio>();
+        preciosBajos = new List<JuegoPrecio>();
+
+        var preciosActivos = preciosActualesDRM.Where(p => Herramientas.OfertaActiva.Verificar(p)).ToList();
+
+        if (preciosActivos.Any() == false)
+        {
+            return;
+        }
+
+        int descuentoMaximo = preciosActivos.Max(p => p.Descuento);
+        int umbralDescuento = descuentoMaximo / 2;
+
+        var enlacesUsados = new HashSet<string>();
+
+        foreach (var precio in preciosActivos)
+        {
+            if (enlacesUsados.Add(precio.Enlace) == false)
+            {
+                continue;
+            }
+
+            if (precio.Descuento >= umbralDescuento || 
+                precio.Tienda == APIs.Steam.Tienda.GenerarBundles().Id)
+            {
+                preciosMostrar.Add(precio);
+            }
+            else
+            {
+                preciosBajos.Add(precio);
+            }
+        }
+
+        decimal ObtenerPrecioReal(JuegoPrecio p)
+        {
+            if (p.Moneda == Herramientas.JuegoMoneda.Euro)
+            {
+                return p.Precio;
+            }
+
+            return p.PrecioCambiado;
+        }
+
+        decimal precioMinimoMostrar = preciosMostrar
+            .Select(ObtenerPrecioReal)
+            .Where(p => p > 0)
+            .DefaultIfEmpty(decimal.MaxValue)
+            .Min();
+
+        var mover = preciosBajos
+            .Where(p =>
+            {
+                decimal precioReal = ObtenerPrecioReal(p);
+                return precioReal > 0 && precioReal < precioMinimoMostrar;
+            }).ToList();
+
+        foreach (var precio in mover)
+        {
+            preciosBajos.Remove(precio);
+            preciosMostrar.Add(precio);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            decimal ObtenerPrecioReal(JuegoPrecio p)
+            {
+                if (p.Moneda == Herramientas.JuegoMoneda.Euro)
+                {
+                    return p.Precio;
+                }
+
+                return p.PrecioCambiado;
+            }
+
+            if (preciosMostrar?.Count > 0)
+            {
+                preciosMostrar = preciosMostrar.OrderBy(p => ObtenerPrecioReal(p)).ToList();
+            }
+
+            if (preciosBajos?.Count > 0)
+            {
+                preciosBajos = preciosBajos.OrderBy(p => ObtenerPrecioReal(p)).ToList();
+            }
+        }
+    }
+
+    private void DescuentosBajosMostrar(MouseEventArgs e)
+    {
+        if (mostrarDescuentosBajos == false)
+        {
+            mostrarDescuentosBajos = true;
+        }
+        else
+        {
+            mostrarDescuentosBajos = false;
+        }
+    }
+}

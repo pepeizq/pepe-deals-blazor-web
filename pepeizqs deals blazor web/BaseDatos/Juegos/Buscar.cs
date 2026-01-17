@@ -1501,7 +1501,7 @@ FROM seccionMinimos j";
 			}
 
 			string sql = @"
-				SELECT j.idSteam, j.imagenes
+				SELECT j.idSteam, j.imagenes, j.precioActualesTiendas
 				FROM juegos j
 				WHERE j.id IN (
 					SELECT value 
