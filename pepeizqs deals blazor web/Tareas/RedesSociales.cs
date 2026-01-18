@@ -37,8 +37,7 @@ namespace Tareas
 						tiempoSiguiente = TimeSpan.FromSeconds(60);
 					}
 
-					if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", tiempoSiguiente) == true &&
-						(await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60)))?.Count == 0)
+					if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("redessociales", tiempoSiguiente) == true)
                     {
 						await BaseDatos.Admin.Actualizar.TareaUso("redessociales", DateTime.Now.AddMinutes(70));
 

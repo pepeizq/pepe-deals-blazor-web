@@ -284,7 +284,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     <div class="caja-admin-noticias" style="margin-top: 20px;">
         <div>
             <label style="margin-bottom: 10px;">Imagen Noticia:</label>
-            <input class="entrada-texto" @bind-value="@noticia.Imagen">
+            <input class="entrada-texto" @bind-value="@noticia.Imagen" @bind-value:after="CambiarImagenNoticias">
 
             @if (string.IsNullOrEmpty(noticia.Imagen) == false)
             {
@@ -756,6 +756,25 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         {
             noticia.Imagen = "https://" + dominio + "/logo/logoentrada.webp";
             noticia.Fecha = DateTime.Now;
+        }
+    }
+
+    private async Task CambiarImagenNoticias()
+    {
+        if (noticiaTipoSeleccionada == NoticiaTipo.Web)
+        {
+            if (noticia.Imagen.Contains(dominio) == false)
+            {
+                List<string> imagenes = new List<string>();
+                imagenes.Add(noticia.Imagen);
+
+                var resultado = await Herramientas.Ficheros.Constructor.Imagen(imagenes, "https://" + dominio + "/logo/logo5.png", Herramientas.Ficheros.Constructor.ImagenModo.Web);
+
+                if (resultado.Exito == true)
+                {
+                    noticia.Imagen = "https://" + dominio + resultado.DirectorioFichero;
+                }
+            }
         }
     }
 

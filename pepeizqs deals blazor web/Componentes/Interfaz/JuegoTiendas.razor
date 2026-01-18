@@ -7,7 +7,7 @@
         {
             foreach (JuegoPrecio precio in preciosMostrar.OrderBy(p => p.Precio))
             {
-                <JuegoTiendasEnlace @key="precio.Enlace" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                     usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" 
                                     OnPrecioFinalCalculado="pf => precio.Precio = pf"/>
             }
@@ -60,7 +60,7 @@
             {
                 foreach (var precioBajo in preciosBajos)
                 {
-                    <JuegoTiendasEnlace @key="precioBajo.Enlace" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                    <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                         usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
                 }
             }
@@ -128,7 +128,7 @@ else
 
         foreach (var precio in preciosActivos)
         {
-            if (enlacesUsados.Add(precio.Enlace) == false)
+            if (enlacesUsados.Add(precio.Enlace + precio.Tienda) == false)
             {
                 continue;
             }

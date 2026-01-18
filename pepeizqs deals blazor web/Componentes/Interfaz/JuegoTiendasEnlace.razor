@@ -125,6 +125,13 @@
                         else
                         {
                             <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
+
+                            if (precioOriginalBundle > 0)
+                            {
+                                <div style="text-align: center; font-size: 13px; margin-top: 5px; text-decoration: line-through;">
+                                    @Herramientas.Precios.Euro(precioOriginalBundle)
+                                </div>
+                            }
                         }
                     </div>
                 </div>
@@ -166,7 +173,10 @@
     public int cuantosJuegosBundle { get; set; }
 
     [PersistentState]
-    public decimal precioFinal { get; set; }    
+    public decimal precioOriginalBundle { get; set; }
+
+    [PersistentState]
+    public decimal precioFinal { get; set; } 
 
     [Parameter] 
     public EventCallback<decimal> OnPrecioFinalCalculado { get; set; }
@@ -207,6 +217,7 @@
 
                                         if (precioFinal == 0)
                                         {
+                                            precioOriginalBundle = precio.Precio;
                                             precioFinal = precio.Precio - precioRebajar;
                                         }
                                     }

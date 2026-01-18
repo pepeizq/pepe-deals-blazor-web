@@ -495,14 +495,16 @@ namespace APIs.Steam
 
 			while (arranque < tope)
 			{
-				string rapidoTexto = null;
+				string rapidoTexto1 = null;
+				string rapidoTexto2 = null;
 
 				if (rapido == false)
 				{
-					rapidoTexto = "%22include_all_purchase_options%22:true,";
+					rapidoTexto1 = "%22include_all_purchase_options%22:true,";
+					rapidoTexto2 = ",%22include_packages%22:true,%22include_bundles%22:true,%22include_dlc%22:true,%22include_software%22:true,%22include_music%22:true";
 				}
 
-				string html = await Decompiladores.Estandar("https://api.steampowered.com/IStoreQueryService/Query/v1/?input_json={%22query%22:{%22start%22:" + arranque + ",%22count%22:1000,%22filters%22:{%22released_only%22:true,%22type_filters%22:{%22include_apps%22:true,%22include_packages%22:true,%22include_bundles%22:true,%22include_games%22:true,%22include_dlc%22:true,%22include_software%22:true,%22include_music%22:true},%22price_filters%22:[{%22min_discount_percent%22:%221%22}]}},%22context%22:{%22language%22:%22english%22,%22country_code%22:%22ES%22,%22steam_realm%22:%221%22},%22data_request%22:{" + rapidoTexto + "%22include_reviews%22:true}}");
+				string html = await Decompiladores.Estandar("https://api.steampowered.com/IStoreQueryService/Query/v1/?input_json={%22query%22:{%22start%22:" + arranque + ",%22count%22:1000,%22filters%22:{%22released_only%22:true,%22type_filters%22:{%22include_apps%22:true,%22include_games%22:true" + rapidoTexto2 + "},%22price_filters%22:[{%22min_discount_percent%22:%221%22}]}},%22context%22:{%22language%22:%22english%22,%22country_code%22:%22ES%22,%22steam_realm%22:%221%22},%22data_request%22:{" + rapidoTexto1 + "%22include_reviews%22:true}}");
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -652,6 +654,11 @@ namespace APIs.Steam
 										}
 									}
 								}
+
+								if (juego.Suscripciones?.Count > 0)
+								{
+
+								}
 							}
 						}
 					}
@@ -761,6 +768,9 @@ namespace APIs.Steam
 
 		[JsonPropertyName("purchase_options")]
 		public List<SteamPurchaseOption> OpcionesCompra { get; set; }
+
+		[JsonPropertyName("accessories")]
+		public List<SteamPurchaseOption> Suscripciones { get; set; }
 	}
 
 	public class SteamReviews

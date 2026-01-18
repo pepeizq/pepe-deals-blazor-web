@@ -69,7 +69,8 @@ namespace Herramientas.Ficheros
 		public enum ImagenModo
 		{
 			Juego,
-			Bundle
+			Bundle,
+			Web
 		}
 
 		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, string encabezadoEnlace = null, ImagenModo modoImagen = ImagenModo.Juego)
@@ -81,7 +82,7 @@ namespace Herramientas.Ficheros
 				modo = LayoutModo.Horizontal;
 			}
 
-			if (modoImagen == ImagenModo.Bundle)
+			if (modoImagen == ImagenModo.Bundle || modoImagen == ImagenModo.Web)
 			{
 				modo = LayoutModo.Vertical;
 			}
@@ -104,6 +105,13 @@ namespace Herramientas.Ficheros
 					separadorAltura = 0; 
 					separadorAncho = 0;
 				}
+				else if (modoImagen == ImagenModo.Web)
+				{
+					encabezadoAlturaMaxima = 120;
+					encabezadoAnchoMaximo = 120;
+					separadorAltura = 0;
+					separadorAncho = 0;
+				}
 
 				if (string.IsNullOrEmpty(encabezadoEnlace) == false)
 				{
@@ -120,7 +128,7 @@ namespace Herramientas.Ficheros
 						if (modo == LayoutModo.Vertical)
 						{
 							int finalEncabezadoAltura = Math.Min(encabezadoImagen.Height, encabezadoAlturaMaxima);
-							int paddingExtra = modoImagen == ImagenModo.Bundle ? (int)(encabezadoPadding * 1.25) : encabezadoPadding * 2;
+							int paddingExtra = modoImagen == ImagenModo.Bundle || modoImagen == ImagenModo.Web ? (int)(encabezadoPadding * 1.25) : encabezadoPadding * 2;
 							encabezadoAltura = finalEncabezadoAltura + paddingExtra + separadorAltura;
 						}
 						else
@@ -182,6 +190,12 @@ namespace Herramientas.Ficheros
 				{
 					imagenAncho = 720;
 					imagenAltura = 405;
+					columnasPorFila = 1;
+				}
+				else if (modoImagen == ImagenModo.Web)
+				{
+					imagenAncho = 800;
+					imagenAltura = 400;
 					columnasPorFila = 1;
 				}
 

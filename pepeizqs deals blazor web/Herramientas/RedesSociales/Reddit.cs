@@ -28,71 +28,82 @@ namespace Herramientas.RedesSociales
                 {
                     titulo = "[Bundle] " + noticia.TituloEn;
 
-                    var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
-					texto = await Bundle(bundle);
+     //               var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
+					//texto = await Bundle(bundle);
                 }
 
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
                 {
                     titulo = "[Free] " + noticia.TituloEn;
 
-                    List<string> ids = Herramientas.Listados.Generar(noticia.GratisIds);
-                    List<Juegos.JuegoGratis> juegosGratis = new List<Juegos.JuegoGratis>();
+        //            List<string> ids = Herramientas.Listados.Generar(noticia.GratisIds);
+        //            List<Juegos.JuegoGratis> juegosGratis = new List<Juegos.JuegoGratis>();
 
-                    if (ids?.Count > 0)
-                    {
-                        foreach (var id in ids)
-                        {
-                            var gratis = await global::BaseDatos.Gratis.Buscar.UnGratis(id);
+        //            if (ids?.Count > 0)
+        //            {
+        //                foreach (var id in ids)
+        //                {
+        //                    var gratis = await global::BaseDatos.Gratis.Buscar.UnGratis(id);
 
-                            if (gratis != null)
-                            {
-								gratis.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
+        //                    if (gratis != null)
+        //                    {
+								//gratis.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
 
-								juegosGratis.Add(gratis);
-                            }
-                        }
-                    }
+								//juegosGratis.Add(gratis);
+        //                    }
+        //                }
+        //            }
 
-                    texto = await Gratis(juegosGratis);
+        //            texto = await Gratis(juegosGratis);
                 }
 
                 if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
                 {
                     titulo = "[Subscriptions] " + noticia.TituloEn;
 
-                    List<string> ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
-                    List<Juegos.JuegoSuscripcion> juegosSuscripciones = new List<Juegos.JuegoSuscripcion>();
+        //            List<string> ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
+        //            List<Juegos.JuegoSuscripcion> juegosSuscripciones = new List<Juegos.JuegoSuscripcion>();
 
-                    if (ids?.Count > 0)
-                    {
-                        foreach (var id in ids)
-                        {
-                            var suscripcion = await global::BaseDatos.Suscripciones.Buscar.Id(int.Parse(id));
+        //            if (ids?.Count > 0)
+        //            {
+        //                foreach (var id in ids)
+        //                {
+        //                    var suscripcion = await global::BaseDatos.Suscripciones.Buscar.Id(int.Parse(id));
 
-                            if (suscripcion != null)
-                            {
-								suscripcion.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
+        //                    if (suscripcion != null)
+        //                    {
+								//suscripcion.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
 
-								juegosSuscripciones.Add(suscripcion);
-                            }
-                        }
-                    }
+								//juegosSuscripciones.Add(suscripcion);
+        //                    }
+        //                }
+        //            }
 
-                    texto = await Suscripciones(juegosSuscripciones);
+        //            texto = await Suscripciones(juegosSuscripciones);
                 }
                
-                if (string.IsNullOrEmpty(texto) == false)
+                if (string.IsNullOrEmpty(titulo) == false)
                 {
                     try
                     {
-                        RedditSharp.Things.Post post = await subreddit.SubmitTextPostAsync(titulo, texto);
-                        
-                        if (post != null)
-                        {
-                            return true;
-                        }
-                    }
+						string enlace = string.Empty;
+
+						if (string.IsNullOrEmpty(noticia.Enlace) == true)
+						{
+							enlace = "https://" + dominio + "/news/" + noticia.Id.ToString();
+						}
+						else
+						{
+							enlace = noticia.Enlace;
+						}
+
+						RedditSharp.Things.Post post = await subreddit.SubmitPostAsync(titulo, enlace);
+
+						if (post != null)
+						{
+							return true;
+						}
+					}
                     catch (Exception ex) 
                     {
                         global::BaseDatos.Errores.Insertar.Mensaje("Reddit Postear Noticia", ex);
