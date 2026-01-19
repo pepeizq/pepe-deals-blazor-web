@@ -67,5 +67,41 @@ namespace BaseDatos.Suscripciones
 				BaseDatos.Errores.Insertar.Mensaje("Suscripciones Insertar Temporal " + nombreTabla, ex);
 			}
 		}
+
+		public static async Task Steam(int idPaquete, int idJuego)
+		{
+			string sql = @"
+BEGIN TRAN;
+
+UPDATE tiendasteamsuscripciones
+SET fecha = GETDATE()
+WHERE idPaquete = @IdPaquete
+  AND idJuego   = @IdJuego;
+
+IF @@ROWCOUNT = 0
+BEGIN
+    INSERT INTO tiendasteamsuscripciones (idPaquete, idJuego, fecha)
+    VALUES (@IdPaquete, @IdJuego, GETDATE());
+END
+
+COMMIT TRAN;
+";
+
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(sql, new
+					{
+						idPaquete,
+						idJuego
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Suscripciones Insertar Steam", ex);
+			}
+		}
 	}
 }

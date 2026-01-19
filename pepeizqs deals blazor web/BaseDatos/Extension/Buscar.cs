@@ -253,21 +253,33 @@ namespace BaseDatos.Extension
 
 		private static void CargarPrecios(string json, List<ExtensionPrecio> destino)
 		{
-			if (string.IsNullOrEmpty(json))
+			if (string.IsNullOrEmpty(json) == true)
+			{
 				return;
+			}
 
 			var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(json);
 			if (lista == null)
+			{ 
 				return;
+			}
 
 			foreach (var precio in lista)
 			{
 				if (precio?.Tienda == null)
+				{
 					continue;
+				}
+				else if (precio.Tienda == APIs.Steam.Tienda.GenerarBundles().Id)
+				{
+					continue;
+				}	
 
 				var tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda);
 				if (tienda == null)
+				{
 					continue;
+				}
 
 				precio.Enlace = Herramientas.EnlaceAcortador.Generar(
 					precio.Enlace,

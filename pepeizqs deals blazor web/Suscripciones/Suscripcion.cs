@@ -25,6 +25,7 @@ namespace Suscripciones2
 		public bool SoloStreaming;
 		public bool AdminAñadir;
 		public bool UsuarioPuedeAbrir;
+		public int SteamPaquete;
 	}
 
     public class SuscripcionComponente

@@ -28,7 +28,7 @@ namespace APIs.Steam
 				return null;
 			}
 
-			string html2 = await Decompiladores.Estandar(@"https://api.steampowered.com/IStoreBrowseService/GetItems/v1?input_json={""ids"":[{""appid"":" + id + @"}],""context"":{""language"":""english"",""country_code"":""ES"",""steam_realm"":1},""data_request"":{""include_reviews"":true,""include_basic_info"":true, ""include_assets"": true, ""include_links"": true, ""include_tag_count"": 20, ""include_release"": true, ""include_platforms"": true, ""include_screenshots"": true, ""include_trailers"": true, ""include_supported_languages"": true}}");
+			string html2 = await Decompiladores.Estandar(@"https://api.steampowered.com/IStoreBrowseService/GetItems/v1?input_json={""ids"":[{""appid"":" + id + @"}],""context"":{""language"":""english"",""country_code"":""ES"",""steam_realm"":1},""data_request"":{""include_reviews"":true,""include_basic_info"":true, ""include_assets"": true, ""include_links"": true, ""include_tag_count"": 20, ""include_release"": true, ""include_platforms"": true, ""include_screenshots"": true, ""include_trailers"": true, ""include_supported_languages"": true, ""include_all_purchase_options"": true}}");
 
 			if (string.IsNullOrEmpty(html2) == false)
 			{
@@ -603,6 +603,21 @@ namespace APIs.Steam
 
 							#endregion
 
+							#region Suscripciones
+
+							if (juegoApi.Suscripciones?.Count > 0)
+							{
+								foreach (var suscripcion in juegoApi.Suscripciones)
+								{
+									if (suscripcion.PaqueteId > 0)
+									{
+										await BaseDatos.Suscripciones.Insertar.Steam(suscripcion.PaqueteId, int.Parse(id));
+									}
+								}
+							}
+
+							#endregion
+
 							Juegos.Juego juego = new Juegos.Juego
 							{
 								IdSteam = int.Parse(id),
@@ -1109,6 +1124,9 @@ namespace APIs.Steam
 
 		[JsonPropertyName("related_items")]
 		public SteamJuegoAPI2JuegoCosas Cosas { get; set; }
+
+		[JsonPropertyName("accessories")]
+		public List<SteamJuegoAPI2JuegoPrecio> Suscripciones { get; set; }
 	}
 
 	public class SteamJuegoAPI2JuegoImagenes
@@ -1328,6 +1346,9 @@ namespace APIs.Steam
 
 		[JsonPropertyName("discount_pct")]
 		public int Descuento { get; set; } = 0;
+
+		[JsonPropertyName("packageid")]
+		public int PaqueteId { get; set; }
 	}
 
 	public class SteamJuegoAPI2JuegoCosas

@@ -3356,7 +3356,7 @@
                     #region API
 
                     bool actualizarDatosAPI = false;
-                    TimeSpan tiempoComprobar = TimeSpan.FromDays(60);
+                    TimeSpan tiempoComprobar = TimeSpan.FromDays(30);
 
                     if (juego.Caracteristicas?.FechaLanzamientoSteam != null)
                     {
@@ -3379,10 +3379,6 @@
                         else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 30)
                         {
                             tiempoComprobar = TimeSpan.FromDays(5);
-                        }
-                        else if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 120)
-                        {
-                            tiempoComprobar = TimeSpan.FromDays(30);
                         }
                     }
 

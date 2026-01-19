@@ -17,6 +17,7 @@ namespace Suscripciones2
 		LunaStandard,
 		LunaClaims,
 		PlayStationPlus,
+		GTAPlus,
 		Desconocido
 	}
 
@@ -38,7 +39,8 @@ namespace Suscripciones2
 				APIs.AmazonLuna.Suscripcion.GenerarStandard(),
 				APIs.AmazonLuna.Suscripcion.GenerarPremium(),
 				APIs.AmazonLuna.Suscripcion.GenerarClaims(),
-				APIs.PlayStation.Suscripcion.Generar()
+				APIs.PlayStation.Suscripcion.Generar(),
+				APIs.GTAPlus.Suscripcion.Generar()
 			};
 
 			return suscripciones;

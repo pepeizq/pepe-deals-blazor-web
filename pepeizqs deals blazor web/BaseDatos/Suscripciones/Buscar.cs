@@ -276,5 +276,26 @@ ORDER BY id DESC";
 
 			return null;
 		}
+
+		public static async Task<List<int>> Steam(int idPaquete)
+		{
+			string busqueda = @"
+SELECT idJuego FROM tiendasteamsuscripciones
+WHERE idPaquete=@idPaquete";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<int>(busqueda, new { idPaquete })).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Suscripciones Steam", ex);
+			}
+
+			return null;
+		}
 	}
 }

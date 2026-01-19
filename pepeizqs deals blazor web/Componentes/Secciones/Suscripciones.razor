@@ -325,24 +325,20 @@ else
                 var gruposPorDia = suscripcionesUltimas.GroupBy(x => x.FechaEmpieza.Date).OrderByDescending(g => g.Key).Select(g => new
                 {
                     Fecha = g.Key,
-                    GruposPorElegido = g
-                .Select(j => new
-                {
-                    Juego = j,
-                    Elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(j.Tipo)
-                })
-                .OrderBy(x => x.Elegido.Nombre)
-                .GroupBy(x => x.Elegido.Id)
-                .Select(eg => new
-                {
-                    Elegido = eg.First().Elegido,
-                    Juegos = eg
-                .Select(x => x.Juego)
-                .OrderBy(x => x.Juego.Nombre)
-                .ToList()
-                })
-                .ToList()
-                }).ToList();
+                    GruposPorElegido = g.Select(j => new
+                                        {
+                                            Juego = j,
+                                            Elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(j.Tipo)
+                                        })
+                                        .OrderBy(x => x.Elegido.Nombre)
+                                        .GroupBy(x => x.Elegido.Id)
+                                        .Select(eg => new
+                                        {
+                                            Elegido = eg.First().Elegido,
+                                            Juegos = eg
+                                        .Select(x => x.Juego)
+                                        .OrderBy(x => x.Juego.Nombre)
+                                        .ToList()}).ToList()}).ToList();
 
                 foreach (var grupo in gruposPorDia)
                 {
@@ -658,8 +654,6 @@ else
         suscripcionSeleccionada = suscripcion;
 
         juegosActuales = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionada, ordenarPor, textoBuscador);
-
-
     }
 
     private async Task CambiarEnlace(Suscripciones2.SuscripcionTipo suscripcion)
