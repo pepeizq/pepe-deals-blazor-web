@@ -95,7 +95,7 @@ namespace APIs.Steam
                 {
                     SteamCuentaAPI cuenta = JsonSerializer.Deserialize<SteamCuentaAPI>(html);
 
-                    if (cuenta != null)
+                    if (cuenta?.Datos?.Jugador?.Count > 0)
                     {
 						List<SteamUsuarioJuego> juegos = null;
                         string htmlJuegos = await Decompiladores.Estandar("https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamid=" + cuenta.Datos.Jugador[0].ID64 + "&include_appinfo=1&include_played_free_games=1&include_extended_appinfo=1");
@@ -174,30 +174,30 @@ namespace APIs.Steam
 
 						//----------------------------------------------
 
-						bool grupoPremium = false;
-                        bool grupoNormal = false;
-                        string htmlGrupos = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetUserGroupList/v0001/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamid=" + cuenta.Datos.Jugador[0].ID64);
+						//bool grupoPremium = false;
+      //                  bool grupoNormal = false;
+      //                  string htmlGrupos = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetUserGroupList/v0001/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamid=" + cuenta.Datos.Jugador[0].ID64);
 
-                        if (string.IsNullOrEmpty(htmlGrupos) == false)
-                        {
-                            SteamGruposAPI json = JsonSerializer.Deserialize<SteamGruposAPI>(htmlGrupos);
+      //                  if (string.IsNullOrEmpty(htmlGrupos) == false)
+      //                  {
+      //                      SteamGruposAPI json = JsonSerializer.Deserialize<SteamGruposAPI>(htmlGrupos);
 
-                            if (json != null)
-                            {
-                                foreach (var grupo in json.Datos.Grupos)
-                                {
-                                    if (grupo.Id == "40604285")
-                                    {
-                                        grupoPremium = true;
-                                    }
+      //                      if (json != null)
+      //                      {
+      //                          foreach (var grupo in json.Datos.Grupos)
+      //                          {
+      //                              if (grupo.Id == "40604285")
+      //                              {
+      //                                  grupoPremium = true;
+      //                              }
 
-                                    if (grupo.Id == "33500256")
-                                    {
-                                        grupoNormal = true;
-                                    }
-                                }
-                            }
-                        }
+      //                              if (grupo.Id == "33500256")
+      //                              {
+      //                                  grupoNormal = true;
+      //                              }
+      //                          }
+      //                      }
+      //                  }
 
                         //----------------------------------------------
 
@@ -205,8 +205,8 @@ namespace APIs.Steam
                         {
                             Avatar = cuenta.Datos.Jugador[0].Avatar,
                             Nombre = cuenta.Datos.Jugador[0].Nombre,
-                            GrupoPremium = grupoPremium.ToString(),
-                            GrupoNormal = grupoNormal.ToString(),
+                            //GrupoPremium = grupoPremium.ToString(),
+                            //GrupoNormal = grupoNormal.ToString(),
                             SteamId = nuevaCuenta.ID64
                         };
 

@@ -4,7 +4,6 @@
 #nullable disable
 
 using Herramientas;
-using Herramientas.Redireccionador;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -40,649 +39,646 @@ namespace APIs.Steam
 				}
 				catch { }
 
-				if (datos2 != null)
+				if (datos2?.Respuesta.Juegos.Count == 1)
 				{
-					if (datos2.Respuesta.Juegos.Count == 1)
+					if (datos2.Respuesta.Juegos[0] != null)
 					{
-						if (datos2.Respuesta.Juegos[0] != null)
+						var juegoApi = datos2.Respuesta.Juegos[0];
+
+						string nombre = string.Empty;
+						Juegos.JuegoTipo tipo = Juegos.JuegoTipo.Game;
+						Juegos.JuegoCaracteristicas caracteristicas = new Juegos.JuegoCaracteristicas();
+						Juegos.JuegoImagenes imagenes = new Juegos.JuegoImagenes();
+						Juegos.JuegoMedia media = new Juegos.JuegoMedia();
+						Juegos.JuegoAnalisis reseñas = new Juegos.JuegoAnalisis();
+						List<string> categorias = new List<string>();
+						List<string> etiquetas = new List<string>();
+						Juegos.JuegoDeck deck = Juegos.JuegoDeck.Desconocido;
+						Juegos.JuegoSteamOS steamOS = Juegos.JuegoSteamOS.Desconocido;
+						bool freeToPlay = false;
+						List<Juegos.JuegoIdioma> idiomas = new List<Juegos.JuegoIdioma>();
+						Juegos.JuegoPrecio precio = null;
+						int idMaestro = 0;
+
+						#region Nombre
+
+						if (string.IsNullOrEmpty(juegoApi.Nombre) == false)
 						{
-							var juegoApi = datos2.Respuesta.Juegos[0];
+							Encoding Utf8 = Encoding.UTF8;
+							byte[] utf8Bytes = Utf8.GetBytes(juegoApi.Nombre);
+							nombre = Utf8.GetString(utf8Bytes);
+						}
 
-							string nombre = string.Empty;
-							Juegos.JuegoTipo tipo = Juegos.JuegoTipo.Game;
-							Juegos.JuegoCaracteristicas caracteristicas = new Juegos.JuegoCaracteristicas();
-							Juegos.JuegoImagenes imagenes = new Juegos.JuegoImagenes();
-							Juegos.JuegoMedia media = new Juegos.JuegoMedia();
-							Juegos.JuegoAnalisis reseñas = new Juegos.JuegoAnalisis();
-							List<string> categorias = new List<string>();
-							List<string> etiquetas = new List<string>();
-							Juegos.JuegoDeck deck = Juegos.JuegoDeck.Desconocido;
-							Juegos.JuegoSteamOS steamOS = Juegos.JuegoSteamOS.Desconocido;
-							bool freeToPlay = false;
-							List<Juegos.JuegoIdioma> idiomas = new List<Juegos.JuegoIdioma>();
-							Juegos.JuegoPrecio precio = null;
-							int idMaestro = 0;
+						#endregion
 
-							#region Nombre
+						#region Tipo
 
-							if (string.IsNullOrEmpty(juegoApi.Nombre) == false)
+						if (juegoApi.Tipo == 0)
+						{
+							tipo = Juegos.JuegoTipo.Game;
+						}
+						else if (juegoApi.Tipo == 4)
+						{
+							tipo = Juegos.JuegoTipo.DLC;
+						}
+						else if (juegoApi.Tipo == 11)
+						{
+							tipo = Juegos.JuegoTipo.Music;
+						}
+						else if (juegoApi.Tipo == 6)
+						{
+							tipo = Juegos.JuegoTipo.Software;
+						}
+
+						#endregion
+
+						#region Caracteristicas
+
+						if (juegoApi?.Info?.Desarrolladores?.Count > 0)
+						{
+							List<Juegos.JuegoCaracteristicasCurator> desarrolladores = new List<Juegos.JuegoCaracteristicasCurator>();
+
+							foreach (var desarrollador in juegoApi.Info.Desarrolladores)
 							{
-								Encoding Utf8 = Encoding.UTF8;
-								byte[] utf8Bytes = Utf8.GetBytes(juegoApi.Nombre);
-								nombre = Utf8.GetString(utf8Bytes);
-							}
-
-							#endregion
-
-							#region Tipo
-
-							if (juegoApi.Tipo == 0)
-							{
-								tipo = Juegos.JuegoTipo.Game;
-							}
-							else if (juegoApi.Tipo == 4)
-							{
-								tipo = Juegos.JuegoTipo.DLC;
-							}
-							else if (juegoApi.Tipo == 11)
-							{
-								tipo = Juegos.JuegoTipo.Music;
-							}
-							else if (juegoApi.Tipo == 6)
-							{
-								tipo = Juegos.JuegoTipo.Software;
-							}
-
-							#endregion
-
-							#region Caracteristicas
-
-							if (juegoApi?.Info?.Desarrolladores?.Count > 0)
-							{
-								List<Juegos.JuegoCaracteristicasCurator> desarrolladores = new List<Juegos.JuegoCaracteristicasCurator>();
-
-								foreach (var desarrollador in juegoApi.Info.Desarrolladores)
+								Juegos.JuegoCaracteristicasCurator desarrollador2 = new Juegos.JuegoCaracteristicasCurator
 								{
-									Juegos.JuegoCaracteristicasCurator desarrollador2 = new Juegos.JuegoCaracteristicasCurator
-									{
-										Id = desarrollador.Id,
-										Nombre = desarrollador.Nombre
-									};
+									Id = desarrollador.Id,
+									Nombre = desarrollador.Nombre
+								};
 
-									desarrolladores.Add(desarrollador2);
-								}
-
-								caracteristicas.Desarrolladores2 = desarrolladores;
+								desarrolladores.Add(desarrollador2);
 							}
 
-							if (juegoApi?.Info?.Editores?.Count > 0)
-							{
-								List<Juegos.JuegoCaracteristicasCurator> editores = new List<Juegos.JuegoCaracteristicasCurator>();
+							caracteristicas.Desarrolladores2 = desarrolladores;
+						}
 
-								foreach (var editor in juegoApi.Info.Editores)
+						if (juegoApi?.Info?.Editores?.Count > 0)
+						{
+							List<Juegos.JuegoCaracteristicasCurator> editores = new List<Juegos.JuegoCaracteristicasCurator>();
+
+							foreach (var editor in juegoApi.Info.Editores)
+							{
+								Juegos.JuegoCaracteristicasCurator editor2 = new Juegos.JuegoCaracteristicasCurator
 								{
-									Juegos.JuegoCaracteristicasCurator editor2 = new Juegos.JuegoCaracteristicasCurator
-									{
-										Id = editor.Id,
-										Nombre = editor.Nombre
-									};
+									Id = editor.Id,
+									Nombre = editor.Nombre
+								};
 
-									editores.Add(editor2);
-								}
-
-								caracteristicas.Editores2 = editores;
+								editores.Add(editor2);
 							}
 
-							if (juegoApi?.Info?.Franquicias?.Count > 0)
-							{
-								List<Juegos.JuegoCaracteristicasCurator> franquicias = new List<Juegos.JuegoCaracteristicasCurator>();
+							caracteristicas.Editores2 = editores;
+						}
 
-								foreach (var franquicia in juegoApi.Info.Franquicias)
+						if (juegoApi?.Info?.Franquicias?.Count > 0)
+						{
+							List<Juegos.JuegoCaracteristicasCurator> franquicias = new List<Juegos.JuegoCaracteristicasCurator>();
+
+							foreach (var franquicia in juegoApi.Info.Franquicias)
+							{
+								Juegos.JuegoCaracteristicasCurator franquicia2 = new Juegos.JuegoCaracteristicasCurator
 								{
-									Juegos.JuegoCaracteristicasCurator franquicia2 = new Juegos.JuegoCaracteristicasCurator
-									{
-										Id = franquicia.Id,
-										Nombre = franquicia.Nombre
-									};
+									Id = franquicia.Id,
+									Nombre = franquicia.Nombre
+								};
 
-									franquicias.Add(franquicia2);
-								}
-
-								caracteristicas.Franquicias = franquicias;
+								franquicias.Add(franquicia2);
 							}
 
-							if (string.IsNullOrEmpty(juegoApi?.Info?.DescripcionCorta) == false)
-							{
-								caracteristicas.Descripcion = juegoApi.Info.DescripcionCorta;
-							}
+							caracteristicas.Franquicias = franquicias;
+						}
 
-							if (juegoApi?.Lanzamiento?.Steam > 0)
-							{
-								caracteristicas.FechaLanzamientoSteam = DateTime.UnixEpoch.AddSeconds(juegoApi.Lanzamiento.Steam);
-							}
+						if (string.IsNullOrEmpty(juegoApi?.Info?.DescripcionCorta) == false)
+						{
+							caracteristicas.Descripcion = juegoApi.Info.DescripcionCorta;
+						}
 
-							if (juegoApi?.Lanzamiento?.Original > 0)
-							{
-								caracteristicas.FechaLanzamientoOriginal = DateTime.UnixEpoch.AddSeconds(juegoApi.Lanzamiento.Original);
-							}
+						if (juegoApi?.Lanzamiento?.Steam > 0)
+						{
+							caracteristicas.FechaLanzamientoSteam = DateTime.UnixEpoch.AddSeconds(juegoApi.Lanzamiento.Steam);
+						}
 
-							if (juegoApi?.AccesoAnticipado == true)
+						if (juegoApi?.Lanzamiento?.Original > 0)
+						{
+							caracteristicas.FechaLanzamientoOriginal = DateTime.UnixEpoch.AddSeconds(juegoApi.Lanzamiento.Original);
+						}
+
+						if (juegoApi?.AccesoAnticipado == true)
+						{
+							caracteristicas.AccesoAnticipado = true;
+						}
+						else
+						{
+							caracteristicas.AccesoAnticipado = false;
+						}
+
+						if (juegoApi?.Cosas?.DemoId?.Count > 0)
+						{
+							caracteristicas.DemoIdSteam = juegoApi.Cosas.DemoId[0];
+						}
+
+						if (juegoApi?.Cosas?.DemoId2?.Count > 0)
+						{
+							caracteristicas.DemoIdSteam = juegoApi.Cosas.DemoId2[0];
+						}
+
+						#endregion
+
+						#region Imagenes
+
+						if (juegoApi.Imagenes != null)
+						{
+							if (string.IsNullOrEmpty(juegoApi.Imagenes?.Header_460x215) == false)
 							{
-								caracteristicas.AccesoAnticipado = true;
+								imagenes.Header_460x215 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Header_460x215;
 							}
 							else
 							{
-								caracteristicas.AccesoAnticipado = false;
-							}
-
-							if (juegoApi?.Cosas?.DemoId?.Count > 0)
-							{
-								caracteristicas.DemoIdSteam = juegoApi.Cosas.DemoId[0];
-							}
-
-							if (juegoApi?.Cosas?.DemoId2?.Count > 0)
-							{
-								caracteristicas.DemoIdSteam = juegoApi.Cosas.DemoId2[0];
-							}
-
-							#endregion
-
-							#region Imagenes
-
-							if (juegoApi.Imagenes != null)
-							{
-								if (string.IsNullOrEmpty(juegoApi.Imagenes?.Header_460x215) == false)
+								if (string.IsNullOrEmpty(juegoApi.Imagenes?.Capsule_231x87) == false)
 								{
-									imagenes.Header_460x215 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Header_460x215;
+									imagenes.Header_460x215 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Capsule_231x87;
+								}
+							}
+
+							if (string.IsNullOrEmpty(juegoApi.Imagenes?.Capsule_231x87) == false)
+							{
+								imagenes.Capsule_231x87 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Capsule_231x87;
+							}
+
+							if (string.IsNullOrEmpty(juegoApi.Imagenes?.Library_600x900) == false)
+							{
+								imagenes.Library_600x900 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Library_600x900;
+							}
+
+							if (string.IsNullOrEmpty(juegoApi.Imagenes?.Library_600x900) == false)
+							{
+								imagenes.Library_1920x620 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Library_1920x620;
+							}
+
+							imagenes.Logo = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/logo.png";
+						}
+
+						#endregion
+
+						#region Reseñas
+
+						if (juegoApi?.Reseñas?.Filtrado != null)
+						{
+							reseñas.Porcentaje = juegoApi.Reseñas.Filtrado.Porcentaje.ToString();
+							reseñas.Cantidad = juegoApi.Reseñas.Filtrado.Cantidad.ToString();
+						}
+
+						#endregion
+
+						#region Categorias
+
+						if (juegoApi?.Categorias != null)
+						{
+							if (juegoApi?.Categorias?.Tipo1?.Count > 0)
+							{
+								foreach (var nuevaCategoria in juegoApi.Categorias.Tipo1)
+								{
+									if (nuevaCategoria > 0)
+									{
+										categorias.Add(nuevaCategoria.ToString());
+									}
+								}
+							}
+
+							if (juegoApi?.Categorias?.Tipo2?.Count > 0)
+							{
+								foreach (var nuevaCategoria in juegoApi.Categorias.Tipo2)
+								{
+									if (nuevaCategoria > 0)
+									{
+										categorias.Add(nuevaCategoria.ToString());
+									}
+								}
+							}
+
+							if (juegoApi?.Categorias?.Tipo3?.Count > 0)
+							{
+								foreach (var nuevaCategoria in juegoApi.Categorias.Tipo3)
+								{
+									if (nuevaCategoria > 0)
+									{
+										categorias.Add(nuevaCategoria.ToString());
+									}
+								}
+							}
+						}
+
+						#endregion
+
+						#region Etiquetas
+
+						if (juegoApi?.Etiquetas?.Count > 0)
+						{
+							foreach (int etiqueta in juegoApi.Etiquetas)
+							{
+								if (etiqueta > 0)
+								{
+									etiquetas.Add(etiqueta.ToString());
+								}
+							}
+						}
+
+						#endregion
+
+						#region Plataformas
+
+						if (juegoApi.Plataformas != null)
+						{
+							caracteristicas.Windows = false;
+							caracteristicas.Mac = false;
+							caracteristicas.Linux = false;
+
+							if (juegoApi.Plataformas.Windows == true)
+							{
+								caracteristicas.Windows = true;
+							}
+
+							if (juegoApi.Plataformas.Mac == true)
+							{
+								caracteristicas.Mac = true;
+							}
+
+							if (juegoApi.Plataformas.Linux == true)
+							{
+								caracteristicas.Linux = true;
+							}
+
+							if (juegoApi.Plataformas.Deck > 0)
+							{
+								deck = (Juegos.JuegoDeck)juegoApi.Plataformas.Deck;
+							}
+
+							if (juegoApi.Plataformas.SteamOS > 0)
+							{
+								steamOS = (Juegos.JuegoSteamOS)juegoApi.Plataformas.SteamOS;
+							}
+
+							if (juegoApi.Plataformas.RV != null)
+							{
+								if (juegoApi.Plataformas.RV.Vrhmd == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.Vrhmd = true;
+								}
+
+								if (juegoApi.Plataformas.RV.VrhmdOnly == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.VrhmdOnly = true;
+								}
+
+								if (juegoApi.Plataformas.RV.HtcVive == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.HtcVive = true;
+								}
+
+								if (juegoApi.Plataformas.RV.OculusRift == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.OculusRift = true;
+								}
+
+								if (juegoApi.Plataformas.RV.WindowsMr == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.WindowsMr = true;
+								}
+
+								if (juegoApi.Plataformas.RV.ValveIndex == true)
+								{
+									if (caracteristicas.RealidadVirtual == null)
+									{
+										caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
+									}
+
+									caracteristicas.RealidadVirtual.ValveIndex = true;
+								}
+							}
+						}
+
+						#endregion
+
+						#region Capturas
+
+						if (juegoApi.Capturas != null)
+						{
+							media.Capturas2 = new List<Juegos.JuegoMediaCaptura>();
+
+							if (juegoApi?.Capturas?.TodasEdades?.Count > 0)
+							{
+								foreach (var captura in juegoApi.Capturas.TodasEdades)
+								{
+									Juegos.JuegoMediaCaptura captura2 = new Juegos.JuegoMediaCaptura
+									{
+										Posicion = captura.Posicion,
+										Imagen = dominioImagenes2 + "/store_item_assets/" + captura.Nombre,
+										MayorEdad = false
+									};
+
+									media.Capturas2.Add(captura2);
+								}
+							}
+
+							if (juegoApi?.Capturas?.MayorEdad?.Count > 0)
+							{
+								foreach (var captura in juegoApi.Capturas.MayorEdad)
+								{
+									Juegos.JuegoMediaCaptura captura2 = new Juegos.JuegoMediaCaptura
+									{
+										Posicion = captura.Posicion,
+										Imagen = dominioImagenes2 + "/store_item_assets/" + captura.Nombre,
+										MayorEdad = true
+									};
+
+									media.Capturas2.Add(captura2);
+								}
+							}
+
+							if (media.Capturas2.Count > 0)
+							{
+								media.Capturas2 = media.Capturas2.OrderBy(x => x.Posicion).ToList();
+							}
+						}
+
+						#endregion
+
+						#region Videos
+
+						if (juegoApi.Trailers?.Videos?.Count > 0)
+						{
+							List<Juegos.JuegoMediaVideo> videos = new List<Juegos.JuegoMediaVideo>();
+
+							foreach (var video in juegoApi.Trailers.Videos)
+							{
+								if (videos.Count == 4)
+								{
+									break;
+								}
+
+								string videoEnlace = string.Empty;
+
+								if (video.DatosAdaptivo != null)
+								{
+									foreach (var videoDatos in video.DatosAdaptivo)
+									{
+										if (videoDatos.Encodeo.Contains("dash") == true || videoDatos.Encodeo.Contains("h264") == true)
+										{
+											videoEnlace = videoDatos.Enlace;
+											videoEnlace = dominioVideos2 + videoEnlace;
+										}
+									}
 								}
 								else
 								{
-									if (string.IsNullOrEmpty(juegoApi.Imagenes?.Capsule_231x87) == false)
+									if (video.DatosMax != null)
 									{
-										imagenes.Header_460x215 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Capsule_231x87;
-									}
-								}
-
-								if (string.IsNullOrEmpty(juegoApi.Imagenes?.Capsule_231x87) == false)
-								{
-									imagenes.Capsule_231x87 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Capsule_231x87;
-								}
-
-								if (string.IsNullOrEmpty(juegoApi.Imagenes?.Library_600x900) == false)
-								{
-									imagenes.Library_600x900 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Library_600x900;
-								}
-
-								if (string.IsNullOrEmpty(juegoApi.Imagenes?.Library_600x900) == false)
-								{
-									imagenes.Library_1920x620 = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/" + juegoApi.Imagenes.Library_1920x620;
-								}
-
-								imagenes.Logo = dominioImagenes3 + "/store_item_assets/steam/apps/" + id + "/logo.png";
-							}
-
-							#endregion
-
-							#region Reseñas
-
-							if (juegoApi?.Reseñas?.Filtrado != null)
-							{
-								reseñas.Porcentaje = juegoApi.Reseñas.Filtrado.Porcentaje.ToString();
-								reseñas.Cantidad = juegoApi.Reseñas.Filtrado.Cantidad.ToString();
-							}
-
-							#endregion
-
-							#region Categorias
-
-							if (juegoApi?.Categorias != null)
-							{
-								if (juegoApi?.Categorias?.Tipo1?.Count > 0)
-								{
-									foreach (var nuevaCategoria in juegoApi.Categorias.Tipo1)
-									{
-										if (nuevaCategoria > 0)
+										foreach (var videoDatos in video.DatosMax)
 										{
-											categorias.Add(nuevaCategoria.ToString());
-										}
-									}
-								}
-
-								if (juegoApi?.Categorias?.Tipo2?.Count > 0)
-								{
-									foreach (var nuevaCategoria in juegoApi.Categorias.Tipo2)
-									{
-										if (nuevaCategoria > 0)
-										{
-											categorias.Add(nuevaCategoria.ToString());
-										}
-									}
-								}
-
-								if (juegoApi?.Categorias?.Tipo3?.Count > 0)
-								{
-									foreach (var nuevaCategoria in juegoApi.Categorias.Tipo3)
-									{
-										if (nuevaCategoria > 0)
-										{
-											categorias.Add(nuevaCategoria.ToString());
-										}
-									}
-								}
-							}
-
-							#endregion
-
-							#region Etiquetas
-
-							if (juegoApi?.Etiquetas?.Count > 0)
-							{
-								foreach (int etiqueta in juegoApi.Etiquetas)
-								{
-									if (etiqueta > 0)
-									{
-										etiquetas.Add(etiqueta.ToString());
-									}
-								}
-							}
-
-							#endregion
-
-							#region Plataformas
-
-							if (juegoApi.Plataformas != null)
-							{
-								caracteristicas.Windows = false;
-								caracteristicas.Mac = false;
-								caracteristicas.Linux = false;
-
-								if (juegoApi.Plataformas.Windows == true)
-								{
-									caracteristicas.Windows = true;
-								}
-
-								if (juegoApi.Plataformas.Mac == true)
-								{
-									caracteristicas.Mac = true;
-								}
-
-								if (juegoApi.Plataformas.Linux == true)
-								{
-									caracteristicas.Linux = true;
-								}
-
-								if (juegoApi.Plataformas.Deck > 0)
-								{
-									deck = (Juegos.JuegoDeck)juegoApi.Plataformas.Deck;
-								}
-
-								if (juegoApi.Plataformas.SteamOS > 0)
-								{
-									steamOS = (Juegos.JuegoSteamOS)juegoApi.Plataformas.SteamOS;
-								}
-
-								if (juegoApi.Plataformas.RV != null)
-								{
-									if (juegoApi.Plataformas.RV.Vrhmd == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.Vrhmd = true;
-									}
-
-									if (juegoApi.Plataformas.RV.VrhmdOnly == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.VrhmdOnly = true;
-									}
-
-									if (juegoApi.Plataformas.RV.HtcVive == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.HtcVive = true;
-									}
-
-									if (juegoApi.Plataformas.RV.OculusRift == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.OculusRift = true;
-									}
-
-									if (juegoApi.Plataformas.RV.WindowsMr == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.WindowsMr = true;
-									}
-
-									if (juegoApi.Plataformas.RV.ValveIndex == true)
-									{
-										if (caracteristicas.RealidadVirtual == null)
-										{
-											caracteristicas.RealidadVirtual = new Juegos.JuegoCaracteristicasRealidadVirtual();
-										}
-
-										caracteristicas.RealidadVirtual.ValveIndex = true;
-									}
-								}
-							}
-
-							#endregion
-
-							#region Capturas
-
-							if (juegoApi.Capturas != null)
-							{
-								media.Capturas2 = new List<Juegos.JuegoMediaCaptura>();
-
-								if (juegoApi?.Capturas?.TodasEdades?.Count > 0)
-								{
-									foreach (var captura in juegoApi.Capturas.TodasEdades)
-									{
-										Juegos.JuegoMediaCaptura captura2 = new Juegos.JuegoMediaCaptura
-										{
-											Posicion = captura.Posicion,
-											Imagen = dominioImagenes2 + "/store_item_assets/" + captura.Nombre,
-											MayorEdad = false
-										};
-
-										media.Capturas2.Add(captura2);
-									}
-								}
-
-								if (juegoApi?.Capturas?.MayorEdad?.Count > 0)
-								{
-									foreach (var captura in juegoApi.Capturas.MayorEdad)
-									{
-										Juegos.JuegoMediaCaptura captura2 = new Juegos.JuegoMediaCaptura
-										{
-											Posicion = captura.Posicion,
-											Imagen = dominioImagenes2 + "/store_item_assets/" + captura.Nombre,
-											MayorEdad = true
-										};
-
-										media.Capturas2.Add(captura2);
-									}
-								}
-
-								if (media.Capturas2.Count > 0)
-								{
-									media.Capturas2 = media.Capturas2.OrderBy(x => x.Posicion).ToList();
-								}
-							}
-
-                            #endregion
-
-                            #region Videos
-
-                            if (juegoApi.Trailers?.Videos?.Count > 0)
-                            {
-                                List<Juegos.JuegoMediaVideo> videos = new List<Juegos.JuegoMediaVideo>();
-
-                                foreach (var video in juegoApi.Trailers.Videos)
-                                {
-									if (videos.Count == 4)
-									{
-										break;
-									}
-
-									string videoEnlace = string.Empty;
-
-									if (video.DatosAdaptivo != null)
-									{
-										foreach (var videoDatos in video.DatosAdaptivo)
-										{
-											if (videoDatos.Encodeo.Contains("dash") == true || videoDatos.Encodeo.Contains("h264") == true)
+											if (videoDatos.Tipo.Contains("mp4") == true)
 											{
-												videoEnlace = videoDatos.Enlace;
-												videoEnlace = dominioVideos2 + videoEnlace;
+												videoEnlace = videoDatos.Fichero;
+												videoEnlace = dominioVideos + video.EnlaceFormato.Replace("steam/apps/", null).Replace("${FILENAME}", videoEnlace);
 											}
 										}
 									}
-									else
+								}
+
+								if (string.IsNullOrEmpty(videoEnlace) == false)
+								{
+									string microEnlace = string.Empty;
+
+									foreach (var microDatos in video.DatosMicro)
 									{
-										if (video.DatosMax != null)
+										if (microDatos.Tipo.Contains("mp4") == true)
 										{
-											foreach (var videoDatos in video.DatosMax)
-											{
-												if (videoDatos.Tipo.Contains("mp4") == true)
-												{
-													videoEnlace = videoDatos.Fichero;
-													videoEnlace = dominioVideos + video.EnlaceFormato.Replace("steam/apps/", null).Replace("${FILENAME}", videoEnlace);
-												}
-											}
+											microEnlace = microDatos.Fichero;
 										}
 									}
 
-									if (string.IsNullOrEmpty(videoEnlace) == false)
+									Juegos.JuegoMediaVideo nuevoVideo = new Juegos.JuegoMediaVideo
 									{
-										string microEnlace = string.Empty;
+										Nombre = video.Nombre,
+										Enlace = videoEnlace,
+										MayorEdad = !video.MayorEdad,
+										Captura = dominioImagenes2 + "/store_item_assets/" + video.EnlaceFormato.Replace("${FILENAME}", video.Captura),
+										CapturaPequeña = dominioImagenes2 + "/store_item_assets/" + video.EnlaceFormato.Replace("${FILENAME}", video.CapturaPequeña),
+										Micro = dominioVideos + video.EnlaceFormato.Replace("steam/apps/", null).Replace("${FILENAME}", microEnlace)
+									};
 
-										foreach (var microDatos in video.DatosMicro)
-										{
-											if (microDatos.Tipo.Contains("mp4") == true)
-											{
-												microEnlace = microDatos.Fichero;
-											}
-										}
-
-										Juegos.JuegoMediaVideo nuevoVideo = new Juegos.JuegoMediaVideo
-										{
-											Nombre = video.Nombre,
-											Enlace = videoEnlace,
-											MayorEdad = !video.MayorEdad,
-											Captura = dominioImagenes2 + "/store_item_assets/" + video.EnlaceFormato.Replace("${FILENAME}", video.Captura),
-											CapturaPequeña = dominioImagenes2 + "/store_item_assets/" + video.EnlaceFormato.Replace("${FILENAME}", video.CapturaPequeña),
-											Micro = dominioVideos + video.EnlaceFormato.Replace("steam/apps/", null).Replace("${FILENAME}", microEnlace)
-										};
-
-										videos.Add(nuevoVideo);
-									}
-                                }
-
-                                if (videos.Count > 0)
-                                {
-                                    media.Videos = videos;
-                                }
-                            }
-
-                            #endregion
-
-                            #region FreeToPlay
-
-                            if (juegoApi.FreeToPlay == true)
-							{
-								freeToPlay = true;
-							}
-
-							#endregion
-
-							#region Idiomas
-
-							if (juegoApi.Idiomas?.Count > 0)
-							{
-								var idiomasSteam = Idiomas.ListadoIdiomasGenerar().ToDictionary(i => i.SteamID);
-
-								foreach (var idioma in juegoApi.Idiomas)
-								{
-									if (idiomasSteam.TryGetValue(idioma.Id, out var idiomaBase))
-									{
-										idiomas.Add(new Juegos.JuegoIdioma
-										{
-											Idioma = idiomaBase.Id,
-											Audio = idioma.Audio,
-											Texto = idioma.Soportado || idioma.Texto,
-											DRM = Juegos.JuegoDRM.Steam
-										});
-									}
+									videos.Add(nuevoVideo);
 								}
 							}
 
-							#endregion
-
-							#region Enlaces
-
-							if (juegoApi?.Enlaces?.Count > 0)
+							if (videos.Count > 0)
 							{
-								List<string> nuevosEnlaces = new List<string>();
-
-								foreach (var enlace2 in juegoApi.Enlaces)
-								{
-									if (string.IsNullOrEmpty(enlace2.Enlace) == false)
-									{
-										nuevosEnlaces.Add(enlace2.Enlace);
-									}
-								}
-
-								if (nuevosEnlaces.Count > 0)
-								{
-									caracteristicas.Enlaces = nuevosEnlaces;
-								}
+								media.Videos = videos;
 							}
-
-							#endregion
-
-							#region Precio 
-
-							if (juegoApi.Precio != null)
-							{
-								string enlacePrecio = "https://store.steampowered.com/app/" + id;
-
-								int descuento = 0;
-
-								if (juegoApi.Precio.Descuento > 0)
-								{
-									descuento = juegoApi.Precio.Descuento;
-								}
-
-								string precioFormateado = juegoApi.Precio.PrecioRebajado;
-								precioFormateado = precioFormateado.Replace("€", null);
-								precioFormateado = precioFormateado.Replace(",", ".");
-								precioFormateado = precioFormateado.Replace(".--", ".00");
-								precioFormateado = precioFormateado.Trim();
-
-								precio = new Juegos.JuegoPrecio
-								{
-									Descuento = descuento,
-									DRM = Juegos.JuegoDRM.Steam,
-									Precio = decimal.Parse(precioFormateado),
-									Moneda = JuegoMoneda.Euro,
-									FechaDetectado = DateTime.Now,
-									FechaActualizacion = DateTime.Now,
-									Enlace = enlacePrecio,
-									Tienda = "steam"
-								};
-							}
-
-							#endregion
-
-							#region DLC
-
-							if (juegoApi.Cosas != null)
-							{
-								idMaestro = juegoApi.Cosas.MaestroId;
-							}
-
-							#endregion
-
-							#region Suscripciones
-
-							if (juegoApi.Suscripciones?.Count > 0)
-							{
-								foreach (var suscripcion in juegoApi.Suscripciones)
-								{
-									if (suscripcion.PaqueteId > 0)
-									{
-										await BaseDatos.Suscripciones.Insertar.Steam(suscripcion.PaqueteId, int.Parse(id));
-									}
-								}
-							}
-
-							#endregion
-
-							Juegos.Juego juego = new Juegos.Juego
-							{
-								IdSteam = int.Parse(id),
-								Nombre = nombre,
-								Imagenes = imagenes,
-								Caracteristicas = caracteristicas,
-								Media = media,
-								FechaSteamAPIComprobacion = DateTime.Now,
-								FreeToPlay = freeToPlay.ToString(),
-								Tipo = tipo,
-								MayorEdad = "false",
-								Analisis = reseñas
-							};
-
-							if (tipo == Juegos.JuegoTipo.DLC || tipo == Juegos.JuegoTipo.Music)
-							{
-								juego.Imagenes.Logo = null;
-								juego.Imagenes.Library_600x900 = null;
-								juego.Imagenes.Library_1920x620 = null;
-
-								if (idMaestro > 0)
-								{
-									Juegos.Juego maestro = await BaseDatos.Juegos.Buscar.UnJuego(null, idMaestro.ToString());
-
-                                    if (maestro?.IdSteam > 0)
-                                    {
-                                        juego.Maestro = maestro.Id.ToString();
-                                    }
-                                }
-							}
-							else if (tipo == Juegos.JuegoTipo.Software)
-							{
-								juego.Imagenes.Logo = null;
-								juego.Imagenes.Library_600x900 = null;
-								juego.Imagenes.Library_1920x620 = null;
-							}
-							else
-							{
-								juego.Deck = deck;
-								juego.SteamOS = steamOS;
-							}
-
-							if (categorias.Count > 0)
-							{
-								juego.Categorias = categorias;
-							}
-
-							if (idiomas.Count > 0)
-							{
-								juego.Idiomas = idiomas;
-							}
-
-							if (etiquetas.Count > 0)
-							{
-								juego.Etiquetas = etiquetas;
-							}
-
-							if (precio != null)
-							{
-								juego.PrecioActualesTiendas = new List<Juegos.JuegoPrecio> { precio };
-								juego.PrecioMinimosHistoricos = new List<Juegos.JuegoPrecio> { precio };
-							}
-
-							return juego;
 						}
+
+						#endregion
+
+						#region FreeToPlay
+
+						if (juegoApi.FreeToPlay == true)
+						{
+							freeToPlay = true;
+						}
+
+						#endregion
+
+						#region Idiomas
+
+						if (juegoApi.Idiomas?.Count > 0)
+						{
+							var idiomasSteam = Idiomas.ListadoIdiomasGenerar().ToDictionary(i => i.SteamID);
+
+							foreach (var idioma in juegoApi.Idiomas)
+							{
+								if (idiomasSteam.TryGetValue(idioma.Id, out var idiomaBase))
+								{
+									idiomas.Add(new Juegos.JuegoIdioma
+									{
+										Idioma = idiomaBase.Id,
+										Audio = idioma.Audio,
+										Texto = idioma.Soportado || idioma.Texto,
+										DRM = Juegos.JuegoDRM.Steam
+									});
+								}
+							}
+						}
+
+						#endregion
+
+						#region Enlaces
+
+						if (juegoApi?.Enlaces?.Count > 0)
+						{
+							List<string> nuevosEnlaces = new List<string>();
+
+							foreach (var enlace2 in juegoApi.Enlaces)
+							{
+								if (string.IsNullOrEmpty(enlace2.Enlace) == false)
+								{
+									nuevosEnlaces.Add(enlace2.Enlace);
+								}
+							}
+
+							if (nuevosEnlaces.Count > 0)
+							{
+								caracteristicas.Enlaces = nuevosEnlaces;
+							}
+						}
+
+						#endregion
+
+						#region Precio 
+
+						if (juegoApi.Precio != null)
+						{
+							string enlacePrecio = "https://store.steampowered.com/app/" + id;
+
+							int descuento = 0;
+
+							if (juegoApi.Precio.Descuento > 0)
+							{
+								descuento = juegoApi.Precio.Descuento;
+							}
+
+							string precioFormateado = juegoApi.Precio.PrecioRebajado;
+							precioFormateado = precioFormateado.Replace("€", null);
+							precioFormateado = precioFormateado.Replace(",", ".");
+							precioFormateado = precioFormateado.Replace(".--", ".00");
+							precioFormateado = precioFormateado.Trim();
+
+							precio = new Juegos.JuegoPrecio
+							{
+								Descuento = descuento,
+								DRM = Juegos.JuegoDRM.Steam,
+								Precio = decimal.Parse(precioFormateado),
+								Moneda = JuegoMoneda.Euro,
+								FechaDetectado = DateTime.Now,
+								FechaActualizacion = DateTime.Now,
+								Enlace = enlacePrecio,
+								Tienda = "steam"
+							};
+						}
+
+						#endregion
+
+						#region DLC
+
+						if (juegoApi.Cosas != null)
+						{
+							idMaestro = juegoApi.Cosas.MaestroId;
+						}
+
+						#endregion
+
+						#region Suscripciones
+
+						if (juegoApi.Suscripciones?.Count > 0)
+						{
+							foreach (var suscripcion in juegoApi.Suscripciones)
+							{
+								if (suscripcion.PaqueteId > 0)
+								{
+									await BaseDatos.Suscripciones.Insertar.Steam(suscripcion.PaqueteId, int.Parse(id));
+								}
+							}
+						}
+
+						#endregion
+
+						Juegos.Juego juego = new Juegos.Juego
+						{
+							IdSteam = int.Parse(id),
+							Nombre = nombre,
+							Imagenes = imagenes,
+							Caracteristicas = caracteristicas,
+							Media = media,
+							FechaSteamAPIComprobacion = DateTime.Now,
+							FreeToPlay = freeToPlay.ToString(),
+							Tipo = tipo,
+							MayorEdad = "false",
+							Analisis = reseñas
+						};
+
+						if (tipo == Juegos.JuegoTipo.DLC || tipo == Juegos.JuegoTipo.Music)
+						{
+							juego.Imagenes.Logo = null;
+							juego.Imagenes.Library_600x900 = null;
+							juego.Imagenes.Library_1920x620 = null;
+
+							if (idMaestro > 0)
+							{
+								Juegos.Juego maestro = await BaseDatos.Juegos.Buscar.UnJuego(null, idMaestro.ToString());
+
+								if (maestro?.IdSteam > 0)
+								{
+									juego.Maestro = maestro.Id.ToString();
+								}
+							}
+						}
+						else if (tipo == Juegos.JuegoTipo.Software)
+						{
+							juego.Imagenes.Logo = null;
+							juego.Imagenes.Library_600x900 = null;
+							juego.Imagenes.Library_1920x620 = null;
+						}
+						else
+						{
+							juego.Deck = deck;
+							juego.SteamOS = steamOS;
+						}
+
+						if (categorias.Count > 0)
+						{
+							juego.Categorias = categorias;
+						}
+
+						if (idiomas.Count > 0)
+						{
+							juego.Idiomas = idiomas;
+						}
+
+						if (etiquetas.Count > 0)
+						{
+							juego.Etiquetas = etiquetas;
+						}
+
+						if (precio != null)
+						{
+							juego.PrecioActualesTiendas = new List<Juegos.JuegoPrecio> { precio };
+							juego.PrecioMinimosHistoricos = new List<Juegos.JuegoPrecio> { precio };
+						}
+
+						return juego;
 					}
 				}
 			}
@@ -815,39 +811,33 @@ namespace APIs.Steam
 				{
 					SteamCMDAPI api = JsonSerializer.Deserialize<SteamCMDAPI>(html);
 
-					if (api != null)
+					if (api?.Datos?.Count > 0)
 					{
-						if (api.Datos != null)
+						foreach (var dato in api.Datos)
 						{
-							if (api.Datos.Count > 0)
-							{			
-								foreach (var dato in api.Datos)
+							SteamCMDDatos datos = new SteamCMDDatos();
+
+							if (string.IsNullOrEmpty(dato.Value.Common?.InteligenciaArtificial) == false)
+							{
+								if (dato.Value.Common?.InteligenciaArtificial == "1")
 								{
-									SteamCMDDatos datos = new SteamCMDDatos();
-
-									if (string.IsNullOrEmpty(dato.Value.Common?.InteligenciaArtificial) == false)
-									{
-										if (dato.Value.Common?.InteligenciaArtificial == "1")
-										{
-											datos.InteligenciaArtificial = true;
-										}
-										else
-										{
-											datos.InteligenciaArtificial = false;
-										}
-									}
-
-									if (dato.Value.Depots?.Branches?.Publico?.Ticks != null)
-									{
-										DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(long.Parse(dato.Value.Depots?.Branches?.Publico?.Ticks));
-										DateTime fechaCreado = fecha.UtcDateTime;
-
-										datos.UltimaActualizacion = fechaCreado;
-									}
-
-									return datos;
+									datos.InteligenciaArtificial = true;
+								}
+								else
+								{
+									datos.InteligenciaArtificial = false;
 								}
 							}
+
+							if (dato.Value.Depots?.Branches?.Publico?.Ticks != null)
+							{
+								DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(long.Parse(dato.Value.Depots?.Branches?.Publico?.Ticks));
+								DateTime fechaCreado = fecha.UtcDateTime;
+
+								datos.UltimaActualizacion = fechaCreado;
+							}
+
+							return datos;
 						}
 					}
 				}

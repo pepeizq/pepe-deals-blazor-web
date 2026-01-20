@@ -119,8 +119,8 @@
                     <div class="juego-precio">
                         @if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
                         {
-                            <div style="text-align: center;">@Herramientas.Precios.Euro(precio.PrecioCambiado)</div>
-                            <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precio.Precio, precio.Moneda)</div>
+                            <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
+                            <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precioFinalCambiadoOriginal, precio.Moneda)</div>
                         }
                         else
                         {
@@ -177,6 +177,9 @@
 
     [PersistentState]
     public decimal precioFinal { get; set; } 
+
+    [PersistentState]
+    public decimal precioFinalCambiadoOriginal { get; set; }
 
     [Parameter] 
     public EventCallback<decimal> OnPrecioFinalCalculado { get; set; }
@@ -245,6 +248,7 @@
                 if (precio.PrecioCambiado > 0)
                 {
                     precioFinal = precio.PrecioCambiado;
+                    precioFinalCambiadoOriginal = precio.Precio;
                 }
                 else
                 {

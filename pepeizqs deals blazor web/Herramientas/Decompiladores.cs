@@ -68,9 +68,11 @@ namespace Herramientas
 
 		public static async Task<string> Estandar(string enlace)
 		{
+			HttpResponseMessage respuesta = null;
+
 			try
 			{
-				using var respuesta = await _cliente.GetAsync(
+				respuesta = await _cliente.GetAsync(
 					enlace,
 					HttpCompletionOption.ResponseHeadersRead);
 
@@ -80,7 +82,22 @@ namespace Herramientas
 			}
 			catch (Exception ex)
 			{
-				global::BaseDatos.Errores.Insertar.Mensaje("Decompilador", ex.StackTrace, enlace);
+				string cuerpo = null;
+
+				if (respuesta != null)
+				{
+					cuerpo = await respuesta.Content.ReadAsStringAsync();
+				}
+
+				global::BaseDatos.Errores.Insertar.Mensaje(
+					"Decompilador",
+					$@"Estado: {(int?)respuesta?.StatusCode} 
+Razon: {respuesta?.ReasonPhrase} 
+Cuerpo: {cuerpo} 
+Error: {ex.Message}",
+					enlace
+				); 
+				
 				return null;
 			}
 		}

@@ -5,7 +5,6 @@
 //https://api.steampowered.com/IStoreService/GetAppList/v1/?key=[devkey]&max_results=50000
 //https://store.steampowered.com/appreviews/730?json=1
 //https://store.steampowered.com/curator/185907/ajaxgetcreatorhomeinfo?get_appids=true
-//https://steamcommunity.com/gid/103582791462511166/ajaxgetvanityandclanid/
 //https://store.steampowered.com/actions/ajaxresolvebundles?bundleids=45867&cc=ES&l=english
 
 #nullable disable
@@ -481,9 +480,9 @@ namespace APIs.Steam
 			if (DateTime.Now.Hour == 19 && DateTime.Now.Minute >= 0 && DateTime.Now.Minute < 10)
 			{
 				arranque = 0;
-				rapido = true;
 			}
-			else if (DateTime.Now.Hour == 20)
+
+			if (DateTime.Now.Hour == 19 || DateTime.Now.Hour == 20)
 			{
 				rapido = true;
 			}

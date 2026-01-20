@@ -158,7 +158,7 @@ else
             .Select(ObtenerPrecioReal)
             .Where(p => p > 0)
             .DefaultIfEmpty(decimal.MaxValue)
-            .Min();
+            .Max();
 
         var mover = preciosBajos
             .Where(p =>
