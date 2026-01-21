@@ -1028,10 +1028,7 @@ FROM seccionMinimos j";
 				dondeDeck = " (" + dondeDeck + ")";
 			}
 
-			if (string.IsNullOrEmpty(dondeTiendas) == false && string.IsNullOrEmpty(dondeDRMs) == false && string.IsNullOrEmpty(dondeCategorias) == false && string.IsNullOrEmpty(dondeMinimoDescuento) == false && string.IsNullOrEmpty(dondeMaximoPrecio) == false && string.IsNullOrEmpty(dondeDeck) == false)
-			{
-				busqueda = busqueda + " WHERE " + dondeTiendas + " AND " + dondeDRMs + " AND " + dondeCategorias + " AND " + dondeMinimoDescuento + " AND " + dondeMaximoPrecio + " AND " + dondeDeck;
-			}
+			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeCategorias, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck }.Where(x => !string.IsNullOrEmpty(x)));
 
 			if (lanzamiento == 1)
 			{

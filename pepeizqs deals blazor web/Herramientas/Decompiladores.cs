@@ -63,7 +63,7 @@ namespace Herramientas
 			_cliente = new HttpClient(handler, disposeHandler: false);
 			_cliente.DefaultRequestHeaders.UserAgent.ParseAdd(
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0");
-			_cliente.Timeout = TimeSpan.FromSeconds(30);
+			_cliente.Timeout = TimeSpan.FromSeconds(60);
 		}
 
 		public static async Task<string> Estandar(string enlace)
@@ -91,10 +91,10 @@ namespace Herramientas
 
 				global::BaseDatos.Errores.Insertar.Mensaje(
 					"Decompilador",
-					$@"Estado: {(int?)respuesta?.StatusCode} 
-Razon: {respuesta?.ReasonPhrase} 
-Cuerpo: {cuerpo} 
-Error: {ex.Message}",
+					"Estado: " + ((int?)respuesta?.StatusCode)?.ToString() + Environment.NewLine + Environment.NewLine +
+					"Razon: " + respuesta?.ReasonPhrase + Environment.NewLine + Environment.NewLine +
+					"Cuerpo: " + cuerpo + Environment.NewLine + Environment.NewLine +
+					"Error: " + ex.Message,
 					enlace
 				); 
 				

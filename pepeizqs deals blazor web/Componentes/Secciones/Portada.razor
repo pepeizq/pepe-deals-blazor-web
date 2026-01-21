@@ -898,7 +898,7 @@
 				{
 					bool añadirTipo = true;
 
-					if (tiposActualesNoticias.Count > 0)
+					if (tiposActualesNoticias?.Count > 0)
 					{
 						foreach (var tipoActual in tiposActualesNoticias)
 						{
@@ -911,6 +911,11 @@
 
 					if (añadirTipo == true)
 					{
+						if (tiposActualesNoticias == null)
+						{
+							tiposActualesNoticias = new List<NoticiaTipo>();
+						}
+
 						tiposActualesNoticias.Add(noticia.NoticiaTipo);
 					}
 				}
@@ -1566,7 +1571,9 @@
 	}
 
 	private NoticiaTipo tipoSeleccionadoNoticias = NoticiaTipo.Desconocido;
-	private List<NoticiaTipo> tiposActualesNoticias = new List<NoticiaTipo>();
+
+	[PersistentState]
+	public List<NoticiaTipo> tiposActualesNoticias { get; set; }
 
 	private async Task CambiarTipo(MouseEventArgs e, NoticiaTipo nuevoTipo)
 	{

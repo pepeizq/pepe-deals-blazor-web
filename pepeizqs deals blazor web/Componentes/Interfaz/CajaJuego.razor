@@ -119,13 +119,13 @@
 
 	string descuento = string.Empty;
 	string precio = string.Empty;
-	string enlace = "/game/" + juego.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+	string enlace = "/game/" + idMaestra + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
 	string enlaceNuevaPestaña = "_self";
 	string iconoTienda = string.Empty;
 	string codigoTexto = string.Empty;
 	DateTime fechaDetectado = DateTime.Now;
 
-	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos)
+	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
 	{
 		JuegoPrecio oferta = null;
 
@@ -142,6 +142,7 @@
 						if (historico.DRM == JuegoDRM.Steam)
 						{
 							oferta = historico;
+							break;
 						}
 					}
 				}
@@ -166,7 +167,7 @@
 
 			//--------------------------------------------------------
 
-			if (tipo == Tipo.MinimosHistoricos)
+			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
 			{
 				if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 				{
@@ -293,7 +294,7 @@
 						@tooltip.Nombre
 					</div>
 
-					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos)
+					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
@@ -514,7 +515,7 @@
 			</a>
 		}
 
-		@if (tipo == Tipo.MinimosHistoricos)
+		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
 		{
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
@@ -526,7 +527,10 @@
 						<div class="minimo-fuente">@juego.Nombre</div>
 
 						<div class="perfil-flexible-centrado" style="justify-content: left; margin-top: 12px; gap: 12px;">
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 20px; height: 20px;"  />
+							@if (tipo == Tipo.MinimosHistoricos)
+							{
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 20px; height: 20px;" />
+							}
 
 							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 20px; height: 20px;"  />
 
@@ -933,7 +937,8 @@
 		PortadaProximamente,
 		JuegoDLC,
 		JuegoBandaSonora,
-		NuevosAñadidos
+		NuevosAñadidos,
+		SteamDeck
 	}
 
 	#region Abrir Enlace

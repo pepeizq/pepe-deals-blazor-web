@@ -1,0 +1,447 @@
+﻿@page "/steamdeck"
+
+@using Juegos
+@using pepeizqs_deals_blazor_web.Componentes.Interfaz
+@using pepeizqs_deals_web.Data
+@using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos
+
+@inject IHttpContextAccessor Contexto
+
+<div style="display: flex; align-items: center; justify-content: center;">
+	<div style="box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
+				background-blend-mode: overlay;
+				border-radius: 100px;
+				border: 1px solid #FFFFFF1A;
+				width: fit-content;
+				background-color: rgba(45, 47, 54, 0.71);
+				backdrop-filter: blur(25px); display: flex; align-items: center; gap: 20px; padding: 5px;">
+
+		<button @onclick="MostrarVerificados" style="@fondoVerificados height: 50px; border: 0px; padding: 15px 25px; display: flex; align-items: center; gap: 20px; color: var(--colorTexto); border-radius: inherit;">
+			<div style="width: 30px; height: 30px;">
+				<svg viewBox="0 0 20 20" fill="var(--deckVerificado)" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z"></path>
+				</svg>
+			</div>
+				
+			<div>
+				Verificado
+			</div>
+		</button>
+
+		<button @onclick="MostrarJugables" style="@fondoJugables height: 50px; border: 0px; padding: 15px 25px; display: flex; align-items: center; gap: 20px; color: var(--colorTexto); border-radius: inherit;">
+			<div style="width: 30px; height: 30px;">
+				<svg viewBox="0 0 20 20" fill="var(--deckJugable)" xmlns="http://www.w3.org/2000/svg">
+					<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z"></path>
+				</svg>
+			</div>
+
+			<div>
+				Jugable
+			</div>
+		</button>
+	</div>
+</div>
+
+
+@if (juegosMostrar?.Count > 0)
+{
+	<div style="max-width: 1000px; margin: 20px auto; display: flex; flex-direction: column; gap: 30px;">
+		<Virtualize Context="juego" Items="juegosMostrar" ItemSize="107" OverscanCount="12">
+			<ItemContent>
+				<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
+					<div style="width: 100%;">
+						<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.SteamDeck" userAgent="@userAgent" />
+					</div>
+
+					@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DeseadoImportado == false && juego.DeseadoMostrar == true)
+					{
+						<div style="position: absolute; top: 0; left: 0;" class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-deseados')">
+							<button @onclick="@(e => CambiarEstadoDeseado(e, usuarioId, juego, juego.Juego.PrecioMinimosHistoricos[0].DRM))" class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @juego.Color;">
+								<div class="svg-boton" style="width: 24px; height: 24px; display: flex;">
+									@if (juego.Color == "var(--fondoAlerta)")
+									{
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+											<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+										</svg>
+									}
+									else
+									{
+										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+											<path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z" />
+										</svg>
+									}
+								</div>
+							</button>
+
+							<div id="tooltip-deseados" class="tooltip-relleno">
+								<div style="margin: 4px; font-size: 14px;">
+									@if (juego.Color == "var(--fondoAlerta)")
+									{
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
+									}
+									else
+									{
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Index")
+									}
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</ItemContent>
+		</Virtualize>
+	</div>
+
+	bool llegadoLimite = false;
+
+	if (string.IsNullOrEmpty(usuarioId) == false)
+	{
+		if (usuarioPatreon == true || usuarioAdmin == true)
+		{
+			if (posicionJuegos > 950 && posicionJuegos <= 1000)
+			{
+				llegadoLimite = true;
+			}
+		}
+		else
+		{
+			if (posicionJuegos > 450 && posicionJuegos <= 500)
+			{
+				llegadoLimite = true;
+			}
+		}
+	}
+	else
+	{
+		if (posicionJuegos > 150 && posicionJuegos <= 200)
+		{
+			llegadoLimite = true;
+		}
+	}
+
+	<div style="margin-bottom: 40px; display: flex; align-items: center; justify-content: center; gap: 40px;">
+		@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+		{
+			if (llegadoLimite == false)
+			{
+				if (cargandoMas == false)
+				{
+					<button class="boton-pequeño" @onclick="CargarMas" style="width: fit-content; padding: 15px 30px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Index")
+					</button>
+				}
+				else
+				{
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Index")
+					</div>
+				}
+			}
+		}
+	</div>
+}
+
+@code {
+
+	#nullable disable
+
+	private string idioma = "en";
+	private string usuarioId = null;
+	private string userAgent = null;
+	private string dominio = null;
+
+	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	private bool usuarioPatreon = false;
+	private bool usuarioAdmin = false;
+
+	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
+
+	public SeccionDeck seccionActual { get; set; } = SeccionDeck.Verificados;
+	private string textoBuscador { get; set; }
+
+	private int posicionJuegos = 0;
+	private bool cargandoMas = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+		idioma = datos.Idioma;
+		usuarioId = datos.UsuarioId;
+		userAgent = datos.UserAgent;
+		dominio = datos.Dominio;
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+		}
+
+		if (seccionActual == SeccionDeck.Verificados)
+		{
+			await MostrarVerificados(true);
+		}
+		else if (seccionActual == SeccionDeck.Jugables)
+		{
+			await MostrarJugables(true);
+		}
+	}
+
+	public enum SeccionDeck
+	{
+		Verificados,
+		Jugables
+	}
+
+	private string fondoVerificados = "background: transparent;";
+
+	private async Task MostrarVerificados()
+	{
+		await MostrarVerificados(true);
+	}
+
+	private async Task MostrarVerificados(bool limpiar)
+	{
+		fondoVerificados = "background: var(--fondoBotonPequeño);";
+		fondoJugables = "background: transparent;";
+
+		deckListado = CrearListaSteamDeck(true, false);
+
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, deckListado, 0, 0, 100, textoBuscador);
+
+		if (juegos?.Count > 0)
+		{
+			if (limpiar == true)
+			{
+				juegosMostrar?.Clear();
+			}
+
+			foreach (var juego in juegos)
+			{
+				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
+				{
+					Juego = juego,
+					DeseadoImportado = false,
+					Color = "var(--fondoBotonPequeño)",
+					DeseadoMostrar = false
+				};
+
+				if (string.IsNullOrEmpty(usuarioId) == false)
+				{
+					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					{
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						{
+							juegoMinimoMostrar.Color = "var(--fondoBien)";
+						}
+						else
+						{
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								juegoMinimoMostrar.DeseadoImportado = true;
+							}
+
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+							}
+						}
+					}
+				}
+
+				if (juegosMostrar == null)
+				{
+					juegosMostrar = new List<JuegoMostrar>();
+				}
+
+				juegosMostrar.Add(juegoMinimoMostrar);
+			}
+		}
+	}
+
+	private string fondoJugables = "background: transparent;";
+
+	private async Task MostrarJugables()
+	{
+		await MostrarJugables(true);
+	}
+
+	private async Task MostrarJugables(bool limpiar)
+	{
+        fondoVerificados = "background: transparent;";
+		fondoJugables = "background: var(--fondoBotonPequeño);";
+
+		deckListado = CrearListaSteamDeck(false, true);
+
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, deckListado, 0, 0, 100, textoBuscador);
+
+		if (juegos?.Count > 0)
+		{
+			if (limpiar == true)
+			{
+				juegosMostrar?.Clear();
+			}
+
+			foreach (var juego in juegos)
+			{
+				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
+				{
+					Juego = juego,
+					DeseadoImportado = false,
+					Color = "var(--fondoBotonPequeño)",
+					DeseadoMostrar = false
+				};
+
+				if (string.IsNullOrEmpty(usuarioId) == false)
+				{
+					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					{
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						{
+							juegoMinimoMostrar.Color = "var(--fondoBien)";
+						}
+						else
+						{
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								juegoMinimoMostrar.DeseadoImportado = true;
+							}
+
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+							}
+						}
+					}
+				}
+
+				if (juegosMostrar == null)
+				{
+					juegosMostrar = new List<JuegoMostrar>();
+				}
+
+				juegosMostrar.Add(juegoMinimoMostrar);
+			}
+		}
+	}
+
+	private async Task CargarMas()
+	{
+		cargandoMas = true;
+
+		posicionJuegos = posicionJuegos + 100;
+
+		if (seccionActual == SeccionDeck.Verificados)
+		{
+			await MostrarVerificados(false);
+		}
+		else if (seccionActual == SeccionDeck.Jugables)
+		{
+			await MostrarJugables(true);
+		}
+
+		cargandoMas = false;
+	}
+
+	private List<MostrarJuegoDRM> drmsListado = CrearListaDRMs();
+
+	private static List<MostrarJuegoDRM> CrearListaDRMs()
+	{
+		List<MostrarJuegoDRM> nuevaLista = new List<MostrarJuegoDRM>();
+
+		foreach (var drm in JuegoDRM2.GenerarListado())
+		{
+			MostrarJuegoDRM nuevoDRM = new MostrarJuegoDRM();
+			nuevoDRM.Estado = false;
+			nuevoDRM.Checkbox = null;
+			nuevoDRM.DRMId = drm.Id;
+
+			if (nuevoDRM.DRMId == JuegoDRM.Steam)
+			{
+				nuevoDRM.Estado = true;
+				nuevoDRM.Checkbox = "checked";
+			}
+
+			nuevaLista.Add(nuevoDRM);
+		}
+
+		return nuevaLista;
+	}
+
+	private List<MostrarJuegoSteamDeck> deckListado = CrearListaSteamDeck();
+
+	private static List<MostrarJuegoSteamDeck> CrearListaSteamDeck(bool verificados = false, bool jugables = false)
+	{
+		List<MostrarJuegoSteamDeck> nuevaLista = new List<MostrarJuegoSteamDeck>();
+
+		if (verificados == true)
+		{
+			MostrarJuegoSteamDeck nuevoTipo1 = new MostrarJuegoSteamDeck();
+			nuevoTipo1.Estado = true;
+			nuevoTipo1.Checkbox = "checked";
+			nuevoTipo1.Tipo = JuegoDeck.Verificado;
+
+			nuevaLista.Add(nuevoTipo1);
+		}
+
+		if (jugables == true)
+		{
+			MostrarJuegoSteamDeck nuevoTipo2 = new MostrarJuegoSteamDeck();
+			nuevoTipo2.Estado = true;
+			nuevoTipo2.Checkbox = "checked";
+			nuevoTipo2.Tipo = JuegoDeck.Jugable;
+
+			nuevaLista.Add(nuevoTipo2);
+		}
+
+		return nuevaLista;
+	}
+
+	#region Deseados
+
+	private async Task CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, JuegoMostrar juego, JuegoDRM drm)
+	{
+		bool estado = true;
+
+		if (juego.Color == "var(--fondoAlerta)")
+		{
+			estado = false;
+		}
+
+		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, true);
+
+		foreach (var juego2 in juegosMostrar)
+		{
+			if (juego2.Juego.Id == juego.Juego.Id && juego2.Juego.PrecioMinimosHistoricos[0].DRM == drm)
+			{
+				if (estado == true)
+				{
+					juego2.Color = "var(--fondoAlerta)";
+				}
+				else
+				{
+					juego2.Color = "var(--fondoBotonPequeño)";
+				}
+			}
+		}
+
+		await InvokeAsync(StateHasChanged);
+	}
+
+	private void MostrarBotonDeseados(MouseEventArgs e, JuegoMostrar juego)
+	{
+		juego.DeseadoMostrar = true;
+	}
+
+	private void OcultarBotonDeseados(MouseEventArgs e, JuegoMostrar juego)
+	{
+		juego.DeseadoMostrar = false;
+	}
+
+	#endregion
+}
