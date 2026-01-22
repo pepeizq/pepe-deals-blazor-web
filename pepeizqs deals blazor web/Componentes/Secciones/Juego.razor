@@ -2671,7 +2671,7 @@
 
                 <div style="display: flex; flex-direction: column;">
                     <div style="display: flex; align-items: center; gap: 20px;">
-                        <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Deck")</label>
+                        <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "GameSteamDeck")</label>
 
                         <div style="height: 24px;">
                             @if (juego.Deck == JuegoDeck.Verificado)
@@ -2696,17 +2696,17 @@
             <div style="padding: 30px;">
                 @if (juego.Deck == JuegoDeck.Verificado)
                 {
-                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Deck"), juego.Nombre)</label>
+                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameSteamDeck"), juego.Nombre)</label>
                 }
 
                 @if (juego.Deck == JuegoDeck.Jugable)
                 {
-                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Deck"), juego.Nombre)</label>
+                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameSteamDeck"), juego.Nombre)</label>
                 }
 
                 @if (juego.Deck == JuegoDeck.NoSoportado)
                 {
-                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Deck"), juego.Nombre)</label>
+                    <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameSteamDeck"), juego.Nombre)</label>
                 }
 
                 @if (juego.DeckTokens?.Count > 0)
@@ -2720,7 +2720,7 @@
                             {
                                 <div style="background-color: var(--fondoAlerta); padding: 8px 16px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                     @{
-                                        string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje, "Deck");
+                                        string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje, "GameSteamDeck");
 
                                         if (string.IsNullOrEmpty(cadenaMensaje) == false)
                                         {
@@ -2760,7 +2760,7 @@
                                     </div>
 
                                     @{
-                                        string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje, "Deck");
+                                        string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje, "GameSteamDeck");
 
                                         if (string.IsNullOrEmpty(cadenaMensaje) == false)
                                         {

@@ -444,6 +444,7 @@
 		Portada,
 		Privacidad,
 		RSS,
+		SteamDeck,
 		Streaming,
 		Suscripciones,
 		UltimasNoticias,
@@ -607,6 +608,14 @@
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "RSS");
 			enlace ??= "https://" + dominio + "/rss";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.SteamDeck)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "SteamDeck");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamDeck");
+			enlace ??= "https://" + dominio + "/steamdeck/";
+			imagen ??= "https://" + dominio + "/otros/steamdeck_logo.webp";
 			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.Streaming)
