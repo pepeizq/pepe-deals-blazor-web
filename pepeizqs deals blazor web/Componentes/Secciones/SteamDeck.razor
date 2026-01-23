@@ -8,22 +8,20 @@
 @inject IHttpContextAccessor Contexto
 
 <style>
-	.boton-steamdeck {
-		transition: background-color 100ms linear;
-		border: 2px solid transparent;
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+        --glaseadoFondo: rgba(45, 47, 54, 0.70);
+		--noResultados: rgba(132, 32, 41, 0.5);
+		--botonSeleccionado: rgba(13, 22, 33, 0.75);
 	}
-
-		.boton-steamdeck:hover {
-			border: 2px solid var(--fondoCodigo);
-		}
 
 	.caja-steamdeck {
 		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
 		background-blend-mode: overlay;
 		border-radius: 100px;
-		border: 2px solid #FFFFFF1A;
+		border: 2px solid var(--glaseadoBorde);
 		width: fit-content;
-		background-color: rgba(45, 47, 54, 0.70);
+		background-color: var(--glaseadoFondo);
 		backdrop-filter: blur(25px);
 		display: flex;
 		align-items: center;
@@ -58,9 +56,9 @@
 			<img src="/imagenes/otros/steamdeck_logo.webp" alt="Steam Deck" style="width: 100%; height: 100%;" />
 		</div>
 
-		<div style="display: flex; align-items: center; justify-content: center; gap: 40px; margin-bottom: 10px; transition: transform 0.3s ease, opacity 0.3s ease; width: fit-content; margin-left: auto; margin-right: auto;">
+		<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px; transition: transform 0.3s ease, opacity 0.3s ease; width: fit-content; margin-left: auto; margin-right: auto;">
 			<div class="caja-steamdeck">
-				<button @onclick="MostrarVerificados" class="boton-steamdeck" style="@fondoVerificados height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
+				<button @onclick="MostrarVerificados" @onmouseenter="CambiarFondoVerificados" @onmouseleave="RestaurarFondoVerificados" style="@fondoVerificados @backdropVerificados border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
 					<div style="display: flex; width: 30px; height: 30px;">
 						<svg viewBox="0 0 20 20" fill="var(--deckVerificado)" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z"></path>
@@ -72,7 +70,7 @@
 					</div>
 				</button>
 
-				<button @onclick="MostrarJugables" class="boton-steamdeck" style="@fondoJugables height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
+				<button @onclick="MostrarJugables" @onmouseenter="CambiarFondoJugables" @onmouseleave="RestaurarFondoJugables" style="@fondoJugables @backdropJugables border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
 					<div style="display: flex; width: 30px; height: 30px;">
 						<svg viewBox="0 0 20 20" fill="var(--deckJugable)" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z"></path>
@@ -85,7 +83,7 @@
 				</button>
 			</div>
 
-			<div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px; @anchoBuscador">
+			<div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px;  margin-left: 40px; @anchoBuscador">
 				<button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -98,11 +96,22 @@
 					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "SteamDeck")" />
 				</div>
 			</div>
+
+			@if (string.IsNullOrEmpty(usuarioId) == false)
+			{
+				<button @onclick="MostrarOcultarOpciones" style="background: transparent; border: 0px; margin-left: 25px;">
+					<div style="width: 24px; height: 24px;">
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+							<path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z" />
+						</svg>
+					</div>
+				</button>
+			}
 		</div>
 
 		@if (mostrarNoResultados == true)
 		{
-			<div class="caja-steamdeck" style="background-color: rgba(132, 32, 41, 0.5); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
+			<div class="caja-steamdeck" style="background-color: var(--noResultados); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
 				<div style="width: 30px; height: 30px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 						<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -225,6 +234,39 @@
 	</div>
 </div>
 
+@if (mostrarOpciones == true)
+{
+	<div class="opciones-panel">
+		<div style="max-width: 800px; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+				<button class="boton-pequeño" @onclick="MostrarOcultarOpciones" style="width: fit-content; padding: 10px 15px;">
+					<div style="max-width: 24px; max-height: 24px;">
+						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+						</svg>
+					</div>
+				</button>
+
+				<div style="font-size: 20px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamDeck")
+				</div>
+			</div>
+
+			<div style="display: flex; flex-direction: column; gap: 40px; padding: 30px;">
+				<div style="display: flex; align-items: center; gap: 20px;">
+					<div class="checkbox-caja">
+						<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuario" @onchange="OcultarJuegosUsuario">
+					</div>
+
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "SteamDeck")
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
 @code {
 
 	#nullable disable
@@ -261,6 +303,20 @@
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+
+			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesSteamDeck(usuarioId);
+
+			if (opciones != null)
+			{
+				if (opciones.SteamDeckOption1 == true)
+				{
+					ocultarJuegosUsuario = "checked";
+				}
+				else
+				{
+					ocultarJuegosUsuario = null;
+				}
+			}
 		}
 
 		if (seccionActual == SeccionDeck.Verificados)
@@ -280,6 +336,7 @@
 	}
 
 	private string fondoVerificados = "background: transparent;";
+	private string backdropVerificados = string.Empty;
 
 	private async Task MostrarVerificados()
 	{
@@ -289,7 +346,7 @@
 	private async Task MostrarVerificados(bool limpiarLista)
 	{
 		seccionActual = SeccionDeck.Verificados;
-		fondoVerificados = "background: var(--fondoBotonPequeño);";
+		fondoVerificados = "background: var(--botonSeleccionado);";
 		fondoJugables = "background: transparent;";
 
 		deckListado = CrearListaSteamDeck(true, false);
@@ -311,49 +368,70 @@
 
 			foreach (var juego in juegos)
 			{
-				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
-				{
-					Juego = juego,
-					DeseadoImportado = false,
-					Color = "var(--fondoBotonPequeño)",
-					DeseadoMostrar = false
-				};
+				bool ocultar = false;
 
-				if (string.IsNullOrEmpty(usuarioId) == false)
+				if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
 				{
-					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					if (ocultarJuegosUsuario == "checked" && juego.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)
 					{
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						foreach (var juegoUsuario in juegosUsuario.Steam)
 						{
-							juegoMinimoMostrar.Color = "var(--fondoBien)";
-						}
-						else
-						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							if (juego.IdSteam == juegoUsuario.Id)
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								juegoMinimoMostrar.DeseadoImportado = true;
-							}
-
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								ocultar = true;
+								break;
 							}
 						}
 					}
 				}
 
-				if (juegosMostrar == null)
+				if (ocultar == false)
 				{
-					juegosMostrar = new List<JuegoMostrar>();
-				}
+					JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
+					{
+						Juego = juego,
+						DeseadoImportado = false,
+						Color = "var(--fondoBotonPequeño)",
+						DeseadoMostrar = false
+					};
 
-				juegosMostrar.Add(juegoMinimoMostrar);
+					if (string.IsNullOrEmpty(usuarioId) == false)
+					{
+						if (juego.PrecioMinimosHistoricos?.Count > 0)
+						{
+							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoBien)";
+							}
+							else
+							{
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+									juegoMinimoMostrar.DeseadoImportado = true;
+								}
+
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								}
+							}
+						}
+					}
+
+					if (juegosMostrar == null)
+					{
+						juegosMostrar = new List<JuegoMostrar>();
+					}
+
+					juegosMostrar.Add(juegoMinimoMostrar);
+				}
 			}
 		}
 	}
 
 	private string fondoJugables = "background: transparent;";
+	private string backdropJugables = string.Empty;
 
 	private async Task MostrarJugables()
 	{
@@ -364,7 +442,7 @@
 	{
 		seccionActual = SeccionDeck.Jugables;
 		fondoVerificados = "background: transparent;";
-		fondoJugables = "background: var(--fondoBotonPequeño);";
+		fondoJugables = "background: var(--botonSeleccionado);";
 
 		deckListado = CrearListaSteamDeck(false, true);
 
@@ -385,44 +463,64 @@
 
 			foreach (var juego in juegos)
 			{
-				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
-				{
-					Juego = juego,
-					DeseadoImportado = false,
-					Color = "var(--fondoBotonPequeño)",
-					DeseadoMostrar = false
-				};
+				bool ocultar = false;
 
-				if (string.IsNullOrEmpty(usuarioId) == false)
+				if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
 				{
-					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					if (ocultarJuegosUsuario == "checked" && juego.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)
 					{
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						foreach (var juegoUsuario in juegosUsuario.Steam)
 						{
-							juegoMinimoMostrar.Color = "var(--fondoBien)";
-						}
-						else
-						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							if (juego.IdSteam == juegoUsuario.Id)
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								juegoMinimoMostrar.DeseadoImportado = true;
-							}
-
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								ocultar = true;
+								break;
 							}
 						}
 					}
 				}
 
-				if (juegosMostrar == null)
+				if (ocultar == false)
 				{
-					juegosMostrar = new List<JuegoMostrar>();
-				}
+					JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
+					{
+						Juego = juego,
+						DeseadoImportado = false,
+						Color = "var(--fondoBotonPequeño)",
+						DeseadoMostrar = false
+					};
 
-				juegosMostrar.Add(juegoMinimoMostrar);
+					if (string.IsNullOrEmpty(usuarioId) == false)
+					{
+						if (juego.PrecioMinimosHistoricos?.Count > 0)
+						{
+							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoBien)";
+							}
+							else
+							{
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+									juegoMinimoMostrar.DeseadoImportado = true;
+								}
+
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								}
+							}
+						}
+					}
+
+					if (juegosMostrar == null)
+					{
+						juegosMostrar = new List<JuegoMostrar>();
+					}
+
+					juegosMostrar.Add(juegoMinimoMostrar);
+				}
 			}
 		}
 	}
@@ -443,6 +541,26 @@
 		}
 
 		cargandoMas = false;
+	}
+
+	private async Task CambiarFondoVerificados()
+	{
+		backdropVerificados = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoVerificados()
+	{
+		backdropVerificados = string.Empty;
+	}
+
+	private async Task CambiarFondoJugables()
+	{
+		backdropJugables = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoJugables()
+	{
+		backdropJugables = string.Empty;
 	}
 
 	private List<MostrarJuegoDRM> drmsListado = CrearListaDRMs();
@@ -546,7 +664,7 @@
 
 	private string textoBuscador { get; set; }
 	private bool mostrarBuscador { get; set; } = false;
-	private string anchoBuscador => mostrarBuscador ? "width: 100%;" : "width: fit-content;";
+	private string anchoBuscador => mostrarBuscador ? "width: 100%;" : "width: 45px;";
 	private string fondoBuscador = "background-color: var(--fondoEntrada);";
 
 	private void MostrarOcultarBuscador()
@@ -576,6 +694,56 @@
 		if (string.IsNullOrEmpty(textoBuscador) == true)
 		{
 			fondoBuscador = "background-color: var(--fondoEntrada);";
+		}
+	}
+
+	#endregion
+
+	#region Opciones
+
+    private bool mostrarOpciones { get; set; } = false;
+
+	private async Task MostrarOcultarOpciones()
+	{
+        mostrarOpciones = !mostrarOpciones;
+	}
+
+	private string ocultarJuegosUsuario = null;
+
+	private async Task OcultarJuegosUsuario()
+	{
+		bool valor = false;
+
+		if (ocultarJuegosUsuario == "checked")
+		{
+			ocultarJuegosUsuario = null;
+		}
+		else
+		{
+			ocultarJuegosUsuario = "checked";
+		}
+
+		if (ocultarJuegosUsuario == "checked")
+		{
+			valor = true;
+		}
+		else if (ocultarJuegosUsuario == null)
+		{
+			valor = false;
+		}
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			await BaseDatos.Usuarios.Actualizar.Opcion("SteamDeckOption1", valor, usuarioId);
+		}
+
+		if (seccionActual == SeccionDeck.Verificados)
+		{
+			await MostrarVerificados(true);
+		}
+		else if (seccionActual == SeccionDeck.Jugables)
+		{
+			await MostrarJugables(true);
 		}
 	}
 

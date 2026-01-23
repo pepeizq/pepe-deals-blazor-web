@@ -349,4 +349,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "int(4)")]
 	public int? BundlesSort { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamDeckOption1 { get; set; }
 }
