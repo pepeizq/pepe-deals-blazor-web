@@ -861,7 +861,7 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
+		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, decimal? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
@@ -1004,21 +1004,18 @@ FROM seccionMinimos j";
 
 			string dondeDeck = string.Empty;
 
-			if (deck != null)
+			if (deck?.Count > 0)
 			{
-				if (deck.Count > 0)
+				foreach (var d in deck)
 				{
-					foreach (var d in deck)
+					if (d.Estado == true)
 					{
-						if (d.Estado == true)
+						if (string.IsNullOrEmpty(dondeDeck) == false)
 						{
-							if (string.IsNullOrEmpty(dondeDeck) == false)
-							{
-								dondeDeck = dondeDeck + " OR ";
-							}
-
-							dondeDeck = dondeDeck + "deck = '" + ((int)d.Tipo).ToString() + "'";
+							dondeDeck = dondeDeck + " OR ";
 						}
+
+						dondeDeck = dondeDeck + "deck = '" + ((int)d.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1028,7 +1025,30 @@ FROM seccionMinimos j";
 				dondeDeck = " (" + dondeDeck + ")";
 			}
 
-			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeCategorias, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck }.Where(x => !string.IsNullOrEmpty(x)));
+			string dondeSteamOS = string.Empty;
+
+			if (steamos?.Count > 0)
+			{
+				foreach (var s in steamos)
+				{
+					if (s.Estado == true)
+					{
+						if (string.IsNullOrEmpty(dondeSteamOS) == false)
+						{
+							dondeSteamOS = dondeSteamOS + " OR ";
+						}
+
+						dondeSteamOS = dondeSteamOS + "steamos = '" + ((int)s.Tipo).ToString() + "'";
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(dondeSteamOS) == false)
+			{
+				dondeSteamOS = " (" + dondeSteamOS + ")";
+			}
+
+			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeCategorias, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS }.Where(x => !string.IsNullOrEmpty(x)));
 
 			if (lanzamiento == 1)
 			{

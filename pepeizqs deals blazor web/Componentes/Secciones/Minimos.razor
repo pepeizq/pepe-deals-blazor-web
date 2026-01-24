@@ -373,6 +373,41 @@ else
 						</div>
 					</button>
 
+					<button class="boton-pequeño" @onclick="OpcionesSteamOS" style="font-size: 14px; width: fit-content; padding: 6px 10px; border: 0px; color: var(--colorTextoVisitado);">
+						<div style="display: flex; align-items: center; gap: 10px;">
+							@{
+								int contadorSteamOS = 0;
+
+								foreach (var steamos2 in steamosListado)
+								{
+									if (steamos2.Estado == true)
+									{
+										contadorSteamOS += 1;
+									}
+								}
+							}
+
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String43", "HistoricalLows") (@contadorSteamOS.ToString())
+
+							@if (enseñarSteamOS == false)
+							{
+								<div style="max-width: 9px;">
+									<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+										<path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+									</svg>
+								</div>
+							}
+							else
+							{
+								<div style="max-width: 9px;">
+									<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+										<path d="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8l256 0c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z" />
+									</svg>
+								</div>
+							}
+						</div>
+					</button>
+
 					<button class="boton-pequeño" @onclick="OpcionesLanzamiento" style="font-size: 14px; width: fit-content; padding: 6px 10px; border: 0px; color: var(--colorTextoVisitado);">
 						<div style="display: flex; align-items: center; gap: 10px;">
 							@{
@@ -667,6 +702,41 @@ else
 					</div>
 				}
 
+				@if (enseñarSteamOS == true)
+				{
+					<div class="minimo-minicaja" style="margin-top: 20px;">
+						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px;">
+							@foreach (var steamos in steamosListado)
+							{
+								string nombreTipo = string.Empty;
+
+								if (steamos.Tipo == JuegoSteamOS.Verificado)
+								{
+									nombreTipo = Herramientas.Idiomas.BuscarTexto(idioma, "String25", "HistoricalLows");
+								}
+								else if (steamos.Tipo == JuegoSteamOS.NoSoportado)
+								{
+									nombreTipo = Herramientas.Idiomas.BuscarTexto(idioma, "String27", "HistoricalLows");
+								}
+								else if (steamos.Tipo == JuegoSteamOS.Desconocido)
+								{
+									nombreTipo = Herramientas.Idiomas.BuscarTexto(idioma, "String28", "HistoricalLows");
+								}
+
+								<div style="display: flex; align-items: center; gap: 15px;" title="@nombreTipo">
+									<div class="checkbox-caja">
+										<input type="checkbox" class="checkbox-interior" checked="@steamos.Checkbox" @onchange="@(e => EnseñarJuegosSteamOS(e, steamos.Tipo))">
+									</div>
+
+									<div>
+										<label style="font-size: 14px;">@nombreTipo</label>
+									</div>
+								</div>
+							}
+						</div>
+					</div>
+				}
+
 				@if (enseñarLanzamiento == true)
 				{
 					<div class="minimo-minicaja" style="margin-top: 20px;">
@@ -845,6 +915,7 @@ else
 	[SupplyParameterFromQuery] private string MinDiscount { get; set; }
 	[SupplyParameterFromQuery] private string MaxPrice { get; set; }
 	[SupplyParameterFromQuery] private string Deck { get; set; }
+	[SupplyParameterFromQuery] private string SteamOS { get; set; }
 	[SupplyParameterFromQuery] private string Release { get; set; }
 	[SupplyParameterFromQuery] private string AI { get; set; }
 	[SupplyParameterFromQuery] private string MinReviews { get; set; }
@@ -953,6 +1024,11 @@ else
 				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsSteamDeck) == false)
 				{
 					deckListado = JsonSerializer.Deserialize<List<MostrarJuegoSteamDeck>>(opcionesMinimos.HistoricalLowsSteamDeck);
+				}
+
+				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsSteamOS) == false)
+				{
+					steamosListado = JsonSerializer.Deserialize<List<MostrarJuegoSteamOS>>(opcionesMinimos.HistoricalLowsSteamOS);
 				}
 
 				if (opcionesMinimos.HistoricalLowsRelease == null)
@@ -1156,6 +1232,30 @@ else
 			}
 		}
 
+		if (string.IsNullOrEmpty(SteamOS) == false)
+		{
+			foreach (var steamos in steamosListado)
+			{
+				steamos.Checkbox = null;
+				steamos.Estado = false;
+			}
+
+			List<string> steamosEnlace = SteamOS.Split(',').ToList();
+
+			foreach (var enlace in steamosEnlace)
+			{
+				foreach (var steamos in steamosListado)
+				{
+					if (((int)steamos.Tipo).ToString() == enlace)
+					{
+						steamos.Estado = true;
+						steamos.Checkbox = "checked";
+						break;
+					}
+				}
+			}
+		}
+
 		if (string.IsNullOrEmpty(Release) == false)
 		{
 			if (int.TryParse(Release, out int lanzamiento))
@@ -1317,7 +1417,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1353,7 +1453,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1389,7 +1489,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1425,7 +1525,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1461,7 +1561,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1497,7 +1597,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1533,7 +1633,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1569,7 +1669,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, categorias, minimoDescuento, maximoPrecio, deckListado, steamosListado, lanzamientoElegido, inteligenciaArtificialElegida, minimoReseñas, textoBuscador);
 
 			if (juegosMostrar.Count > 0)
 			{
@@ -1789,6 +1889,21 @@ else
 		if (string.IsNullOrEmpty(deckTexto) == false)
 		{
 			deckTexto = "&deck=" + deckTexto.TrimEnd(',');
+		}
+
+		string steamosTexto = string.Empty;
+
+		foreach (var steamos in steamosListado)
+		{
+			if (steamos.Estado == true)
+			{
+				steamosTexto += ((int)steamos.Tipo).ToString() + ",";
+			}
+		}
+
+		if (string.IsNullOrEmpty(steamosTexto) == false)
+		{
+			steamosTexto = "&steamos=" + steamosTexto.TrimEnd(',');
 		}
 
 		string lanzamientoTexto = string.Empty;
@@ -2184,29 +2299,91 @@ else
 		nuevoTipo1.Estado = true;
 		nuevoTipo1.Checkbox = "checked";
 		nuevoTipo1.Tipo = JuegoDeck.Verificado;
-
 		nuevaLista.Add(nuevoTipo1);
 
 		MostrarJuegoSteamDeck nuevoTipo2 = new MostrarJuegoSteamDeck();
 		nuevoTipo2.Estado = true;
 		nuevoTipo2.Checkbox = "checked";
 		nuevoTipo2.Tipo = JuegoDeck.Jugable;
-
 		nuevaLista.Add(nuevoTipo2);
 
 		MostrarJuegoSteamDeck nuevoTipo3 = new MostrarJuegoSteamDeck();
 		nuevoTipo3.Estado = true;
 		nuevoTipo3.Checkbox = "checked";
 		nuevoTipo3.Tipo = JuegoDeck.NoSoportado;
-
 		nuevaLista.Add(nuevoTipo3);
 
 		MostrarJuegoSteamDeck nuevoTipo4 = new MostrarJuegoSteamDeck();
 		nuevoTipo4.Estado = true;
 		nuevoTipo4.Checkbox = "checked";
 		nuevoTipo4.Tipo = JuegoDeck.Desconocido;
-
 		nuevaLista.Add(nuevoTipo4);
+
+		return nuevaLista;
+	}
+
+	private async Task EnseñarJuegosSteamOS(ChangeEventArgs e, JuegoSteamOS tipoElegido)
+	{
+		foreach (var steamos in steamosListado)
+		{
+			if (steamos.Tipo == tipoElegido)
+			{
+				if (steamos.Checkbox == null)
+				{
+					steamos.Checkbox = "checked";
+					steamos.Estado = true;
+				}
+				else
+				{
+					steamos.Checkbox = null;
+					steamos.Estado = false;
+				}
+			}
+		}
+
+		if (opcionesMinimos != null)
+		{
+			opcionesMinimos.HistoricalLowsSteamOS = JsonSerializer.Serialize(steamosListado);
+
+			if (string.IsNullOrEmpty(usuarioId) == false)
+			{
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamOS", opcionesMinimos.HistoricalLowsSteamOS, usuarioId);
+			}
+		}
+
+		await ElegirOrdenamiento(true);
+	}
+
+	private List<MostrarJuegoSteamOS> steamosListado = CrearListaSteamOS();
+
+	public class MostrarJuegoSteamOS
+	{
+		public bool Estado { get; set; }
+		public string Checkbox { get; set; }
+		public JuegoSteamOS Tipo { get; set; }
+	}
+
+	private static List<MostrarJuegoSteamOS> CrearListaSteamOS()
+	{
+		List<MostrarJuegoSteamOS> nuevaLista = new List<MostrarJuegoSteamOS>();
+
+		MostrarJuegoSteamOS nuevoTipo1 = new MostrarJuegoSteamOS();
+		nuevoTipo1.Estado = true;
+		nuevoTipo1.Checkbox = "checked";
+		nuevoTipo1.Tipo = JuegoSteamOS.Verificado;
+		nuevaLista.Add(nuevoTipo1);
+
+		MostrarJuegoSteamOS nuevoTipo2 = new MostrarJuegoSteamOS();
+		nuevoTipo2.Estado = true;
+		nuevoTipo2.Checkbox = "checked";
+		nuevoTipo2.Tipo = JuegoSteamOS.NoSoportado;
+		nuevaLista.Add(nuevoTipo2);
+
+		MostrarJuegoSteamOS nuevoTipo3 = new MostrarJuegoSteamOS();
+		nuevoTipo3.Estado = true;
+		nuevoTipo3.Checkbox = "checked";
+		nuevoTipo3.Tipo = JuegoSteamOS.Desconocido;
+		nuevaLista.Add(nuevoTipo3);
 
 		return nuevaLista;
 	}
@@ -2310,6 +2487,7 @@ else
 		enseñarMinimoReseñas = false;
 		enseñarCategorias = false;
 		enseñarSteamDeck = false;
+		enseñarSteamOS = false;
 		enseñarLanzamiento = false;
 		enseñarInteligenciaArtificial = false;
 	}
@@ -2438,6 +2616,22 @@ else
 		else
 		{
 			enseñarSteamDeck = false;
+		}
+	}
+
+	private bool enseñarSteamOS = false;
+
+	private void OpcionesSteamOS()
+	{
+		if (enseñarSteamOS == false)
+		{
+			OpcionesPestañas();
+
+			enseñarSteamOS = true;
+		}
+		else
+		{
+			enseñarSteamOS = false;
 		}
 	}
 

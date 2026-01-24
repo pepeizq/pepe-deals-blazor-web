@@ -149,6 +149,10 @@ public class Usuario : IdentityUser
 	public string? HistoricalLowsSteamDeck { get; set; }
 
 	[PersonalData]
+	[Column(TypeName = "nvarchar(max)")]
+	public string? HistoricalLowsSteamOS { get; set; }
+
+	[PersonalData]
 	[Column(TypeName = "int(4)")]
 	public int? HistoricalLowsRelease { get; set; }
 
@@ -353,4 +357,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? SteamDeckOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamOSOption1 { get; set; }
 }

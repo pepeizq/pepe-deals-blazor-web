@@ -1,4 +1,4 @@
-﻿@page "/steamdeck"
+﻿@page "/steamos"
 
 @using Juegos
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -10,12 +10,12 @@
 <style>
 	:root {
 		--glaseadoBorde: #FFFFFF1A;
-        --glaseadoFondo: rgba(45, 47, 54, 0.70);
+		--glaseadoFondo: rgba(45, 47, 54, 0.70);
 		--noResultados: rgba(132, 32, 41, 0.5);
 		--botonSeleccionado: rgba(13, 22, 33, 0.75);
 	}
 
-	.caja-steamdeck {
+	.caja-steamos {
 		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
 		background-blend-mode: overlay;
 		border-radius: 100px;
@@ -29,7 +29,7 @@
 		padding: 5px;
 	}
 
-	.caja-steamdeck-animacion {
+	.caja-steamos-animacion {
 		opacity: 0;
 		transition: all 0.5s ease, transform .2s ease;
 		pointer-events: none;
@@ -38,7 +38,7 @@
 		max-width: 0;
 	}
 
-		.caja-steamdeck-animacion.visible {
+		.caja-steamos-animacion.visible {
 			opacity: 1;
 			pointer-events: auto;
 			transform: scaleX(1);
@@ -46,39 +46,27 @@
 		}
 </style>
 
-<Titulo tipo="@Titulo.Tipo.SteamDeck" idioma="@idioma" dominio="@dominio"/>
+<Titulo tipo="@Titulo.Tipo.SteamOS" idioma="@idioma" dominio="@dominio" />
 
 <div>
-	<img class="juego-fondo" src="/imagenes/otros/steamdeck_fondo.webp" alt="Steam Deck" fetchpriority="high" />
+	<img class="juego-fondo" src="/imagenes/otros/steamos_fondo.webp" alt="SteamOS" fetchpriority="high" />
 
 	<div>
-		<div class="caja-steamdeck" style="margin: 40px auto; display: flex; justify-content: center; max-width: 350px; border-radius: 20px; padding: 20px 40px;">
-			<img src="/imagenes/otros/steamdeck_logo.webp" alt="Steam Deck" style="width: 100%; height: 100%;" />
+		<div class="caja-steamos" style="margin: 40px auto; display: flex; justify-content: center; max-width: 350px; border-radius: 20px; padding: 20px 40px;">
+			<img src="/imagenes/otros/steamos_logo.webp" alt="SteamOS" style="width: 100%; height: 100%;" />
 		</div>
 
 		<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px; transition: transform 0.3s ease, opacity 0.3s ease; width: fit-content; margin-left: auto; margin-right: auto;">
-			<div class="caja-steamdeck">
+			<div class="caja-steamos">
 				<button @onclick="MostrarVerificados" @onmouseenter="CambiarFondoVerificados" @onmouseleave="RestaurarFondoVerificados" style="@fondoVerificados @backdropVerificados border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
 					<div style="display: flex; width: 30px; height: 30px;">
-						<svg viewBox="0 0 20 20" fill="var(--deckVerificado)" xmlns="http://www.w3.org/2000/svg">
+						<svg viewBox="0 0 20 20" fill="var(--steamOSVerificado)" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z"></path>
 						</svg>
 					</div>
 
-					<div class="caja-steamdeck-animacion @(mostrarBuscador ? "" : "visible")">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "SteamDeck")
-					</div>
-				</button>
-
-				<button @onclick="MostrarJugables" @onmouseenter="CambiarFondoJugables" @onmouseleave="RestaurarFondoJugables" style="@fondoJugables @backdropJugables border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
-					<div style="display: flex; width: 30px; height: 30px;">
-						<svg viewBox="0 0 20 20" fill="var(--deckJugable)" xmlns="http://www.w3.org/2000/svg">
-							<path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z"></path>
-						</svg>
-					</div>
-
-					<div class="caja-steamdeck-animacion @(mostrarBuscador ? "" : "visible")">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "SteamDeck")
+					<div class="caja-steamos-animacion @(mostrarBuscador ? "" : "visible")">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "SteamOS")
 					</div>
 				</button>
 			</div>
@@ -92,8 +80,8 @@
 					</div>
 				</button>
 
-				<div class="caja-steamdeck caja-steamdeck-animacion @(mostrarBuscador ? "visible" : "")">
-					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "SteamDeck")" />
+				<div class="caja-steamos caja-steamos-animacion @(mostrarBuscador ? "visible" : "")">
+					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "SteamOS")" />
 				</div>
 			</div>
 
@@ -111,7 +99,7 @@
 
 		@if (mostrarNoResultados == true)
 		{
-			<div class="caja-steamdeck" style="background-color: var(--noResultados); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
+			<div class="caja-steamos" style="background-color: var(--noResultados); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
 				<div style="width: 30px; height: 30px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 						<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -119,7 +107,7 @@
 				</div>
 
 				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "SteamDeck")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "SteamOS")
 				</div>
 			</div>
 		}
@@ -209,27 +197,19 @@
 							if (cargandoMas == false)
 							{
 								<button class="boton-pequeño" @onclick="CargarMas" style="width: fit-content; padding: 15px 30px;">
-									@if (seccionActual == SeccionDeck.Verificados)
-									{
-										@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "SteamDeck")
-									}
-									else if (seccionActual == SeccionDeck.Jugables)
-									{
-										@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "SteamDeck")
-									}
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "SteamOS")
 								</button>
 							}
 							else
 							{
 								<div>
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "SteamDeck")
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "SteamOS")
 								</div>
 							}
 						}
 					}
 				</div>
 			}
-
 		}
 	</div>
 </div>
@@ -248,7 +228,7 @@
 				</button>
 
 				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamDeck")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamOS")
 				</div>
 			</div>
 
@@ -259,7 +239,7 @@
 					</div>
 
 					<div>
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "SteamDeck")
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "SteamOS")
 					</div>
 				</div>
 			</div>
@@ -282,7 +262,6 @@
 	private bool usuarioAdmin = false;
 
 	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
-	[PersistentState] public SeccionDeck seccionActual { get; set; }
 
 	private int posicionJuegos = 0;
 	private bool cargandoMas = false;
@@ -304,11 +283,11 @@
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
-			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesSteamDeck(usuarioId);
+			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesSteamOS(usuarioId);
 
 			if (opciones != null)
 			{
-				if (opciones.SteamDeckOption1 == true)
+				if (opciones.SteamOSOption1 == true)
 				{
 					ocultarJuegosUsuario = "checked";
 				}
@@ -319,20 +298,7 @@
 			}
 		}
 
-		if (seccionActual == SeccionDeck.Verificados)
-		{
-			await MostrarVerificados(true);
-		}
-		else if (seccionActual == SeccionDeck.Jugables)
-		{
-			await MostrarJugables(true);
-		}
-	}
-
-	public enum SeccionDeck
-	{
-		Verificados,
-		Jugables
+		await MostrarVerificados(true);
 	}
 
 	private string fondoVerificados = "background: transparent;";
@@ -345,108 +311,11 @@
 
 	private async Task MostrarVerificados(bool limpiarLista)
 	{
-		seccionActual = SeccionDeck.Verificados;
 		fondoVerificados = "background: var(--botonSeleccionado);";
-		fondoJugables = "background: transparent;";
 
-		deckListado = CrearListaSteamDeck(true, false);
+		steamosListado = CrearListaSteamOS(true);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, deckListado, null, 0, 0, 100, textoBuscador);
-
-		if (juegos?.Count == 0)
-		{
-			mostrarNoResultados = true;
-		}
-		else if (juegos?.Count > 0)
-		{
-			mostrarNoResultados = false;
-
-			if (limpiarLista == true)
-			{
-				juegosMostrar?.Clear();
-			}
-
-			foreach (var juego in juegos)
-			{
-				bool ocultar = false;
-
-				if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
-				{
-					if (ocultarJuegosUsuario == "checked" && juego.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)
-					{
-						foreach (var juegoUsuario in juegosUsuario.Steam)
-						{
-							if (juego.IdSteam == juegoUsuario.Id)
-							{
-								ocultar = true;
-								break;
-							}
-						}
-					}
-				}
-
-				if (ocultar == false)
-				{
-					JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
-					{
-						Juego = juego,
-						DeseadoImportado = false,
-						Color = "var(--fondoBotonPequeño)",
-						DeseadoMostrar = false
-					};
-
-					if (string.IsNullOrEmpty(usuarioId) == false)
-					{
-						if (juego.PrecioMinimosHistoricos?.Count > 0)
-						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
-							{
-								juegoMinimoMostrar.Color = "var(--fondoBien)";
-							}
-							else
-							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-									juegoMinimoMostrar.DeseadoImportado = true;
-								}
-
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								}
-							}
-						}
-					}
-
-					if (juegosMostrar == null)
-					{
-						juegosMostrar = new List<JuegoMostrar>();
-					}
-
-					juegosMostrar.Add(juegoMinimoMostrar);
-				}
-			}
-		}
-	}
-
-	private string fondoJugables = "background: transparent;";
-	private string backdropJugables = string.Empty;
-
-	private async Task MostrarJugables()
-	{
-		await MostrarJugables(true);
-	}
-
-	private async Task MostrarJugables(bool limpiarLista)
-	{
-		seccionActual = SeccionDeck.Jugables;
-		fondoVerificados = "background: transparent;";
-		fondoJugables = "background: var(--botonSeleccionado);";
-
-		deckListado = CrearListaSteamDeck(false, true);
-
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, deckListado, null, 0, 0, 100, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, null, steamosListado, 0, 0, 100, textoBuscador);
 
 		if (juegos?.Count == 0)
 		{
@@ -531,14 +400,7 @@
 
 		posicionJuegos = posicionJuegos + 100;
 
-		if (seccionActual == SeccionDeck.Verificados)
-		{
-			await MostrarVerificados(false);
-		}
-		else if (seccionActual == SeccionDeck.Jugables)
-		{
-			await MostrarJugables(false);
-		}
+		await MostrarVerificados(false);
 
 		cargandoMas = false;
 	}
@@ -551,16 +413,6 @@
 	private async Task RestaurarFondoVerificados()
 	{
 		backdropVerificados = string.Empty;
-	}
-
-	private async Task CambiarFondoJugables()
-	{
-		backdropJugables = "backdrop-filter: brightness(50%);";
-	}
-
-	private async Task RestaurarFondoJugables()
-	{
-		backdropJugables = string.Empty;
 	}
 
 	private List<MostrarJuegoDRM> drmsListado = CrearListaDRMs();
@@ -588,30 +440,20 @@
 		return nuevaLista;
 	}
 
-	private List<MostrarJuegoSteamDeck> deckListado = CrearListaSteamDeck();
+	private List<MostrarJuegoSteamOS> steamosListado = CrearListaSteamOS();
 
-	private static List<MostrarJuegoSteamDeck> CrearListaSteamDeck(bool verificados = false, bool jugables = false)
+	private static List<MostrarJuegoSteamOS> CrearListaSteamOS(bool verificados = true)
 	{
-		List<MostrarJuegoSteamDeck> nuevaLista = new List<MostrarJuegoSteamDeck>();
+		List<MostrarJuegoSteamOS> nuevaLista = new List<MostrarJuegoSteamOS>();
 
 		if (verificados == true)
 		{
-			MostrarJuegoSteamDeck nuevoTipo1 = new MostrarJuegoSteamDeck();
+			MostrarJuegoSteamOS nuevoTipo1 = new MostrarJuegoSteamOS();
 			nuevoTipo1.Estado = true;
 			nuevoTipo1.Checkbox = "checked";
-			nuevoTipo1.Tipo = JuegoDeck.Verificado;
+			nuevoTipo1.Tipo = JuegoSteamOS.Verificado;
 
 			nuevaLista.Add(nuevoTipo1);
-		}
-
-		if (jugables == true)
-		{
-			MostrarJuegoSteamDeck nuevoTipo2 = new MostrarJuegoSteamDeck();
-			nuevoTipo2.Estado = true;
-			nuevoTipo2.Checkbox = "checked";
-			nuevoTipo2.Tipo = JuegoDeck.Jugable;
-
-			nuevaLista.Add(nuevoTipo2);
 		}
 
 		return nuevaLista;
@@ -674,14 +516,7 @@
 
 	private async Task TextoCambiaBuscador()
 	{
-		if (seccionActual == SeccionDeck.Verificados)
-		{
-			await MostrarVerificados(true);
-		}
-		else if (seccionActual == SeccionDeck.Jugables)
-		{
-			await MostrarJugables(true);
-		}
+		await MostrarVerificados(true);
 	}
 
 	private void ClickBuscador()
@@ -701,11 +536,11 @@
 
 	#region Opciones
 
-    private bool mostrarOpciones { get; set; } = false;
+	private bool mostrarOpciones { get; set; } = false;
 
 	private async Task MostrarOcultarOpciones()
 	{
-        mostrarOpciones = !mostrarOpciones;
+		mostrarOpciones = !mostrarOpciones;
 	}
 
 	private string ocultarJuegosUsuario = null;
@@ -734,17 +569,10 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await BaseDatos.Usuarios.Actualizar.Opcion("SteamDeckOption1", valor, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("SteamOSOption1", valor, usuarioId);
 		}
 
-		if (seccionActual == SeccionDeck.Verificados)
-		{
-			await MostrarVerificados(true);
-		}
-		else if (seccionActual == SeccionDeck.Jugables)
-		{
-			await MostrarJugables(true);
-		}
+		await MostrarVerificados(true);
 	}
 
 	#endregion

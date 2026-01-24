@@ -217,6 +217,20 @@ namespace Herramientas
 
 			sb.Append(textoMinimos);
 
+			string textoSteamDeck = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/steamdeck/</loc>" + Environment.NewLine +
+					"<changefreq>hourly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoSteamDeck);
+
+			string textoSteamOS = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/steamos/</loc>" + Environment.NewLine +
+					"<changefreq>hourly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoSteamOS);
+
 			string textoNoticias = "<url>" + Environment.NewLine +
 					"<loc>https://" + dominio + "/last-news/</loc>" + Environment.NewLine +
 					"<changefreq>hourly</changefreq>" + Environment.NewLine +

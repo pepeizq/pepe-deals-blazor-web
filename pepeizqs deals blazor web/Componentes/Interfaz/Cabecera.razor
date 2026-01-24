@@ -1,5 +1,7 @@
 ﻿@rendermode InteractiveServer
 
+@attribute [StreamRendering(true)]
+
 @using BaseDatos.Usuarios
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
@@ -147,6 +149,93 @@
             margin-left: auto;
         }
     }
+
+    :root {
+        --glaseadoCabeceraBoton: rgba(0, 32, 51, 0.7);
+        --glaseadoCabeceraBorde: rgba(0, 255, 255, 0.15);
+    }
+
+    .menu-dropdown2 {
+        position: relative;
+        display: inline-block;
+    }
+
+    .menu-dropdown2::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        height: 20px;
+        width: 100%;
+    }
+
+    .menu-dropdown-contenido-centrado {
+        position: absolute;
+        top: 120%;
+        left: 50%;
+        transform: translate(-50%, -8px);
+        min-width: 200px;
+        padding: 8px;
+        backdrop-filter: blur(25px);
+        background: var(--glaseadoCabeceraBoton);
+        border-radius: 14px;
+        box-shadow: 0 20px 40px rgba(0,0,0,.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        border: 2px solid var(--glaseadoCabeceraBorde);
+    }
+
+    .menu-dropdown2:hover .menu-dropdown-contenido-centrado {
+        opacity: 1;
+        transform: translate(-50%, 0);
+        pointer-events: auto;
+    }
+
+    .menu-dropdown-contenido-centrado a {
+        display: block;
+        padding: 12px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+        .menu-dropdown-contenido-centrado a:hover {
+            background: rgba(99, 102, 241,.15);
+        }
+
+    .menu-dropdown-contenido-derecha {
+        position: absolute;
+        top: 120%;
+        right: -15px;
+        transform: translateY(-8px);
+        min-width: 200px;
+        padding: 8px;
+        backdrop-filter: blur(25px);
+        background: var(--glaseadoCabeceraBoton);
+        border-radius: 14px;
+        box-shadow: 0 20px 40px rgba(0,0,0,.25);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease, transform .2s ease;
+        border: 2px solid var(--glaseadoCabeceraBorde);
+    }
+
+    .menu-dropdown2:hover .menu-dropdown-contenido-derecha {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .menu-dropdown-contenido-derecha button {
+        display: block;
+        padding: 12px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+
+        .menu-dropdown-contenido-derecha button:hover {
+            background: rgba(99, 102, 241, .15);
+        }
 </style>
 
 <header class="cabecera2">
@@ -234,11 +323,41 @@
                         </a>
                     }
 
-                    <a class="boton-superior" href="/historical-lows" style="font-size: 15px;">
-                        <div style="@GenerarEstilo("/historical-lows")">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
+                    <div class="menu-dropdown2">
+                        <div style="display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 15px;">
+                            <a class="boton-superior" href="/historical-lows" style="font-size: 15px;">
+                                <div style="@GenerarEstilo("/historical-lows")">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
+                                </div>
+                            </a>
                         </div>
-                    </a>
+
+                        <div class="menu-dropdown-contenido-centrado">
+                            <a class="texto-cabecera boton-superior" href="/historical-lows" style="font-size: 15px;">
+                                <div style="text-align: center;">
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
+                                </div>
+                            </a>
+                            <a class="texto-cabecera boton-superior" href="/steamdeck" style="font-size: 15px;">
+                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                    <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px;" />
+
+                                    <div>
+                                        Steam Deck
+                                    </div>
+                                </div>
+                            </a>
+                            <a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
+                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                    <img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" />
+
+                                    <div>
+                                        SteamOS
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
 
                     <a class="boton-superior" href="/bundles" style="font-size: 15px;">
                         <div style="@GenerarEstilo("/bundles")">
@@ -280,7 +399,7 @@
                     <AuthorizeView>
                         <Authorized>
                             <div style="display: flex; align-items: center; margin-left: auto;">
-                                <div class="menu-dropdown">
+                                <div class="menu-dropdown2">
                                     <div style="display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 15px;">
                                         @if (opcionesCabecera != null)
                                         {
@@ -311,17 +430,20 @@
                                         </div>
                                     </div>
 
-                                    <div class="menu-dropdown-contenido" style="right: -10px;">
+                                    <div class="menu-dropdown-contenido-derecha">
                                         @{
-                                            string enlaceCuenta = "/account";
-                                            string enlaceDeslogear = "/account/logout";
+                                            string enlaceCuenta = "/account/";
                                         }
 
-                                        <button @onclick="(e => AbrirEnlace(e, enlaceCuenta, false))" class="texto-cabecera boton-superior" style="font-size: 15px; width: 100%; text-align: right;">
+                                        <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceCuenta, false))" style="font-size: 15px; width: 100%; text-align: right;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Account", "Header")
                                         </button>
 
-                                        <button @onclick="(e => AbrirEnlace(e, enlaceDeslogear, false))" class="texto-cabecera boton-superior" style="font-size: 15px; width: 100%; text-align: right;">
+                                        @{
+                                            string enlaceDesconectar = "/account/logout";
+                                        }
+
+                                        <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceDesconectar, false))" style="font-size: 15px; width: 100%; text-align: right;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Logout", "Header")
                                         </button>
                                     </div>

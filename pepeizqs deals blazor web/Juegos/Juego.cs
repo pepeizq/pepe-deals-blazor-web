@@ -415,7 +415,6 @@ namespace Juegos
 	{
 		Desconocido,
 		NoSoportado,
-		Jugable,
 		Verificado
 	}
 

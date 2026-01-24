@@ -445,6 +445,7 @@
 		Privacidad,
 		RSS,
 		SteamDeck,
+		SteamOS,
 		Streaming,
 		Suscripciones,
 		UltimasNoticias,
@@ -616,6 +617,14 @@
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamDeck");
 			enlace ??= "https://" + dominio + "/steamdeck/";
 			imagen ??= "https://" + dominio + "/otros/steamdeck_logo.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.SteamOS)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "SteamOS");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamOS");
+			enlace ??= "https://" + dominio + "/steamos/";
+			imagen ??= "https://" + dominio + "/otros/steamos_logo.webp";
 			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.Streaming)
