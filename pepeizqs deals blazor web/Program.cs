@@ -577,6 +577,6 @@ app.Use(async (context, next) =>
 
 app.MapHealthChecks("/vida");
 
-app.UseStatusCodePagesWithRedirects("/error");
+app.UseStatusCodePagesWithRedirects("/");
 
 app.Run();

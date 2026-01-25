@@ -242,6 +242,31 @@
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "SteamOS")
 					</div>
 				</div>
+
+				<div style="display: flex; flex-direction: column; gap: 10px;">
+					<div style="margin-left: 15px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "SteamDeck")
+					</div>
+
+					<div style="display: flex; align-items: center; gap: 20px;">
+						<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+							<input type="range" min="0" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
+
+							<datalist id="precios">
+								<option value="0" label="0€"></option>
+								<option value="20" label="20€"></option>
+								<option value="40" label="40€"></option>
+								<option value="60" label="60€"></option>
+								<option value="80" label="80€"></option>
+								<option value="100" label="100€"></option>
+							</datalist>
+						</div>
+
+						<div style="width: 30px;">
+							@precioMaximo€
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -315,7 +340,7 @@
 
 		steamosListado = CrearListaSteamOS(true);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, 90, null, steamosListado, 0, 0, 100, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, precioMaximo, null, steamosListado, 0, 0, 100, textoBuscador);
 
 		if (juegos?.Count == 0)
 		{
@@ -572,6 +597,13 @@
 			await BaseDatos.Usuarios.Actualizar.Opcion("SteamOSOption1", valor, usuarioId);
 		}
 
+		await MostrarVerificados(true);
+	}
+
+	private int precioMaximo = 100;
+
+	private async Task CambiarPrecioMaximo()
+	{
 		await MostrarVerificados(true);
 	}
 

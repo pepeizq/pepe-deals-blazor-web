@@ -345,6 +345,7 @@ namespace Juegos
 					"no",
 					"none",
 					"nv_bundle",
+					"nvidia",
 					"oculus",
 					"other-",
 					"other drm",

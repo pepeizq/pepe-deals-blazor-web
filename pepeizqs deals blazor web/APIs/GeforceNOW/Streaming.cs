@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Microsoft.Data.SqlClient;
 using Microsoft.VisualBasic;
 using System.Net.Http.Headers;
 using System.Text;
@@ -63,101 +62,116 @@ namespace APIs.GeforceNOW
                 {
                     GeforceNOWDatos datos = JsonSerializer.Deserialize<GeforceNOWDatos>(html);
 
-                    if (datos != null)
-                    {
-                        if (datos.Datos != null)
-                        {
-                            if (datos.Datos.Info != null)
-                            {
-                                if (datos.Datos.Info.SiguientePagina != null)
-                                {
-                                    if (datos.Datos.Info.SiguientePagina.Existe == true)
-                                    {
-                                        cadena = datos.Datos.Info.SiguientePagina.Cadena;
-                                    }
-                                    else
-                                    {
-                                        i = 100;
-                                    }
-                                }
+					if (datos?.Datos?.Info != null)
+					{
+						if (datos?.Datos?.Info?.SiguientePagina != null)
+						{
+							if (datos.Datos.Info.SiguientePagina.Existe == true)
+							{
+								cadena = datos.Datos.Info.SiguientePagina.Cadena;
+							}
+							else
+							{
+								i = 100;
+							}
+						}
 
-                                foreach (var juego in datos.Datos.Info.Juegos)
-                                {
-                                    List<string> drms = new List<string>();
+						foreach (var juego in datos.Datos.Info.Juegos)
+						{
+							List<string> drms = new List<string>();
 
-                                    foreach (var drm in juego.DRMs)
-                                    {
-                                        drms.Add(drm.DRM);
-                                    }
+							foreach (var drm in juego.DRMs)
+							{
+								drms.Add(drm.DRM);
+							}
 
-                                    DateTime fecha = DateTime.Now;
-                                    fecha = fecha + TimeSpan.FromDays(1);
+							List<int> drms2 = new List<int>();
 
-                                    bool encontrado = false;
+							if (drms?.Count > 0)
+							{
+								foreach (var drm in drms)
+								{
+									var drmTraducido = Juegos.JuegoDRM2.Traducir(drm);
 
-									string sqlBuscar = "SELECT 1 FROM streaminggeforcenow WHERE nombreCodigo=@nombreCodigo";
-
-									try
+									if (drmTraducido != Juegos.JuegoDRM.NoEspecificado)
 									{
-										encontrado = await Herramientas.BaseDatos.Select(async conexion =>
-										{
-											return await conexion.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true) });
-										});
+										drms2.Add((int)drmTraducido);
 									}
-									catch (Exception ex)
+								}
+							}
+
+							DateTime fecha = DateTime.Now;
+							fecha = fecha + TimeSpan.FromDays(1);
+
+							bool encontrado = false;
+
+							string sqlBuscar = "SELECT 1 FROM streaminggeforcenow WHERE nombreCodigo=@nombreCodigo";
+
+							try
+							{
+								encontrado = await Herramientas.BaseDatos.Select(async conexion =>
+								{
+									return await conexion.QueryFirstOrDefaultAsync<bool>(sqlBuscar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true) });
+								});
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 1", ex);
+							}
+
+							if (encontrado == true)
+							{
+								cantidad += 1;
+								await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
+
+								string sqlActualizar = "UPDATE streaminggeforcenow " +
+														"SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE nombreCodigo=@nombreCodigo";
+
+								try
+								{
+									await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 									{
-										BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 1", ex);
-									}
+										return await conexion.ExecuteAsync(sqlActualizar, new { 
+                                            nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true), 
+                                            fecha,
+											drms = JsonSerializer.Serialize(drms),
+											drms2 = JsonSerializer.Serialize(drms2)
+									}, transaction: sentencia);
+									});
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 2", ex);
+								}
+							}
+							else
+							{
+								string sqlInsertar = "INSERT INTO streaminggeforcenow " +
+													"(nombreCodigo, nombre, drms, fecha, drms2) VALUES " +
+													"(@nombreCodigo, @nombre, @drms, @fecha, @drms2) ";
 
-                                    if (encontrado == true)
-                                    {
-										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
-
-										string sqlActualizar = "UPDATE streaminggeforcenow " +
-																"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
-
-										try
+								try
+								{
+									await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+									{
+										return await conexion.ExecuteAsync(sqlInsertar, new
 										{
-											await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-											{
-												return await conexion.ExecuteAsync(sqlActualizar, new { nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true), fecha }, transaction: sentencia);
-											});
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 2", ex);
-										}
-                                    }
-                                    else
-                                    {
-                                        string sqlInsertar = "INSERT INTO streaminggeforcenow " +
-                                                            "(nombreCodigo, nombre, drms, fecha) VALUES " +
-                                                            "(@nombreCodigo, @nombre, @drms, @fecha) ";
-
-										try
-										{
-											await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-											{
-												return await conexion.ExecuteAsync(sqlInsertar, new
-												{
-													nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true),
-													nombre = juego.Nombre,
-													drms = JsonSerializer.Serialize(drms),
-													fecha
-												}, transaction: sentencia);
-											});
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 3", ex);
-										}
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+											nombreCodigo = Herramientas.Buscador.LimpiarNombre(juego.Nombre, true),
+											nombre = juego.Nombre,
+											drms = JsonSerializer.Serialize(drms),
+											fecha,
+											drms2 = JsonSerializer.Serialize(drms2)
+										}, transaction: sentencia);
+									});
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Geforce NOW 3", ex);
+								}
+							}
+						}
+					}
+				}
 
                 i += 1;
             }          
