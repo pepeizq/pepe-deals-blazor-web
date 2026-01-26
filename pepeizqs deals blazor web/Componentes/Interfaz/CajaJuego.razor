@@ -125,7 +125,7 @@
 	string codigoTexto = string.Empty;
 	DateTime fechaDetectado = DateTime.Now;
 
-	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
+	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW)
 	{
 		JuegoPrecio oferta = null;
 
@@ -167,7 +167,7 @@
 
 			//--------------------------------------------------------
 
-			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
+			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW)
 			{
 				if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 				{
@@ -294,7 +294,7 @@
 						@tooltip.Nombre
 					</div>
 
-					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
+					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
@@ -515,7 +515,7 @@
 			</a>
 		}
 
-		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck)
+		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW)
 		{
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
@@ -938,7 +938,9 @@
 		JuegoDLC,
 		JuegoBandaSonora,
 		NuevosAñadidos,
-		SteamDeck
+		SteamDeck,
+		SteamOS,
+		GeforceNOW
 	}
 
 	#region Abrir Enlace

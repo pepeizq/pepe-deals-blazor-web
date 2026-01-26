@@ -361,4 +361,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? SteamOSOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? GeforceNOWOption1 { get; set; }
 }

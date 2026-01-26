@@ -436,6 +436,7 @@
 		Curator,
 		Deseados,
 		Filtro,
+		GeforceNOW,
 		Gratis,
 		Juego,
 		Minimos,
@@ -528,6 +529,14 @@
 			enlace ??= "https://" + dominio + "/filter/" + idsFiltro + "/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= tituloKeywords.Keywords;
+		}
+		else if (tipo == Tipo.GeforceNOW)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "GeforceNOW");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "GeforceNOW");
+			enlace ??= "https://" + dominio + "/geforcenow/";
+			imagen ??= "https://" + dominio + "/streaming/geforcenow_logo.webp";
+			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.Gratis)
 		{

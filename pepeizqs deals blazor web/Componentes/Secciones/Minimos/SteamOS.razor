@@ -3,7 +3,7 @@
 @using Juegos
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
-@using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos
+@using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos
 
 @inject IHttpContextAccessor Contexto
 
@@ -120,7 +120,7 @@
 						<ItemContent>
 							<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 								<div style="width: 100%;">
-									<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.SteamDeck" userAgent="@userAgent" />
+									<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.SteamOS" userAgent="@userAgent" />
 								</div>
 
 								@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DeseadoImportado == false && juego.DeseadoMostrar == true)
@@ -161,8 +161,6 @@
 						</ItemContent>
 					</Virtualize>
 				</div>
-
-				bool llegadoLimite = false;
 
 				if (string.IsNullOrEmpty(usuarioId) == false)
 				{
@@ -217,7 +215,7 @@
 @if (mostrarOpciones == true)
 {
 	<div class="opciones-panel">
-		<div style="max-width: 800px; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
 			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 				<button class="boton-pequeño" @onclick="MostrarOcultarOpciones" style="width: fit-content; padding: 10px 15px;">
 					<div style="max-width: 24px; max-height: 24px;">
@@ -232,8 +230,8 @@
 				</div>
 			</div>
 
-			<div style="display: flex; flex-direction: column; gap: 40px; padding: 30px;">
-				<div style="display: flex; align-items: center; gap: 20px;">
+			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
+				<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
 					<div class="checkbox-caja">
 						<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuario" @onchange="OcultarJuegosUsuario">
 					</div>
@@ -243,27 +241,54 @@
 					</div>
 				</div>
 
-				<div style="display: flex; flex-direction: column; gap: 10px;">
-					<div style="margin-left: 15px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "SteamDeck")
-					</div>
-
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-							<input type="range" min="0" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
-
-							<datalist id="precios">
-								<option value="0" label="0€"></option>
-								<option value="20" label="20€"></option>
-								<option value="40" label="40€"></option>
-								<option value="60" label="60€"></option>
-								<option value="80" label="80€"></option>
-								<option value="100" label="100€"></option>
-							</datalist>
+				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px;">
+					<div style="display: flex; flex-direction: column; gap: 10px;">
+						<div style="margin-left: 15px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "SteamOS")
 						</div>
 
-						<div style="width: 30px;">
-							@precioMaximo€
+						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
+
+								<datalist id="precios">
+									<option value="5" label="5€"></option>
+									<option value="20" label="20€"></option>
+									<option value="40" label="40€"></option>
+									<option value="60" label="60€"></option>
+									<option value="80" label="80€"></option>
+									<option value="100" label="100€"></option>
+								</datalist>
+							</div>
+
+							<div style="width: 20%; text-align: center;">
+								@precioMaximo€
+							</div>
+						</div>
+					</div>
+
+					<div style="display: flex; flex-direction: column; gap: 10px;">
+						<div style="margin-left: 15px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "SteamOS")
+						</div>
+
+						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" style="width: 100%;" />
+
+								<datalist id="descuentos">
+									<option value="5" label="5%"></option>
+									<option value="20" label="20%"></option>
+									<option value="40" label="40%"></option>
+									<option value="60" label="60%"></option>
+									<option value="80" label="80%"></option>
+									<option value="95" label="95%"></option>
+								</datalist>
+							</div>
+
+							<div style="width: 20%; text-align: center;">
+								@descuentoMinimo%
+							</div>
 						</div>
 					</div>
 				</div>
@@ -331,6 +356,9 @@
 
 	private async Task MostrarVerificados()
 	{
+		llegadoLimite = false;
+		posicionJuegos = 0;
+
 		await MostrarVerificados(true);
 	}
 
@@ -340,11 +368,15 @@
 
 		steamosListado = CrearListaSteamOS(true);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, 1, precioMaximo, null, steamosListado, 0, 0, 100, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, descuentoMinimo, precioMaximo, null, steamosListado, 0, 0, 100, textoBuscador);
 
-		if (juegos?.Count == 0)
+		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
 			mostrarNoResultados = true;
+		}
+		else if (juegos?.Count == 0 && juegosMostrar?.Count > 0)
+		{
+			llegadoLimite = true;
 		}
 		else if (juegos?.Count > 0)
 		{
@@ -418,6 +450,8 @@
 			}
 		}
 	}
+
+	public bool llegadoLimite = false;
 
 	private async Task CargarMas()
 	{
@@ -603,6 +637,13 @@
 	private int precioMaximo = 100;
 
 	private async Task CambiarPrecioMaximo()
+	{
+		await MostrarVerificados(true);
+	}
+
+	private int descuentoMinimo = 0;
+
+	private async Task CambiarDescuentoMinimo()
 	{
 		await MostrarVerificados(true);
 	}

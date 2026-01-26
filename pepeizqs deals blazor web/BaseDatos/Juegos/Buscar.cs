@@ -4,7 +4,7 @@ using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
-using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos;
+using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
 
 namespace BaseDatos.Juegos
 {
@@ -1150,6 +1150,127 @@ FROM seccionMinimos j";
 				catch (Exception ex)
 				{
 					BaseDatos.Errores.Insertar.Mensaje("Juego Minimos", ex);
+				}
+			}
+
+			return null;
+		}
+
+		public static async Task<List<Juego>> MinimosStreaming(JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
+		{
+			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.idMaestra
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.idMaestra
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
+FROM seccionMinimos j
+INNER JOIN streaminggeforcenow sgn
+    ON sgn.idJuego = j.idMaestra
+WHERE 
+sgn.fecha BETWEEN DATEADD(DAY, -3, GETDATE()) AND DATEADD(DAY, 3, GETDATE())
+AND EXISTS (
+    SELECT 1
+    FROM OPENJSON(j.precioMinimosHistoricos)
+         WITH (DRM INT '$.DRM') p
+    INNER JOIN OPENJSON(sgn.drms2) d
+        ON d.value = p.DRM
+) AND j.Tipo = 0
+AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString();
+
+			string dondeMinimoDescuento = string.Empty;
+
+			if (minimoDescuento == null)
+			{
+				minimoDescuento = 1;
+			}
+
+			if (minimoDescuento > 0)
+			{
+				dondeMinimoDescuento = "JSON_VALUE(j.precioMinimosHistoricos, '$[0].Descuento') >= " + minimoDescuento.ToString();
+			}
+
+			if (string.IsNullOrEmpty(dondeMinimoDescuento) == false)
+			{
+				dondeMinimoDescuento = " (" + dondeMinimoDescuento + ")";
+			}
+
+			string dondeMaximoPrecio = string.Empty;
+
+			if (maximoPrecio == null)
+			{
+				maximoPrecio = 90;
+			}
+
+			if (maximoPrecio > 0)
+			{
+				dondeMaximoPrecio = "CONVERT(decimal, JSON_VALUE(j.precioMinimosHistoricos, '$[0].Precio')) <= " + maximoPrecio.ToString();
+			}
+
+			if (string.IsNullOrEmpty(dondeMaximoPrecio) == false)
+			{
+				dondeMaximoPrecio = " (" + dondeMaximoPrecio + ")";
+			}
+
+			if (string.IsNullOrEmpty(busqueda) == false)
+			{
+				busqueda = busqueda + " AND " + string.Join(" AND ", new[] { dondeMinimoDescuento, dondeMaximoPrecio }.Where(x => !string.IsNullOrEmpty(x)));
+
+				if (minimoReseñas != null)
+				{
+					if (minimoReseñas > 0)
+					{
+						busqueda = busqueda + " AND j.analisis IS NOT NULL and CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > " + minimoReseñas.ToString();
+					}
+				}
+
+				if (string.IsNullOrEmpty(nombreBusqueda) == false)
+				{
+					busqueda += $@"AND j.nombre COLLATE Latin1_General_CI_AI
+      LIKE '%{nombreBusqueda}%'";
+				}
+
+				busqueda = busqueda + " ORDER BY CASE\r\n WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))\r\n END DESC";
+
+				busqueda = busqueda + @$" OFFSET {posicion} ROWS
+										FETCH NEXT 100 ROWS ONLY";
+
+				try
+				{
+					return await Herramientas.BaseDatos.Select(async conexion =>
+					{
+						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Juego Minimos Streaming", ex);
 				}
 			}
 
