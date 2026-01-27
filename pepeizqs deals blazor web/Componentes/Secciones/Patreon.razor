@@ -19,111 +19,162 @@
 	}
 </style>
 
-<div class="subcabecera">
-	<div class="cuerpo-ancho sub-subcabecera">
-		<h1 style="font-size: 18px; width: fit-content; margin: 0px; padding: 9px 0px;">
-			@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Patreon")
-		</h1>
+<style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+		--glaseadoFondo: rgba(45, 47, 54, 0.70);
+		--noResultados: rgba(132, 32, 41, 0.5);
+		--botonSeleccionado: rgba(13, 22, 33, 0.75);
+	}
 
-		<div style="max-width: 20px;">
-			<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-				<path d="M489.7 153.8c-.1-65.4-51-119-110.7-138.3C304.8-8.5 207-5 136.1 28.4C50.3 68.9 23.3 157.7 22.3 246.2C21.5 319 28.7 510.6 136.9 512c80.3 1 92.3-102.5 129.5-152.3c26.4-35.5 60.5-45.5 102.4-55.9c72-17.8 121.1-74.7 121-150z"/>
-			</svg>
-		</div>
-	</div>
-</div>
+	.caja-patreon {
+		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
+		background-blend-mode: overlay;
+		border-radius: 100px;
+		border: 2px solid var(--glaseadoBorde);
+		width: fit-content;
+		background-color: var(--glaseadoFondo);
+		backdrop-filter: blur(25px);
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		padding: 20px 40px;
+	}
 
-<div class="subcabecera" style="background-color: var(--fondoSubsubcabecera);">
-	<div class="cuerpo-ancho sub-subcabecera" style="font-size: 16px; flex-direction: column; padding: 20px 0px; align-items: baseline;">
-		<div>
-			@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Patreon")
-		</div>
-	</div>
-</div>
+	.caja-patreon-imagen {
+		border: 1px solid var(--glaseadoBorde);
+		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
+	}
 
-<div class="cuerpo-ancho">
-	<div style="position: sticky; top: var(--alturaCabecera); z-index: 1000; background-color: var(--fondoBotonPequeño); padding: 20px 45px; width: fit-content;">
-		@{
-			string? patreonEnlace = Configuracion.GetValue<string>("RedesSociales:Patreon");
+	.caja-patreon-animacion {
+		transform-origin: top;
+		transition: all 220ms cubic-bezier(.2,.8,.2,1);
+	}
+
+		.caja-patreon-animacion > div {
+			overflow: hidden;
 		}
 
-		<a href="@patreonEnlace" target="_blank">@patreonEnlace</a>
+		.caja-patreon-animacion.cerrado {
+			opacity: 0;
+			transform: scaleY(0.95);
+			height: 0;
+			overflow: hidden;
+		}
+
+		.caja-patreon-animacion.abierto {
+			opacity: 1;
+			transform: scaleY(1);
+			height: auto;
+		}
+</style>
+
+<div>
+	<div class="caja-patreon" style="margin: 40px auto; display: flex; justify-content: center; max-width: 300px; border-radius: 20px;">
+		<img src="/imagenes/patreon/patreon_logo.webp" alt="Patreon" style="width: 100%; height: 100%;" />
 	</div>
 
-	<div style="margin: 40px auto; display: flex; flex-direction: column; gap: 30px;">
-		<div class="caja-patreon-contenido">
-			<div style="display: flex; align-items: center; gap: 30px;">
-				<div style="width: 30%;">
+	<div style="max-width: 1100px; margin: 0px auto; display: flex; flex-direction: column;">
+		<div class="caja-patreon" style="flex-direction: column; border-radius: 20px; margin-bottom: 40px;">
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Patreon")
+			</div>
+
+			<a href="@enlacePatreon" target="_blank" class="boton-pequeño" style="width: fit-content; padding: 15px 25px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Patreon")
+			</a>
+		</div>
+
+		<button @onclick="MostrarOcultarVentajas" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; border: 1px solid var(--glaseadoBorde);">
+			<div style="font-size: 18px; color: var(--colorTexto);">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Patreon")
+			</div>
+
+			<div style="width: 20px; height: 20px;">
+				@if (enseñarVentajas == true)
+				{
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M297.4 470.6C309.9 483.1 330.2 483.1 342.7 470.6L534.7 278.6C547.2 266.1 547.2 245.8 534.7 233.3C522.2 220.8 501.9 220.8 489.4 233.3L320 402.7L150.6 233.4C138.1 220.9 117.8 220.9 105.3 233.4C92.8 245.9 92.8 266.2 105.3 278.7L297.3 470.7z" />
+					</svg>
+				}
+				else
+				{
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M297.4 169.4C309.9 156.9 330.2 156.9 342.7 169.4L534.7 361.4C547.2 373.9 547.2 394.2 534.7 406.7C522.2 419.2 501.9 419.2 489.4 406.7L320 237.3L150.6 406.6C138.1 419.1 117.8 419.1 105.3 406.6C92.8 394.1 92.8 373.8 105.3 361.3L297.3 169.3z" />
+					</svg>
+				}
+			</div>
+		</button>
+
+		<div class="caja-patreon-animacion @(enseñarVentajas ? "abierto" : "cerrado")" style="max-width: 1100px; display: flex; flex-direction: column;">
+			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
+				<div class="caja-patreon-imagen" style="width: 40%;">
 					<img src="/imagenes/patreon/patreon1.webp" style="width: 100%; height: 100%;" />
 				</div>
 
-				<div style="width: 70%; display: flex; flex-direction: column; gap: 10px;">
-					<div style="font-size: 18px;">
+				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
+					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Patreon")
 					</div>
 
-					<div>
+					<div style="padding: 20px 30px;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Patreon")
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="caja-patreon-contenido">
-			<div style="display: flex; align-items: center; gap: 30px;">
-				<div style="width: 30%;">
+			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
+				<div class="caja-patreon-imagen" style="width: 40%;">
 					<img src="/imagenes/patreon/patreon2.webp" style="width: 100%; height: 100%;" />
 				</div>
 
-				<div style="width: 70%; display: flex; flex-direction: column; gap: 10px;">
-					<div style="font-size: 18px;">
+				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
+					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Patreon")
 					</div>
 
-					<div>
+					<div style="padding: 20px 30px;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Patreon")
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="caja-patreon-contenido">
-			<div style="display: flex; align-items: center; gap: 30px;">
-				<div style="width: 30%;">
+			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
+				<div class="caja-patreon-imagen" style="width: 40%;">
 					<img src="/imagenes/patreon/patreon3.webp" style="width: 100%; height: 100%;" />
 				</div>
 
-				<div style="width: 70%; display: flex; flex-direction: column; gap: 10px;">
-					<div style="font-size: 18px;">
+				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
+					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Patreon")
 					</div>
 
-					<div>
+					<div style="padding: 20px 30px;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Patreon")
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="caja-patreon-contenido">
-			<div style="display: flex; align-items: center; gap: 30px;">
-				<div style="width: 30%;">
+			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
+				<div class="caja-patreon-imagen" style="width: 40%;">
 					<img src="/imagenes/patreon/patreon4.webp" style="width: 100%; height: 100%;" />
 				</div>
 
-				<div style="width: 70%; display: flex; flex-direction: column; gap: 10px;">
-					<div style="font-size: 18px;">
+				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
+					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Patreon")
 					</div>
 
-					<div>
+					<div style="padding: 20px 30px;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Patreon")
 					</div>
 				</div>
 			</div>
 		</div>
+		
 	</div>
 </div>
+
 
 @code {
 
@@ -131,21 +182,33 @@
 
 	private string idioma = "en";
 	private string usuarioId = null;
-    private string dominio = null;
+	private string dominio = null;
 
 	private bool usuarioPatreon = false;
+
+	private string enlacePatreon = null;
+
+	private bool enseñarVentajas = true;
+	private bool enseñarTienda = true;
 
 	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
-        dominio = datos.Dominio;
+		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 		}
+
+		enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
+	}
+
+	private async Task MostrarOcultarVentajas()
+	{
+        enseñarVentajas = !enseñarVentajas;
 	}
 }

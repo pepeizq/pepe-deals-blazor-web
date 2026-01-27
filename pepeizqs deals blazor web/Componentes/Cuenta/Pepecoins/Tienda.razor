@@ -122,7 +122,7 @@
 					bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, recompensaJuego.DRM);
 					bool usuarioTieneDeseado = false;
 
-					string fondoColor = "background-color: var(--fondoBotonPequeño)";
+					string fondoColor = "background-color: var(--fondoBotonPequeño);";
 
 					if (usuarioTieneJuego)
 					{
@@ -359,7 +359,7 @@
 	private Herramientas.UsuarioListadosJuegos juegosUsuario = null;
 	private bool usuarioPatreon = false;
 
-	private List<RecompensaJuego> juegos = null;
+	[PersistentState] public List<RecompensaJuego> juegos { get; set; }
 
 	private string claveJuegoSeleccionado = null;
 

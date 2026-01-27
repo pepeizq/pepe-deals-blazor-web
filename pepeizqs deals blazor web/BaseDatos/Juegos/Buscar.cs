@@ -1156,9 +1156,9 @@ FROM seccionMinimos j";
 			return null;
 		}
 
-		public static async Task<List<Juego>> MinimosStreaming(JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
+		public static async Task<List<Juego>> MinimosStreaming(string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
-			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
+			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
 	(
         SELECT g.gratis
@@ -1191,7 +1191,7 @@ FROM seccionMinimos j";
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM seccionMinimos j
-INNER JOIN streaminggeforcenow sgn
+INNER JOIN {tabla} sgn
     ON sgn.idJuego = j.idMaestra
 WHERE 
 sgn.fecha BETWEEN DATEADD(DAY, -3, GETDATE()) AND DATEADD(DAY, 3, GETDATE())

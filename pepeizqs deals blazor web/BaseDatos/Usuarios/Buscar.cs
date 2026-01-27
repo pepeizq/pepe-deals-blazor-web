@@ -622,7 +622,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT SteamDeckOption1 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT SteamDeckOption1, SteamDeckOption2, SteamDeckOption3, SteamDeckOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -646,7 +646,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT SteamOSOption1 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT SteamOSOption1, SteamOSOption2, SteamOSOption3, SteamOSOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -670,7 +670,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT GeforceNOWOption1 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT GeforceNOWOption1, GeforceNOWOption2, GeforceNOWOption3, GeforceNOWOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -682,6 +682,30 @@ namespace BaseDatos.Usuarios
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Geforce NOW", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesBoosteroid(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT BoosteroidOption1, BoosteroidOption2, BoosteroidOption3, BoosteroidOption4 FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Boosteroid", ex);
 			}
 
 			return null;

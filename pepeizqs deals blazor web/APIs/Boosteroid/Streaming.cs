@@ -2,7 +2,6 @@
 
 using Dapper;
 using Herramientas;
-using Microsoft.Data.SqlClient;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -32,7 +31,7 @@ namespace APIs.Boosteroid
 			int i = 1;
 			while (i < 100)
 			{
-				string html = await Decompiladores.Estandar("https://cloud.boosteroid.com/api/v1/public/applications?orderBy=popularity&collection=1&page=" + i.ToString());
+				string html = await Decompiladores.GZipFormato3("https://cloud.boosteroid.com/api/v1/public/applications?orderBy=popularity&collection=1&page=" + i.ToString());
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -74,6 +73,21 @@ namespace APIs.Boosteroid
 										}
 									}
 
+									List<int> drms2 = new List<int>();
+
+									if (drms?.Count > 0)
+									{
+										foreach (var drm in drms)
+										{
+											var drmTraducido = Juegos.JuegoDRM2.Traducir(drm);
+
+											if (drmTraducido != Juegos.JuegoDRM.NoEspecificado)
+											{
+												drms2.Add((int)drmTraducido);
+											}
+										}
+									}
+
 									if (drms.Count > 0)
 									{
 										DateTime fecha = DateTime.Now;
@@ -101,13 +115,18 @@ namespace APIs.Boosteroid
 											await BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad);
 
 											string sqlActualizar = "UPDATE streamingboosteroid " +
-																"SET fecha=@fecha WHERE id=@id";
+																"SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE id=@id";
 
 											try
 											{
 												await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 												{
-													return await conexion.ExecuteAsync(sqlActualizar, new { id = juego.Id, fecha }, transaction: sentencia);
+													return await conexion.ExecuteAsync(sqlActualizar, new { 
+														id = juego.Id, 
+														fecha,
+														drms = JsonSerializer.Serialize(drms),
+														drms2 = JsonSerializer.Serialize(drms2)
+													}, transaction: sentencia);
 												});
 											}
 											catch (Exception ex)
@@ -118,8 +137,8 @@ namespace APIs.Boosteroid
 										else 
 										{
 											string sqlInsertar = "INSERT INTO streamingboosteroid " +
-															"(id, nombre, drms, fecha) VALUES " +
-															"(@id, @nombre, @drms, @fecha) ";
+															"(id, nombre, drms, fecha, drms2) VALUES " +
+															"(@id, @nombre, @drms, @fecha, @drms2) ";
 
 											try
 											{
@@ -130,7 +149,8 @@ namespace APIs.Boosteroid
 														id = juego.Id,
 														nombre = juego.Nombre,
 														drms = JsonSerializer.Serialize(drms),
-														fecha
+														fecha,
+														drms2 = JsonSerializer.Serialize(drms2)
 													}, transaction: sentencia);
 												});
 											}

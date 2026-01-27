@@ -351,18 +351,66 @@ public class Usuario : IdentityUser
 	public string? WishlistData { get; set; }
 
 	[PersonalData]
-	[Column(TypeName = "int(4)")]
-	public int? BundlesSort { get; set; }
-
-	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? SteamDeckOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamDeckOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamDeckOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamDeckOption4 { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? SteamOSOption1 { get; set; }
 
 	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamOSOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamOSOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamOSOption4 { get; set; }
+
+	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? GeforceNOWOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? GeforceNOWOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? GeforceNOWOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? GeforceNOWOption4 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? BoosteroidOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? BoosteroidOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? BoosteroidOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? BoosteroidOption4 { get; set; }
 }

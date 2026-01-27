@@ -428,6 +428,7 @@
 	{
 		Otros,
 		Api,
+		Boosteroid,
 		Bundle,
 		Bundles,
 		Comparador,
@@ -462,6 +463,14 @@
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Api");
 			enlace ??= "https://" + dominio + "/api";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.Boosteroid)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Boosteroid");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Boosteroid");
+			enlace ??= "https://" + dominio + "/boosteroid/";
+			imagen ??= "https://" + dominio + "/streaming/boosteroid_logo.webp";
 			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.Bundle)
