@@ -1,5 +1,6 @@
 ﻿@page "/patreon/"
 
+@using BaseDatos.Recompensas
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -75,7 +76,7 @@
 	</div>
 
 	<div style="max-width: 1100px; margin: 0px auto; display: flex; flex-direction: column;">
-		<div class="caja-patreon" style="flex-direction: column; border-radius: 20px; margin-bottom: 40px;">
+		<div class="caja-patreon" style="flex-direction: column; border-radius: 20px; margin-bottom: 40px; padding: 20px 30px;">
 			<div>
 				@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Patreon")
 			</div>
@@ -85,93 +86,139 @@
 			</a>
 		</div>
 
-		<button @onclick="MostrarOcultarVentajas" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; border: 1px solid var(--glaseadoBorde);">
-			<div style="font-size: 18px; color: var(--colorTexto);">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Patreon")
-			</div>
-
-			<div style="width: 20px; height: 20px;">
-				@if (enseñarVentajas == true)
-				{
-					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-						<path d="M297.4 470.6C309.9 483.1 330.2 483.1 342.7 470.6L534.7 278.6C547.2 266.1 547.2 245.8 534.7 233.3C522.2 220.8 501.9 220.8 489.4 233.3L320 402.7L150.6 233.4C138.1 220.9 117.8 220.9 105.3 233.4C92.8 245.9 92.8 266.2 105.3 278.7L297.3 470.7z" />
-					</svg>
-				}
-				else
-				{
-					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-						<path d="M297.4 169.4C309.9 156.9 330.2 156.9 342.7 169.4L534.7 361.4C547.2 373.9 547.2 394.2 534.7 406.7C522.2 419.2 501.9 419.2 489.4 406.7L320 237.3L150.6 406.6C138.1 419.1 117.8 419.1 105.3 406.6C92.8 394.1 92.8 373.8 105.3 361.3L297.3 169.3z" />
-					</svg>
-				}
-			</div>
-		</button>
-
-		<div class="caja-patreon-animacion @(enseñarVentajas ? "abierto" : "cerrado")" style="max-width: 1100px; display: flex; flex-direction: column;">
-			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
-				<div class="caja-patreon-imagen" style="width: 40%;">
-					<img src="/imagenes/patreon/patreon1.webp" style="width: 100%; height: 100%;" />
+		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 1px solid var(--glaseadoBorde);">
+			<button @onclick="MostrarOcultarVentajas" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 1px solid var(--glaseadoBorde); @bordeRadioVentajas">
+				<div style="font-size: 18px; color: var(--colorTexto);">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Patreon")
 				</div>
 
-				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
-					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Patreon")
+				<div style="width: 20px; height: 20px;">
+					@if (enseñarVentajas == true)
+					{
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+							<path d="M297.4 470.6C309.9 483.1 330.2 483.1 342.7 470.6L534.7 278.6C547.2 266.1 547.2 245.8 534.7 233.3C522.2 220.8 501.9 220.8 489.4 233.3L320 402.7L150.6 233.4C138.1 220.9 117.8 220.9 105.3 233.4C92.8 245.9 92.8 266.2 105.3 278.7L297.3 470.7z" />
+						</svg>
+					}
+					else
+					{
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+							<path d="M297.4 169.4C309.9 156.9 330.2 156.9 342.7 169.4L534.7 361.4C547.2 373.9 547.2 394.2 534.7 406.7C522.2 419.2 501.9 419.2 489.4 406.7L320 237.3L150.6 406.6C138.1 419.1 117.8 419.1 105.3 406.6C92.8 394.1 92.8 373.8 105.3 361.3L297.3 169.3z" />
+						</svg>
+					}
+				</div>
+			</button>
+
+			<div class="caja-patreon-animacion @(enseñarVentajas ? "abierto" : "cerrado")" style="max-width: 1100px; display: flex; flex-direction: column;">
+				<div style="display: flex; align-items: center; gap: 50px; padding: 50px; border-bottom: 1px solid var(--glaseadoBorde);">
+					<div class="caja-patreon-imagen" style="width: 40%;">
+						<img src="/imagenes/patreon/patreon1.webp" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div style="padding: 20px 30px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Patreon")
+					<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px; background-color: var(--fondoSubsubcabecera);">
+						<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Patreon")
+						</div>
+
+						<div style="padding: 20px 30px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Patreon")
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
-				<div class="caja-patreon-imagen" style="width: 40%;">
-					<img src="/imagenes/patreon/patreon2.webp" style="width: 100%; height: 100%;" />
-				</div>
-
-				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
-					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Patreon")
+				<div style="display: flex; align-items: center; gap: 50px; padding: 50px; border-bottom: 1px solid var(--glaseadoBorde);">
+					<div class="caja-patreon-imagen" style="width: 40%;">
+						<img src="/imagenes/patreon/patreon2.webp" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div style="padding: 20px 30px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Patreon")
+					<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px; background-color: var(--fondoSubsubcabecera);">
+						<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Patreon")
+						</div>
+
+						<div style="padding: 20px 30px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Patreon")
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
-				<div class="caja-patreon-imagen" style="width: 40%;">
-					<img src="/imagenes/patreon/patreon3.webp" style="width: 100%; height: 100%;" />
-				</div>
-
-				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
-					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Patreon")
+				<div style="display: flex; align-items: center; gap: 50px; padding: 50px; border-bottom: 1px solid var(--glaseadoBorde);">
+					<div class="caja-patreon-imagen" style="width: 40%;">
+						<img src="/imagenes/patreon/patreon3.webp" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div style="padding: 20px 30px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Patreon")
+					<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px; background-color: var(--fondoSubsubcabecera);">
+						<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Patreon")
+						</div>
+
+						<div style="padding: 20px 30px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Patreon")
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div style="display: flex; align-items: center; gap: 50px; padding: 40px; border-bottom: 1px solid var(--glaseadoBorde);">
-				<div class="caja-patreon-imagen" style="width: 40%;">
-					<img src="/imagenes/patreon/patreon4.webp" style="width: 100%; height: 100%;" />
-				</div>
-
-				<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px;">
-					<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Patreon")
+				<div style="display: flex; align-items: center; gap: 50px; padding: 50px;">
+					<div class="caja-patreon-imagen" style="width: 40%;">
+						<img src="/imagenes/patreon/patreon4.webp" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div style="padding: 20px 30px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Patreon")
+					<div class="caja-patreon" style="width: 60%; display: flex; flex-direction: column; gap: 0px; border-radius: 20px; padding: 0px; background-color: var(--fondoSubsubcabecera);">
+						<div style="padding: 20px 30px; width: 100%; border-top-left-radius: 20px; border-top-right-radius: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Patreon")
+						</div>
+
+						<div style="padding: 20px 30px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Patreon")
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 		
+		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 1px solid var(--glaseadoBorde); margin: 40px 0px;">
+			<button @onclick="MostrarOcultarTienda" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 1px solid var(--glaseadoBorde); @bordeRadioTienda">
+				<div style="font-size: 18px; color: var(--colorTexto);">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Patreon")
+				</div>
+
+				<div style="width: 20px; height: 20px;">
+					@if (enseñarTienda == true)
+					{
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+							<path d="M297.4 470.6C309.9 483.1 330.2 483.1 342.7 470.6L534.7 278.6C547.2 266.1 547.2 245.8 534.7 233.3C522.2 220.8 501.9 220.8 489.4 233.3L320 402.7L150.6 233.4C138.1 220.9 117.8 220.9 105.3 233.4C92.8 245.9 92.8 266.2 105.3 278.7L297.3 470.7z" />
+						</svg>
+					}
+					else
+					{
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+							<path d="M297.4 169.4C309.9 156.9 330.2 156.9 342.7 169.4L534.7 361.4C547.2 373.9 547.2 394.2 534.7 406.7C522.2 419.2 501.9 419.2 489.4 406.7L320 237.3L150.6 406.6C138.1 419.1 117.8 419.1 105.3 406.6C92.8 394.1 92.8 373.8 105.3 361.3L297.3 169.3z" />
+						</svg>
+					}
+				</div>
+			</button>
+			
+			<div class="caja-patreon-animacion @(enseñarTienda ? "abierto" : "cerrado")" style="max-width: 1100px; display: flex; flex-direction: column;">
+				<div class="caja-patreon" style="flex-direction: column; border: 0px; border-radius: 0px; padding: 30px 40px; background-color: var(--fondoSubsubcabecera);">
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Patreon")
+					</div>
+				</div>
+
+				<div style="padding: 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 40px; justify-items: center;">
+					@if (juegosConDatos?.Count > 0)
+					{
+						foreach (var item in juegosConDatos)
+						{
+							var juego = item.juego;
+
+							<div style="background-color: var(--fondoBotonPequeño); display: flex; flex-direction: column;">
+								<img src="@juego.Imagenes.Library_600x900" style="width: 100%; height: 100%;" />
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
@@ -188,8 +235,8 @@
 
 	private string enlacePatreon = null;
 
-	private bool enseñarVentajas = true;
-	private bool enseñarTienda = true;
+	[PersistentState] public List<RecompensaJuego> juegosTienda { get; set; }
+	[PersistentState] public List<(RecompensaJuego recompensa, global::Juegos.Juego juego)> juegosConDatos { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -205,10 +252,37 @@
 		}
 
 		enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
+
+		juegosTienda = await BaseDatos.Recompensas.Juegos.Aleatorios();
+		juegosConDatos = new List<(RecompensaJuego recompensa, global::Juegos.Juego juego)>();
+
+		if (juegosConDatos.Count < 6)
+		{
+			foreach (var recompensaJuego in juegosTienda)
+			{
+				if (string.IsNullOrEmpty(recompensaJuego.UsuarioId) == true)
+				{
+					var juego = await BaseDatos.Juegos.Buscar.UnJuego(recompensaJuego.JuegoId);
+
+					juegosConDatos.Add((recompensaJuego, juego));
+				}
+			}
+		}
 	}
+
+	private bool enseñarVentajas = true;
+	private string bordeRadioVentajas => enseñarVentajas ? "border-top-left-radius: 20px; border-top-right-radius: 20px;" : "border-radius: 20px;";
 
 	private async Task MostrarOcultarVentajas()
 	{
         enseñarVentajas = !enseñarVentajas;
+	}
+
+	private bool enseñarTienda = true;
+	private string bordeRadioTienda => enseñarTienda ? "border-top-left-radius: 20px; border-top-right-radius: 20px;" : "border-radius: 20px;";
+
+	private async Task MostrarOcultarTienda()
+	{
+		enseñarTienda = !enseñarTienda;
 	}
 }

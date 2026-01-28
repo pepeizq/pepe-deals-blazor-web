@@ -361,6 +361,31 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
+		public static async Task<Usuario> OpcionesPatreon(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = @"SELECT PatreonOption1, PatreonOption2, PatreonMail, PatreonCoins, Keys
+								FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones App", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<Usuario> OpcionesNotificacionesCorreo(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)

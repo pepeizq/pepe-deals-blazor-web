@@ -397,7 +397,7 @@
                     </a>
 
                     <div class="menu-dropdown2">
-                        <a class="texto-cabecera boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Footer")">
+                        <a class="texto-cabecera boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Header")">
                             <div style="width: 22px; height: 22px;">
                                 <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                     <path d="M0 256C0 209.4 12.5 165.6 34.3 127.1L144.1 318.3C166 357.5 207.9 384 256 384C270.3 384 283.1 381.7 296.8 377.4L220.5 509.6C95.9 492.3 0 385.3 0 256zM365.1 321.6C377.4 302.4 384 279.1 384 256C384 217.8 367.2 183.5 340.7 160H493.4C505.4 189.6 512 222.1 512 256C512 397.4 397.4 511.1 256 512L365.1 321.6zM477.8 128H256C193.1 128 142.3 172.1 130.5 230.7L54.2 98.5C101 38.5 174 0 256 0C350.8 0 433.5 51.5 477.8 128V128zM168 256C168 207.4 207.4 168 256 168C304.6 168 344 207.4 344 256C344 304.6 304.6 344 256 344C207.4 344 168 304.6 168 256z" />
@@ -456,13 +456,28 @@
 
                     @if (usuarioPatreon == false)
                     {
-                        <a class="boton-superior" href="@enlacePatreon" target="_blank" style="font-size: 15px;" title="Patreon">
-                            <div style="width: 22px; height: 22px;">
-                                <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                    <path d="M489.7 153.8c-.1-65.4-51-119-110.7-138.3C304.8-8.5 207-5 136.1 28.4C50.3 68.9 23.3 157.7 22.3 246.2C21.5 319 28.7 510.6 136.9 512c80.3 1 92.3-102.5 129.5-152.3c26.4-35.5 60.5-45.5 102.4-55.9c72-17.8 121.1-74.7 121-150z" />
-                                </svg>
+                        <div class="menu-dropdown2">
+                            <a class="boton-superior" href="@enlacePatreon" target="_blank" style="font-size: 15px;" title="Patreon">
+                                <div style="width: 22px; height: 22px;">
+                                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path d="M489.7 153.8c-.1-65.4-51-119-110.7-138.3C304.8-8.5 207-5 136.1 28.4C50.3 68.9 23.3 157.7 22.3 246.2C21.5 319 28.7 510.6 136.9 512c80.3 1 92.3-102.5 129.5-152.3c26.4-35.5 60.5-45.5 102.4-55.9c72-17.8 121.1-74.7 121-150z" />
+                                    </svg>
+                                </div>
+                            </a>
+
+                            <div class="menu-dropdown-contenido-centrado">
+                                <a class="texto-cabecera boton-superior" href="/patreon" style="font-size: 15px;">
+                                    <div style="text-align: center;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Header")
+                                    </div>
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="/cost-web" style="font-size: 15px;">
+                                    <div style="text-align: center;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Header")
+                                    </div>
+                                </a>
                             </div>
-                        </a>
+                        </div>
                     }
 
                     <AuthorizeView>
@@ -507,6 +522,17 @@
                                         <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceCuenta, false))" style="font-size: 15px; width: 100%; text-align: right;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Account", "Header")
                                         </button>
+
+                                        @if (usuarioPatreon == true || usuarioAdmin == true)
+                                        {
+                                            string enlacePatreonCuenta = "/account/patreon-store/";
+
+                                            <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlacePatreonCuenta, false))" style="font-size: 15px; width: 100%; text-align: right;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Header")
+                                            </button>
+                                        }
+
+                                        <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
 
                                         @{
                                             string enlaceDesconectar = "/account/logout";

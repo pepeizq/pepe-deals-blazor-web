@@ -217,6 +217,10 @@ public class Usuario : IdentityUser
 	public bool? PatreonOption1 { get; set; }
 
 	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? PatreonOption2 { get; set; }
+
+	[PersonalData]
 	[Column(TypeName = "nvarchar(256)")]
 	public string? GogAccount { get; set; }
 

@@ -72,6 +72,29 @@ namespace BaseDatos.Recompensas
 			return null;
 		}
 
+		public static async Task<List<RecompensaJuego>> Aleatorios()
+		{
+			try
+			{
+				string busqueda = @"SELECT TOP 5 *
+FROM recompensasJuegos
+WHERE usuarioId IS NULL
+  AND (fechaCaduca IS NULL OR fechaCaduca > GETDATE())
+ORDER BY NEWID();";
+
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<RecompensaJuego>(busqueda)).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Recompensas Disponibles", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task Actualizar(int id, string usuarioId)
 		{
 			try

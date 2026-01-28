@@ -317,80 +317,6 @@
 
         <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
             <div class="caja-cuenta-indice-titulo">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String28", "Account") (@monedas)
-            </div>
-
-            <div class="grid-estructura" style="padding: 30px;">
-                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-store')">
-                    <button @onclick="MostrarTienda" class="boton-pestañas">
-                        <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                            <div style="width: 30px; height: 30px; display: flex;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                    <path d="M53.5 245.1L110.3 131.4C121.2 109.7 143.3 96 167.6 96L472.5 96C496.7 96 518.9 109.7 529.7 131.4L586.5 245.1C590.1 252.3 592 260.2 592 268.3C592 295.6 570.8 318 544 319.9L544 512C544 529.7 529.7 544 512 544C494.3 544 480 529.7 480 512L480 320L384 320L384 496C384 522.5 362.5 544 336 544L144 544C117.5 544 96 522.5 96 496L96 319.9C69.2 318 48 295.6 48 268.3C48 260.3 49.9 252.3 53.5 245.1zM160 320L160 432C160 440.8 167.2 448 176 448L304 448C312.8 448 320 440.8 320 432L320 320L160 320z" />
-                                </svg>
-                            </div>
-
-                            <div>
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Account")
-                            </div>
-                        </div>
-                    </button>
-
-                    <div id="tooltip-store" class="tooltip-relleno">
-                        <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String30", "Account")
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-history')">
-                    <button @onclick="MostrarHistorial" class="boton-pestañas">
-                        <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                            <div style="width: 30px; height: 30px; display: flex;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                    <path d="M192 160L192 144C192 99.8 278 64 384 64C490 64 576 99.8 576 144L576 160C576 190.6 534.7 217.2 474 230.7C471.6 227.9 469.1 225.2 466.6 222.7C451.1 207.4 431.1 195.8 410.2 187.2C368.3 169.7 313.7 160.1 256 160.1C234.1 160.1 212.7 161.5 192.2 164.2C192 162.9 192 161.5 192 160.1zM496 417L496 370.8C511.1 366.9 525.3 362.3 538.2 356.9C551.4 351.4 564.3 344.7 576 336.6L576 352C576 378.8 544.5 402.5 496 417zM496 321L496 288C496 283.5 495.6 279.2 495 275C510.5 271.1 525 266.4 538.2 260.8C551.4 255.2 564.3 248.6 576 240.5L576 255.9C576 282.7 544.5 306.4 496 320.9zM64 304L64 288C64 243.8 150 208 256 208C362 208 448 243.8 448 288L448 304C448 348.2 362 384 256 384C150 384 64 348.2 64 304zM448 400C448 444.2 362 480 256 480C150 480 64 444.2 64 400L64 384.6C75.6 392.7 88.5 399.3 101.8 404.9C143.7 422.4 198.3 432 256 432C313.7 432 368.3 422.3 410.2 404.9C423.4 399.4 436.3 392.7 448 384.6L448 400zM448 480.6L448 496C448 540.2 362 576 256 576C150 576 64 540.2 64 496L64 480.6C75.6 488.7 88.5 495.3 101.8 500.9C143.7 518.4 198.3 528 256 528C313.7 528 368.3 518.3 410.2 500.9C423.4 495.4 436.3 488.7 448 480.6z" />
-                                </svg>
-                            </div>
-
-                            <div>
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Account")
-                            </div>
-                        </div>
-                    </button>
-
-                    <div id="tooltip-history" class="tooltip-relleno">
-                        <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Account")
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-patreon')">
-                    <button @onclick="MostrarPatreon" class="boton-pestañas">
-                        <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                            <div style="width: 30px; height: 30px; display: flex;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                    <path d="M554 217.8C553.9 152.4 503 98.8 443.3 79.5C369.1 55.5 271.3 59 200.4 92.4C114.6 132.9 87.6 221.7 86.6 310.2C85.8 383 93 574.6 201.2 576C281.5 577 293.5 473.5 330.7 423.7C357.1 388.2 391.2 378.2 433.1 367.8C505.1 350 554.2 293.1 554.1 217.8L554 217.8z" />
-                                </svg>
-                            </div>
-
-                            <div>
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Account")
-                            </div>
-                        </div>
-                    </button>
-
-                    <div id="tooltip-patreon" class="tooltip-relleno">
-                        <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Account")
-                        </div>
-                    </div>
-                </div>               
-            </div>
-        </div>
-
-        <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
-            <div class="caja-cuenta-indice-titulo">
                 @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Account")
             </div>
 
@@ -567,21 +493,6 @@ else
             <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Foro idioma="@idioma" />
         }
 
-        @if (mostrarTienda == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Pepecoins.Tienda idioma="@idioma" usuarioId="@usuarioId" usuarioAdmin="@usuarioAdmin"/>
-        }
-
-        @if (mostrarHistorial == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Pepecoins.Historial idioma="@idioma" usuarioId="@usuarioId" />
-        }
-
-        @if (mostrarPatreon == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Pepecoins.Patreon idioma="@idioma" />
-        }
-
         @if (mostrarJuegos == true)
         {
             <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos idioma="@idioma" usuarioId="@usuarioId" fondoCabecera="background-color: var(--fondoSubsubcabecera);" />
@@ -711,21 +622,6 @@ else
                     MostrarPerfil();
                 }
 
-                if (seccion == "store")
-                {
-                    MostrarTienda();
-                }
-
-                if (seccion == "record")
-                {
-                    MostrarHistorial();
-                }
-
-                if (seccion == "patreon")
-                {
-                    MostrarPatreon();
-                }
-
                 if (seccion == "notificationsemail")
                 {
                     MostrarNotificacionesCorreo();
@@ -794,11 +690,6 @@ else
         mostrarForo = false;
         mostrarJuegos = false;
         mostrarPerfil = false;
-
-        mostrarTienda = false;
-        mostrarHistorial = false;
-        mostrarPatreon = false;
-
         mostrarNotificacionesCorreo = false;
         mostrarNotificacionesPush = false;
 
@@ -915,46 +806,6 @@ else
         enseñarOpcion = true;
         mostrarPerfil = true;
         seccion = "profile";
-    }
-
-    #endregion
-
-    #region Pepecoins
-
-    private bool mostrarTienda = false;
-
-    private async void MostrarTienda()
-    {
-        CerrarPestañas();
-        tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Account");
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarTienda = true;
-        seccion = "store";
-    }
-
-    private bool mostrarHistorial = false;
-
-    private async void MostrarHistorial()
-    {
-        CerrarPestañas();
-        tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Account");
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarHistorial = true;
-        seccion = "record";
-    }
-    
-    private bool mostrarPatreon = false;
-
-    private async void MostrarPatreon()
-    {
-        CerrarPestañas();
-        tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Account");
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarPatreon = true;
-        seccion = "patreon";
     }
 
     #endregion

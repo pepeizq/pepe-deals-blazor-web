@@ -222,7 +222,7 @@ ORDER BY NEWID()";
           AND s.FechaTermina < GETDATE()
         FOR JSON PATH
     ) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos j
-                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].Descuento') > 0 AND j.MayorEdad <> 'true' @categoria @drm";
+                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) @categoria @drm";
 
 			if (tipo == 0)
 			{
