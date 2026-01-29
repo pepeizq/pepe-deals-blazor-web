@@ -10,200 +10,203 @@
 		border: 2px solid var(--fondoSubcabecera);
 		padding: 30px;
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+		border-radius: 20px;
 	}
 </style>
 
 @if (usuario != null)
 {
-	<div class="caja-perfil-contenido" style="display: flex; flex-direction: column;">
-		<div style="display: flex; align-items: start; gap: 20px;">
-			<div class="checkbox-caja">
-				<input type="checkbox" class="checkbox-interior" checked="@estadoEnseñar" @onchange="ClickearPerfilEnseñar">
-			</div>
+	<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
+		<div class="caja-perfil-contenido" style="display: flex; flex-direction: column;">
+			<div style="display: flex; align-items: start; gap: 20px;">
+				<div class="checkbox-caja">
+					<input type="checkbox" class="checkbox-interior" checked="@estadoEnseñar" @onchange="ClickearPerfilEnseñar">
+				</div>
 
-			<div style="display: flex; flex-direction: column; gap: 10px;">
-				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountUser")
+				<div style="display: flex; flex-direction: column; gap: 10px;">
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountUser")
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<hr />
+			<hr />
 
-		<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountUser")</label>
-		<input type="text" @bind-value="textoNombre" @bind-value:event="oninput" @bind-value:after="TextoCambiaNombre" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "AccountUser")" />
+			<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountUser")</label>
+			<input type="text" @bind-value="textoNombre" @bind-value:event="oninput" @bind-value:after="TextoCambiaNombre" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "AccountUser")" />
 
-		@if (nombreYaUsado == true)
-		{
-			<div style="background-color: var(--fondoPeligro); padding: 6px 12px; margin-top: 20px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountUser")
-			</div>
-		}
-		else
-		{
-			if (string.IsNullOrEmpty(textoNombre) == false)
+			@if (nombreYaUsado == true)
 			{
-				if (textoNombre.Length > 3)
+				<div style="background-color: var(--fondoPeligro); padding: 6px 12px; margin-top: 20px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountUser")
+				</div>
+			}
+			else
+			{
+				if (string.IsNullOrEmpty(textoNombre) == false)
 				{
-					<hr />
+					if (textoNombre.Length > 3)
+					{
+						<hr />
 
-					<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "AccountUser")</label>
-					<a href="https://pepe.deals/user/@textoNombre" target="_blank">
-						https://pepe.deals/user/@textoNombre
-					</a>
+						<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "AccountUser")</label>
+						<a href="https://pepe.deals/user/@textoNombre" target="_blank">
+							https://pepe.deals/user/@textoNombre
+						</a>
+					}
 				}
 			}
+		</div>
+
+		@if (estadoEnseñar == "checked" && textoNombre.Length > 3 && nombreYaUsado == false)
+		{
+			<div class="caja-perfil-contenido" style="display: flex; flex-direction: column;">
+				<label>@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "AccountUser")</label>
+				<hr />
+
+				<div style="display: flex; flex-direction: column; gap: 20px;">
+					@if (string.IsNullOrEmpty(steamCuentaId) == false)
+					{
+						<div style="display: flex; align-items: start; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@estadoSteamCuenta" @onchange="ClickearPerfilSteamCuenta">
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountUser") (@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountUser"))
+								</div>
+							</div>
+						</div>
+					}
+
+					@if (string.IsNullOrEmpty(gogCuentaId) == false)
+					{
+						<div style="display: flex; align-items: start; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@estadoGogCuenta" @onchange="ClickearPerfilGogCuenta">
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AccountUser") (@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountUser"))
+								</div>
+							</div>
+						</div>
+					}
+
+					@if (usuario.SteamGames != null || usuario.GogGames != null)
+					{
+						<div style="display: flex; align-items: start; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@estadoUltimoJugado" @onchange="ClickearPerfilUltimoJugado">
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountUser")
+								</div>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div style="max-width: 26px;">
+								<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
+								</svg>
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "AccountUser")
+							</div>
+						</div>
+					}
+
+					@if (usuario.SteamGames != null || usuario.GogGames != null || usuario.AmazonGames != null || usuario.EpicGames != null ||
+								usuario.UbisoftGames != null || usuario.EaGames != null)
+					{
+						<div style="display: flex; align-items: start; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@estadoJuegos" @onchange="ClickearPerfilJuegos">
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountUser")
+								</div>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div style="max-width: 26px;">
+								<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
+								</svg>
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String18", "AccountUser")
+							</div>
+						</div>
+					}
+
+					@if (usuario.Wishlist != null || usuario.SteamWishlist != null || usuario.GogWishlist != null)
+					{
+						<div style="display: flex; align-items: start; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@estadoDeseados" @onchange="ClickearPerfilDeseados">
+							</div>
+
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountUser")
+								</div>
+							</div>
+						</div>
+					}
+					else
+					{
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div style="max-width: 26px;">
+								<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
+								</svg>
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountUser")
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+
+			<div class="caja-perfil-contenido" style="display: flex; flex-direction: column;">
+				<label>@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "AccountUser")</label>
+				<hr />
+
+				<div style="display: flex; flex-direction: column; gap: 20px;">
+					<div style="display: flex; align-items: center; gap: 20px;">
+						<img src="@textoAvatar" style="width: 80px; height: 80px;" />
+
+						<div style="width: 100%;">
+							<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "AccountUser")</label>
+							<input type="text" @bind-value="textoAvatar" @bind-value:event="oninput" @bind-value:after="TextoCambiaAvatar" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "AccountUser")" />
+						</div>
+					</div>
+
+					<div>
+						<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "AccountUser")</label>
+						<input type="text" @bind-value="textoNombre2" @bind-value:event="oninput" @bind-value:after="TextoCambiaNombre2" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String17", "AccountUser")" />
+					</div>
+				</div>
+			</div>
 		}
 	</div>
-
-	@if (estadoEnseñar == "checked" && textoNombre.Length > 3 && nombreYaUsado == false)
-	{
-		<div class="caja-perfil-contenido" style="display: flex; flex-direction: column; margin-top: 30px;">
-			<label>@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "AccountUser")</label>
-			<hr />
-
-			<div style="display: flex; flex-direction: column; gap: 20px;">
-				@if (string.IsNullOrEmpty(steamCuentaId) == false)
-				{
-					<div style="display: flex; align-items: start; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@estadoSteamCuenta" @onchange="ClickearPerfilSteamCuenta">
-						</div>
-
-						<div style="display: flex; flex-direction: column; gap: 10px;">
-							<div>
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountUser") (@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountUser"))
-							</div>
-						</div>
-					</div>
-				}
-
-				@if (string.IsNullOrEmpty(gogCuentaId) == false)
-				{
-					<div style="display: flex; align-items: start; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@estadoGogCuenta" @onchange="ClickearPerfilGogCuenta">
-						</div>
-
-						<div style="display: flex; flex-direction: column; gap: 10px;">
-							<div>
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AccountUser") (@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountUser"))
-							</div>
-						</div>
-					</div>
-				}
-
-				@if (usuario.SteamGames != null || usuario.GogGames != null)
-				{
-					<div style="display: flex; align-items: start; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@estadoUltimoJugado" @onchange="ClickearPerfilUltimoJugado">
-						</div>
-
-						<div style="display: flex; flex-direction: column; gap: 10px;">
-							<div>
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountUser")
-							</div>
-						</div>
-					</div>
-				}
-				else
-				{
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div style="max-width: 26px;">
-							<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-								<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
-							</svg>
-						</div>
-
-						<div>
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "AccountUser")
-						</div>
-					</div>
-				}
-
-				@if (usuario.SteamGames != null || usuario.GogGames != null || usuario.AmazonGames != null || usuario.EpicGames != null ||
-					usuario.UbisoftGames != null || usuario.EaGames != null)
-				{
-					<div style="display: flex; align-items: start; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@estadoJuegos" @onchange="ClickearPerfilJuegos">
-						</div>
-
-						<div style="display: flex; flex-direction: column; gap: 10px;">
-							<div>
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountUser")
-							</div>
-						</div>
-					</div>
-				}
-				else
-				{
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div style="max-width: 26px;">
-							<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-								<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
-							</svg>
-						</div>
-						
-						<div>
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "AccountUser")
-						</div>
-					</div>
-				}
-
-				@if (usuario.Wishlist != null || usuario.SteamWishlist != null || usuario.GogWishlist != null)
-				{
-					<div style="display: flex; align-items: start; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@estadoDeseados" @onchange="ClickearPerfilDeseados">
-						</div>
-
-						<div style="display: flex; flex-direction: column; gap: 10px;">
-							<div>
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountUser")
-							</div>
-						</div>
-					</div>
-				}
-				else
-				{
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div style="max-width: 26px;">
-							<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-								<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
-							</svg>
-						</div>
-
-						<div>
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "AccountUser")
-						</div>
-					</div>
-				}
-			</div>
-		</div>
-
-		<div class="caja-perfil-contenido" style="display: flex; flex-direction: column; margin-top: 30px;">
-			<label>@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "AccountUser")</label>
-			<hr />
-
-			<div style="display: flex; flex-direction: column; gap: 20px;">
-				<div style="display: flex; align-items: center; gap: 20px;">
-					<img src="@textoAvatar" style="width: 80px; height: 80px;" />
-
-					<div style="width: 100%;">
-						<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "AccountUser")</label>
-						<input type="text" @bind-value="textoAvatar" @bind-value:event="oninput" @bind-value:after="TextoCambiaAvatar" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "AccountUser")" />
-					</div>
-				</div>
-
-				<div>
-					<label style="margin-bottom: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "AccountUser")</label>
-					<input type="text" @bind-value="textoNombre2" @bind-value:event="oninput" @bind-value:after="TextoCambiaNombre2" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String17", "AccountUser")" />
-				</div>
-			</div>
-		</div>
-	}
 }
 
 @code {

@@ -1,0 +1,334 @@
+﻿@page "/account/sync/"
+
+@attribute [Authorize]
+
+@using Microsoft.AspNetCore.Authorization
+@using global::Juegos
+
+@inject IHttpContextAccessor Contexto
+
+<style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+		--glaseadoFondo: rgba(45, 47, 54, 0.70);
+		--noResultados: rgba(132, 32, 41, 0.5);
+		--botonSeleccionado: rgba(13, 22, 33, 0.75);
+	}
+
+	.caja-sincronizar {
+		background-blend-mode: overlay;
+		border-radius: 100px;
+		border: 2px solid var(--glaseadoBorde);
+		width: fit-content;
+		background-color: var(--fondoSubcabecera);
+		backdrop-filter: blur(25px);
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		padding: 5px;
+		transition: width 0.3s ease;
+		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+	}
+
+	.caja-sincronizar-animacion {
+		opacity: 0;
+		transition: all 0.5s ease, transform .2s ease;
+		pointer-events: none;
+		transform: scaleX(0);
+		transform-origin: left;
+		max-width: 0;
+	}
+
+		.caja-sincronizar-animacion.visible {
+			opacity: 1;
+			pointer-events: auto;
+			transform: scaleX(1);
+			max-width: fit-content;
+		}
+
+	.boton-pestañas {
+		color: var(--colorTexto);
+		fill: var(--colorTexto);
+		background-color: var(--fondoBotonPequeño);
+		border: 1px solid var(--fondoOscuro);
+		width: 100%;
+		transition: transform .2s;
+		font-size: 17px;
+		padding: 15px 20px;
+	}
+
+		.boton-pestañas:hover {
+			color: var(--colorTextoHover);
+			fill: var(--colorTextoHover);
+			transform: scale(1.01);
+		}
+</style>
+
+@{
+	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Account") + " • pepe's deals";
+}
+
+<HeadContent>
+	<PageTitle>@titulo</PageTitle>
+</HeadContent>
+
+<div class="cuerpo-ancho" style="width: 100%; margin: 40px auto;">
+	<div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; transition: transform 0.3s ease, opacity 0.3s ease; width: fit-content; margin-left: auto; margin-right: auto; margin-bottom: 40px;">
+		<div class="caja-sincronizar">
+			<button @onclick="MostrarSteam" @onmouseenter="CambiarFondoSteam" @onmouseleave="RestaurarFondoSteam" style="@fondoSteam @backdropSteam border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.Steam ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.Steam ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)
+				</div>
+			</button>
+
+			<button @onclick="MostrarGOG" @onmouseenter="CambiarFondoGOG" @onmouseleave="RestaurarFondoGOG" style="@fondoGOG @backdropGOG border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.GOG ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.GOG)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.GOG ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.GOG)
+				</div>
+			</button>
+
+			<button @onclick="MostrarAmazon" @onmouseenter="CambiarFondoAmazon" @onmouseleave="RestaurarFondoAmazon" style="@fondoAmazon @backdropAmazon border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.Amazon ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Amazon)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.Amazon ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.Amazon)
+				</div>
+			</button>
+
+			<button @onclick="MostrarEpic" @onmouseenter="CambiarFondoEpic" @onmouseleave="RestaurarFondoEpic" style="@fondoEpic @backdropEpic border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.Epic ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Epic)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.Epic ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.Epic)
+				</div>
+			</button>
+
+			<button @onclick="MostrarUbisoft" @onmouseenter="CambiarFondoUbisoft" @onmouseleave="RestaurarFondoUbisoft" style="@fondoUbisoft @backdropUbisoft border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.Ubisoft ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Ubisoft)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.Ubisoft ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft)
+				</div>
+			</button>
+
+			<button @onclick="MostrarEA" @onmouseenter="CambiarFondoEA" @onmouseleave="RestaurarFondoEA" style="@fondoEA @backdropEA border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(seccionActual == SeccionDRM.EA ? "gap: 20px;" : "")">
+				<div style="display: flex; max-width: 30px; max-height: 30px;">
+					<img src="@JuegoDRM2.SacarImagen(JuegoDRM.EA)" style="width: 100%; height: 100%;" />
+				</div>
+
+				<div class="caja-sincronizar-animacion @(seccionActual == SeccionDRM.EA ? "visible" : "")">
+					@JuegoDRM2.DevolverDRM(JuegoDRM.EA)
+				</div>
+			</button>
+		</div>
+	</div>
+
+	<div>
+		@if (seccionActual == SeccionDRM.Steam)
+		{
+			<Steam idioma="@idioma" usuarioId="@usuarioId"/>
+		}
+		else if (seccionActual == SeccionDRM.GOG)
+		{
+			<Gog idioma="@idioma" usuarioId="@usuarioId" />
+		}
+		else if (seccionActual == SeccionDRM.Amazon)
+		{
+			<Amazon idioma="@idioma" usuarioId="@usuarioId" />
+		}
+		else if (seccionActual == SeccionDRM.Epic)
+		{
+			<EpicGames idioma="@idioma" usuarioId="@usuarioId" />
+		}
+		else if (seccionActual == SeccionDRM.Ubisoft)
+		{
+			<Ubisoft idioma="@idioma" usuarioId="@usuarioId" />
+		}
+		else if (seccionActual == SeccionDRM.EA)
+		{
+			<Ea idioma="@idioma" usuarioId="@usuarioId" />
+		}
+	</div>
+</div>
+
+@code {
+
+	#nullable disable
+
+	private string idioma = "en";
+	private string usuarioId = null;
+	private string userAgent = null;
+	private string dominio = null;
+
+	[PersistentState] public SeccionDRM seccionActual { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+		idioma = datos.Idioma;
+		usuarioId = datos.UsuarioId;
+		userAgent = datos.UserAgent;
+		dominio = datos.Dominio;
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+		}
+
+		await MostrarSteam();
+	}
+
+	public enum SeccionDRM
+	{
+		Steam,
+		GOG,
+		Amazon,
+		Epic,
+		Ubisoft,
+		EA
+	}
+
+	private void TransparentarFondos()
+	{
+		fondoSteam = "background: transparent;";
+		fondoGOG = "background: transparent;";
+		fondoAmazon = "background: transparent;";
+        fondoEpic = "background: transparent;";
+		fondoUbisoft = "background: transparent;";
+		fondoEA = "background: transparent;";
+	}
+
+	private string fondoSteam = "background: transparent;";
+	private string backdropSteam = string.Empty;
+
+	private async Task MostrarSteam()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.Steam;
+		fondoSteam = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoSteam()
+	{
+		backdropSteam = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoSteam()
+	{
+		backdropSteam = string.Empty;
+	}
+
+	private string fondoGOG = "background: transparent;";
+	private string backdropGOG = string.Empty;
+
+	private async Task MostrarGOG()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.GOG;
+		fondoGOG = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoGOG()
+	{
+		backdropGOG = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoGOG()
+	{
+		backdropGOG = string.Empty;
+	}
+
+	private string fondoAmazon = "background: transparent;";
+	private string backdropAmazon = string.Empty;
+
+	private async Task MostrarAmazon()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.Amazon;
+		fondoAmazon = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoAmazon()
+	{
+		backdropAmazon = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoAmazon()
+	{
+		backdropAmazon = string.Empty;
+	}
+
+	private string fondoEpic = "background: transparent;";
+	private string backdropEpic = string.Empty;
+
+	private async Task MostrarEpic()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.Epic;
+		fondoEpic = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoEpic()
+	{
+		backdropEpic = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoEpic()
+	{
+		backdropEpic = string.Empty;
+	}
+
+	private string fondoUbisoft = "background: transparent;";
+	private string backdropUbisoft = string.Empty;
+
+	private async Task MostrarUbisoft()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.Ubisoft;
+		fondoUbisoft = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoUbisoft()
+	{
+		backdropUbisoft = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoUbisoft()
+	{
+		backdropUbisoft = string.Empty;
+	}
+
+	private string fondoEA = "background: transparent;";
+	private string backdropEA = string.Empty;
+
+	private async Task MostrarEA()
+	{
+		TransparentarFondos();
+		seccionActual = SeccionDRM.EA;
+		fondoEA = "background: var(--botonSeleccionado);";
+	}
+
+	private async Task CambiarFondoEA()
+	{
+		backdropEA = "backdrop-filter: brightness(50%);";
+	}
+
+	private async Task RestaurarFondoEA()
+	{
+		backdropEA = string.Empty;
+	}
+}

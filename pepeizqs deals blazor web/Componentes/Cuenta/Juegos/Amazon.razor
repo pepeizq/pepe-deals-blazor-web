@@ -6,15 +6,17 @@
 <style>
     .caja-cuenta-amazon-contenido {
         background-color: var(--fondoSubsubcabecera);
-        border: 2px solid var(--fondoSubcabecera);
+        border: 2px solid var(--glaseadoBorde);
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+        border-radius: 20px;
     }
 
     .caja-cuenta-amazon-titulo {
         background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
         font-size: 18px;
         padding: 20px 30px;
-        border: 1px solid var(--fondoSubsubcabecera);
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
     }
 </style>
 
@@ -61,19 +63,13 @@
 
 @if (usuario != null)
 {
-    <div style="display: flex; flex-direction: column; gap: 30px;">
+    <div style="display: grid; gap: 30px; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); width: 100%;">
         <div class="caja-cuenta-amazon-contenido">
             <div class="caja-cuenta-amazon-titulo" style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                <img src="@JuegoDRM2.SacarImagen(JuegoDRM.Amazon)" style="max-width: 40px; max-height: 40px;" />
+                <img src="@JuegoDRM2.SacarImagen(JuegoDRM.Amazon)" style="max-width: 24px; max-height: 24px;" />
 
                 <div>
-                    <div style="font-size: 18px;">
-                        @JuegoDRM2.DevolverDRM(JuegoDRM.Amazon)
-                    </div>
-
-                    <div style="font-size: 14px;">
-                        @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountGames")
-                    </div>
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountGames")
                 </div>
             </div>
 
@@ -94,6 +90,23 @@
                 </div>
             </div>
         </div>
+
+        @if (cantidadJuegos > 0)
+        {
+            <div class="caja-cuenta-amazon-contenido">
+                <div class="caja-cuenta-amazon-titulo" style="font-size: 18px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String30", "AccountGames")
+                </div>
+
+                <div style="padding: 20px 30px;">
+                    <div style="display: flex; align-items: center; gap: 25px;">
+                        <button @onclick="ClickearBorrarJuegos" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String37", "AccountGames")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
 
         <div class="caja-cuenta-amazon-contenido">
             <div class="caja-cuenta-amazon-titulo" style="display: flex; align-items: center; gap: 20px;">
@@ -415,23 +428,6 @@
                 }
             </div>
         </div>
-
-        @if (cantidadJuegos > 0)
-        {
-            <div class="caja-cuenta-amazon-contenido">
-			    <div class="caja-cuenta-amazon-titulo" style="font-size: 18px;">
-				    @Herramientas.Idiomas.BuscarTexto(idioma, "String30", "AccountGames")
-			    </div>
-
-			    <div style="padding: 20px 30px;">
-                    <div style="display: flex; align-items: center; gap: 25px;">
-                        <button @onclick="ClickearBorrarJuegos" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String37", "AccountGames")
-                        </button>
-                    </div>
-                </div>
-            </div>
-        }
     </div>
 }
 

@@ -523,6 +523,14 @@
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Account", "Header")
                                         </button>
 
+                                        @{
+                                            string enlaceSincronizarCuenta = "/account/sync/";
+                                        }
+
+                                        <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceSincronizarCuenta, false))" style="font-size: 15px; width: 100%; text-align: right;">
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Header")
+                                        </button>
+
                                         @if (usuarioPatreon == true || usuarioAdmin == true)
                                         {
                                             string enlacePatreonCuenta = "/account/patreon-store/";

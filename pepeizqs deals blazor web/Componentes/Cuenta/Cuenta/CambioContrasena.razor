@@ -5,18 +5,9 @@
 @inject UserManager<Usuario> UserManager
 @inject IHttpContextAccessor Contexto
 
-<style>
-    .caja-cuenta-contenido {
-        background-color: var(--fondoSubsubcabecera);
-        border: 2px solid var(--fondoSubcabecera);
-        padding: 30px;
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-    }
-</style>
-
 @if (usuario != null)
 {
-    <div class="caja-cuenta-contenido">
+    <div style="padding: 30px">
         <div style="margin-bottom: 20px;">
             <label class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword1", "Account")</label>
             <input value="@contraseñaActual" @onchange="@(e => CambiarActualContraseña(e))" type="password" class="entrada-texto" autocomplete="current-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword2", "Account")" />

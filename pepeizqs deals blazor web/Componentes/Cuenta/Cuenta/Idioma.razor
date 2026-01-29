@@ -8,6 +8,7 @@
     .caja-cuenta-contenido {
         background-color: var(--fondoSubsubcabecera);
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+        border-radius: 20px;
     }
 
     .caja-cuenta-titulo {
@@ -15,12 +16,14 @@
         font-size: 18px;
         padding: 20px 30px;
         border: 1px solid var(--fondoSubsubcabecera);
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
     }
 </style>
 
 @if (usuario != null)
 {
-    <div style="display: flex; flex-direction: column; gap: 40px;">
+    <div style="display: flex; flex-direction: column; gap: 40px; padding: 30px;">
         <div class="caja-cuenta-contenido">
             <div class="caja-cuenta-titulo">
                 @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountLanguage")

@@ -53,16 +53,25 @@
 </style>
 
 <style>
+    :root {
+        --glaseadoBorde: #FFFFFF1A;
+        --glaseadoFondo: rgba(45, 47, 54, 0.70);
+        --botonSeleccionado: rgba(13, 22, 33, 0.75);
+    }
+
 	.caja-cuenta-indice-contenido {
 		background-color: var(--fondoSubsubcabecera);
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+        border: 2px solid var(--glaseadoBorde);
+        border-radius: 20px;
 	}
 
     .caja-cuenta-indice-titulo {
 		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
 		font-size: 18px;
 		padding: 20px 30px;
-        border: 1px solid var(--fondoSubsubcabecera);
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
 	}
 </style>
 
@@ -92,16 +101,8 @@
 
 @if (enseñarOpcion == false)
 {
-    <div class="subcabecera">
-		<div class="cuerpo-ancho sub-subcabecera">
-            <h1 style="font-size: 18px; margin: 10px 0px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Account")
-			</h1>
-        </div>
-    </div>
-
     <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
-        <div class="caja-cuenta-indice-titulo">
+        <div class="caja-cuenta-indice-titulo" style="padding: 16px 30px; height: 60px; display: flex; align-items: center;">
             @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Account")
 	    </div>
 
@@ -305,164 +306,24 @@
             </div>
         </div>
     </div>
-
-    @if (opcionesCuenta?.EmailConfirmed == true)
-    {
-        int? monedas = 0;
-
-        if (opcionesCuenta?.PatreonCoins != null)
-        {
-            monedas = opcionesCuenta.PatreonCoins;
-        }
-
-        <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
-            <div class="caja-cuenta-indice-titulo">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Account")
-            </div>
-
-            <div class="grid-estructura" style="padding: 30px;">
-                <button @onclick="MostrarSteam" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.Steam))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.Steam)
-                            </div>
-
-                            @if (string.IsNullOrEmpty(opcionesCuenta?.SteamAccountLastCheck) == false)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Account") @Herramientas.Calculadora.DiferenciaTiempo(Convert.ToDateTime(opcionesCuenta.SteamAccountLastCheck), idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-
-                <button @onclick="MostrarGog" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.GOG))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.GOG)
-                            </div>
-
-                            @if (opcionesCuenta?.GogAccountLastCheck != null)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.GogAccountLastCheck, idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-
-                <button @onclick="MostrarAmazon" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.Amazon))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.Amazon)
-                            </div>
-
-                            @if (opcionesCuenta?.AmazonLastImport != null)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.AmazonLastImport, idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-
-                <button @onclick="MostrarEpicGames" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.Epic))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.Epic)
-                            </div>
-
-                            @if (opcionesCuenta?.EpicGamesLastImport != null)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.EpicGamesLastImport, idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-
-                <button @onclick="MostrarUbisoft" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.Ubisoft))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft)
-                            </div>
-
-                            @if (opcionesCuenta?.UbisoftLastImport != null)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.UbisoftLastImport, idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-
-                <button @onclick="MostrarEa" class="boton-pestañas">
-                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(JuegoDRM.EA))" style="max-width: 30px; max-height: 30px;" />
-
-                        <div style="display: flex; flex-direction: column; gap: 5px;">
-                            <div>
-                                @JuegoDRM2.DevolverDRM(JuegoDRM.EA)
-                            </div>
-
-                            @if (opcionesCuenta?.EaLastImport != null)
-                            {
-                                <div style="font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Account") @Herramientas.Calculadora.DiferenciaTiempo(opcionesCuenta.EaLastImport, idioma)
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </button>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div style="margin: 40px auto; background-color: var(--fondoPeligro); padding: 15px 20px;">
-            @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Account")
-        </div>
-    }
 }
 else
 {
-    <div class="subcabecera">
-        <div class="cuerpo-ancho sub-subcabecera" style="padding: 17px 0px;">
-            <button @onclick="ClickearCerrarPestaña" class="boton-pequeño" style="width: fit-content; padding: 8px 20px 8px 0px; background-color: transparent; box-shadow: none;">
-                <h1 style="font-size: 18px; margin: 0px;">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Account")
-                </h1>
+    <div class="cuerpo-ancho" style="width: 100%; margin: 40px auto; background-color: var(--fondoSubsubcabecera); border-radius: 20px; border: 2px solid var(--glaseadoBorde); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+        <div style="display: flex; align-items: center; gap: 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit; overflow: hidden;">
+            <button class="boton-pequeño" @onclick="ClickearCerrarPestaña" style="width: fit-content; padding: 18px 25px; border-top-left-radius: inherit; box-shadow: none;">
+                <div style="max-width: 24px; max-height: 24px;">
+                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+                    </svg>
+                </div>
             </button>
 
-            <div style="width: fit-content; padding: 8px 20px; border-radius: 5px; background-color: var(--botonSubcabecera); box-shadow: none;">
-                <h1 style="font-size: 18px; margin: 0px;">
-                    @tituloOpcion
-                </h1>
+            <div style="font-size: 18px;">
+                @tituloOpcion
             </div>
         </div>
-    </div>
 
-    <div class="cuerpo-ancho" style="width: 100%; @añadirMargin">
         @if (mostrarCorreo == true)
         {
             <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Correo idioma="@idioma" dominio="@dominio"/>
@@ -512,36 +373,6 @@ else
         {
             <pepeizqs_deals_blazor_web.Componentes.Cuenta.Notificaciones.Push idioma="@idioma" />
         }
-
-        @if (mostrarSteam == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.Steam idioma="@idioma" usuarioId="@usuarioId" />
-        }
-
-        @if (mostrarGog == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.Gog idioma="@idioma" usuarioId="@usuarioId" />
-        }
-
-        @if (mostrarAmazon == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.Amazon idioma="@idioma" usuarioId="@usuarioId"/>
-        }
-
-        @if (mostrarEpicGames == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.EpicGames idioma="@idioma" usuarioId="@usuarioId" />
-        }
-
-        @if (mostrarUbisoft == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.Ubisoft idioma="@idioma" usuarioId="@usuarioId" />
-        }
-
-        @if (mostrarEa == true)
-        {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Juegos.Ea idioma="@idioma" usuarioId="@usuarioId" />
-        }
     </div>
 }
 
@@ -584,7 +415,7 @@ else
             {
                 if (seccion == "email")
                 {
-                    MostrarJuegos();
+                    MostrarCorreo();
                 }
 
                 if (seccion == "password")
@@ -631,36 +462,6 @@ else
                 {
                     MostrarNotificacionesPush();
                 }
-
-                if (seccion == "steam")
-                {
-                    MostrarSteam();
-                }
-
-                if (seccion == "gog")
-                {
-                    MostrarGog();
-                }
-
-                if (seccion == "amazon")
-                {
-                    MostrarAmazon();
-                }
-
-                if (seccion == "epicgames")
-                {
-                    MostrarEpicGames();
-                }
-
-                if (seccion == "ubisoft")
-                {
-                    MostrarUbisoft();
-                }
-
-                if (seccion == "ea")
-                {
-                    MostrarEa();
-                }
             }
         }
     }
@@ -692,13 +493,6 @@ else
         mostrarPerfil = false;
         mostrarNotificacionesCorreo = false;
         mostrarNotificacionesPush = false;
-
-        mostrarSteam = false;
-        mostrarGog = false;
-        mostrarAmazon = false;
-        mostrarEpicGames = false;
-        mostrarUbisoft = false;
-        mostrarEa = false;
     }
 
     private async void ClickearCerrarPestaña()
@@ -834,82 +628,6 @@ else
         enseñarOpcion = true;
         mostrarNotificacionesPush = true;
         seccion = "notificationspush";
-    }
-
-    #endregion
-
-    #region Juegos
-
-    private bool mostrarSteam = false;
-
-    private async void MostrarSteam()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.Steam);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarSteam = true;
-        seccion = "steam";
-    }
-
-    private bool mostrarGog = false;
-
-    private async void MostrarGog()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.GOG);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarGog = true;
-        seccion = "gog";
-    }
-
-    private bool mostrarAmazon = false;
-
-    private async void MostrarAmazon()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.Amazon);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarAmazon = true;
-        seccion = "amazon";
-    }
-
-    private bool mostrarEpicGames = false;
-
-    private async void MostrarEpicGames()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.Epic);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarEpicGames = true;
-        seccion = "epicgames";
-    }
-
-    private bool mostrarUbisoft = false;
-
-    private async void MostrarUbisoft()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarUbisoft = true;
-        seccion = "ubisoft";
-    }
-
-    private bool mostrarEa = false;
-
-    private async void MostrarEa()
-    {
-        CerrarPestañas();
-        tituloOpcion = JuegoDRM2.DevolverDRM(JuegoDRM.EA);
-        añadirMargin = "margin: 40px auto;";
-        enseñarOpcion = true;
-        mostrarEa = true;
-        seccion = "ea";
     }
 
     #endregion
