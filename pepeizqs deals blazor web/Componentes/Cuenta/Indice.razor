@@ -304,6 +304,28 @@
                     </div>
                 </div>
             </div>
+
+            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-mailpatreon')">
+                <button @onclick="MostrarCorreoPatreon" class="boton-pestañas">
+                    <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
+                        <div style="width: 30px; height: 30px; display: flex;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                <path d="M554 217.8C553.9 152.4 503 98.8 443.3 79.5C369.1 55.5 271.3 59 200.4 92.4C114.6 132.9 87.6 221.7 86.6 310.2C85.8 383 93 574.6 201.2 576C281.5 577 293.5 473.5 330.7 423.7C357.1 388.2 391.2 378.2 433.1 367.8C505.1 350 554.2 293.1 554.1 217.8L554 217.8z" />
+                            </svg>
+                        </div>
+
+                        <div>
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String37", "Account")
+                        </div>
+                    </div>
+                </button>
+
+                <div id="tooltip-mailpatreon" class="tooltip-relleno">
+                    <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String38", "Account")
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -373,6 +395,11 @@ else
         {
             <pepeizqs_deals_blazor_web.Componentes.Cuenta.Notificaciones.Push idioma="@idioma" />
         }
+
+        @if (mostrarCorreoPatreon == true)
+        {
+            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.CorreoPatreon idioma="@idioma" usuarioId="@usuarioId" />
+        }
     </div>
 }
 
@@ -394,7 +421,6 @@ else
 
     private bool enseñarOpcion = false;
     private string tituloOpcion = string.Empty;
-    private string añadirMargin = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -453,14 +479,19 @@ else
                     MostrarPerfil();
                 }
 
-                if (seccion == "notificationsemail")
+                if (seccion == "notifications-email")
                 {
                     MostrarNotificacionesCorreo();
                 }
 
-                if (seccion == "notificationspush")
+                if (seccion == "notifications-push")
                 {
                     MostrarNotificacionesPush();
+                }
+
+                if (seccion == "mail-patreon")
+                {
+                    MostrarCorreoPatreon();
                 }
             }
         }
@@ -481,7 +512,6 @@ else
     private void CerrarPestañas()
     {
         tituloOpcion = string.Empty;
-        añadirMargin = string.Empty;
 
         mostrarCorreo = false;
         mostrarContraseña = false;
@@ -493,6 +523,7 @@ else
         mostrarPerfil = false;
         mostrarNotificacionesCorreo = false;
         mostrarNotificacionesPush = false;
+        mostrarCorreoPatreon = false;
     }
 
     private async void ClickearCerrarPestaña()
@@ -501,7 +532,6 @@ else
         enseñarOpcion = false;
 
         seccion = string.Empty;
-        
     }
 
     #region Cuenta
@@ -512,7 +542,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarCorreo = true;
         seccion = "email";
@@ -524,7 +553,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarContraseña = true;
         seccion = "password";
@@ -536,7 +564,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarDatosPersonales = true;
         seccion = "data";
@@ -548,7 +575,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarIdioma = true;
         seccion = "language";
@@ -560,7 +586,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarClaves = true;
         seccion = "keys";
@@ -572,7 +597,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarForo = true;
         seccion = "forum";
@@ -584,7 +608,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String35", "Account");
-        añadirMargin = string.Empty;
         enseñarOpcion = true;
         mostrarJuegos = true;
         seccion = "games";
@@ -596,7 +619,6 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarPerfil = true;
         seccion = "profile";
@@ -612,10 +634,9 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarNotificacionesCorreo = true;
-        seccion = "notificationsemail";
+        seccion = "notifications-email";
     }
 
     private bool mostrarNotificacionesPush = false;
@@ -624,10 +645,20 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Account");
-        añadirMargin = "margin: 40px auto;";
         enseñarOpcion = true;
         mostrarNotificacionesPush = true;
-        seccion = "notificationspush";
+        seccion = "notifications-push";
+    }
+
+    private bool mostrarCorreoPatreon = false;
+
+    private async void MostrarCorreoPatreon()
+    {
+        CerrarPestañas();
+        tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String37", "Account");
+        enseñarOpcion = true;
+        mostrarCorreoPatreon = true;
+        seccion = "mail-patreon";
     }
 
     #endregion

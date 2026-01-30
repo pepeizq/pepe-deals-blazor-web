@@ -25,6 +25,12 @@
   "String25": "Cambia le preferenze linguistiche su questo web",
   "String26": "Forum",
   "String27": "Cambia le impostazioni del forum",
+  "String33": "Profilo",
+  "String34": "Condividi i tuoi giochi e desideri con il mondo",
+  "String35": "Giochi",
+  "String36": "Controlla i giochi che hai aggiunto al tuo account web",
+  "String37": "E-mail per Patreon",
+  "String38": "Se mi supporti su Patreon, puoi aggiungere qui l'indirizzo email che usi lì in modo che il sito web possa leggerlo.",
   "Mail1": "E-mail corrente",
   "Mail2": "Per favore inserisci la tua email",
   "Mail3": "Invia e-mail di verifica",
@@ -85,12 +91,5 @@
   "PersonalData6": "Elimina account",
   "PersonalData7": "Prima di eliminare l'account ho bisogno che tu inserisca nuovamente la password:",
   "PersonalData8": "Ricorda, se elimini il tuo account non potrò recuperarlo.",
-  "PersonalData9": "Elimina account",
-  "Patreon1": "Grazie per avermi aiutato finanziariamente a mantenere questo sito web, puoi vedere la serie di vantaggi a tua disposizione qui:",
-  "Patreon2": "Puoi aiutarmi a mantenere finanziariamente questo sito Web tramite Patreon e guadagnare 2 Pepe Coins ogni giorno, qui hai informazioni su come farlo e puoi anche vedere la serie di vantaggi che avrai se lo fai:",
-  "Patreon3": "Posta Patreon",
-  "Patreon4": "Nel caso in cui utilizzi un indirizzo email diverso per Patreon puoi inserirlo qui:",
-  "Patreon5": "Inserisci la tua email",
-  "Patreon6": "Quell'e-mail è associata a un altro account.",
-  "Patreon7": "Il sito verifica automaticamente gli utenti Patreon ogni 6 ore, quindi se decidi di sostenermi finanziariamente dovrai attendere qualche ora per ricevere i benefici."
+  "PersonalData9": "Elimina account"
 }

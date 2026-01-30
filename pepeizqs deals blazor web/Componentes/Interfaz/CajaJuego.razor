@@ -125,7 +125,7 @@
 	string codigoTexto = string.Empty;
 	DateTime fechaDetectado = DateTime.Now;
 
-	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid)
+	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 	{
 		JuegoPrecio oferta = null;
 
@@ -167,7 +167,7 @@
 
 			//--------------------------------------------------------
 
-			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid)
+			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 			{
 				if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 				{
@@ -294,7 +294,7 @@
 						@tooltip.Nombre
 					</div>
 
-					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid)
+					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
@@ -515,7 +515,7 @@
 			</a>
 		}
 
-		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid)
+		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 		{
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
@@ -941,7 +941,8 @@
 		SteamDeck,
 		SteamOS,
 		GeforceNOW,
-		Boosteroid
+		Boosteroid,
+		AmazonLuna
 	}
 
 	#region Abrir Enlace

@@ -2,6 +2,7 @@
 
 using Dapper;
 using Herramientas;
+using Juegos;
 using System.Text.Json;
 
 namespace APIs.GOG
@@ -79,19 +80,43 @@ namespace APIs.GOG
 									BaseDatos.Errores.Insertar.Mensaje("Amazon Luna 1", ex);
 								}
 
+								List<string> drms = new List<string>();
+								drms.Add("gog");
+
+								List<int> drms2 = new List<int>();
+
+								if (drms?.Count > 0)
+								{
+									foreach (var drm in drms)
+									{
+										var drmTraducido = Juegos.JuegoDRM2.Traducir(drm);
+
+										if (drmTraducido != Juegos.JuegoDRM.NoEspecificado)
+										{
+											drms2.Add((int)drmTraducido);
+										}
+									}
+								}
+
 								if (encontrado == true)
 								{
 									cantidad += 1;
 									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad);
 
-									string sqlActualizar = "UPDATE streamingamazonluna " +
-															"SET fecha=@fecha WHERE nombreCodigo=@nombreCodigo";
+									string sqlActualizar = @"UPDATE streamingamazonluna 
+													SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE nombreCodigo=@nombreCodigo";
 
 									try
 									{
 										await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 										{
-											return await conexion.ExecuteAsync(sqlActualizar, new { nombreCodigo = juego.Id, fecha }, transaction: sentencia);
+											return await conexion.ExecuteAsync(sqlActualizar, new
+											{
+												nombreCodigo = juego.Id,
+												fecha,
+												drms = JsonSerializer.Serialize(drms),
+												drms2 = JsonSerializer.Serialize(drms2)
+											}, transaction: sentencia);
 										});
 									}
 									catch (Exception ex)
@@ -102,8 +127,8 @@ namespace APIs.GOG
 								else
 								{
 									string sqlInsertar = "INSERT INTO streamingamazonluna " +
-														"(nombreCodigo, nombre, drms, fecha) VALUES " +
-														"(@nombreCodigo, @nombre, @drms, @fecha) ";
+														"(nombreCodigo, nombre, drms, fecha, drms2) VALUES " +
+														"(@nombreCodigo, @nombre, @drms, @fecha, @drms2) ";
 
 									try
 									{
@@ -113,8 +138,9 @@ namespace APIs.GOG
 											{
 												nombreCodigo = juego.Id,
 												nombre = juego.Nombre,
-												drms = "gog",
-												fecha
+												drms = JsonSerializer.Serialize(drms),
+												fecha,
+												drms2 = JsonSerializer.Serialize(drms2)
 											}, transaction: sentencia);
 										});
 									}

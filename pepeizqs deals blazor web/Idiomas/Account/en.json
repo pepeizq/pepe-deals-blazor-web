@@ -29,6 +29,8 @@
   "String34": "Share your games and wishes with the world",
   "String35": "Games",
   "String36": "Check the games you have added to your web account",
+  "String37": "Email for Patreon",
+  "String38": "If you support me on Patreon, you can add the email address you use there here so the website can read it.",
   "Mail1": "Current Email",
   "Mail2": "Please enter your email",
   "Mail3": "Send verification email",
@@ -89,12 +91,5 @@
   "PersonalData6": "Delete account",
   "PersonalData7": "Before deleting the account I need you to enter your password again:",
   "PersonalData8": "Remember, if you delete your account I will not be able to recover it.",
-  "PersonalData9": "Delete account",
-  "Patreon1": "Thank you for helping me financially to maintain this website, you can see the series of advantages available to you here:",
-  "Patreon2": "You can help me financially maintain this website through Patreon and earn 2 Pepe Coins every day, here you have information on how to do it and you can also see the series of advantages that you will have if you do so:",
-  "Patreon3": "Patreon Mail",
-  "Patreon4": "In case you use a different email for Patreon you can put it here:",
-  "Patreon5": "Enter your email",
-  "Patreon6": "That email is associated with another account.",
-  "Patreon7": "The site automatically verifies Patreon users every 6 hours, so if you decide to support me financially you will have to wait a few hours to receive the benefits."
+  "PersonalData9": "Delete account"
 }

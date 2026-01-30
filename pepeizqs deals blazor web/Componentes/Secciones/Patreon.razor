@@ -12,15 +12,6 @@
 <Titulo tipo="@Titulo.Tipo.Patreon" idioma="@idioma" dominio="@dominio"/>
 
 <style>
-	.caja-patreon-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 30px;
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-	}
-</style>
-
-<style>
 	:root {
 		--glaseadoBorde: #FFFFFF1A;
 		--glaseadoFondo: rgba(45, 47, 54, 0.70);
@@ -34,7 +25,7 @@
 		border-radius: 100px;
 		border: 2px solid var(--glaseadoBorde);
 		width: fit-content;
-		background-color: var(--glaseadoFondo);
+		background-color: var(--fondoSubcabecera);
 		backdrop-filter: blur(25px);
 		display: flex;
 		align-items: center;
@@ -86,8 +77,8 @@
 			</a>
 		</div>
 
-		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 1px solid var(--glaseadoBorde);">
-			<button @onclick="MostrarOcultarVentajas" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 1px solid var(--glaseadoBorde); @bordeRadioVentajas">
+		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 2px solid var(--glaseadoBorde);">
+			<button @onclick="MostrarOcultarVentajas" style="background-color: var(--fondoBotonPequeño); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 0px; @bordeRadioVentajas">
 				<div style="font-size: 18px; color: var(--colorTexto);">
 					@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Patreon")
 				</div>
@@ -175,8 +166,8 @@
 			</div>
 		</div>
 		
-		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 1px solid var(--glaseadoBorde); margin: 40px 0px;">
-			<button @onclick="MostrarOcultarTienda" style="background-color: var(--fondoSubcabecera); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 1px solid var(--glaseadoBorde); @bordeRadioTienda">
+		<div style="border-radius: 20px; box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25); border: 2px solid var(--glaseadoBorde); margin: 40px 0px;">
+			<button @onclick="MostrarOcultarTienda" style="background-color: var(--fondoBotonPequeño); padding: 15px 0px; font-size: 18px; display: flex; align-items: center; gap: 20px; justify-content: center; width: 100%; border: 0px; @bordeRadioTienda">
 				<div style="font-size: 18px; color: var(--colorTexto);">
 					@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Patreon")
 				</div>

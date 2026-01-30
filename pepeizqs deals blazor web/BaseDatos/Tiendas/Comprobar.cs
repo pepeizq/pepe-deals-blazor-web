@@ -16,15 +16,9 @@ namespace BaseDatos.Tiendas
 			{
 				idSteam2 = APIs.Steam.Tienda.IdsEspeciales(idSteam2);
 
-				int idSteam = 0;
-
-				try
+				if (!int.TryParse(idSteam2, out int idSteam) || idSteam <= 0)
 				{
-					idSteam = int.Parse(idSteam2);
-				}
-				catch
-				{
-
+					return;
 				}
 
 				if (idSteam > 0)

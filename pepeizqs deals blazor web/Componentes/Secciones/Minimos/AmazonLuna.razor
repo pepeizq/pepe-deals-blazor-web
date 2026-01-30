@@ -1,4 +1,4 @@
-﻿@page "/boosteroid"
+﻿@page "/luna"
 
 @using Juegos
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -10,12 +10,12 @@
 <style>
 	:root {
 		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(18,11,50, 0.3);
+		--glaseadoFondo: rgba(28, 23, 43, 0.3);
 		--noResultados: rgba(132, 32, 41, 0.5);
 		--botonSeleccionado: rgba(13, 22, 33, 0.75);
 	}
 
-	.caja-boosteroid {
+	.caja-amazonluna {
 		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
 		background-blend-mode: overlay;
 		border-radius: 100px;
@@ -29,7 +29,7 @@
 		padding: 5px;
 	}
 
-	.caja-boosteroid-animacion {
+	.caja-amazonluna-animacion {
 		opacity: 0;
 		transition: all 0.5s ease, transform .2s ease;
 		pointer-events: none;
@@ -38,7 +38,7 @@
 		max-width: 0;
 	}
 
-		.caja-boosteroid-animacion.visible {
+		.caja-amazonluna-animacion.visible {
 			opacity: 1;
 			pointer-events: auto;
 			transform: scaleX(1);
@@ -46,35 +46,35 @@
 		}
 </style>
 
-<Titulo tipo="@Titulo.Tipo.Boosteroid" idioma="@idioma" dominio="@dominio" />
+<Titulo tipo="@Titulo.Tipo.AmazonLuna" idioma="@idioma" dominio="@dominio" />
 
 <div>
-	<img class="juego-fondo" src="/imagenes/streaming/boosteroid_fondo.webp" alt="Boosteroid" fetchpriority="high" />
+	<img class="juego-fondo" src="/imagenes/streaming/amazonluna_fondo.webp" alt="Amazon Luna" fetchpriority="high" />
 
 	<div>
-		<div class="caja-boosteroid" style="margin: 40px auto; display: flex; justify-content: center; max-width: 350px; border-radius: 20px; padding: 20px 40px;">
-			<img src="/imagenes/streaming/boosteroid_logo.webp" alt="Boosteroid" style="width: 100%; height: 100%;" />
+		<div class="caja-amazonluna" style="margin: 40px auto; display: flex; justify-content: center; max-width: 270px; border-radius: 20px; padding: 20px 40px;">
+			<img src="/imagenes/streaming/amazonluna_logo.webp" alt="Amazon Luna" style="width: 100%; height: 100%;" />
 		</div>
 
 		<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px; transition: transform 0.3s ease, opacity 0.3s ease; width: fit-content; margin-left: auto; margin-right: auto;">
-			<div class="caja-boosteroid">
-				<button @onclick="MostrarSteam" @onmouseenter="CambiarFondoSteam" @onmouseleave="RestaurarFondoSteam" style="@fondoSteam @backdropSteam border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
+			<div class="caja-amazonluna">
+				<button @onclick="MostrarGOG" @onmouseenter="CambiarFondoGOG" @onmouseleave="RestaurarFondoGOG" style="@fondoGOG @backdropGOG border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
 					<div style="width: 24px; height: 24px;">
-						<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)" style="width: 100%; height: 100%;" />
+						<img src="@JuegoDRM2.SacarImagen(JuegoDRM.GOG)" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.GOG)" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div class="caja-boosteroid-animacion @(mostrarBuscador ? "" : "visible")">
-						@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)
+					<div class="caja-amazonluna-animacion @(mostrarBuscador ? "" : "visible")">
+						@JuegoDRM2.DevolverDRM(JuegoDRM.GOG)
 					</div>
 				</button>
 
-				<button @onclick="MostrarEpic" @onmouseenter="CambiarFondoEpic" @onmouseleave="RestaurarFondoEpic" style="@fondoEpic @backdropEpic border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
+				<button @onclick="MostrarUbisoft" @onmouseenter="CambiarFondoUbisoft" @onmouseleave="RestaurarFondoUbisoft" style="@fondoUbisoft @backdropUbisoft border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador ? "" : "gap: 20px;")">
 					<div style="width: 24px; height: 24px;">
-						<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Epic)" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Epic)" style="width: 100%; height: 100%;" />
+						<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Ubisoft)" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft)" style="width: 100%; height: 100%;" />
 					</div>
 
-					<div class="caja-boosteroid-animacion @(mostrarBuscador ? "" : "visible")">
-						@JuegoDRM2.DevolverDRM(JuegoDRM.Epic)
+					<div class="caja-amazonluna-animacion @(mostrarBuscador ? "" : "visible")">
+						@JuegoDRM2.DevolverDRM(JuegoDRM.Ubisoft)
 					</div>
 				</button>
 			</div>
@@ -88,8 +88,8 @@
 					</div>
 				</button>
 
-				<div class="caja-boosteroid caja-boosteroid-animacion @(mostrarBuscador ? "visible" : "")">
-					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Boosteroid")" />
+				<div class="caja-amazonluna caja-amazonluna-animacion @(mostrarBuscador ? "visible" : "")">
+					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "AmazonLuna")" />
 				</div>
 			</div>
 
@@ -104,7 +104,7 @@
 
 		@if (mostrarNoResultados == true)
 		{
-			<div class="caja-boosteroid" style="background-color: var(--noResultados); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
+			<div class="caja-amazonluna" style="background-color: var(--noResultados); justify-content: center; margin: 40px auto; padding: 20px; border-radius: 30px; max-width: 600px;">
 				<div style="width: 30px; height: 30px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 						<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -112,7 +112,7 @@
 				</div>
 
 				<div>
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Boosteroid")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AmazonLuna")
 				</div>
 			</div>
 		}
@@ -200,13 +200,13 @@
 							if (cargandoMas == false)
 							{
 								<button class="boton-pequeño" @onclick="CargarMas" style="width: fit-content; padding: 15px 30px;">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Boosteroid")
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AmazonLuna")
 								</button>
 							}
 							else
 							{
 								<div>
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Boosteroid")
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "AmazonLuna")
 								</div>
 							}
 						}
@@ -231,7 +231,7 @@
 				</button>
 
 				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Boosteroid")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AmazonLuna")
 				</div>
 			</div>
 
@@ -244,7 +244,7 @@
 						</div>
 
 						<div>
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Boosteroid")
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AmazonLuna")
 						</div>
 					</div>
 				}
@@ -252,7 +252,7 @@
 				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
 					<div style="display: flex; flex-direction: column; gap: 10px;">
 						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Boosteroid")
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AmazonLuna")
 						</div>
 
 						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
@@ -277,7 +277,7 @@
 
 					<div style="display: flex; flex-direction: column; gap: 10px;">
 						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Boosteroid")
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "AmazonLuna")
 						</div>
 
 						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
@@ -304,7 +304,7 @@
 				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
 					<div style="display: flex; flex-direction: column; gap: 10px;">
 						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Boosteroid")
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "AmazonLuna")
 						</div>
 
 						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
@@ -369,11 +369,11 @@
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
-			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesBoosteroid(usuarioId);
+			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesAmazonLuna(usuarioId);
 
 			if (opciones != null)
 			{
-				if (opciones.BoosteroidOption1 == true)
+				if (opciones.AmazonLunaOption1 == true)
 				{
 					ocultarJuegosUsuario = "checked";
 				}
@@ -382,52 +382,52 @@
 					ocultarJuegosUsuario = null;
 				}
 
-				if (opciones.BoosteroidOption2.HasValue == true)
+				if (opciones.AmazonLunaOption2.HasValue == true)
 				{
-					precioMaximo = opciones.BoosteroidOption2.Value;
+					precioMaximo = opciones.AmazonLunaOption2.Value;
 				}
 
-				if (opciones.BoosteroidOption3.HasValue == true)
+				if (opciones.AmazonLunaOption3.HasValue == true)
 				{
-					descuentoMinimo = opciones.BoosteroidOption3.Value;
+					descuentoMinimo = opciones.AmazonLunaOption3.Value;
 				}
 
-				if (opciones.BoosteroidOption4.HasValue == true)
+				if (opciones.AmazonLunaOption4.HasValue == true)
 				{
-					minimoReseñas = opciones.BoosteroidOption4.Value;
+					minimoReseñas = opciones.AmazonLunaOption4.Value;
 				}
 			}
 		}
 
-		await MostrarSteam();
+		await MostrarGOG();
 	}
 
-	private string fondoSteam = "background: transparent;";
-	private string backdropSteam = string.Empty;
+	private string fondoGOG = "background: transparent;";
+	private string backdropGOG = string.Empty;
 
-	private async Task MostrarSteam()
+	private async Task MostrarGOG()
 	{
 		llegadoLimite = false;
 		posicionJuegos = 0;
-		drmActual = JuegoDRM.Steam;
+		drmActual = JuegoDRM.GOG;
 
-		fondoSteam = "background: var(--botonSeleccionado);";
-		fondoEpic = "background: transparent;";
+		fondoGOG = "background: var(--botonSeleccionado);";
+		fondoUbisoft = "background: transparent;";
 
 		await MostrarCompatibles(true);
 	}
 
-	private string fondoEpic = "background: transparent;";
-	private string backdropEpic = string.Empty;
+	private string fondoUbisoft = "background: transparent;";
+	private string backdropUbisoft = string.Empty;
 
-	private async Task MostrarEpic()
+	private async Task MostrarUbisoft()
 	{
 		llegadoLimite = false;
 		posicionJuegos = 0;
-		drmActual = JuegoDRM.Epic;
+		drmActual = JuegoDRM.Ubisoft;
 
-		fondoSteam = "background: transparent;";
-		fondoEpic = "background: var(--botonSeleccionado);";
+		fondoGOG = "background: transparent;";
+		fondoUbisoft = "background: var(--botonSeleccionado);";
 
 		await MostrarCompatibles(true);
 	}
@@ -439,7 +439,7 @@
 			posicionJuegos = 0;
 		}
 
-		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming("streamingboosteroid", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming("streamingamazonluna", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
@@ -542,24 +542,24 @@
 		cargandoMas = false;
 	}
 
-	private async Task CambiarFondoSteam()
+	private async Task CambiarFondoGOG()
 	{
-		backdropSteam = "backdrop-filter: brightness(50%);";
+		backdropGOG = "backdrop-filter: brightness(50%);";
 	}
 
-	private async Task RestaurarFondoSteam()
+	private async Task RestaurarFondoGOG()
 	{
-		backdropSteam = string.Empty;
+		backdropGOG = string.Empty;
 	}
 
-	private async Task CambiarFondoEpic()
+	private async Task CambiarFondoUbisoft()
 	{
-		backdropEpic = "backdrop-filter: brightness(50%);";
+		backdropUbisoft = "backdrop-filter: brightness(50%);";
 	}
 
-	private async Task RestaurarFondoEpic()
+	private async Task RestaurarFondoUbisoft()
 	{
-		backdropEpic = string.Empty;
+		backdropUbisoft = string.Empty;
 	}
 
 	#region Deseados
@@ -672,7 +672,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await BaseDatos.Usuarios.Actualizar.Opcion("BoosteroidOption1", valor, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("AmazonLunaOption1", valor, usuarioId);
 		}
 
 		await MostrarCompatibles(true);
@@ -686,7 +686,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await BaseDatos.Usuarios.Actualizar.Opcion("BoosteroidOption2", precioMaximo, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("AmazonLunaOption2", precioMaximo, usuarioId);
 		}
 	}
 
@@ -698,7 +698,7 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await BaseDatos.Usuarios.Actualizar.Opcion("BoosteroidOption3", descuentoMinimo, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("AmazonLunaOption3", descuentoMinimo, usuarioId);
 		}
 	}
 
@@ -710,10 +710,11 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			await BaseDatos.Usuarios.Actualizar.Opcion("BoosteroidOption4", minimoReseñas, usuarioId);
+			await BaseDatos.Usuarios.Actualizar.Opcion("AmazonLunaOption4", minimoReseñas, usuarioId);
 		}
 	}
 
 	#endregion
 
 }
+

@@ -1,0 +1,71 @@
+﻿@using System.Net.Mail
+@using Microsoft.AspNetCore.Identity
+@using pepeizqs_deals_web.Data
+
+@inject UserManager<Usuario> UserManager
+@inject IHttpContextAccessor Contexto
+
+<div style="display: flex; flex-direction: column; gap: 10px; padding: 30px;">
+	<label style="margin-left: 5px; margin-bottom: 5px;">
+		@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "PatreonStore")
+	</label>
+
+	<input value="@correoAlternativo" @onchange="@(e => CambiarCorreo(e))" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "PatreonStore")" />
+
+	@if (string.IsNullOrEmpty(correoAlternativo) == false && correoUsado == true)
+	{
+		<label style="margin-left: 5px; font-size: 14px;">
+			@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "PatreonStore")
+		</label>
+	}
+</div>
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public string idioma { get; set; }
+
+	[Parameter]
+	public string usuarioId { get; set; }
+
+	private Usuario usuario = new Usuario();
+
+	protected override async Task OnInitializedAsync()
+	{
+		usuario = await UserManager.GetUserAsync(Contexto.HttpContext.User);
+
+		if (usuario != null)
+		{
+			correoAlternativo = usuario.PatreonMail;
+		}
+	}
+
+	private string correoAlternativo = null;
+	private bool correoUsado = false;
+
+	private async Task CambiarCorreo(ChangeEventArgs texto)
+	{
+		correoAlternativo = texto.Value.ToString();
+
+		if (string.IsNullOrEmpty(correoAlternativo) == false)
+		{
+			bool correoValido = true;
+
+			try
+			{
+				MailAddress comprobar = new MailAddress(correoAlternativo);
+			}
+			catch
+			{
+				correoValido = false;
+			}
+
+			if (correoValido == true)
+			{
+				correoUsado = await BaseDatos.Usuarios.Actualizar.PatreonCorreo(usuarioId, correoAlternativo);
+			}
+		}
+	}
+}

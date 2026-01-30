@@ -22,6 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddResponseCompression(opciones =>
 {
+	opciones.Providers.Add<BrotliCompressionProvider>();
 	opciones.Providers.Add<GzipCompressionProvider>();
 	opciones.EnableForHttps = true;
 	opciones.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
@@ -29,6 +30,11 @@ builder.Services.AddResponseCompression(opciones =>
 });
 
 builder.Services.Configure<GzipCompressionProviderOptions>(opciones =>
+{
+	opciones.Level = CompressionLevel.Optimal;
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(opciones =>
 {
 	opciones.Level = CompressionLevel.Optimal;
 });

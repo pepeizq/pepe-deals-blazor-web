@@ -417,4 +417,20 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "int(4)")]
 	public int? BoosteroidOption4 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? AmazonLunaOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? AmazonLunaOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? AmazonLunaOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? AmazonLunaOption4 { get; set; }
 }

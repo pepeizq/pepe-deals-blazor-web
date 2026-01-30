@@ -29,6 +29,8 @@
   "String34": "Comparte tus juegos y deseados con el mundo",
   "String35": "Juegos",
   "String36": "Comprueba los juegos que tienes añadidos a tu cuenta de la web",
+  "String37": "Correo para Patreon",
+  "String38": "Si me ayudas en Patreon, aquí puedes añadir el correo que usas allí para que la web pueda leerlo.",
   "Mail1": "Correo Actual",
   "Mail2": "Por favor introduce tu correo",
   "Mail3": "Enviar correo de confirmación",
@@ -89,12 +91,5 @@
   "PersonalData6": "Borrar cuenta",
   "PersonalData7": "Antes de borrar la cuenta necesito que introduzcas tu contraseña de nuevo:",
   "PersonalData8": "Recuerda, si borras tu cuenta no podré recuperarla.",
-  "PersonalData9": "Borrar cuenta",
-  "Patreon1": "Gracias por ayudarme económicamente a mantener esta web, puedes ver la serie de ventajas de que dispones aquí:",
-  "Patreon2": "Puedes ayudarme económicamente a mantener esta web a través de Patreon y ganar 2 Pepe Coins cada día, aquí tienes información de como hacerlo y aparte puedes ver la serie de ventajas que dispondrás si lo haces:",
-  "Patreon3": "Correo de Patreon",
-  "Patreon4": "En caso de que uses un correo diferente para Patreon puedes ponerlo aquí:",
-  "Patreon5": "Introduce tu correo",
-  "Patreon6": "Ese correo esta asociado a otra cuenta.",
-  "Patreon7": "La web verifica automáticamente cada 6 horas los usuarios de Patreon, así que si decides ayudarme económicamente tendrás que esperar unas horas para recibir las ventajas."
+  "PersonalData9": "Borrar cuenta"
 }

@@ -1191,17 +1191,20 @@ FROM seccionMinimos j";
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM seccionMinimos j
-INNER JOIN {tabla} sgn
-    ON sgn.idJuego = j.idMaestra
-WHERE 
-sgn.fecha BETWEEN DATEADD(DAY, -3, GETDATE()) AND DATEADD(DAY, 3, GETDATE())
+WHERE j.Tipo = 0
 AND EXISTS (
     SELECT 1
-    FROM OPENJSON(j.precioMinimosHistoricos)
-         WITH (DRM INT '$.DRM') p
-    INNER JOIN OPENJSON(sgn.drms2) d
-        ON d.value = p.DRM
-) AND j.Tipo = 0
+    FROM {tabla} sgn
+    WHERE sgn.idJuego = j.idMaestra
+      AND sgn.fecha BETWEEN DATEADD(DAY, -3, GETDATE()) AND DATEADD(DAY, 3, GETDATE())
+      AND EXISTS (
+            SELECT 1
+            FROM OPENJSON(j.precioMinimosHistoricos)
+                 WITH (DRM INT '$.DRM') p
+            INNER JOIN OPENJSON(sgn.drms2) d
+                ON d.value = p.DRM
+      )
+)
 AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString();
 
 			string dondeMinimoDescuento = string.Empty;

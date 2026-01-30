@@ -427,6 +427,7 @@
 	public enum Tipo
 	{
 		Otros,
+		AmazonLuna,
 		Api,
 		Boosteroid,
 		Bundle,
@@ -457,7 +458,15 @@
 
 	protected override void OnInitialized()
 	{
-		if (tipo == Tipo.Api)
+		if (tipo == Tipo.AmazonLuna)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AmazonLuna");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AmazonLuna");
+			enlace ??= "https://" + dominio + "/luna/";
+			imagen ??= "https://" + dominio + "/streaming/amazonluna_logo.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.Api)
 		{
 			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Api");
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Api");
