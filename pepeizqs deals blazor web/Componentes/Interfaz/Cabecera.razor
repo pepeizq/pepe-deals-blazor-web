@@ -14,6 +14,7 @@
 @using pepeizqs_deals_web.Data
 
 @inject NavigationManager NavManager
+@inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 @inject IConfiguration Configuracion
 
@@ -331,60 +332,63 @@
                             </a>
                         </div>
 
-                        <div class="menu-dropdown-contenido-centrado">
-                            <a class="texto-cabecera boton-superior" href="/historical-lows" style="font-size: 15px;">
-                                <div style="text-align: center;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
-                                </div>
-                            </a>
-                            <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
-                            <a class="texto-cabecera boton-superior" href="/steamdeck" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px;" />
-
-                                    <div>
-                                        Steam Deck
+                        @if (mostrarDropdown == true)
+                        {
+                            <div class="menu-dropdown-contenido-centrado">
+                                <a class="texto-cabecera boton-superior" href="/historical-lows" style="font-size: 15px;">
+                                    <div style="text-align: center;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
                                     </div>
-                                </div>
-                            </a>
-                            <a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" />
+                                </a>
+                                <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+                                <a class="texto-cabecera boton-superior" href="/steamdeck" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px;" alt="Steam Deck" />
 
-                                    <div>
-                                        SteamOS
+                                        <div>
+                                            Steam Deck
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
-                            <a class="texto-cabecera boton-superior" href="/geforcenow" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <img src="/imagenes/streaming/geforcenow_icono.webp" style="max-width: 20px; max-height: 20px;" />
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" alt="SteamOS" />
 
-                                    <div>
-                                        Geforce NOW
+                                        <div>
+                                            SteamOS
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <a class="texto-cabecera boton-superior" href="/boosteroid" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <img src="/imagenes/streaming/boosteroid_icono.webp" style="max-width: 20px; max-height: 20px;" />
+                                </a>
+                                <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+                                <a class="texto-cabecera boton-superior" href="/geforcenow" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <img src="/imagenes/streaming/geforcenow_icono.webp" style="max-width: 20px; max-height: 20px;" alt="Geforce NOW" />
 
-                                    <div>
-                                        Boosteroid
+                                        <div>
+                                            Geforce NOW
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <a class="texto-cabecera boton-superior" href="/luna" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <img src="/imagenes/streaming/amazonluna_icono.webp" style="max-width: 20px; max-height: 20px;" />
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="/boosteroid" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <img src="/imagenes/streaming/boosteroid_icono.webp" style="max-width: 20px; max-height: 20px;" alt="Boosteroid" />
 
-                                    <div>
-                                        Amazon Luna
+                                        <div>
+                                            Boosteroid
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="/luna" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <img src="/imagenes/streaming/amazonluna_icono.webp" style="max-width: 20px; max-height: 20px;" alt="Amazon Luna" />
+
+                                        <div>
+                                            Amazon Luna
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
                     </div>
 
                     <a class="boton-superior" href="/bundles" style="font-size: 15px;">
@@ -754,30 +758,21 @@
 
     #nullable disable
 
-    [Parameter]
-    public string idioma { get; set; }
-
-    [Parameter]
-    public string usuarioId { get; set; }
-
-    [Parameter]
-    public string enlace { get; set; }
-
-    [Parameter]
-    public string userAgent { get; set; }
-
-    [Parameter]
-    public string dominio { get; set; }
-
-    [Parameter]
-    public bool usuarioAdmin { get; set; }
-
-    [SupplyParameterFromQuery]
-    private string Search { get; set; }
+    private string idioma = "en";
+    private string usuarioId = null;
+    private string userAgent = null;
+    private string dominio = null;
 
     [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
     [PersistentState] public Usuario deseadosUsuario { get; set; }
     private bool usuarioPatreon = false;
+    private bool usuarioAdmin = false;
+
+    private string enlace = null;
+
+    [SupplyParameterFromQuery]
+    private string Search { get; set; }
+
     [PersistentState] public Usuario opcionesCabecera { get; set; }
 
     private int cantidadDeseados = 0;
@@ -786,10 +781,21 @@
     private string enlaceEdge = null;
     private string enlacePatreon = null;
 
+    private bool mostrarDropdown = true;
+
     protected override async Task OnInitializedAsync()
     {
+        Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+        idioma = datos.Idioma;
+        usuarioId = datos.UsuarioId;
+        userAgent = datos.UserAgent;
+        dominio = datos.Dominio;
+
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
+            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
@@ -797,27 +803,32 @@
 
             if (string.IsNullOrEmpty(deseadosUsuario?.WishlistData) == false)
             {
-                DeseadosDatos datos = JsonSerializer.Deserialize<DeseadosDatos>(deseadosUsuario?.WishlistData);
+                DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(deseadosUsuario?.WishlistData);
 
-                if (datos != null)
+                if (datos2 != null)
                 {
-                    cantidadDeseados = datos.Cantidad;
+                    cantidadDeseados = datos2.Cantidad;
 
-                    if (datos.UltimaVisita != null && datos.UltimoJuego != null)
+                    if (datos2.UltimaVisita != null && datos2.UltimoJuego != null)
                     {
-                        if (datos.UltimaVisita?.Subtract((DateTime)datos.UltimoJuego).TotalDays > 7)
+                        if (datos2.UltimaVisita?.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
                             cantidadDeseados = 0;       
                         }
                     }
-                    else if (datos.UltimaVisita == null && datos.UltimoJuego != null)
+                    else if (datos2.UltimaVisita == null && datos2.UltimoJuego != null)
                     {
-                        if (DateTime.Now.Subtract((DateTime)datos.UltimoJuego).TotalDays > 7)
+                        if (DateTime.Now.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
                             cantidadDeseados = 0;
                         }
                     }
                 }
+            }
+
+            if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
+            {
+                mostrarDropdown = false;
             }
         }
 

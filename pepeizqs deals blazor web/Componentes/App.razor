@@ -70,11 +70,7 @@
 </head>
 
 <body class="cuerpo" id="cuerpazo" style="margin: 0px;">
-    <Cabecera idioma="@idioma" usuarioId="@usuarioId" userAgent="@userAgent" usuarioAdmin="@usuarioAdmin" dominio="@dominio" />
-
-    <main role="main">
-        <Routes @rendermode="renderizacion" />
-    </main>
+    <Routes @rendermode="renderizacion" />
 
     <PiePagina idioma="@idioma" usuarioId="@usuarioId"/>
 
@@ -130,7 +126,6 @@
     private string userAgent = null;
     private string dominio = null;
     private bool usuarioPatreon = false;
-    private bool usuarioAdmin = false;
 
     private string enlaceEnNoticia = null;
     private string enlaceEsNoticia = null;
@@ -169,7 +164,6 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
             idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 
             Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesApp(usuarioId);
