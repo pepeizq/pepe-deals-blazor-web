@@ -20,7 +20,7 @@
   "String17": "Tier {0}",
   "String19": "Descuento mínimo",
   "String20": "Precio máximo",
-  "String21": "Debes añadir un juego a tu lista de deseados, también tienes la opción de importar tu lista de deseados desde Steam o GOG si vinculas una cuenta.",
+  "String21": "Debes añadir un juego a tu lista de deseados, también tienes la opción de importar tu lista de deseados desde Steam o GOG si sincronizas una cuenta.",
   "String22": "Eliminar",
   "String23": "Ofertas ({0})",
   "String24": "Exportar",
@@ -31,5 +31,6 @@
   "String29": "Bundles ({0})",
   "String30": "Se mostrarán los juegos de tu lista de deseados que tengan al menos el descuento mínimo indicado.",
   "String31": "No se mostrarán los juegos de tu lista de deseados que superen el precio máximo indicado.",
-  "String32": "Fecha Detectado"
+  "String32": "Fecha Detectado",
+  "String33": "Abrir Sincronización"
 }

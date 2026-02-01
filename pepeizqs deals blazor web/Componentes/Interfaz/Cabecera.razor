@@ -418,56 +418,59 @@
                             </div>
                         </a>
 
-                        <div class="menu-dropdown-contenido-centrado">
-                            <a class="texto-cabecera boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" style="font-size: 15px;">
-                                <div style="text-align: center;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Header")
-                                </div>
-                            </a>
-                            <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
-                            <a class="texto-cabecera boton-superior" href="@enlaceChrome" target="_blank" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <div style="width: 24px; height: 24px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                            <path d="M64 320C64 273.4 76.5 229.6 98.3 191.1L208.1 382.3C230 421.5 271.9 448 320 448C334.3 448 347.1 445.7 360.8 441.4L284.5 573.6C159.9 556.3 64 449.3 64 320zM429.1 385.6C441.4 366.4 448 343.1 448 320C448 281.8 431.2 247.5 404.7 224L557.4 224C569.4 253.6 576 286.1 576 320C576 461.4 461.4 575.1 320 576L429.1 385.6zM541.8 192L320 192C257.1 192 206.3 236.1 194.5 294.7L118.2 162.5C165 102.5 238 64 320 64C414.8 64 497.5 115.5 541.8 192zM408 320C408 368.6 368.6 408 320 408C271.4 408 232 368.6 232 320C232 271.4 271.4 232 320 232C368.6 232 408 271.4 408 320z" />
-                                        </svg>
+                        @if (mostrarDropdown == true)
+                        {
+                            <div class="menu-dropdown-contenido-centrado">
+                                <a class="texto-cabecera boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" style="font-size: 15px;">
+                                    <div style="text-align: center;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Header")
                                     </div>
+                                </a>
+                                <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+                                <a class="texto-cabecera boton-superior" href="@enlaceChrome" target="_blank" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M64 320C64 273.4 76.5 229.6 98.3 191.1L208.1 382.3C230 421.5 271.9 448 320 448C334.3 448 347.1 445.7 360.8 441.4L284.5 573.6C159.9 556.3 64 449.3 64 320zM429.1 385.6C441.4 366.4 448 343.1 448 320C448 281.8 431.2 247.5 404.7 224L557.4 224C569.4 253.6 576 286.1 576 320C576 461.4 461.4 575.1 320 576L429.1 385.6zM541.8 192L320 192C257.1 192 206.3 236.1 194.5 294.7L118.2 162.5C165 102.5 238 64 320 64C414.8 64 497.5 115.5 541.8 192zM408 320C408 368.6 368.6 408 320 408C271.4 408 232 368.6 232 320C232 271.4 271.4 232 320 232C368.6 232 408 271.4 408 320z" />
+                                            </svg>
+                                        </div>
 
-                                    <div>
-                                        Chrome
+                                        <div>
+                                            Chrome
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <a class="texto-cabecera boton-superior" href="@enlaceFirefox" target="_blank" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <div style="width: 24px; height: 24px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                            <path d="M194.2 191.5L194.2 191.5zM545.6 236.9C535 211.4 513.5 183.9 496.7 175.2C510.4 202.1 518.4 229.1 521.4 249.2C521.4 249.3 521.4 249.5 521.5 249.6C493.9 180.8 447.1 153.1 408.9 92.8C393.9 69.1 398 67.6 395.8 68.1L395.7 68.2C349 94.2 320.4 146.6 313.1 190.9C296.5 191.8 280.2 195.9 265.2 203C263.8 203.6 262.7 204.7 262.1 206C261.5 207.3 261.2 208.8 261.5 210.3C261.7 211.1 262.1 211.9 262.6 212.6C263.1 213.3 263.8 213.9 264.5 214.3C265.2 214.7 266.1 215 266.9 215.1C267.7 215.2 268.6 215.1 269.4 214.8L269.9 214.6C285.4 207.3 302.3 203.4 319.4 203.3C382.2 202.7 416.6 247.3 427 265.6C414 256.4 390.6 247.4 368.2 251.3C455.9 295.2 432.4 445.8 310.8 440.5C251.3 437.9 213.7 389.5 210.3 349.7C210.3 349.7 221.5 307.8 290.9 307.8C298.4 307.8 319.8 286.9 320.2 280.8C320.1 278.8 277.7 261.9 261.1 245.6C252.3 236.9 248 232.7 244.3 229.5C242.3 227.8 240.2 226.2 238 224.7C232.4 205.2 232.2 184.7 237.3 165.1C212.2 176.5 192.7 194.5 178.6 210.5L178.5 210.5C168.8 198.3 169.5 157.9 170.1 149.4C170 148.9 162.9 153.1 161.9 153.7C153.3 159.8 145.4 166.6 138.1 174.1C121.8 190.7 94 224.3 82.6 275.3C78.1 295.7 75.8 319.7 75.8 327.6C75.8 462.3 185 571.5 319.7 571.5C440.3 571.5 542.7 484.3 560.1 368.9C571.7 292.2 545.4 237.8 545.4 236.9z" />
-                                        </svg>
-                                    </div>
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="@enlaceFirefox" target="_blank" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M194.2 191.5L194.2 191.5zM545.6 236.9C535 211.4 513.5 183.9 496.7 175.2C510.4 202.1 518.4 229.1 521.4 249.2C521.4 249.3 521.4 249.5 521.5 249.6C493.9 180.8 447.1 153.1 408.9 92.8C393.9 69.1 398 67.6 395.8 68.1L395.7 68.2C349 94.2 320.4 146.6 313.1 190.9C296.5 191.8 280.2 195.9 265.2 203C263.8 203.6 262.7 204.7 262.1 206C261.5 207.3 261.2 208.8 261.5 210.3C261.7 211.1 262.1 211.9 262.6 212.6C263.1 213.3 263.8 213.9 264.5 214.3C265.2 214.7 266.1 215 266.9 215.1C267.7 215.2 268.6 215.1 269.4 214.8L269.9 214.6C285.4 207.3 302.3 203.4 319.4 203.3C382.2 202.7 416.6 247.3 427 265.6C414 256.4 390.6 247.4 368.2 251.3C455.9 295.2 432.4 445.8 310.8 440.5C251.3 437.9 213.7 389.5 210.3 349.7C210.3 349.7 221.5 307.8 290.9 307.8C298.4 307.8 319.8 286.9 320.2 280.8C320.1 278.8 277.7 261.9 261.1 245.6C252.3 236.9 248 232.7 244.3 229.5C242.3 227.8 240.2 226.2 238 224.7C232.4 205.2 232.2 184.7 237.3 165.1C212.2 176.5 192.7 194.5 178.6 210.5L178.5 210.5C168.8 198.3 169.5 157.9 170.1 149.4C170 148.9 162.9 153.1 161.9 153.7C153.3 159.8 145.4 166.6 138.1 174.1C121.8 190.7 94 224.3 82.6 275.3C78.1 295.7 75.8 319.7 75.8 327.6C75.8 462.3 185 571.5 319.7 571.5C440.3 571.5 542.7 484.3 560.1 368.9C571.7 292.2 545.4 237.8 545.4 236.9z" />
+                                            </svg>
+                                        </div>
 
-                                    <div>
-                                        Firefox
+                                        <div>
+                                            Firefox
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <a class="texto-cabecera boton-superior" href="@enlaceEdge" target="_blank" style="font-size: 15px;">
-                                <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                    <div style="width: 24px; height: 24px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                            <path d="M184.1 101.4C225.1 76.2 271.7 63.2 319 64C487 64 576 187.8 576 283.5C575.9 316.2 563 347.4 540.1 370.7C517.2 393.9 486.1 407.2 453.4 407.7C378.2 407.7 361.9 384.6 361.9 375.7C361.9 371.9 363.1 369.5 366.7 366.3L367.7 365.1L368.1 363.5C378.6 352 384 337.3 384 321.9C384 243.2 301.8 179.2 200 179.2C162.5 178.9 125.5 188.1 92.5 206.1C119.5 148.6 175.2 108.5 183.8 102.3C184.6 101.7 184.1 101.5 184.1 101.5zM199.7 419.5C198.3 449.5 204.3 479.5 216.1 506.7C229.7 533.1 248.8 557.7 272.6 576C213.1 564.5 161.1 532.1 123.2 486.7C85.1 440.3 64 382.4 64 321.9C64 270.7 126.4 227.5 200 227.5C236.6 226.9 272.4 238.4 301.8 260.2L298.2 261.4C246.7 279 199.7 352.1 199.7 419.5zM533.8 464L533.1 464.1C521.3 482.9 507.2 499.2 490.9 513.6C460.1 541.6 422.8 559.1 382.1 563.5C363.5 563.8 345.3 560.3 328.3 552.1C302.7 541.8 281.2 522.1 266.7 499.1C252.3 475.2 245.6 447.4 247.7 419.5C247.1 399.4 253.1 379.2 262.7 361.3C276.6 394.4 300.2 422.6 330.3 442.1C360.4 461.6 395.8 471.6 431.7 470.7C462.7 471 493.8 464 521.9 450.2L523.8 449.3C527.7 447 531.5 445.4 535.4 449.3C539.9 454.2 537.2 458.5 534.2 463.3C534 463.5 533.9 463.8 533.8 464z" />
-                                        </svg>
-                                    </div>
+                                </a>
+                                <a class="texto-cabecera boton-superior" href="@enlaceEdge" target="_blank" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        <div style="width: 24px; height: 24px;">
+                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                <path d="M184.1 101.4C225.1 76.2 271.7 63.2 319 64C487 64 576 187.8 576 283.5C575.9 316.2 563 347.4 540.1 370.7C517.2 393.9 486.1 407.2 453.4 407.7C378.2 407.7 361.9 384.6 361.9 375.7C361.9 371.9 363.1 369.5 366.7 366.3L367.7 365.1L368.1 363.5C378.6 352 384 337.3 384 321.9C384 243.2 301.8 179.2 200 179.2C162.5 178.9 125.5 188.1 92.5 206.1C119.5 148.6 175.2 108.5 183.8 102.3C184.6 101.7 184.1 101.5 184.1 101.5zM199.7 419.5C198.3 449.5 204.3 479.5 216.1 506.7C229.7 533.1 248.8 557.7 272.6 576C213.1 564.5 161.1 532.1 123.2 486.7C85.1 440.3 64 382.4 64 321.9C64 270.7 126.4 227.5 200 227.5C236.6 226.9 272.4 238.4 301.8 260.2L298.2 261.4C246.7 279 199.7 352.1 199.7 419.5zM533.8 464L533.1 464.1C521.3 482.9 507.2 499.2 490.9 513.6C460.1 541.6 422.8 559.1 382.1 563.5C363.5 563.8 345.3 560.3 328.3 552.1C302.7 541.8 281.2 522.1 266.7 499.1C252.3 475.2 245.6 447.4 247.7 419.5C247.1 399.4 253.1 379.2 262.7 361.3C276.6 394.4 300.2 422.6 330.3 442.1C360.4 461.6 395.8 471.6 431.7 470.7C462.7 471 493.8 464 521.9 450.2L523.8 449.3C527.7 447 531.5 445.4 535.4 449.3C539.9 454.2 537.2 458.5 534.2 463.3C534 463.5 533.9 463.8 533.8 464z" />
+                                            </svg>
+                                        </div>
 
-                                    <div>
-                                        Edge
+                                        <div>
+                                            Edge
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                        </div>
+                                </a>
+                            </div>                            
+                        }
                     </div>
 
-                    @if (usuarioPatreon == false)
+                    @if (mostrarDropdown == true && usuarioPatreon == false)
                     {
                         <div class="menu-dropdown2">
                             <a class="boton-superior" href="@enlacePatreon" target="_blank" style="font-size: 15px;" title="Patreon">
@@ -838,14 +841,6 @@
         enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
     }
 
-    protected override void OnParametersSet()
-    {
-        if (string.IsNullOrEmpty(Search) == false)
-        {
-            textoBuscador = Search;
-        }
-    }
-
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         enlace = NavManager.Uri;
@@ -854,6 +849,13 @@
         {
             cabeceraReferencia = DotNetObjectReference.Create(this);
             await JavaScript.InvokeVoidAsync("buscador.teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
+
+            if (string.IsNullOrEmpty(Search) == false)
+            {
+                textoBuscador = Search;
+                resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 20);
+                await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
+            }
         }
 
         await InvokeAsync(StateHasChanged);

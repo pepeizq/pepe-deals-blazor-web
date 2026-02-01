@@ -13,6 +13,7 @@ using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 ClasesDapper.Registrar();
 
@@ -140,7 +141,7 @@ builder.Services.Configure<HostOptions>(opciones =>
 });
 
 builder.Services.AddSingleton<Tareas.Minimos>();
-builder.Services.AddSingleton<Tareas.Memoria>();
+builder.Services.AddSingleton<Tareas.LimpiezaLog>();
 builder.Services.AddSingleton<Tareas.Mantenimiento>();
 builder.Services.AddSingleton<Tareas.Pings>();
 builder.Services.AddSingleton<Tareas.CorreosEnviar>();
@@ -195,7 +196,7 @@ builder.Services.AddSingleton<Tareas.Streaming.AmazonLuna>();
 builder.Services.AddSingleton<Tareas.Streaming.Boosteroid>();
 
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos>());
-builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Memoria>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Mantenimiento>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Pings>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.CorreosEnviar>());

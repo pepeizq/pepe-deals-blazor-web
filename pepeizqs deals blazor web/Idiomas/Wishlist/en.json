@@ -20,7 +20,7 @@
   "String17": "Tier {0}",
   "String19": "Minimum Discount",
   "String20": "Maximum Price",
-  "String21": "You must add a game to your wishlist, you also have the option to import your Steam or GOG wishlist if you link an account.",
+  "String21": "You must add a game to your wishlist, you also have the option to import your Steam or GOG wishlist if you sync an account.",
   "String22": "Remove",
   "String23": "Deals ({0})",
   "String24": "Export",
@@ -31,5 +31,6 @@
   "String29": "Bundles ({0})",
   "String30": "Games on your wishlist that have at least the minimum discount indicated will be displayed.",
   "String31": "Games on your wishlist that exceed the maximum price indicated will not be displayed.",
-  "String32": "Date Detected"
+  "String32": "Date Detected",
+  "String33": "Open Sync"
 }
