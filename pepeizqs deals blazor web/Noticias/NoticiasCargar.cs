@@ -77,10 +77,18 @@ namespace Noticias
 			NoticiaMostrar despedidas = new NoticiaMostrar
 			{
 				Tipo = NoticiaTipo.Despedidas,
-				Mostrar = true
+				Mostrar = false
 			};
 
 			noticias.Add(despedidas);
+
+			NoticiaMostrar otros = new NoticiaMostrar
+			{
+				Tipo = NoticiaTipo.Otros,
+				Mostrar = true
+			};
+
+			noticias.Add(otros);
 
 			return noticias;
 		}

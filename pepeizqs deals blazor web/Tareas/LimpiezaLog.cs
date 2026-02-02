@@ -22,7 +22,7 @@ namespace Tareas
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
 		{
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(30));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{
@@ -33,6 +33,11 @@ namespace Tareas
 				{
 					try
 					{
+						await Herramientas.BaseDatos.Select(async (conexion) =>
+						{
+							return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos");
+						});
+
 						await Herramientas.BaseDatos.Select(async (conexion) =>
 						{
 							return await conexion.ExecuteAsync("DBCC SHRINKFILE('pepeizq2_simply__winspace_es_1_log', 200);");

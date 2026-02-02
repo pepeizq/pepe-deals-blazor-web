@@ -109,8 +109,8 @@ public class Usuario : IdentityUser
 	public int? WishlistOption3 { get; set; }
 
 	[PersonalData]
-	[Column(TypeName = "decimal(9)")]
-	public decimal? WishlistOption4 { get; set; }
+	[Column(TypeName = "int(4)")]
+	public int? WishlistOption4 { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "int(4)")]

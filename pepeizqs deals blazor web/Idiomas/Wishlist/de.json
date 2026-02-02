@@ -25,11 +25,12 @@
   "String23": "Angebote ({0})",
   "String24": "Export",
   "String25": "JSON formatieren",
-  "String26": "Exportieren Sie Ihre Wunschliste in eine Datei und machen Sie damit, was Sie wollen. Ich werde Ihnen niemals Einschränkungen auferlegen:",
+  "String26": "Exportieren Sie Ihre Wunschliste in eine Datei und machen Sie damit, was Sie wollen. Ich werde Ihnen niemals Einschränkungen auferlegen.",
   "String27": "Filter",
   "String28": "Abonnements ({0})",
   "String29": "Pakete ({0})",
   "String30": "Es werden Spiele auf Ihrer Wunschliste angezeigt, die mindestens den angegebenen Mindestrabatt haben.",
   "String31": "Spiele auf Ihrer Wunschliste, die den angegebenen Höchstpreis überschreiten, werden nicht angezeigt.",
-  "String32": "Datum erkannt"
+  "String32": "Datum erkannt",
+  "String33": "Öffnen Sie die Synchronisierung"
 }

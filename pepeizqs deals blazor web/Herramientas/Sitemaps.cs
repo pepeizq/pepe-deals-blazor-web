@@ -231,6 +231,27 @@ namespace Herramientas
 
 			sb.Append(textoSteamOS);
 
+			string textoGeforceNOW = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/geforcenow/</loc>" + Environment.NewLine +
+					"<changefreq>hourly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoGeforceNOW);
+
+			string textoBoosteroid = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/boosteroid/</loc>" + Environment.NewLine +
+					"<changefreq>hourly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoBoosteroid);
+
+			string textoAmazonLuna = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/luna/</loc>" + Environment.NewLine +
+					"<changefreq>hourly</changefreq>" + Environment.NewLine +
+					"</url>";
+
+			sb.Append(textoAmazonLuna);
+
 			string textoNoticias = "<url>" + Environment.NewLine +
 					"<loc>https://" + dominio + "/last-news/</loc>" + Environment.NewLine +
 					"<changefreq>hourly</changefreq>" + Environment.NewLine +

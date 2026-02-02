@@ -25,11 +25,12 @@
   "String23": "Offerte ({0})",
   "String24": "Esportare",
   "String25": "Formato JSON",
-  "String26": "Esporta la tua lista dei desideri in un file e fai quello che vuoi con essa, non ti metterò mai restrizioni:",
+  "String26": "Esporta la tua lista dei desideri in un file e fai quello che vuoi con essa, non ti metterò mai restrizioni.",
   "String27": "Filtro",
   "String28": "Abbonamenti ({0})",
   "String29": "Pacchetti ({0})",
   "String30": "Verranno visualizzati i giochi nella tua lista dei desideri che hanno almeno lo sconto minimo indicato.",
   "String31": "I giochi nella tua lista dei desideri che superano il prezzo massimo indicato non verranno visualizzati.",
-  "String32": "Data rilevata"
+  "String32": "Data rilevata",
+  "String33": "Apri la sincronizzazione"
 }
