@@ -167,14 +167,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = @"
-				SELECT 
-					SteamWishlist,
-					Wishlist,
-					GogWishlist,
-					WishlistData
-				FROM AspNetUsers
-				WHERE Id = @Id";
+			string busqueda = "SELECT SteamWishlist, Wishlist, GogWishlist FROM AspNetUsers WHERE Id = @Id";
 
 			try
 			{
@@ -199,6 +192,30 @@ namespace BaseDatos.Usuarios
 			}
 
 			string busqueda = "SELECT Avatar, Email, Nickname, PatreonCoins FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Cabecera", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesCabeceraDeseados(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT WishlistData FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{

@@ -803,10 +803,23 @@
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
             opcionesCabecera ??= await BaseDatos.Usuarios.Buscar.OpcionesCabecera(usuarioId);
+        }
 
-            if (string.IsNullOrEmpty(deseadosUsuario?.WishlistData) == false)
+        enlaceChrome = Configuracion.GetValue<string>("Extension:Chrome");
+        enlaceFirefox = Configuracion.GetValue<string>("Extension:Firefox");
+        enlaceEdge = Configuracion.GetValue<string>("Extension:Edge");
+        enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            Usuario deseadosCabecera = await BaseDatos.Usuarios.Buscar.OpcionesCabeceraDeseados(usuarioId);
+
+            if (string.IsNullOrEmpty(deseadosCabecera?.WishlistData) == false)
             {
-                DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(deseadosUsuario?.WishlistData);
+                DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(deseadosCabecera?.WishlistData);
 
                 if (datos2 != null)
                 {
@@ -816,7 +829,7 @@
                     {
                         if (datos2.UltimaVisita?.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
-                            cantidadDeseados = 0;       
+                            cantidadDeseados = 0;
                         }
                     }
                     else if (datos2.UltimaVisita == null && datos2.UltimoJuego != null)
@@ -828,22 +841,14 @@
                     }
                 }
             }
+        }    
 
-            if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
-            {
-                mostrarDropdown = false;
-            }
-        }
-
-        enlaceChrome = Configuracion.GetValue<string>("Extension:Chrome");
-        enlaceFirefox = Configuracion.GetValue<string>("Extension:Firefox");
-        enlaceEdge = Configuracion.GetValue<string>("Extension:Edge");
-        enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
-    }
-
-    protected override async Task OnAfterRenderAsync(bool primerRender)
-    {
         enlace = NavManager.Uri;
+
+        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
+        {
+            mostrarDropdown = false;
+        }
 
         if (primerRender == true)
         {

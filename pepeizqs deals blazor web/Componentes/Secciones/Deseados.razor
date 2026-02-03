@@ -65,12 +65,6 @@
 			display: none;
 		}
 	}
-
-	.deseado-minicaja {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 80%, var(--fondoSubsubcabecera) 20%);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 20px;
-	}
 </style>
 
 <style>
@@ -139,6 +133,15 @@
 			transform: scaleX(1);
 			pointer-events: auto;
 		}
+
+	.boton-deseados {
+		backdrop-filter: brightness(100%);
+		transition: backdrop-filter 0.2s ease;
+	}
+
+		.boton-deseados:hover {
+			backdrop-filter: brightness(50%);
+		}
 </style>
 
 @if (string.IsNullOrEmpty(usuarioId) == false)
@@ -178,7 +181,7 @@
 				<div class="caja-deseados">
 					@if (deseadosHistoricos?.Count > 0)
 					{
-						<button @onclick="(e => CambiarPestaña(e, 1))" @onmouseenter="CambiarFondoMinimos" @onmouseleave="RestaurarFondoMinimos" style="@fondoMinimos @backdropMinimos border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 1 ? "display: none;" : "")">
+						<button @onclick="(e => CambiarPestaña(e, 1))" class="boton-deseados" style="@fondoMinimos border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 1 ? "display: none;" : "")">
 							<div class="caja-deseados-animacion @(mostrarBuscador == true && pestañaMostrar != 1 ? "" : "visible")">
 								@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Wishlist"), deseadosHistoricos?.Count)
 							</div>
@@ -187,7 +190,7 @@
 					
 					@if (deseadosOfertas?.Count > 0)
 					{
-						<button @onclick="(e => CambiarPestaña(e, 0))" @onmouseenter="CambiarFondoOfertas" @onmouseleave="RestaurarFondoOfertas" style="@fondoOfertas @backdropOfertas border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 0 ? "display: none;" : "")">
+						<button @onclick="(e => CambiarPestaña(e, 0))" class="boton-deseados" style="@fondoOfertas border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 0 ? "display: none;" : "")">
 							<div class="caja-deseados-animacion @(mostrarBuscador == true && pestañaMostrar != 0 ? "" : "visible")">
 								@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Wishlist") (@deseadosOfertas?.Count)
 							</div>
@@ -198,7 +201,7 @@
 					{
 						if (deseadosBundles?.Count > 0)
 						{
-							<button @onclick="(e => CambiarPestaña(e, 2))" @onmouseenter="CambiarFondoBundles" @onmouseleave="RestaurarFondoBundles" style="@fondoBundles @backdropBundles border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 2 ? "display: none;" : "")">
+							<button @onclick="(e => CambiarPestaña(e, 2))" class="boton-deseados" style="@fondoBundles border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 2 ? "display: none;" : "")">
 								<div class="caja-deseados-animacion @(mostrarBuscador == true && pestañaMostrar != 2 ? "" : "visible")">
 									@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Wishlist"), deseadosBundles.Count)
 								</div>
@@ -207,7 +210,7 @@
 
 						if (deseadosSuscripciones?.Count > 0)
 						{
-							<button @onclick="(e => CambiarPestaña(e, 3))" @onmouseenter="CambiarFondoSuscripciones" @onmouseleave="RestaurarFondoSuscripciones" style="@fondoSuscripciones @backdropSuscripciones border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 3 ? "display: none;" : "")">
+							<button @onclick="(e => CambiarPestaña(e, 3))" class="boton-deseados" style="@fondoSuscripciones border: 0px; height: 50px; padding: 15px 25px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit; @(mostrarBuscador == true && pestañaMostrar != 3 ? "display: none;" : "")">
 								<div class="caja-deseados-animacion @(mostrarBuscador == true && pestañaMostrar != 3 ? "" : "visible")">
 									@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String28", "Wishlist"), deseadosSuscripciones.Count)
 								</div>
@@ -1603,56 +1606,9 @@
 	#region Cabecera
 
 	private string fondoMinimos = "background: transparent;";
-	private string backdropMinimos = string.Empty;
-
-	private async Task CambiarFondoMinimos()
-	{
-		backdropMinimos = "backdrop-filter: brightness(50%);";
-	}
-
-	private async Task RestaurarFondoMinimos()
-	{
-		backdropMinimos = string.Empty;
-	}
-
 	private string fondoOfertas = "background: transparent;";
-	private string backdropOfertas = string.Empty;
-
-	private async Task CambiarFondoOfertas()
-	{
-		backdropOfertas = "backdrop-filter: brightness(50%);";
-	}
-
-	private async Task RestaurarFondoOfertas()
-	{
-		backdropOfertas = string.Empty;
-	}
-
 	private string fondoBundles = "background: transparent;";
-	private string backdropBundles = string.Empty;
-
-	private async Task CambiarFondoBundles()
-	{
-		backdropBundles = "backdrop-filter: brightness(50%);";
-	}
-
-	private async Task RestaurarFondoBundles()
-	{
-		backdropBundles = string.Empty;
-	}
-
 	private string fondoSuscripciones = "background: transparent;";
-	private string backdropSuscripciones = string.Empty;
-
-	private async Task CambiarFondoSuscripciones()
-	{
-		backdropSuscripciones = "backdrop-filter: brightness(50%);";
-	}
-
-	private async Task RestaurarFondoSuscripciones()
-	{
-		backdropSuscripciones = string.Empty;
-	}
 
 	#endregion
 }
