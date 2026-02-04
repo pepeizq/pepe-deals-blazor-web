@@ -27,7 +27,8 @@ namespace APIs.Ubisoft
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = false,
                 Precio = 7.99,
-                AdminPendientes = true,
+				SuscripcionesRelacionadas = new List<Suscripciones2.SuscripcionTipo>() { Suscripciones2.SuscripcionTipo.UbisoftPlusPremium },
+				AdminPendientes = true,
                 TablaPendientes = "tiendaubisoft",
 				UsuarioPuedeAbrir = true
 			};
@@ -49,7 +50,6 @@ namespace APIs.Ubisoft
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = false,
                 Precio = 17.99,
-                IncluyeSuscripcion = Suscripciones2.SuscripcionTipo.UbisoftPlusClassics,
                 AdminPendientes = true,
                 TablaPendientes = "tiendaubisoft",
 				UsuarioPuedeAbrir = true

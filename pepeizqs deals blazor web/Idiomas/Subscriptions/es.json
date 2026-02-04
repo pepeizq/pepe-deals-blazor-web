@@ -11,12 +11,14 @@
   "String8": "{0} / cada mes",
   "String9": "Todo",
   "String10": "Filtrar por DRM",
-  "String11": "Recién Añadidas",
+  "String11": "Recién Añadidos",
   "String12": "No se han añadido nuevos juegos a las suscripciones en los últimos 7 días.",
   "String13": "Buscar",
   "String14": "Esta suscripción ofrece sus juegos en formato streaming, eso quiere decir que solo puedes jugar mientras tengas Internet.",
   "String15": "Ordenar Por:",
   "String16": "Reseñas (Cantidad)",
   "String17": "Nombre (A-Z)",
-  "String18": "Nombre (Z-A)"
+  "String18": "Nombre (Z-A)",
+  "String19": "Suscripciones Relacionadas:",
+  "String20": "y"
 }

@@ -233,7 +233,7 @@
             </div>
         </button>
 
-        @if (tiposActuales.Count > 0 && mostrarArchivo == false)
+        @if (tiposActuales.Count > 0 && mostrarArchivo == false && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
         {
             foreach (var tipo in tiposActuales)
             {

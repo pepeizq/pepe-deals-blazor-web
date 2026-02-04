@@ -11,6 +11,7 @@ namespace Suscripciones2
 		public string ImagenLogo;
 		public string ImagenIcono;
 		public string ImagenFondo;
+		public string ColorDestacado;
 		public string Enlace;
 		public DateTime FechaSugerencia;
 		public JuegoDRM DRMDefecto;
@@ -18,7 +19,7 @@ namespace Suscripciones2
 		public bool AdminInteractuar;
 		public bool UsuarioEnlacesEspecificos;
 		public bool ParaSiempre; //true si pagas los juegos son para siempre
-		public SuscripcionTipo? IncluyeSuscripcion;
+		public List<SuscripcionTipo> SuscripcionesRelacionadas;
 		public double Precio;
 		public bool AdminPendientes;
 		public string TablaPendientes;

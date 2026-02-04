@@ -21,6 +21,7 @@ namespace APIs.AmazonLuna
 				AdminInteractuar = true,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = true,
+				SuscripcionesRelacionadas = new List<Suscripciones2.SuscripcionTipo>() { Suscripciones2.SuscripcionTipo.LunaStandard, Suscripciones2.SuscripcionTipo.LunaPremium },
 				Precio = 4.99,
 				AdminAñadir = true,
 				UsuarioPuedeAbrir = true

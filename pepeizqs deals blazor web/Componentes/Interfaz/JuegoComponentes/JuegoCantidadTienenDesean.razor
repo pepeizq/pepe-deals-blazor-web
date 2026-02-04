@@ -30,12 +30,12 @@
 
             @if (cuantosLoDesean > 0)
             {
-                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-howmanyhave-@drm.Id.ToString()')">
+                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-howmanywish-@drm.Id.ToString()')">
                     <div style="font-size: 14px; padding: 6px 10px; background-color: var(--fondoAlerta);">
                         @cuantosLoDesean.ToString()
                     </div>
 
-                    <div id="tooltip-howmanyhave-@drm.Id.ToString()" class="tooltip-relleno">
+                    <div id="tooltip-howmanywish-@drm.Id.ToString()" class="tooltip-relleno">
                         <div style="margin: 8px; max-width: 300px; font-size: 14px;">
                             @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String79", "Game"), drm.Nombre)
                         </div>

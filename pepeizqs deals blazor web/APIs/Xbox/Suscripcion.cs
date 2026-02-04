@@ -19,9 +19,11 @@ namespace APIs.Xbox
             {
                 Id = Suscripciones2.SuscripcionTipo.PCGamePass,
                 Nombre = "PC Game Pass",
-                ImagenLogo = "/imagenes/suscripciones/pcgamepass.webp",
+                ImagenLogo = "/imagenes/suscripciones/pcgamepass_logo.webp",
 				ImagenIcono = "/imagenes/suscripciones/pcgamepass_icono.webp",
-                Enlace = "https://www.xbox.com/xbox-game-pass/pc-game-pass",
+				ImagenFondo = "/imagenes/suscripciones/pcgamepass_fondo.webp",
+				ColorDestacado = "rgba(46, 71, 3, 0.3)",
+				Enlace = "https://www.xbox.com/xbox-game-pass/pc-game-pass",
                 DRMDefecto = JuegoDRM.Microsoft,
                 AdminInteractuar = true,
                 UsuarioEnlacesEspecificos = true,
