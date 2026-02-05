@@ -12,6 +12,8 @@ namespace APIs.Humble
 				Nombre = "Humble Choice",
 				ImagenLogo = "/imagenes/suscripciones/humblechoice.webp",
 				ImagenIcono = "/imagenes/tiendas/humblestore_icono.webp",
+				ImagenFondo = "/imagenes/suscripciones/humblechoice_fondo.webp",
+				ColorDestacado = "rgba(201, 42, 46, 0.3)",
 				Enlace = "https://www.humblebundle.com/membership/home",
 				DRMDefecto = JuegoDRM.Steam,
 				AdminInteractuar = true,

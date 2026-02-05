@@ -10,7 +10,6 @@
   "String8": "Rabais",
   "String9": "Rechercher",
   "String10": "Filtre",
-  "String11": "Masquer les jeux que vous possédez déjà",
   "String12": "Remise minimale",
   "String13": "Prix ​​maximum",
   "String14": "DRM",
@@ -39,8 +38,12 @@
   "String37": "Je m'en fiche",
   "String38": "Montrer",
   "String39": "Exclure",
-  "String40": "Examens minimaux",
+  "String40": "Avis minimum sur Steam",
   "String41": "Charger plus de plus bas historiques",
   "String42": "Chargement",
-  "String43": "SteamOS"
+  "String43": "SteamOS",
+  "String44": "Possibilités",
+  "String45": "Masquez les jeux que vous possédez déjà dans {0}",
+  "String46": "Plateformes",
+  "String47": "Streaming"
 }

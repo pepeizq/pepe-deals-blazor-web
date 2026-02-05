@@ -779,6 +779,198 @@
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+
+			opciones ??= await BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+
+			if (string.IsNullOrEmpty(perfilUsuarioId) == true)
+			{
+				if (string.IsNullOrEmpty(opciones?.WishlistData) == false)
+				{
+					DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(opciones?.WishlistData);
+
+					if (datos2 != null)
+					{
+						if (datos2.UltimaVisita != null)
+						{
+							ultimaVisita = (DateTime)datos2.UltimaVisita;
+						}
+						else
+						{
+							ultimaVisita = DateTime.Now;
+						}
+
+						datos2.Cantidad = 0;
+						datos2.UltimaVisita = DateTime.Now;
+
+						await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
+					}
+				}
+			}
+
+			if (opciones.WishlistPosition != null)
+			{
+				pestañaMostrar = (int)opciones.WishlistPosition;
+			}
+
+			await CambiarPestañaFondo(pestañaMostrar);
+
+			if (deseadosGestor == null)
+			{
+				deseadosGestor = new List<JuegoDeseadoMostrar>();
+			}
+
+			deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioId);
+
+			#region Filtrado
+
+			if (opciones.WishlistOption3.HasValue == true)
+			{
+				descuentoMinimo = opciones.WishlistOption3.Value;
+			}
+
+			if (opciones.WishlistOption4.HasValue == true)
+			{
+				precioMaximo = opciones.WishlistOption4.Value;
+			}
+
+			#endregion
+
+			if (deseadosGestor?.Count > 0)
+			{
+				if (opciones?.WishlistSort == null)
+				{
+					opciones.WishlistSort = 3;
+				}
+
+				await ElegirOrdenamiento();
+			}
+
+			#region Bundles
+
+			bundlesActuales ??= await BaseDatos.Bundles.Buscar.Actuales();
+
+			if (bundlesActuales.Count > 0)
+			{
+				foreach (var bundle in bundlesActuales)
+				{
+					foreach (var bundleJuego in bundle.Juegos)
+					{
+						foreach (var deseado in deseadosGestor)
+						{
+							if (bundleJuego.JuegoId == deseado.Id.ToString() && bundleJuego.DRM == deseado.DRM)
+							{
+								JuegoDeseadoMostrar nuevoDeseadoBundle = new JuegoDeseadoMostrar();
+								nuevoDeseadoBundle.Id = deseado.Id;
+								nuevoDeseadoBundle.Nombre = deseado.Nombre;
+								nuevoDeseadoBundle.IdBundle = bundle.Id;
+								nuevoDeseadoBundle.DRM = deseado.DRM;
+								nuevoDeseadoBundle.Imagen = deseado.Imagen;
+								nuevoDeseadoBundle.Importado = deseado.Importado;
+
+								if (deseadosBundles == null)
+								{
+									deseadosBundles = new List<JuegoDeseadoMostrar>();
+								}
+
+								bool añadir = true;
+
+								if (deseadosBundles.Count > 0)
+								{
+									foreach (var yaEnLista in deseadosBundles)
+									{
+										if (yaEnLista.Id == nuevoDeseadoBundle.Id && yaEnLista.DRM == nuevoDeseadoBundle.DRM && yaEnLista.IdBundle == nuevoDeseadoBundle.IdBundle)
+										{
+											añadir = false;
+											break;
+										}
+									}
+								}
+
+								if (añadir == true)
+								{
+									deseadosBundles.Add(nuevoDeseadoBundle);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (deseadosBundles?.Count > 0)
+			{
+				foreach (var juego in deseadosBundles)
+				{
+					if (juego.IdBundle > 0 && bundlesCache.ContainsKey(juego.IdBundle) == false)
+					{
+						bundlesCache[juego.IdBundle] = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
+					}
+				}
+			}
+
+			#endregion
+
+			#region Suscripciones
+
+			suscripcionesActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
+
+			if (suscripcionesActuales?.Count > 0)
+			{
+				foreach (var juegoSuscripcion in suscripcionesActuales)
+				{
+					foreach (var deseado in deseadosGestor)
+					{
+						if (juegoSuscripcion.JuegoId == deseado.Id && juegoSuscripcion.DRM == deseado.DRM &&
+							Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juegoSuscripcion.Tipo).ParaSiempre == true)
+						{
+							JuegoDeseadoMostrar nuevoDeseadoSuscripcion = new JuegoDeseadoMostrar();
+							nuevoDeseadoSuscripcion.Id = deseado.Id;
+							nuevoDeseadoSuscripcion.Nombre = deseado.Nombre;
+							nuevoDeseadoSuscripcion.IdSuscripcion = juegoSuscripcion.Id;
+							nuevoDeseadoSuscripcion.DRM = deseado.DRM;
+							nuevoDeseadoSuscripcion.Imagen = deseado.Imagen;
+							nuevoDeseadoSuscripcion.Importado = deseado.Importado;
+
+							if (deseadosSuscripciones == null)
+							{
+								deseadosSuscripciones = new List<JuegoDeseadoMostrar>();
+							}
+
+							bool añadir = true;
+
+							if (deseadosSuscripciones.Count > 0)
+							{
+								foreach (var yaEnLista in deseadosSuscripciones)
+								{
+									if (yaEnLista.Id == nuevoDeseadoSuscripcion.Id && yaEnLista.DRM == nuevoDeseadoSuscripcion.DRM && yaEnLista.IdSuscripcion == nuevoDeseadoSuscripcion.IdSuscripcion)
+									{
+										añadir = false;
+										break;
+									}
+								}
+							}
+
+							if (añadir == true)
+							{
+								deseadosSuscripciones.Add(nuevoDeseadoSuscripcion);
+							}
+						}
+					}
+				}
+			}
+
+			if (deseadosSuscripciones?.Count > 0)
+			{
+				foreach (var juego in deseadosSuscripciones)
+				{
+					if (juego.IdSuscripcion > 0 && suscripcionesCache.ContainsKey(juego.Id) == false)
+					{
+						suscripcionesCache[juego.IdSuscripcion] = await BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
+					}
+				}
+			}
+
+			#endregion
+			cargado = true;
 		}
 
 		if (string.IsNullOrEmpty(perfilUsuarioId) == false)
@@ -791,200 +983,7 @@
 	{
 		if (primerRender == true)
 		{
-			if (string.IsNullOrEmpty(usuarioId) == false)
-			{
-				opciones ??= await BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
-
-				if (string.IsNullOrEmpty(perfilUsuarioId) == true)
-				{
-					if (string.IsNullOrEmpty(opciones?.WishlistData) == false)
-					{
-						DeseadosDatos datos = JsonSerializer.Deserialize<DeseadosDatos>(opciones?.WishlistData);
-
-						if (datos != null)
-						{
-							if (datos.UltimaVisita != null)
-							{
-								ultimaVisita = (DateTime)datos.UltimaVisita;
-							}
-							else
-							{
-								ultimaVisita = DateTime.Now;
-							}
-
-							datos.Cantidad = 0;
-							datos.UltimaVisita = DateTime.Now;
-
-							await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos), usuarioId);
-						}
-					}
-				}
-
-				if (opciones.WishlistPosition != null)
-				{
-					pestañaMostrar = (int)opciones.WishlistPosition;
-				}
-
-				await CambiarPestañaFondo(pestañaMostrar);
-
-				if (deseadosGestor == null)
-				{
-					deseadosGestor = new List<JuegoDeseadoMostrar>();
-				}
-
-				deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioId);
-
-				#region Filtrado
-
-				if (opciones.WishlistOption3.HasValue == true)
-				{
-					descuentoMinimo = opciones.WishlistOption3.Value;
-				}
-
-				if (opciones.WishlistOption4.HasValue == true)
-				{
-					precioMaximo = opciones.WishlistOption4.Value;
-				}
-
-				#endregion
-
-				if (deseadosGestor?.Count > 0)
-				{
-					if (opciones?.WishlistSort == null)
-					{
-						opciones.WishlistSort = 3;
-					}
-
-					await ElegirOrdenamiento();
-				}
-
-				#region Bundles
-
-				bundlesActuales ??= await BaseDatos.Bundles.Buscar.Actuales();
-
-				if (bundlesActuales.Count > 0)
-				{
-					foreach (var bundle in bundlesActuales)
-					{
-						foreach (var bundleJuego in bundle.Juegos)
-						{
-							foreach (var deseado in deseadosGestor)
-							{
-								if (bundleJuego.JuegoId == deseado.Id.ToString() && bundleJuego.DRM == deseado.DRM)
-								{
-									JuegoDeseadoMostrar nuevoDeseadoBundle = new JuegoDeseadoMostrar();
-									nuevoDeseadoBundle.Id = deseado.Id;
-									nuevoDeseadoBundle.Nombre = deseado.Nombre;
-									nuevoDeseadoBundle.IdBundle = bundle.Id;
-									nuevoDeseadoBundle.DRM = deseado.DRM;
-									nuevoDeseadoBundle.Imagen = deseado.Imagen;
-									nuevoDeseadoBundle.Importado = deseado.Importado;
-
-									if (deseadosBundles == null)
-									{
-										deseadosBundles = new List<JuegoDeseadoMostrar>();
-									}
-
-									bool añadir = true;
-
-									if (deseadosBundles.Count > 0)
-									{
-										foreach (var yaEnLista in deseadosBundles)
-										{
-											if (yaEnLista.Id == nuevoDeseadoBundle.Id && yaEnLista.DRM == nuevoDeseadoBundle.DRM && yaEnLista.IdBundle == nuevoDeseadoBundle.IdBundle)
-											{
-												añadir = false;
-												break;
-											}
-										}
-									}
-
-									if (añadir == true)
-									{
-										deseadosBundles.Add(nuevoDeseadoBundle);
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (deseadosBundles?.Count > 0)
-				{
-					foreach (var juego in deseadosBundles)
-					{
-						if (juego.IdBundle > 0 && bundlesCache.ContainsKey(juego.IdBundle) == false)
-						{
-							bundlesCache[juego.IdBundle] = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
-						}
-					}
-				}
-
-				#endregion
-
-				#region Suscripciones
-
-				suscripcionesActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
-
-				if (suscripcionesActuales?.Count > 0)
-				{
-					foreach (var juegoSuscripcion in suscripcionesActuales)
-					{
-						foreach (var deseado in deseadosGestor)
-						{
-							if (juegoSuscripcion.JuegoId == deseado.Id && juegoSuscripcion.DRM == deseado.DRM && 
-								Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juegoSuscripcion.Tipo).ParaSiempre == true)
-							{
-								JuegoDeseadoMostrar nuevoDeseadoSuscripcion = new JuegoDeseadoMostrar();
-								nuevoDeseadoSuscripcion.Id = deseado.Id;
-								nuevoDeseadoSuscripcion.Nombre = deseado.Nombre;
-								nuevoDeseadoSuscripcion.IdSuscripcion = juegoSuscripcion.Id;
-								nuevoDeseadoSuscripcion.DRM = deseado.DRM;
-								nuevoDeseadoSuscripcion.Imagen = deseado.Imagen;
-								nuevoDeseadoSuscripcion.Importado = deseado.Importado;
-
-								if (deseadosSuscripciones == null)
-								{
-									deseadosSuscripciones = new List<JuegoDeseadoMostrar>();
-								}
-
-								bool añadir = true;
-
-								if (deseadosSuscripciones.Count > 0)
-								{
-									foreach (var yaEnLista in deseadosSuscripciones)
-									{
-										if (yaEnLista.Id == nuevoDeseadoSuscripcion.Id && yaEnLista.DRM == nuevoDeseadoSuscripcion.DRM && yaEnLista.IdSuscripcion == nuevoDeseadoSuscripcion.IdSuscripcion)
-										{
-											añadir = false;
-											break;
-										}
-									}
-								}
-
-								if (añadir == true)
-								{
-									deseadosSuscripciones.Add(nuevoDeseadoSuscripcion);
-								}
-							}
-						}
-					}
-				}
-
-				if (deseadosSuscripciones?.Count > 0)
-				{
-					foreach (var juego in deseadosSuscripciones)
-					{
-						if (juego.IdSuscripcion > 0 && suscripcionesCache.ContainsKey(juego.Id) == false)
-						{
-							suscripcionesCache[juego.IdSuscripcion] = await BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
-						}
-					}
-				}
-
-				#endregion
-				cargado = true;
-			}
+			
 
 			await InvokeAsync(StateHasChanged);
 		}

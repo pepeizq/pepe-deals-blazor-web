@@ -125,8 +125,8 @@ public class Usuario : IdentityUser
 	public int? HistoricalLowsOption2 { get; set; }
 
 	[PersonalData]
-	[Column(TypeName = "decimal(9)")]
-	public decimal? HistoricalLowsOption3 { get; set; }
+	[Column(TypeName = "int(4)")]
+	public int? HistoricalLowsOption3 { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]

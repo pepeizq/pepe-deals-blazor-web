@@ -10,7 +10,6 @@
   "String8": "Discount",
   "String9": "Search",
   "String10": "Filter",
-  "String11": "Hide games you already own",
   "String12": "Minimum Discount",
   "String13": "Maximum Price",
   "String14": "DRMs",
@@ -39,8 +38,12 @@
   "String37": "I don't care",
   "String38": "Show",
   "String39": "Exclude",
-  "String40": "Minimum Reviews",
+  "String40": "Minimum Reviews on Steam",
   "String41": "Load more historical lows",
   "String42": "Loading",
-  "String43": "SteamOS"
+  "String43": "SteamOS",
+  "String44": "Options",
+  "String45": "Hide the games you already have in {0}",
+  "String46": "Platforms",
+  "String47": "Streaming"
 }

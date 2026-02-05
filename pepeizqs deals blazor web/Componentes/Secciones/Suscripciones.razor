@@ -307,19 +307,19 @@ else
         @if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
         {
             var grupos = Suscripciones2.SuscripcionesCargar.GenerarListado()
-            .Where(s =>
-            s.Id == suscripcionSeleccionada ||
-            s.SuscripcionesRelacionadas?.Contains(suscripcionSeleccionada) == true ||
-            (suscripcionSeleccionada2.SuscripcionesRelacionadas?.Contains(s.Id) == true)
-            ).ToList();
+                .Where(s =>
+                s.Id == suscripcionSeleccionada ||
+                s.SuscripcionesRelacionadas?.Contains(suscripcionSeleccionada) == true ||
+                (suscripcionSeleccionada2.SuscripcionesRelacionadas?.Contains(s.Id) == true)
+                ).ToList();
 
             suscripcionesRelacionadas = grupos
-            .SelectMany(s => new[] { s.Id }
-            .Concat(s.SuscripcionesRelacionadas ?? Enumerable.Empty<Suscripciones2.SuscripcionTipo>()))
-            .Where(id => id != suscripcionSeleccionada)
-            .Distinct()
-            .Select(id => Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(id))
-            .ToList();
+                .SelectMany(s => new[] { s.Id }
+                .Concat(s.SuscripcionesRelacionadas ?? Enumerable.Empty<Suscripciones2.SuscripcionTipo>()))
+                .Where(id => id != suscripcionSeleccionada)
+                .Distinct()
+                .Select(id => Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(id))
+                .ToList();
 
             if (suscripcionesRelacionadas?.Count > 0)
             {

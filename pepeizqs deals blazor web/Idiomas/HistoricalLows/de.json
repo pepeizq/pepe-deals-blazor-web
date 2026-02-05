@@ -10,7 +10,6 @@
   "String8": "Rabatt",
   "String9": "Suche",
   "String10": "Filter",
-  "String11": "Verstecken Sie Spiele, die Sie bereits besitzen",
   "String12": "Mindestrabatt",
   "String13": "Maximaler Preis",
   "String14": "DRMs",
@@ -39,8 +38,12 @@
   "String37": "Es ist mir egal",
   "String38": "Zeigen",
   "String39": "Ausschließen",
-  "String40": "Mindestbewertungen",
+  "String40": "Mindestbewertungen auf Steam",
   "String41": "Laden Sie weitere historische Tiefststände",
   "String42": "Laden",
-  "String43": "SteamOS"
+  "String43": "SteamOS",
+  "String44": "Optionen",
+  "String45": "Verstecken Sie die Spiele, die Sie bereits in {0} haben",
+  "String46": "Plattformen",
+  "String47": "Streaming"
 }

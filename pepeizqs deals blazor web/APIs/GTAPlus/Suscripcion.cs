@@ -13,6 +13,8 @@ namespace APIs.GTAPlus
 				Nombre = "GTA+",
 				ImagenLogo = "/imagenes/suscripciones/gtaplus_logo.webp",
 				ImagenIcono = "/imagenes/suscripciones/gtaplus_icono.webp",
+				ImagenFondo = "/imagenes/suscripciones/gtaplus_fondo.webp",
+				ColorDestacado = "rgba(246, 135, 30, 0.2)",
 				Enlace = "https://store.steampowered.com/subscriptions/gtaplus",
 				DRMDefecto = JuegoDRM.Steam,
 				AdminInteractuar = false,
