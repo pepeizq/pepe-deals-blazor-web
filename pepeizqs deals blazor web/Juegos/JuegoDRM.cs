@@ -334,6 +334,7 @@ namespace Juegos
 					"all",
 					"android",
 					"antstream arcade",
+					"asmjs",
 					"audio-download",
 					"desura",
 					"download",

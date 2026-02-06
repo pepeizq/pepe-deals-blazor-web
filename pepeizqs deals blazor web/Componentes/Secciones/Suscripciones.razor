@@ -158,6 +158,19 @@ else
     }
 </style>
 
+@if (usuarioPatreon == false && usuarioAdmin == false)
+{
+    <div style="margin-top: 40px; text-align: center;">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-8367196321891178"
+             data-ad-slot="7306068238"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+}
+
 <div>
 	<img class="juego-fondo" src="@imagenFondo" alt="Background Subscriptions" fetchpriority="high" />
 
@@ -702,6 +715,7 @@ else
     [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
     [PersistentState] public Usuario deseadosUsuario { get; set; }
     private bool usuarioPatreon = false;
+    private bool usuarioAdmin = false;
 
     [PersistentState] public List<Juegos.JuegoSuscripcion> juegosActuales { get; set; }
     [PersistentState] public List<JuegoSuscripcion> suscripcionesUltimas { get; set; }
@@ -734,6 +748,7 @@ else
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
         }
 
         //--------------------------------------------------------------------

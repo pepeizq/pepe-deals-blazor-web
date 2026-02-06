@@ -204,6 +204,19 @@
 
 @if (mostrarBundleSeleccionado == false)
 {
+	if (usuarioPatreon == false && usuarioAdmin == false)
+	{
+		<div style="margin-top: 40px; text-align: center;">
+			<ins class="adsbygoogle"
+				 style="display:inline-block;width:728px;height:90px"
+				 data-ad-client="ca-pub-8367196321891178"
+				 data-ad-slot="3761682690"></ins>
+			<script>
+				(adsbygoogle = window.adsbygoogle || []).push({});
+			</script>
+		</div>	
+	}
+
 	<div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
 		<div class="caja-bundles">
 			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, false))" class="boton-bundles" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, false) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
@@ -525,6 +538,7 @@ else
 	private string dominio = null;
 
 	private bool usuarioPatreon = false;
+	private bool usuarioAdmin = false;
 
 	[PersistentState] public List<Bundles2.Bundle> bundlesActuales { get; set; }
 	[PersistentState] public List<Bundles2.Bundle> bundlesPasados { get; set; }
@@ -547,6 +561,7 @@ else
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}
 
 		//--------------------------------------------------------------------

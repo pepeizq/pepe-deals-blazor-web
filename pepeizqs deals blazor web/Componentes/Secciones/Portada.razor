@@ -220,6 +220,56 @@
 	}
 </style>
 
+<style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+		--glaseadoFondo: rgba(41, 55, 81, 0.6);
+		--noResultados: rgba(132, 32, 41, 0.5);
+		--botonSeleccionado: rgba(13, 22, 33, 0.75);
+		--fondoPortadaNoticias: rgb(33, 49, 69);
+		--bordePortadaNoticias: rgba(14, 21, 29, 0.4);
+		--fondoPortadaNoticias2: rgba(46, 68, 96, 0.5);
+	}
+
+	.caja-portada {
+		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
+		background-blend-mode: overlay;
+		border-radius: 100px;
+		border: 2px solid var(--glaseadoBorde);
+		width: fit-content;
+		background-color: var(--glaseadoFondo);
+		backdrop-filter: blur(25px);
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		padding: 5px;
+	}
+
+	.caja-portada-animacion {
+		opacity: 0;
+		transition: all 0.5s ease, transform .2s ease;
+		pointer-events: none;
+		transform: scaleX(0);
+		transform-origin: left;
+		max-width: 0;
+	}
+
+		.caja-portada-animacion.visible {
+			opacity: 1;
+			pointer-events: auto;
+			transform: scaleX(1);
+			max-width: fit-content;
+		}
+
+	.boton-portada {
+		transition: backdrop-filter 0.2s ease;
+	}
+
+		.boton-portada:hover {
+			backdrop-filter: brightness(50%);
+		}
+</style>
+
 <script>
 	function anularEnlace(event) {
 	  event.preventDefault() 
@@ -386,128 +436,143 @@
 	</div>
 }
 
-<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera)); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);">
-	<div class="cuerpo-ancho portada-sub-subcabecera" style="font-size: 18px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-		@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
-		{
-			<button class="boton-pequeño" style="@CambiarEstilo(Noticias.NoticiaTipo.Desconocido) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, Noticias.NoticiaTipo.Desconocido))">
-				<h1 style="font-size: 18px; margin: 0px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Index")
-				</h1>
-			</button>
+@if (usuarioPatreon == false && usuarioAdmin == false)
+{
+	<div style="margin-top: 40px; text-align: center;">
+		<ins class="adsbygoogle"
+			 style="display:inline-block;width:728px;height:90px"
+			 data-ad-client="ca-pub-8367196321891178"
+			 data-ad-slot="9570103649"></ins>
+		<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</div>
+}
 
-			@if (tiposActualesNoticias?.Count > 1)
-			{
-				tiposActualesNoticias = tiposActualesNoticias.OrderBy(x => Noticias.NoticiasCargar.Traduccion(x, idioma)).ToList();
+@if (noticias?.Count > 0)
+{
+	string paddingScrollbar = string.Empty;
 
-				foreach (var tipo in tiposActualesNoticias)
+	if (noticias.Count > 3)
+	{
+		paddingScrollbar = "padding-bottom: 20px;";
+	}
+
+	<div style="margin-top: 40px; padding: 30px; background-color: var(--fondoPortadaNoticias2); border-top: 1px solid var(--bordePortadaNoticias); border-bottom: 1px solid var(--bordePortadaNoticias);">
+		<div style="display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
+			<div class="caja-portada" style="background-color: var(--fondoPortadaNoticias); border: 2px solid var(--bordePortadaNoticias);">
+				<button @onclick="@(e => CambiarTipo(e, Noticias.NoticiaTipo.Desconocido))" class="boton-portada" style="@CambiarEstilo(Noticias.NoticiaTipo.Desconocido) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+					<div>
+						<h1 style="font-size: 17px; margin: 0px;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Index")
+						</h1>
+					</div>
+				</button>
+
+				@if (tiposActualesNoticias?.Count > 1)
 				{
-					if (tipo != NoticiaTipo.Desconocido)
+					tiposActualesNoticias = tiposActualesNoticias.OrderBy(x => Noticias.NoticiasCargar.Traduccion(x, idioma)).ToList();
+
+					foreach (var tipo in tiposActualesNoticias)
 					{
-						<button class="boton-pequeño" style="@CambiarEstilo(tipo) width: fit-content; font-size: 18px; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, tipo))" title="@Noticias.NoticiasCargar.Traduccion(tipo, idioma)">
-							@Noticias.NoticiasCargar.Traduccion(tipo, idioma)
-						</button>
+						if (tipo != NoticiaTipo.Desconocido)
+						{
+							<button @onclick="@(e => CambiarTipo(e, tipo))" class="boton-portada" style="@CambiarEstilo(tipo) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+								<div style="font-size: 17px;">
+									@Noticias.NoticiasCargar.Traduccion(tipo, idioma)
+								</div>
+							</button>
+						}
 					}
 				}
-			}
-		}
-		else
-		{
-			<h1 style="font-size: 18px; margin: 0px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Index")
-			</h1>
-		}
+			</div>
+		</div>
 
-		<div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
-			<RedesSociales idioma="@idioma" />
+		<div class="cuerpo-ancho" style="display: flex; flex-direction: column; margin-top: 40px;">
+			<div style="display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); overflow-y: hidden; justify-content: space-around; width: fit-content; margin-left: auto; margin-right: auto; max-width:100%; @paddingScrollbar" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
+				@foreach (var noticia in noticias)
+				{
+					<CajaNoticia idioma="@idioma" noticia="@noticia" tipo="@CajaNoticia.Tipo.Portada" />
+				}
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 50px; justify-content: center; margin-top: 30px;">
+				<a class="boton-pequeño" style="padding: 15px 30px; width: fit-content;" href="/last-news">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Index")
+				</a>
+
+				<RedesSociales idioma="@idioma" />
+			</div>
 		</div>
 	</div>
-</div>
+}
+else
+{
+	<div style="margin-top: 40px; padding: 30px; background-color: var(--fondoPortadaNoticias2); display: flex; align-items: center; gap: 50px; justify-content: center;">
+		<a class="boton-pequeño" style="padding: 15px 30px; width: fit-content;" href="/last-news">
+			@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Index")
+		</a>
 
-<div style="background-color: color-mix(in srgb, var(--fondoOscuro) 15%, var(--fondoPortadaNoticias) 100%);">
-    <div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; flex-direction: column;">
-		@{
-			string marginArriba = string.Empty;
-			string marginAbajo = string.Empty;
-			string paddingBottom = string.Empty;
-
-			if (noticias?.Count > 0)
-			{
-				marginArriba = "margin-top: 20px;";
-				marginAbajo = "margin-bottom: 20px;";
-
-				if (noticias.Count > 3)
-				{
-					paddingBottom = "padding-bottom: 30px;";					
-				}
-				else
-				{
-					paddingBottom = "padding-bottom: 10px;";
-				}
-
-				<div style="margin-top: 20px; display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); overflow-y: hidden; justify-content: space-around; padding-left: 5px; padding-right: 5px; @paddingBottom" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
-					@foreach (var noticia in noticias)
-					{
-						<CajaNoticia idioma="@idioma" noticia="@noticia" tipo="@CajaNoticia.Tipo.Portada" />
-					}
-				</div>
-			}
-		}
-
-		<div style="display: flex; align-items: center; gap: 40px; justify-content: center; @marginArriba @marginAbajo">
-			<a class="boton-pequeño" style="padding: 15px 30px; width: fit-content;" href="/last-news">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Index")
-			</a>
-		</div>
+		<RedesSociales idioma="@idioma" />
 	</div>
-</div>
+}
+
+@if (usuarioPatreon == false && usuarioAdmin == false)
+{
+	<div style="margin-top: 40px; text-align: center;">
+		<ins class="adsbygoogle"
+			 style="display:inline-block;width:728px;height:90px"
+			 data-ad-client="ca-pub-8367196321891178"
+			 data-ad-slot="8089501012"></ins>
+		<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</div>
+}
 
 @if (juegosMinimosMostrar?.Count > 0)
 {
-	<div style="background: linear-gradient(90deg, var(--fondoSubcabecera), var(--fondoSubsubcabecera)); border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);">
-		<div class="cuerpo-ancho portada-sub-subcabecera" style="font-size: 18px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
-			@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
-			{
-				<button class="boton-pequeño" style="@CambiarEstilo(MinimosTipo.Nuevos) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, MinimosTipo.Nuevos))">
-					<div style="font-size: 18px; margin: 0px;">
-						@CambiarTexto(MinimosTipo.Nuevos, Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Index"))
-					</div>
-				</button>
-
-				<button class="boton-pequeño" style="@CambiarEstilo(MinimosTipo.Populares) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, MinimosTipo.Populares))">
-					<div style="font-size: 18px; margin: 0px;">
-						@CambiarTexto(MinimosTipo.Populares, Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Index"))
-					</div>
-				</button>
-
-				<button class="boton-pequeño" style="@CambiarEstilo(MinimosTipo.Lanzamientos) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, MinimosTipo.Lanzamientos))">
-					<div style="font-size: 18px; margin: 0px;">
-						@CambiarTexto(MinimosTipo.Lanzamientos, Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Index"))
-					</div>
-				</button>
-
-				<button class="boton-pequeño" style="@CambiarEstilo(MinimosTipo.Proximamente) width: fit-content; padding: 8px 20px; border-radius: 5px; box-shadow: none;" @onclick="@(e => CambiarTipo(e, MinimosTipo.Proximamente))">
-					<div style="font-size: 18px; margin: 0px;">
-						@CambiarTexto(MinimosTipo.Proximamente, Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Index"))
-					</div>
-				</button>
-
-				<div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 20px;">
-					<button class="boton-pequeño" @onclick="EnseñarFiltrado" style="width: fit-content; padding: 10px 15px; border: 0px; background-color: transparent; box-shadow: none;">
-						<div style="width: 22px;">
-							<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-								<path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" />
-							</svg>
-						</div>
-					</button>
+	<div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease;">
+		<div class="caja-portada">
+			<button @onclick="@(e => CambiarTipo(e, MinimosTipo.Nuevos))" class="boton-portada" style="@CambiarEstilo(MinimosTipo.Nuevos) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+				<div style="font-size: 17px;">
+					@CambiarTexto(MinimosTipo.Nuevos, Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Index"))
 				</div>
-			}
-			else
-			{
-				<div style="font-size: 18px; margin: 0px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Index")
+			</button>
+
+			<button @onclick="@(e => CambiarTipo(e, MinimosTipo.Populares))" class="boton-portada" style="@CambiarEstilo(MinimosTipo.Populares) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+				<div style="font-size: 17px;">
+					@CambiarTexto(MinimosTipo.Populares, Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Index"))
 				</div>
-			}
+			</button>
+
+			<button @onclick="@(e => CambiarTipo(e, MinimosTipo.Lanzamientos))" class="boton-portada" style="@CambiarEstilo(MinimosTipo.Lanzamientos) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+				<div style="font-size: 17px;">
+					@CambiarTexto(MinimosTipo.Lanzamientos, Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Index"))
+				</div>
+			</button>
+
+			<button @onclick="@(e => CambiarTipo(e, MinimosTipo.Proximamente))" class="boton-portada" style="@CambiarEstilo(MinimosTipo.Proximamente) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+				<div style="font-size: 17px;">
+					@CambiarTexto(MinimosTipo.Proximamente, Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Index"))
+				</div>
+			</button>
+		</div>
+
+		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-index-options')">
+			<button @onclick="MostrarOcultarOpciones" style="background: transparent; border: 0px; margin-left: 35px;">
+				<div style="width: 24px; height: 24px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z" />
+					</svg>
+				</div>
+			</button>
+
+			<div id="tooltip-index-options" class="tooltip-relleno">
+				<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "Filter", "Index")
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -632,12 +697,12 @@
 	</div>	
 }
 
-@if (mostrarFiltrado == true)
+@if (mostrarOpciones == true)
 {
 	<div class="opciones-panel">
-		<div style="max-width: 800px; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-				<button class="boton-pequeño" @onclick="OcultarFiltrado" style="width: fit-content; padding: 10px 15px;">
+		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+				<button class="boton-pequeño" @onclick="MostrarOcultarOpciones" style="width: fit-content; padding: 10px 15px;">
 					<div style="max-width: 24px; max-height: 24px;">
 						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
@@ -653,7 +718,7 @@
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 20px;">
 				<AuthorizeView>
 					<Authorized>
-						<div style="display: flex; flex-direction: column; gap: 30px; background-color: var(--fondoSubsubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); padding: 20px;">
+						<div style="display: flex; flex-direction: column; gap: 30px; border-radius: 10px; background-color: var(--fondoSubsubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); padding: 20px;">
 							<div style="display: flex; align-items: center; gap: 20px;">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteam" @onchange="OcultarJuegosUsuarioSteam">
@@ -677,12 +742,12 @@
 					</Authorized>
 				</AuthorizeView>
 
-				<div style="background-color: var(--fondoSubsubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); padding: 20px;">
-					<div style="padding-bottom: 15px;">
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption2", "Index")
 					</div>
 
-					<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;">
+					<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 20px;">
 						@foreach (var drm in drms)
 						{
 							string iconoDRM = string.Empty;
@@ -719,12 +784,12 @@
 					</div>
 				</div>
 
-				<div style="background-color: var(--fondoSubsubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); padding: 20px;">
-					<div style="padding-bottom: 15px;">
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption3", "Index")
 					</div>
 
-					<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+					<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px;">
 						@foreach (var categoria in categorias)
 						{
 							string nombreCategoria = string.Empty;
@@ -1228,7 +1293,7 @@
 		}
 		else
 		{
-			return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
+			return "background-color: var(--botonSeleccionado);";
 		}
 	}
 
@@ -1352,16 +1417,11 @@
 		}
 	}
 
-	private bool mostrarFiltrado = false;
+	private bool mostrarOpciones { get; set; } = false;
 
-	private void EnseñarFiltrado()
+	private async Task MostrarOcultarOpciones()
 	{
-		mostrarFiltrado = true;
-	}
-
-	private void OcultarFiltrado()
-	{
-		mostrarFiltrado = false;
+		mostrarOpciones = !mostrarOpciones;
 	}
 
 	private string ocultarJuegosUsuarioSteam = null;
@@ -1589,7 +1649,7 @@
 		}
 		else
 		{
-			return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
+			return "background-color: var(--botonSeleccionado);";
 		}
 	}
 

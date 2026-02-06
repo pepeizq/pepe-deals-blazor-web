@@ -223,6 +223,19 @@
     }
 </style>
 
+@if (usuarioPatreon == false && usuarioAdmin == false)
+{
+    <div style="margin-top: 40px; text-align: center;">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-8367196321891178"
+             data-ad-slot="7130082060"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+}
+
 <div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
     <div class="caja-gratis">
         <button @onclick="@(e => CambiarTipo(e, Gratis2.GratisTipo.Desconocido, false))" class="boton-gratis" style="@CambiarEstilo(Gratis2.GratisTipo.Desconocido, false) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
@@ -448,6 +461,7 @@ else
     [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
     [PersistentState] public Usuario deseadosUsuario { get; set; }
     private bool usuarioPatreon = false;
+    private bool usuarioAdmin = false;
 
     [PersistentState] public List<Juegos.JuegoGratis> juegosActuales { get; set; }
     private List<Gratis2.GratisComponente> gratisPasados = new List<Gratis2.GratisComponente>();
@@ -471,6 +485,7 @@ else
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
         }
 
         //--------------------------------------------------------------------
