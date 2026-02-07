@@ -118,11 +118,55 @@
 }
 
 <style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+		--glaseadoFondo: rgba(41, 55, 81, 0.9);
+		--botonSeleccionado: rgba(13, 22, 33, 0.75);
+	}
+
+	.caja-noticia {
+		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
+		background-blend-mode: overlay;
+		border-radius: 100px;
+		border: 2px solid var(--glaseadoBorde);
+		width: fit-content;
+		background-color: var(--glaseadoFondo);
+		backdrop-filter: blur(25px);
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		padding: 5px;
+	}
+
+	.caja-noticia-animacion {
+		opacity: 0;
+		transition: all 0.5s ease, transform .2s ease;
+		pointer-events: none;
+		transform: scaleX(0);
+		transform-origin: left;
+		max-width: 0;
+	}
+
+		.caja-noticia-animacion.visible {
+			opacity: 1;
+			pointer-events: auto;
+			transform: scaleX(1);
+			max-width: fit-content;
+		}
+
+	.boton-noticia {
+		transition: backdrop-filter 0.2s ease;
+	}
+
+		.boton-noticia:hover {
+			backdrop-filter: brightness(50%);
+		}
+
 	.caja-noticia-contenido {
 		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
+		border-left: 2px solid var(--glaseadoBorde);
+		border-right: 2px solid var(--glaseadoBorde);
 		padding: 40px;
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
 	}
 
 	.caja-noticia-titulo {
@@ -140,38 +184,40 @@
 		<pepeizqs_deals_blazor_web.Componentes.Admin.Noticia idioma="@idioma" dominio="@dominio" noticiaId="@noticia.Id" />
 	}
 
-	<div class="subcabecera">
-		<div class="cuerpo-ancho sub-subcabecera" style="flex-wrap: nowrap; padding: 20px 0px;">
+	<img class="juego-fondo" src="@fondo" alt="Background" />
+
+	<div class="cuerpo-ancho" style="background-color: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño)); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px;">
+		<div style="display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; padding: 30px 40px;">
 			@{
-				string imagenCabecera = string.Empty;
+				string imagenIcono = string.Empty;
 
 				if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 				{
-					imagenCabecera = BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenTienda;
+					imagenIcono = BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
 				}
 				else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 				{
-					imagenCabecera = GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenLogo;
+					imagenIcono = GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
 				}
 				else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
-					imagenCabecera = SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenLogo;
+					imagenIcono = SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
 				}
 
-				if (string.IsNullOrEmpty(imagenCabecera) == false)
+				if (string.IsNullOrEmpty(imagenIcono) == false)
 				{
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(imagenCabecera)" style="max-width: 200px; max-height: 75px;" alt="Logo" />
+						<img src="@imagenIcono" style="max-width: 30px; max-height: 30px;" alt="Icon" />
 					</div>
 				}
 			}
 
-			<h1 style="font-size: 18px; margin: 0px; padding: 9px 20px; line-height: 30px;">
+			<h1 style="font-size: 20px; margin: 0px; line-height: 30px;">
 				@titulo
 			</h1>
 
 			<div style="margin-left: auto; display: flex; justify-content: right;">
-				<div>
+				<div style="font-size: 18px;">
 					@noticia.FechaEmpieza.ToString("d/M/yyyy")
 				</div>
 			</div>
@@ -179,18 +225,7 @@
 	</div>
 
 	<div class="cuerpo-ancho">
-		<img class="juego-fondo" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(fondo, 1536, 496)" alt="Background"  />
-
-		@{
-			string añadirMarginSuperior = string.Empty;
-
-			if (noticia.NoticiaTipo != NoticiaTipo.Bundles)
-			{
-				añadirMarginSuperior = "margin-top: 40px;";
-			}
-		}
-
-		<div style="position: relative; display: flex; flex-direction: column; gap: 40px; margin-bottom: 40px; @añadirMarginSuperior">
+		<div style="position: relative; display: flex; flex-direction: column; gap: 40px; margin-bottom: 40px;">
 			@if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 			{
 				if (noticia.BundleId > 0)
@@ -234,59 +269,57 @@
 
 				@if (string.IsNullOrEmpty(noticia.GratisIds) == false)
 				{
-					@if (juegosGratisCache?.Count > 0)
-{
-    <div class="caja-noticia-contenido">
-        <div>@texto</div>
+					if (juegosGratisCache?.Count > 0)
+					{
+						<div class="caja-noticia-contenido">
+							<div>@texto</div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
-            @foreach (var gratis in juegosGratisCache)
-            {
-                string imagen = gratis.Imagen;
+							<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 30px; margin-top: 30px;">
+								@foreach (var gratis in juegosGratisCache)
+								{
+									string imagen = gratis.Imagen;
 
-                if (gratis.JuegoId > 0)
-                {
-                    var juego = juegosCache1.TryGetValue(gratis.JuegoId, out var j) ? j : null;
+									if (gratis.JuegoId > 0)
+									{
+										var juego = juegosCache1.TryGetValue(gratis.JuegoId, out var j) ? j : null;
 
-                    if (juego != null)
-                    {
-                        string enlaceJuego = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, usuarioPatreon, false);
+										if (juego != null)
+										{
+											string enlaceJuego = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, usuarioPatreon, false);
 
-                        <CajaJuego drmNoticia="@gratis.DRM"
-                                  enlaceNoticia="@enlaceJuego"
-                                  idioma="@idioma"
-                                  juego="@juego"
-                                  juegosUsuario="@juegosUsuario"
-                                  usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
-                                  usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
-                                  usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
-                                  tipo="CajaJuego.Tipo.Noticia"
-                                  userAgent="@userAgent"
-								  tipoGratis="@gratis.Tipo"/>
-                    }
-                }
-            }
-        </div>
-    </div>
+											<CajaJuego drmNoticia="@gratis.DRM"
+													  enlaceNoticia="@enlaceJuego"
+													  idioma="@idioma"
+													  juego="@juego"
+													  juegosUsuario="@juegosUsuario"
+													  usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
+													  usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
+													  usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+													  tipo="CajaJuego.Tipo.Noticia"
+													  userAgent="@userAgent"
+													  tipoGratis="@gratis.Tipo"/>
+										}
+									}
+								}
+							</div>
+						</div>
 
-    <div class="caja-noticia-contenido" style="padding: 0px;">
-        <div class="caja-noticia-titulo">
-            @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-        </div>
+						<div class="caja-noticia-contenido" style="padding: 0px;">
+							<div class="caja-noticia-titulo">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
+							</div>
 
-        <div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-            <button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))"
-                    class="boton-pequeño"
-                    style="width: fit-content; padding: 10px 30px;">
-                <div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-                    Reddit
-                </div>
-            </button>
-        </div>
-    </div>
-}
-
-
+							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
+								<button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))"
+										class="boton-pequeño"
+										style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										Reddit
+									</div>
+								</button>
+							</div>
+						</div>
+					}
 				}
 			}
 			else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
