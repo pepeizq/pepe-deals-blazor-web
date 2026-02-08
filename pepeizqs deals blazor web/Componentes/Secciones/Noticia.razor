@@ -7,6 +7,7 @@
 @using Microsoft.JSInterop
 @using Microsoft.VisualBasic
 @using Noticias
+@using System.Net
 @using pepeizqs_deals_web.Data
 @using Suscripciones2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -186,7 +187,7 @@
 
 	<img class="juego-fondo" src="@fondo" alt="Background" />
 
-	<div class="cuerpo-ancho" style="background-color: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño)); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px;">
+	<div class="cuerpo-ancho" style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px;">
 		<div style="display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; padding: 30px 40px;">
 			@{
 				string imagenIcono = string.Empty;
@@ -225,7 +226,7 @@
 	</div>
 
 	<div class="cuerpo-ancho">
-		<div style="position: relative; display: flex; flex-direction: column; gap: 40px; margin-bottom: 40px;">
+		<div style="position: relative; display: flex; flex-direction: column; gap: 40px;">
 			@if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 			{
 				if (noticia.BundleId > 0)
@@ -303,22 +304,6 @@
 								}
 							</div>
 						</div>
-
-						<div class="caja-noticia-contenido" style="padding: 0px;">
-							<div class="caja-noticia-titulo">
-								@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-							</div>
-
-							<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-								<button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))"
-										class="boton-pequeño"
-										style="width: fit-content; padding: 10px 30px;">
-									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-										Reddit
-									</div>
-								</button>
-							</div>
-						</div>
 					}
 				}
 			}
@@ -381,25 +366,6 @@
 								}
 							</div>
 						</div>
-
-						@if (juegosSuscripcionesCache?.Count > 0)
-						{
-							<div class="caja-noticia-contenido" style="margin: 0px; padding: 0px;">
-								<div class="caja-noticia-titulo">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News")
-								</div>
-
-								<div style="padding: 40px; display: flex; align-items: center; gap: 20px;">
-									<button @onclick="(e => CopiarAlClipboard(e, juegosSuscripcionesCache))"
-											class="boton-pequeño"
-											style="width: fit-content; padding: 10px 30px;">
-										<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
-											Reddit
-										</div>
-									</button>
-								</div>
-							</div>
-						}
 					}
 				}
 			}
@@ -410,42 +376,133 @@
 				</div>
 			}
 		</div>
+
+		<div style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; display: flex; align-items: center; gap: 15px; padding: 20px 40px; margin-bottom: 40px;">
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "News"):
+			</div>
+
+			@{
+				string tituloAdaptado = WebUtility.UrlEncode(titulo);
+				string enlaceAdaptado = "https://" + dominio + "/news/" + id.ToString() + "/";
+			}
+
+			<a href="https://x.com/intent/tweet?url=@enlaceAdaptado&text=@tituloAdaptado" target="_blank">
+				<div style="width: 24px; height: 24px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z" />
+					</svg>
+				</div>
+			</a>
+
+			<a href="https://www.reddit.com/submit?url=@enlaceAdaptado&title=@tituloAdaptado" target="_blank">
+				<div style="width: 24px; height: 24px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576L101.1 576C87.4 576 80.6 559.5 90.2 549.8L139 501C92.7 454.7 64 390.7 64 320zM413.6 217.6C437.2 217.6 456.3 198.5 456.3 174.9C456.3 151.3 437.2 132.2 413.6 132.2C393 132.2 375.8 146.8 371.8 166.2C337.3 169.9 310.4 199.2 310.4 234.6L310.4 234.8C272.9 236.4 238.6 247.1 211.4 263.9C201.3 256.1 188.6 251.4 174.9 251.4C141.9 251.4 115.1 278.2 115.1 311.2C115.1 335.2 129.2 355.8 149.5 365.3C151.5 434.7 227.1 490.5 320.1 490.5C413.1 490.5 488.8 434.6 490.7 365.2C510.9 355.6 524.8 335 524.8 311.2C524.8 278.2 498 251.4 465 251.4C451.3 251.4 438.7 256 428.6 263.8C401.2 246.8 366.5 236.1 328.6 234.7L328.6 234.5C328.6 209.1 347.5 188 372 184.6C376.4 203.4 393.3 217.4 413.5 217.4L413.6 217.6zM241.1 310.9C257.8 310.9 270.6 328.5 269.6 350.2C268.6 371.9 256.1 379.8 239.3 379.8C222.5 379.8 207.9 371 208.9 349.3C209.9 327.6 224.3 311 241 311L241.1 310.9zM431.2 349.2C432.2 370.9 417.5 379.7 400.8 379.7C384.1 379.7 371.5 371.8 370.5 350.1C369.5 328.4 382.3 310.8 399 310.8C415.7 310.8 430.2 327.4 431.1 349.1L431.2 349.2zM383.1 405.9C372.8 430.5 348.5 447.8 320.1 447.8C291.7 447.8 267.4 430.5 257.1 405.9C255.9 403 257.9 399.7 261 399.4C279.4 397.5 299.3 396.5 320.1 396.5C340.9 396.5 360.8 397.5 379.2 399.4C382.3 399.7 384.3 403 383.1 405.9z" />
+					</svg>
+				</div>
+			</a>
+
+			<a href="https://t.me/share/url?url=@enlaceAdaptado&text=@tituloAdaptado" target="_blank">
+				<div style="width: 24px; height: 24px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M320 72C183 72 72 183 72 320C72 457 183 568 320 568C457 568 568 457 568 320C568 183 457 72 320 72zM435 240.7C431.3 279.9 415.1 375.1 406.9 419C403.4 437.6 396.6 443.8 390 444.4C375.6 445.7 364.7 434.9 350.7 425.7C328.9 411.4 316.5 402.5 295.4 388.5C270.9 372.4 286.8 363.5 300.7 349C304.4 345.2 367.8 287.5 369 282.3C369.2 281.6 369.3 279.2 367.8 277.9C366.3 276.6 364.2 277.1 362.7 277.4C360.5 277.9 325.6 300.9 258.1 346.5C248.2 353.3 239.2 356.6 231.2 356.4C222.3 356.2 205.3 351.4 192.6 347.3C177.1 342.3 164.7 339.6 165.8 331C166.4 326.5 172.5 322 184.2 317.3C256.5 285.8 304.7 265 328.8 255C397.7 226.4 412 221.4 421.3 221.2C423.4 221.2 427.9 221.7 430.9 224.1C432.9 225.8 434.1 228.2 434.4 230.8C434.9 234 435 237.3 434.8 240.6z" />
+					</svg>
+				</div>
+			</a>
+
+			<a href="mailto:?subject=@tituloAdaptado&body=@enlaceAdaptado" target="_blank">
+				<div style="width: 24px; height: 24px;">
+					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+						<path d="M112 128C85.5 128 64 149.5 64 176C64 191.1 71.1 205.3 83.2 214.4L291.2 370.4C308.3 383.2 331.7 383.2 348.8 370.4L556.8 214.4C568.9 205.3 576 191.1 576 176C576 149.5 554.5 128 528 128L112 128zM64 260L64 448C64 483.3 92.7 512 128 512L512 512C547.3 512 576 483.3 576 448L576 260L377.6 408.8C343.5 434.4 296.5 434.4 262.4 408.8L64 260z" />
+					</svg>
+				</div>
+			</a>
+
+			@if (juegosGratisCache?.Count > 0)
+			{
+				<div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News"):
+					</div>
+
+					<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-news-clipboard')">
+						<button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))" style="background: transparent; border: 0px;">
+							<div style="width: 24px; height: 24px;">
+								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576L101.1 576C87.4 576 80.6 559.5 90.2 549.8L139 501C92.7 454.7 64 390.7 64 320zM413.6 217.6C437.2 217.6 456.3 198.5 456.3 174.9C456.3 151.3 437.2 132.2 413.6 132.2C393 132.2 375.8 146.8 371.8 166.2C337.3 169.9 310.4 199.2 310.4 234.6L310.4 234.8C272.9 236.4 238.6 247.1 211.4 263.9C201.3 256.1 188.6 251.4 174.9 251.4C141.9 251.4 115.1 278.2 115.1 311.2C115.1 335.2 129.2 355.8 149.5 365.3C151.5 434.7 227.1 490.5 320.1 490.5C413.1 490.5 488.8 434.6 490.7 365.2C510.9 355.6 524.8 335 524.8 311.2C524.8 278.2 498 251.4 465 251.4C451.3 251.4 438.7 256 428.6 263.8C401.2 246.8 366.5 236.1 328.6 234.7L328.6 234.5C328.6 209.1 347.5 188 372 184.6C376.4 203.4 393.3 217.4 413.5 217.4L413.6 217.6zM241.1 310.9C257.8 310.9 270.6 328.5 269.6 350.2C268.6 371.9 256.1 379.8 239.3 379.8C222.5 379.8 207.9 371 208.9 349.3C209.9 327.6 224.3 311 241 311L241.1 310.9zM431.2 349.2C432.2 370.9 417.5 379.7 400.8 379.7C384.1 379.7 371.5 371.8 370.5 350.1C369.5 328.4 382.3 310.8 399 310.8C415.7 310.8 430.2 327.4 431.1 349.1L431.2 349.2zM383.1 405.9C372.8 430.5 348.5 447.8 320.1 447.8C291.7 447.8 267.4 430.5 257.1 405.9C255.9 403 257.9 399.7 261 399.4C279.4 397.5 299.3 396.5 320.1 396.5C340.9 396.5 360.8 397.5 379.2 399.4C382.3 399.7 384.3 403 383.1 405.9z" />
+								</svg>
+							</div>
+						</button>
+
+						<div id="tooltip-news-clipboard" class="tooltip-relleno">
+							<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+								Reddit
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+
+			@if (juegosSuscripcionesCache?.Count > 0)
+			{
+				<div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+					<div>
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News"):
+					</div>
+
+					<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-news-clipboard')">
+						<button @onclick="(e => CopiarAlClipboard(e, juegosSuscripcionesCache))" style="background: transparent; border: 0px;">
+							<div style="width: 24px; height: 24px;">
+								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+									<path d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576L101.1 576C87.4 576 80.6 559.5 90.2 549.8L139 501C92.7 454.7 64 390.7 64 320zM413.6 217.6C437.2 217.6 456.3 198.5 456.3 174.9C456.3 151.3 437.2 132.2 413.6 132.2C393 132.2 375.8 146.8 371.8 166.2C337.3 169.9 310.4 199.2 310.4 234.6L310.4 234.8C272.9 236.4 238.6 247.1 211.4 263.9C201.3 256.1 188.6 251.4 174.9 251.4C141.9 251.4 115.1 278.2 115.1 311.2C115.1 335.2 129.2 355.8 149.5 365.3C151.5 434.7 227.1 490.5 320.1 490.5C413.1 490.5 488.8 434.6 490.7 365.2C510.9 355.6 524.8 335 524.8 311.2C524.8 278.2 498 251.4 465 251.4C451.3 251.4 438.7 256 428.6 263.8C401.2 246.8 366.5 236.1 328.6 234.7L328.6 234.5C328.6 209.1 347.5 188 372 184.6C376.4 203.4 393.3 217.4 413.5 217.4L413.6 217.6zM241.1 310.9C257.8 310.9 270.6 328.5 269.6 350.2C268.6 371.9 256.1 379.8 239.3 379.8C222.5 379.8 207.9 371 208.9 349.3C209.9 327.6 224.3 311 241 311L241.1 310.9zM431.2 349.2C432.2 370.9 417.5 379.7 400.8 379.7C384.1 379.7 371.5 371.8 370.5 350.1C369.5 328.4 382.3 310.8 399 310.8C415.7 310.8 430.2 327.4 431.1 349.1L431.2 349.2zM383.1 405.9C372.8 430.5 348.5 447.8 320.1 447.8C291.7 447.8 267.4 430.5 257.1 405.9C255.9 403 257.9 399.7 261 399.4C279.4 397.5 299.3 396.5 320.1 396.5C340.9 396.5 360.8 397.5 379.2 399.4C382.3 399.7 384.3 403 383.1 405.9z" />
+								</svg>
+							</div>
+						</button>
+
+						<div id="tooltip-news-clipboard" class="tooltip-relleno">
+							<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+								Reddit
+							</div>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
 	</div>
 
 	@if (noticiaAnterior != null || noticiaPosterior != null)
 	{
-		<div class="subcabecera" style="background-color: var(--fondoSubsubcabecera);">
-			<div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; align-items: center; gap: 40px;">
-				@if (noticiaAnterior?.Id > 0)
-				{
-					string enlaceAnterior = "/news/" + noticiaAnterior.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaAnterior.TituloEn, noticiaAnterior.TituloEs)) + "/";
+		<div class="cuerpo-ancho" style="padding: 30px; display: flex; align-items: center; gap: 40px; background-color: var(--fondoSubsubcabecera); border: solid var(--glaseadoBorde); border-width: 2px 2px 0 2px; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+			@if (noticiaAnterior?.Id > 0)
+			{
+				string enlaceAnterior = "/news/" + noticiaAnterior.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaAnterior.TituloEn, noticiaAnterior.TituloEs)) + "/";
 
-					<a href="@enlaceAnterior" @onclick="(e => AbrirNoticia(e, enlaceAnterior, false))" class="boton-pequeño" style="color: var(--colorTextoVisitado); background-color: var(--fondoBotonPequeño); border: 0px; padding: 12px 20px; text-decoration: none; width: 50%; display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
-						<div style="max-width: 16px;">
-							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-								<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-							</svg>
-						</div>
+				<a href="@enlaceAnterior" @onclick="(e => AbrirNoticia(e, enlaceAnterior, false))" class="boton-pequeño" style="color: var(--colorTextoVisitado); background-color: var(--fondoBotonPequeño); border: 0px; padding: 12px 20px; text-decoration: none; width: 50%; display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
+					<div style="max-width: 16px;">
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+						</svg>
+					</div>
 
-						@Herramientas.Idiomas.ElegirTexto(idioma, noticiaAnterior.TituloEn, noticiaAnterior.TituloEs)
-					</a>
-				}
+					@Herramientas.Idiomas.ElegirTexto(idioma, noticiaAnterior.TituloEn, noticiaAnterior.TituloEs)
+				</a>
+			}
 
-				@if (noticiaPosterior?.Id > 0)
-				{
-					string enlacePosterior = "/news/" + noticiaPosterior.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaPosterior.TituloEn, noticiaPosterior.TituloEs)) + "/";
+			@if (noticiaPosterior?.Id > 0)
+			{
+				string enlacePosterior = "/news/" + noticiaPosterior.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaPosterior.TituloEn, noticiaPosterior.TituloEs)) + "/";
 
-					<a href="@enlacePosterior" @onclick="(e => AbrirNoticia(e, enlacePosterior, false))" class="boton-pequeño" style="color: var(--colorTextoVisitado); background-color: var(--fondoBotonPequeño); border: 0px; padding: 12px 20px; text-decoration: none; width: 50%; display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
-						@Herramientas.Idiomas.ElegirTexto(idioma, noticiaPosterior.TituloEn, noticiaPosterior.TituloEs)
+				<a href="@enlacePosterior" @onclick="(e => AbrirNoticia(e, enlacePosterior, false))" class="boton-pequeño" style="color: var(--colorTextoVisitado); background-color: var(--fondoBotonPequeño); border: 0px; padding: 12px 20px; text-decoration: none; width: 50%; display: flex; align-items: center; gap: 15px; justify-content: flex-end;">
+					@Herramientas.Idiomas.ElegirTexto(idioma, noticiaPosterior.TituloEn, noticiaPosterior.TituloEs)
 
-						<div style="max-width: 16px;">
-							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-								<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
-							</svg>
-						</div>
-					</a>
-				}
-			</div>
+					<div style="max-width: 16px;">
+						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+							<path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" />
+						</svg>
+					</div>
+				</a>
+			}
 		</div>
 	}
 }
