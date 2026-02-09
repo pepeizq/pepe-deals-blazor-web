@@ -114,6 +114,7 @@ else
         align-items: center;
         gap: 20px;
         padding: 5px;
+        flex-wrap: wrap;
     }
 
     .caja-suscripciones-animacion {
@@ -157,19 +158,6 @@ else
         border-top-right-radius: inherit;
     }
 </style>
-
-@if (usuarioPatreon == false && usuarioAdmin == false)
-{
-    <div style="margin-top: 40px; text-align: center;">
-        <ins class="adsbygoogle"
-             style="display:inline-block;width:728px;height:90px"
-             data-ad-client="ca-pub-8367196321891178"
-             data-ad-slot="7306068238"></ins>
-        <script>
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
-}
 
 <div>
 	<img class="juego-fondo" src="@imagenFondo" alt="Background Subscriptions" fetchpriority="high" />

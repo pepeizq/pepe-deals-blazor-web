@@ -2,6 +2,7 @@
 
 @using Bundles2
 @using Gratis2
+@using Herramientas.Bundles
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
@@ -185,47 +186,54 @@
 		<pepeizqs_deals_blazor_web.Componentes.Admin.Noticia idioma="@idioma" dominio="@dominio" noticiaId="@noticia.Id" />
 	}
 
+	string estiloCaja = "border-radius: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);";
+
+	if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
+	{
+		estiloCaja = string.Empty;
+	}
+
 	<img class="juego-fondo" src="@fondo" alt="Background" />
 
-	<div class="cuerpo-ancho" style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px;">
-		<div style="display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; padding: 30px 40px;">
-			@{
-				string imagenIcono = string.Empty;
+	<div class="cuerpo-ancho" style="@estiloCaja">
+		<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño)); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: 40px;">
+			<div style="display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; padding: 30px 40px;">
+				@{
+					string imagenIcono = string.Empty;
 
-				if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
-				{
-					imagenIcono = BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
-				}
-				else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
-				{
-					imagenIcono = GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
-				}
-				else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
-				{
-					imagenIcono = SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
+					if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
+					{
+						imagenIcono = BundlesCargar.DevolverBundle(noticia.BundleTipo).ImagenIcono;
+					}
+					else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
+					{
+						imagenIcono = GratisCargar.DevolverGratis(noticia.GratisTipo).ImagenIcono;
+					}
+					else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
+					{
+						imagenIcono = SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenIcono;
+					}
+
+					if (string.IsNullOrEmpty(imagenIcono) == false)
+					{
+						<div>
+							<img src="@imagenIcono" style="max-width: 30px; max-height: 30px;" alt="Icon" />
+						</div>
+					}
 				}
 
-				if (string.IsNullOrEmpty(imagenIcono) == false)
-				{
-					<div>
-						<img src="@imagenIcono" style="max-width: 30px; max-height: 30px;" alt="Icon" />
+				<h1 style="font-size: 20px; margin: 0px; line-height: 30px;">
+					@titulo
+				</h1>
+
+				<div style="margin-left: auto; display: flex; justify-content: right;">
+					<div style="font-size: 18px;">
+						@noticia.FechaEmpieza.ToString("d/M/yyyy")
 					</div>
-				}
-			}
-
-			<h1 style="font-size: 20px; margin: 0px; line-height: 30px;">
-				@titulo
-			</h1>
-
-			<div style="margin-left: auto; display: flex; justify-content: right;">
-				<div style="font-size: 18px;">
-					@noticia.FechaEmpieza.ToString("d/M/yyyy")
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="cuerpo-ancho">
 		<div style="position: relative; display: flex; flex-direction: column; gap: 40px;">
 			@if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 			{
@@ -289,16 +297,16 @@
 											string enlaceJuego = Herramientas.EnlaceAcortador.Generar(gratis.Enlace, gratis.Tipo, usuarioPatreon, false);
 
 											<CajaJuego drmNoticia="@gratis.DRM"
-													  enlaceNoticia="@enlaceJuego"
-													  idioma="@idioma"
-													  juego="@juego"
-													  juegosUsuario="@juegosUsuario"
-													  usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
-													  usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
-													  usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
-													  tipo="CajaJuego.Tipo.Noticia"
-													  userAgent="@userAgent"
-													  tipoGratis="@gratis.Tipo"/>
+													   enlaceNoticia="@enlaceJuego"
+													   idioma="@idioma"
+													   juego="@juego"
+													   juegosUsuario="@juegosUsuario"
+													   usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
+													   usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
+													   usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+													   tipo="CajaJuego.Tipo.Noticia"
+													   userAgent="@userAgent"
+													   tipoGratis="@gratis.Tipo" />
 										}
 									}
 								}
@@ -361,7 +369,7 @@
 												   tipo="CajaJuego.Tipo.Noticia"
 												   userAgent="@userAgent"
 												   idSuscripcion="@suscripcion.Id"
-												   tipoSuscripcion="@suscripcion.Tipo"/>
+												   tipoSuscripcion="@suscripcion.Tipo" />
 									}
 								}
 							</div>
@@ -377,7 +385,7 @@
 			}
 		</div>
 
-		<div style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; display: flex; align-items: center; gap: 15px; padding: 20px 40px; margin-bottom: 40px;">
+		<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño)); border: 2px solid var(--glaseadoBorde); border-top: 0px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; display: flex; align-items: center; gap: 15px; padding: 30px 40px; margin-bottom: 60px;">
 			<div>
 				@Herramientas.Idiomas.BuscarTexto(idioma, "String11", "News"):
 			</div>
@@ -418,6 +426,19 @@
 					</svg>
 				</div>
 			</a>
+
+			@if (bundleCache != null)
+			{
+				<div style="margin-left: auto; display: flex; align-items: center; gap: 15px;">
+					<button @onclick="MostrarOcultarHerramientasBundle" style="background: transparent; border: 0px; margin-left: 25px;">
+						<div style="width: 24px; height: 24px;">
+							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+								<path d="M246.9 82.3L271 67.8C292.6 54.8 317.3 48 342.5 48C379.3 48 414.7 62.6 440.7 88.7L504.6 152.6C519.6 167.6 528 188 528 209.2L528 240.1L547.7 259.8L547.7 259.8C563.3 244.2 588.6 244.2 604.3 259.8C620 275.4 619.9 300.7 604.3 316.4L540.3 380.4C524.7 396 499.4 396 483.7 380.4C468 364.8 468.1 339.5 483.7 323.8L464 304L433.1 304C411.9 304 391.5 295.6 376.5 280.6L327.4 231.5C312.4 216.5 304 196.1 304 174.9L304 162.2C304 151 298.1 140.5 288.5 134.8L246.9 109.8C236.5 103.6 236.5 88.6 246.9 82.4zM50.7 466.7L272.8 244.6L363.3 335.1L141.2 557.2C116.2 582.2 75.7 582.2 50.7 557.2C25.7 532.2 25.7 491.7 50.7 466.7z" />
+							</svg>
+						</div>
+					</button>
+				</div>
+			}
 
 			@if (juegosGratisCache?.Count > 0)
 			{
@@ -471,6 +492,7 @@
 		</div>
 	</div>
 
+
 	@if (noticiaAnterior != null || noticiaPosterior != null)
 	{
 		<div class="cuerpo-ancho" style="padding: 30px; display: flex; align-items: center; gap: 40px; background-color: var(--fondoSubsubcabecera); border: solid var(--glaseadoBorde); border-width: 2px 2px 0 2px; border-top-left-radius: 20px; border-top-right-radius: 20px;">
@@ -505,6 +527,110 @@
 			}
 		</div>
 	}
+}
+
+@if (mostrarHerramientasBundle == true)
+{
+	<div class="opciones-panel">
+		<div style="max-width: 1000px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+				<button class="boton-pequeño" @onclick="MostrarOcultarHerramientasBundle" style="width: fit-content; padding: 10px 15px;">
+					<div style="max-width: 24px; max-height: 24px;">
+						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+						</svg>
+					</div>
+				</button>
+
+				<div style="font-size: 20px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "News")
+				</div>
+			</div>
+			
+			<div style="padding: 30px;">
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String34", "Bundle")
+					</div>
+
+					<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+						<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+							<button @onclick="GenerarBBCode" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+									BBCode
+								</div>
+							</button>
+
+							<button @onclick="GenerarReddit" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+									Reddit
+								</div>
+							</button>
+
+							<button @onclick="GenerarMarkdown" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+								<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+									Markdown
+								</div>
+							</button>
+						</div>
+
+						@if (string.IsNullOrEmpty(contenidoCajaClipboard) == false)
+						{
+							<div style="display: flex; flex-direction: column; gap: 20px;">
+								<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+									<button @onclick="@(e => CopiarAlClipboard(e, contenidoCajaClipboard))" class="boton-pequeño" style="width: fit-content; padding: 5px 10px;">
+										<div style="width: 22px; height: 22px; display: flex;">
+											<svg style="fill: var(--colorTexto);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+												<path d="M480 400L288 400C279.2 400 272 392.8 272 384L272 128C272 119.2 279.2 112 288 112L421.5 112C425.7 112 429.8 113.7 432.8 116.7L491.3 175.2C494.3 178.2 496 182.3 496 186.5L496 384C496 392.8 488.8 400 480 400zM288 448L480 448C515.3 448 544 419.3 544 384L544 186.5C544 169.5 537.3 153.2 525.3 141.2L466.7 82.7C454.7 70.7 438.5 64 421.5 64L288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L368 496L368 512C368 520.8 360.8 528 352 528L160 528C151.2 528 144 520.8 144 512L144 256C144 247.2 151.2 240 160 240L176 240L176 192L160 192z" />
+											</svg>
+										</div>
+									</button>
+								</div>
+
+								<textarea class="entrada-texto" rows="8">
+									@contenidoCajaClipboard
+								</textarea>
+							</div>
+						}
+					</div>
+				</div>
+
+				@if (bundleCache?.Pick == false)
+				{
+					<div style="margin-top: 40px; width: 100%; background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String35", "Bundle")
+						</div>
+
+						<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+							@if (valoraciones == null)
+							{
+								<button @onclick="GenerarValoraciones" class="boton-pequeño" style="width: fit-content; padding: 10px 30px;">
+									<div style="display: flex; flex-direction: column; gap: 10px; text-align: center;">
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String36", "Bundle")
+									</div>
+								</button>
+							}
+							else
+							{
+								if (valoraciones.Count > 0)
+								{
+									valoraciones = valoraciones.OrderBy(v => v.Nombre).ToList();
+
+									foreach (var valoracion in valoraciones)
+									{
+										<div>
+											@valoracion.Nombre (@Herramientas.Precios.Euro(valoracion.Valoracion))
+										</div>
+									}
+								}
+							}
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
 }
 
 @code {
@@ -591,6 +717,10 @@
 					{
 						fondo = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(noticia.SuscripcionTipo).ImagenFondo;
 					}
+				}
+				else if (noticia.NoticiaTipo == NoticiaTipo.Web)
+				{
+					fondo = "/logo/logofondoentrada.webp";
 				}
 
 				if (juegos != null)
@@ -799,4 +929,39 @@
 		Portada,
 		UltimasNoticias
 	}
+
+	#region Herramientas Bundle
+
+	private bool mostrarHerramientasBundle { get; set; } = false;
+
+	private async Task MostrarOcultarHerramientasBundle()
+	{
+		mostrarHerramientasBundle = !mostrarHerramientasBundle;
+	}
+
+	private List<JuegoValoracion> valoraciones = null;
+
+	private async Task GenerarValoraciones(MouseEventArgs e)
+	{
+		valoraciones = await Herramientas.Bundles.ValorEstimado.Generar(bundleCache);
+	}
+
+	private string contenidoCajaClipboard = null;
+
+	private async Task GenerarBBCode(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.Bundles.BBCode.Generar(idioma, bundleCache);
+	}
+
+	private async Task GenerarReddit(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.RedesSociales.Reddit.Bundle(bundleCache);
+	}
+
+	private async Task GenerarMarkdown(MouseEventArgs e)
+	{
+		contenidoCajaClipboard = await Herramientas.Bundles.Markdown.Generar(idioma, bundleCache);
+	}
+
+	#endregion
 }

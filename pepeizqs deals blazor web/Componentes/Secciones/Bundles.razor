@@ -204,19 +204,6 @@
 
 @if (mostrarBundleSeleccionado == false)
 {
-	if (usuarioPatreon == false && usuarioAdmin == false)
-	{
-		<div style="margin-top: 40px; text-align: center;">
-			<ins class="adsbygoogle"
-				 style="display:inline-block;width:728px;height:90px"
-				 data-ad-client="ca-pub-8367196321891178"
-				 data-ad-slot="3761682690"></ins>
-			<script>
-				(adsbygoogle = window.adsbygoogle || []).push({});
-			</script>
-		</div>	
-	}
-
 	<div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
 		<div class="caja-bundles">
 			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, false))" class="boton-bundles" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, false) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
@@ -448,25 +435,25 @@ else
 {
 	if (bundleSeleccionado != null)
 	{
-		<div class="subcabecera">
-			<div class="cuerpo-ancho sub-subcabecera">
-				<button @onclick="@(e => CerrarBundle(e))" class="boton-pequeño" style="width: fit-content; padding: 8px 20px; background-color: transparent; box-shadow: none;">
+		<div class="cuerpo-ancho" style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: 40px;">
+			<div style="display: flex; align-items: center; gap: 30px; flex-wrap: nowrap; padding: 30px 40px;">
+				<button @onclick="@(e => CerrarBundle(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
 					<div style="max-width: 24px; max-height: 24px;">
 						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
 						</svg>
 					</div>
 				</button>
-
-				<div style="height: 40px; padding: 0px 20px;">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda)" style="height: 100%;" alt="@bundleSeleccionado.Nombre" />
+				
+				<div>
+					<img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenIcono" style="max-width: 30px; max-height: 30px;" alt="Icon" />
 				</div>
 
-				<div style="font-size: 18px; padding: 0px 20px;">
+				<h1 style="font-size: 20px; margin: 0px; line-height: 30px;">
 					@bundleSeleccionado.Nombre
-				</div>
+				</h1>
 
-				<div style="font-size: 16px; padding: 0px 20px; margin-left: auto;">
+				<div style="margin-left: auto; display: flex; justify-content: right;">
 					@MostrarFecha(bundleSeleccionado.FechaEmpieza, bundleSeleccionado.FechaTermina)
 				</div>
 			</div>
