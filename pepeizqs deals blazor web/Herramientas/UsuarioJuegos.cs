@@ -274,7 +274,80 @@ namespace Herramientas
 
 			return false;
 		}
+
+		public static UsuarioJuegosIndex CrearIndex(UsuarioListadosJuegos listados)
+		{
+			var index = new UsuarioJuegosIndex();
+
+			if (listados.Steam != null)
+				index.Steam = listados.Steam.Select(x => x.Id).ToHashSet();
+
+			if (listados.Gog != null)
+				index.Gog = listados.Gog.Select(x => x.Id).ToHashSet();
+
+			if (listados.Amazon != null)
+				index.Amazon = listados.Amazon.ToHashSet();
+
+			if (listados.Epic != null)
+				index.Epic = listados.Epic.ToHashSet();
+
+			if (listados.Ubisoft != null)
+				index.Ubisoft = listados.Ubisoft.ToHashSet();
+
+			if (listados.Ea != null)
+				index.Ea = listados.Ea.ToHashSet();
+
+			return index;
+		}
+
+		public static bool ComprobarSiTiene(UsuarioJuegosIndex index, Juegos.Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
+		{
+			if (juego == null || juego.Tipo != JuegoTipo.Game)
+				return false;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam) &&
+				juego.IdSteam > 0 &&
+				index.Steam.Contains(juego.IdSteam))
+				return true;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG) &&
+				juego.IdGog > 0 &&
+				index.Gog.Contains(juego.IdGog))
+				return true;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Amazon) &&
+				!string.IsNullOrEmpty(juego.IdAmazon) &&
+				index.Amazon.Contains(juego.IdAmazon))
+				return true;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Epic) &&
+				!string.IsNullOrEmpty(juego.ExeEpic) &&
+				index.Epic.Contains(juego.ExeEpic))
+				return true;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Ubisoft) &&
+				!string.IsNullOrEmpty(juego.ExeUbisoft) &&
+				index.Ubisoft.Contains(juego.ExeUbisoft))
+				return true;
+
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.EA) &&
+				!string.IsNullOrEmpty(juego.ExeEA) &&
+				index.Ea.Contains(juego.ExeEA))
+				return true;
+
+			return false;
+		}
 	}
+
+	public class UsuarioJuegosIndex
+	{
+		public HashSet<int> Steam = new();
+		public HashSet<int> Gog = new();
+		public HashSet<string> Amazon = new();
+		public HashSet<string> Epic = new();
+		public HashSet<string> Ubisoft = new();
+		public HashSet<string> Ea = new();
+    }
 
 	public class UsuarioListadosJuegos
 	{

@@ -225,7 +225,7 @@
 		}
 	}
 
-	bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, drmUsar);
+	bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
 	bool usuarioTieneDeseado = false;
 
 	string fondoColor = string.Empty;
@@ -240,7 +240,15 @@
 		}
 		else
 		{
-			usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEsta(usuarioDeseadosSteam, usuarioDeseadosWeb, usuarioDeseadosGog, juego, drmUsar, true);
+			if (usuarioTieneDeseado == false)
+			{
+				usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, Juegos.JuegoDRM.NoEspecificado);
+			}
+
+			if (usuarioTieneDeseado == false)
+			{
+				usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, Juegos.JuegoDRM.NoEspecificado);
+			}
 
 			if (usuarioTieneDeseado == true)
 			{
@@ -260,7 +268,7 @@
 
 	bool usuarioConectado = false;
 
-	if (juegosUsuario?.Steam?.Count > 0)
+	if (juegosUsuarioIndex?.Steam?.Count > 0)
 	{
 		usuarioConectado = true;
 	}
@@ -861,16 +869,13 @@
 	public string color { get; set; }
 
 	[Parameter]
-	public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
 
 	[Parameter]
-	public string usuarioDeseadosSteam { get; set; }
+	public Herramientas.UsuarioDeseadosImportadosIndex usuarioDeseadosImportados { get; set; }
 
 	[Parameter]
-	public string usuarioDeseadosWeb { get; set; }
-
-	[Parameter]
-	public string usuarioDeseadosGog { get; set; }
+	public Herramientas.UsuarioDeseadosWebIndex usuarioDeseadosWeb { get; set; }
 
 	[Parameter]
 	public bool usuarioPatreon { get; set; }

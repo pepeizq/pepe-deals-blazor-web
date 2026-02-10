@@ -13,7 +13,6 @@ using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json.Serialization;
-using System.Threading.RateLimiting;
 
 ClasesDapper.Registrar();
 

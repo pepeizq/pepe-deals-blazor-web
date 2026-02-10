@@ -3,6 +3,7 @@
 using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
+using System.Data;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
 
@@ -651,7 +652,11 @@ WHERE 1=1";
 							WHERE 1=1";
 			}
 
+			var parametros = new DynamicParameters();
+			parametros.Add("cantidad", cantidadResultados);
+
 			string[] palabras = nombre.Split(" ");
+			int i = 0;
 
 			foreach (var palabra in palabras)
 			{
@@ -659,7 +664,10 @@ WHERE 1=1";
 				{
 					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
 
-					busqueda = busqueda + $" AND j.nombreCodigo LIKE '%{palabraLimpia}%'";
+					string paramName = $"p{i}";
+					busqueda += $" AND j.nombreCodigo LIKE '%' + @{paramName} + '%'";
+					parametros.Add(paramName, palabraLimpia, DbType.String); 
+					i++;
 				}
 			}
 
@@ -674,7 +682,7 @@ END DESC";
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return (await conexion.QueryAsync<Juego>(busqueda, new { cantidad = cantidadResultados })).ToList();
+					return (await conexion.QueryAsync<Juego>(busqueda, parametros)).ToList();
 				});
 			}
 			catch (Exception ex)

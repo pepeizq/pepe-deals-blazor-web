@@ -1,14 +1,15 @@
 {
   "String1": "Streaming",
-  "String2": "Ordenar por:",
+  "String2": "Ordenar por",
   "String3": "Avaliações (quantidade)",
   "String4": "Nome (A-Z)",
   "String5": "Nome (Z-A)",
-  "String6": "Mostrar:",
+  "String6": "Mostrar",
   "String7": "Todos",
   "String8": "Jogos que você tem",
   "String9": "Jogos que você não tem",
   "String10": "Procurar",
   "String11": "Verifique quais jogos você pode jogar via streaming em serviços como GeForce NOW ou Boosteroid.",
-  "String12": "Para jogar os jogos oferecidos por streaming em cada serviço, é necessário comprá-los nas plataformas compatíveis com cada serviço. Por exemplo, para jogar no GeForce NOW, é necessário ter o jogo no Steam."
+  "String12": "Para jogar os jogos oferecidos por streaming em cada serviço, é necessário comprá-los nas plataformas compatíveis com cada serviço. Por exemplo, para jogar no GeForce NOW, é necessário ter o jogo no Steam.",
+  "String13": "Não há jogos disponíveis com a pesquisa solicitada."
 }

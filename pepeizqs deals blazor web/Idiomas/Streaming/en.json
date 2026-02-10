@@ -1,14 +1,15 @@
 {
   "String1": "Streaming",
-  "String2": "Order By:",
+  "String2": "Order By",
   "String3": "Reviews (Quantity)",
   "String4": "Name (A-Z)",
   "String5": "Name (Z-A)",
-  "String6": "Show:",
+  "String6": "Show",
   "String7": "All",
   "String8": "Games you have",
   "String9": "Games you don't have",
   "String10": "Search",
   "String11": "Check which games you can play via streaming on services like GeForce NOW or Boosteroid.",
-  "String12": "To play games via streaming offered by each service, you need to purchase them on the platforms that each streaming service supports. For example, to play on GeForce NOW, you need to own the game on Steam."
+  "String12": "To play games via streaming offered by each service, you need to purchase them on the platforms that each streaming service supports. For example, to play on GeForce NOW, you need to own the game on Steam.",
+  "String13": "There are no games available with the search you requested."
 }

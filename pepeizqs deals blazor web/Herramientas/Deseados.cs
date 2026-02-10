@@ -627,5 +627,80 @@ namespace Herramientas
 
 			return usuarioTieneDesea;
 		}
+
+		public static UsuarioDeseadosImportadosIndex CrearImportadosIndex(Usuario usuario)
+		{
+			var index = new UsuarioDeseadosImportadosIndex();
+
+			if (!string.IsNullOrEmpty(usuario.SteamWishlist))
+				index.Steam = Listados.Generar(usuario.SteamWishlist)
+					.Select(int.Parse)
+					.ToHashSet();
+
+			if (!string.IsNullOrEmpty(usuario.GogWishlist))
+				index.Gog = Listados.Generar(usuario.GogWishlist)
+					.Select(int.Parse)
+					.ToHashSet();
+
+			return index;
+		}
+
+		public static UsuarioDeseadosWebIndex CrearWebIndex(Usuario usuario)
+		{
+			var index = new UsuarioDeseadosWebIndex();
+
+			if (!string.IsNullOrEmpty(usuario.Wishlist))
+			{
+				var lista = JsonSerializer.Deserialize<List<JuegoDeseado>>(usuario.Wishlist);
+
+				index.Juegos = lista
+					.Select(d => (int.Parse(d.IdBaseDatos), d.DRM))
+					.ToHashSet();
+			}
+
+			return index;
+		}
+
+		public static bool ComprobarSiEstaImportado(UsuarioDeseadosImportadosIndex index, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
+		{
+			if (juego == null)
+				return false;
+
+			if ((drm == JuegoDRM.Steam || drm == JuegoDRM.NoEspecificado) &&
+				juego.IdSteam > 0 &&
+				index.Steam.Contains(juego.IdSteam))
+				return true;
+
+			if ((drm == JuegoDRM.GOG || drm == JuegoDRM.NoEspecificado) &&
+				juego.IdGog > 0 &&
+				index.Gog.Contains(juego.IdGog))
+				return true;
+
+			return false;
+		}
+
+		public static bool ComprobarSiEstaWeb(UsuarioDeseadosWebIndex index, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado, bool usarIdMaestra = false)
+		{
+			if (juego == null)
+				return false;
+
+			int idCheck = usarIdMaestra && juego.IdMaestra > 0 ? juego.IdMaestra : juego.Id;
+
+			if (drm == JuegoDRM.NoEspecificado)
+				return index.Juegos.Any(x => x.id == idCheck);
+
+			return index.Juegos.Contains((idCheck, drm));
+		}
+	}
+
+	public class UsuarioDeseadosImportadosIndex
+	{
+		public HashSet<int> Steam = new();
+		public HashSet<int> Gog = new();
+	}
+
+	public class UsuarioDeseadosWebIndex
+	{
+		public HashSet<(int id, JuegoDRM drm)> Juegos = new();
 	}
 }

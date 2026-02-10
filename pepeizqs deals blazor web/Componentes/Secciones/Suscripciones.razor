@@ -134,16 +134,13 @@ else
         }
 
     .boton-suscripciones {
-        backdrop-filter: brightness(100%);
         transition: backdrop-filter 0.2s ease;
     }
 
         .boton-suscripciones:hover {
             backdrop-filter: brightness(50%);
         }
-</style>
 
-<style>
     .caja-archivo-contenido {
         background-color: var(--fondoSubsubcabecera);
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
@@ -438,7 +435,7 @@ else
                                             enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(elegido.Enlace, elegido.Id, usuarioPatreon, false);
                                         }
 
-                                        <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                                        <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
                                     }
                                 </div>
                             }
@@ -459,17 +456,17 @@ else
                                 Juego = j,
                                 Elegido = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(j.Tipo)
                             })
-                        .OrderBy(x => x.Elegido.Nombre)
-                        .GroupBy(x => x.Elegido.Id)
-                        .Select(eg => new
-                        {
-                            Elegido = eg.First().Elegido,
-                            Juegos = eg
-                        .Select(x => x.Juego)
-                        .OrderBy(x => x.Juego.Nombre)
-                        .ToList()
-                        }).ToList()
-                        }).ToList();
+                            .OrderBy(x => x.Elegido.Nombre)
+                            .GroupBy(x => x.Elegido.Id)
+                            .Select(eg => new
+                            {
+                                Elegido = eg.First().Elegido,
+                                Juegos = eg
+                            .Select(x => x.Juego)
+                            .OrderBy(x => x.Juego.Nombre)
+                            .ToList()
+                            }).ToList()
+                            }).ToList();
 
                         foreach (var grupo in gruposPorDia)
                         {
@@ -513,7 +510,7 @@ else
                                                         enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(elegido.Enlace, elegido.Id, usuarioPatreon, false);
                                                     }
 
-                                                    <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
+                                                    <CajaJuego idSuscripcion="@juego.Id" tipoSuscripcion="@elegido.Id" enlaceSuscripcion="@enlaceSuscripcion" drmSuscripcion="@juego.DRM" idioma="@idioma" juego="@juego.Juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Suscripciones" userAgent="@userAgent" />
                                                 }
                                             </div>
                                         </div>
@@ -701,7 +698,12 @@ else
     private string dominio = null;
 
     [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
     [PersistentState] public Usuario deseadosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
+
     private bool usuarioPatreon = false;
     private bool usuarioAdmin = false;
 
@@ -733,8 +735,14 @@ else
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
             idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
             usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
         }

@@ -300,10 +300,7 @@
 													   enlaceNoticia="@enlaceJuego"
 													   idioma="@idioma"
 													   juego="@juego"
-													   juegosUsuario="@juegosUsuario"
-													   usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
-													   usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
-													   usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+													   juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex"
 													   tipo="CajaJuego.Tipo.Noticia"
 													   userAgent="@userAgent"
 													   tipoGratis="@gratis.Tipo" />
@@ -362,10 +359,7 @@
 												   enlaceNoticia="@enlaceJuego"
 												   idioma="@idioma"
 												   juego="@juego"
-												   juegosUsuario="@juegosUsuario"
-												   usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist"
-												   usuarioDeseadosWeb="@deseadosUsuario?.Wishlist"
-												   usuarioDeseadosGog="@deseadosUsuario?.GogWishlist"
+												   juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex"
 												   tipo="CajaJuego.Tipo.Noticia"
 												   userAgent="@userAgent"
 												   idSuscripcion="@suscripcion.Id"
@@ -643,7 +637,12 @@
 	private string dominio = null;
 
 	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
 	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
+
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 
@@ -688,8 +687,14 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
 			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}

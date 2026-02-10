@@ -131,7 +131,7 @@
 					<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; width: 100%; padding: 30px;">
 						@foreach (var destacado in juegosDestacados)
 						{
-							<CajaJuego idioma="@idioma" juego="@destacado" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.CuratorDestacado" userAgent="@userAgent" />
+							<CajaJuego idioma="@idioma" juego="@destacado" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.CuratorDestacado" userAgent="@userAgent" />
 						}
 					</div>
 				</div>
@@ -237,7 +237,7 @@
 						<div style="display: flex; flex-direction: column; gap: 20px; margin-top: -20px;">
 							<Virtualize Context="juego" Items="juegosCuratorMostrar" ItemSize="107" OverscanCount="6">
 								<ItemContent>
-									<CajaJuego idioma="@idioma" juego="@juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.CuratorLista" userAgent="@userAgent" />
+									<CajaJuego idioma="@idioma" juego="@juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.CuratorLista" userAgent="@userAgent" />
 								</ItemContent>
 							</Virtualize>
 						</div>
@@ -258,7 +258,12 @@
 	private string dominio = null;
 
 	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
 	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
+
 	private bool usuarioPatreon = false;
 
 	[Parameter]
@@ -286,8 +291,14 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
 			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 		}
 

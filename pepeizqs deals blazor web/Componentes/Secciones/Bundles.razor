@@ -1,4 +1,5 @@
-﻿@page "/bundles"
+﻿@page "/bundles/"
+@page "/bundles/{bundleSeleccionadoTexto}/"
 
 @using APIs.Steam
 @using Microsoft.AspNetCore.Components.Web
@@ -248,7 +249,7 @@
 		}
 		
 		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-bundles-archive')">
-			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, true))" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, true) border: 0px; @(mostrarArchivo ? "margin-left: 35px;" : "margin-left: 25px;"); padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
+			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, true))" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, true) border: 0px; @(mostrarArchivo ? "margin-left: 35px;" : "margin-left: 25px;") padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;">
 				<div style="width: 24px; height: 24px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 						<path d="M64 128C64 110.3 78.3 96 96 96L544 96C561.7 96 576 110.3 576 128L576 160C576 177.7 561.7 192 544 192L96 192C78.3 192 64 177.7 64 160L64 128zM96 240L544 240L544 480C544 515.3 515.3 544 480 544L160 544C124.7 544 96 515.3 96 480L96 240zM248 304C234.7 304 224 314.7 224 328C224 341.3 234.7 352 248 352L392 352C405.3 352 416 341.3 416 328C416 314.7 405.3 304 392 304L248 304z" />
@@ -532,6 +533,9 @@ else
 	private Bundles2.Bundle bundleSeleccionado = new Bundles2.Bundle();
 	private bool mostrarBundleSeleccionado = false;
 
+	[Parameter]
+	public string bundleSeleccionadoTexto { get; set; }
+
 	private List<string> años = new List<string>();
 	private string añoSeleccionado = string.Empty;
 	private bool cargadoBundles = false;
@@ -579,6 +583,34 @@ else
 		}
 
 		await CargarBundles(ordenamientoUsuario);
+
+		//--------------------------------------------------------------------
+
+		if (string.IsNullOrEmpty(bundleSeleccionadoTexto) == false)
+		{
+			foreach (var bundleTipo in Bundles2.BundlesCargar.CargarBundles())
+			{
+				if (bundleTipo != Bundles2.BundleTipo.Desconocido)
+				{
+					if (bundleTipo.ToString().ToLower() == bundleSeleccionadoTexto)
+					{
+						tipoSeleccionado = bundleTipo;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			if (tipoSeleccionado != Bundles2.BundleTipo.Desconocido)
+			{
+				await CambiarTipo(tipoSeleccionado, false);
+			}
+		}
 	}
 
 	[PersistentState] public string ordenamientoElegido { get; set; }
@@ -664,12 +696,26 @@ else
 
 	private async Task CambiarTipo(MouseEventArgs e, Bundles2.BundleTipo nuevoTipo, bool esArchivo)
 	{
+		await CambiarTipo(nuevoTipo, esArchivo);
+	}
+
+	private async Task CambiarTipo(Bundles2.BundleTipo nuevoTipo, bool esArchivo)
+	{
 		mostrarArchivo = esArchivo;
 
 		if (esArchivo == false)
 		{
 			tipoSeleccionado = nuevoTipo;
 			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
+
+			if (nuevoTipo != Bundles2.BundleTipo.Desconocido)
+			{
+				await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/" + nuevoTipo.ToString().ToLower() + "/");
+			}
+			else
+			{
+				await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/");
+			}
 		}
 		else
 		{

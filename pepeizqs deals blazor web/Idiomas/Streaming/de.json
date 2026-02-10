@@ -1,14 +1,15 @@
 {
   "String1": "Streaming",
-  "String2": "Bestellen nach:",
+  "String2": "Bestellen nach",
   "String3": "Bewertungen (Anzahl)",
   "String4": "Name (A-Z)",
   "String5": "Name (Z-A)",
-  "String6": "Zeigen:",
+  "String6": "Zeigen",
   "String7": "Alle",
   "String8": "Spiele, die du hast",
   "String9": "Spiele, die Sie nicht haben",
   "String10": "Suchen",
   "String11": "Prüfen Sie, welche Spiele Sie per Streaming auf Diensten wie GeForce NOW oder Boosteroid spielen können.",
-  "String12": "Um Spiele über die Streaming-Angebote der jeweiligen Dienste zu spielen, müssen Sie diese auf den von den Streaming-Diensten unterstützten Plattformen erwerben. Um beispielsweise auf GeForce NOW spielen zu können, benötigen Sie das Spiel auf Steam."
+  "String12": "Um Spiele über die Streaming-Angebote der jeweiligen Dienste zu spielen, müssen Sie diese auf den von den Streaming-Diensten unterstützten Plattformen erwerben. Um beispielsweise auf GeForce NOW spielen zu können, benötigen Sie das Spiel auf Steam.",
+  "String13": "Für die von Ihnen gewünschte Suche sind keine Spiele verfügbar."
 }

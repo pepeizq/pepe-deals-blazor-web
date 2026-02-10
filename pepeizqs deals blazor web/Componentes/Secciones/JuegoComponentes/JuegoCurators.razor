@@ -50,7 +50,7 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 30px; width: 100%;">
                             @foreach (var juegoCurator in curator.JuegosMostrar)
                             {
-                                <CajaJuego idCurator="@curator.Curator.Id" idioma="@idioma" juego="@juegoCurator" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.CuratorJuego" userAgent="@userAgent" />
+                                <CajaJuego idCurator="@curator.Curator.Id" idioma="@idioma" juego="@juegoCurator" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@usuarioDeseadosImportados" usuarioDeseadosWeb="@usuarioDeseadosWeb" tipo="CajaJuego.Tipo.CuratorJuego" userAgent="@userAgent" />
                             }
                         </div>
 
@@ -112,10 +112,13 @@
     public Juego juego { get; set; }
 
     [Parameter]
-    public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+    public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
 
     [Parameter]
-    public Usuario deseadosUsuario { get; set; }
+    public Herramientas.UsuarioDeseadosImportadosIndex usuarioDeseadosImportados { get; set; }
+
+    [Parameter]
+    public Herramientas.UsuarioDeseadosWebIndex usuarioDeseadosWeb { get; set; }
 
     [PersistentState] public List<global::BaseDatos.Curators.CuratorFicha> curators { get; set; }
 

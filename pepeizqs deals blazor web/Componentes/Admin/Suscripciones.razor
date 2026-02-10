@@ -125,12 +125,26 @@ else
     private string imagenNoticiaSuscripciones = null;
 
     private string textoBuscador = string.Empty;
+    private CancellationTokenSource _cts;
 
     private async Task TextoCambiaBuscador()
     {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
         if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {
-            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
+            var tarea = BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 250, true);
+
+            var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
+
+            if (tareaFinalizada != tarea)
+            {
+                return;
+            }
+
+            List<global::Juegos.Juego> resultados = tarea.Result;
 
             if (resultados.Count > 0)
             {

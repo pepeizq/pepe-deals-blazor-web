@@ -438,13 +438,6 @@
 
 @if (noticias?.Count > 0)
 {
-	string paddingScrollbar = string.Empty;
-
-	if (noticias.Count > 3)
-	{
-		paddingScrollbar = "padding-bottom: 20px;";
-	}
-
 	<div style="margin-top: 40px; padding: 30px; background-color: var(--fondoPortadaNoticias2); border-top: 1px solid var(--bordePortadaNoticias); border-bottom: 1px solid var(--bordePortadaNoticias);">
 		<div style="display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
 			<div class="caja-portada" style="background-color: var(--fondoPortadaNoticias); border: 2px solid var(--bordePortadaNoticias);">
@@ -475,15 +468,15 @@
 			</div>
 		</div>
 
-		<div class="cuerpo-ancho" style="display: flex; flex-direction: column; margin-top: 40px;">
-			<div style="display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); overflow-y: hidden; justify-content: space-around; width: fit-content; margin-left: auto; margin-right: auto; max-width:100%; @paddingScrollbar" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
+		<div class="cuerpo-ancho" style="display: flex; flex-direction: column; @(noticias.Count > 3 ? "margin-top: 30px;" : "margin-top: 20px;")">
+			<div style="display: flex; gap: 35px; overflow-x: auto; flex-wrap: nowrap; height: 100%; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); overflow-y: hidden; justify-content: space-around; width: fit-content; margin-left: auto; margin-right: auto; max-width:100%; @(noticias.Count > 3 ? "padding-bottom: 20px;" : "")" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Index")">
 				@foreach (var noticia in noticias)
 				{
 					<CajaNoticia idioma="@idioma" noticia="@noticia" tipo="@CajaNoticia.Tipo.Portada" />
 				}
 			</div>
 
-			<div style="display: flex; align-items: center; gap: 50px; justify-content: center; margin-top: 30px;">
+			<div style="display: flex; align-items: center; gap: 50px; justify-content: center; margin-top: 20px;">
 				<a class="boton-pequeño" style="padding: 15px 30px; width: fit-content;" href="/last-news">
 					@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Index")
 				</a>
@@ -579,7 +572,7 @@ else
 				<ItemContent>
 					<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 						<div style="width: 100%;">
-							<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="@tipoJuego" userAgent="@userAgent" />
+							<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="@tipoJuego" userAgent="@userAgent" />
 						</div>
 						
 						@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DeseadoImportado == false && juego.DeseadoMostrar == true)
@@ -817,8 +810,13 @@ else
 	private string userAgent = null;
 	private string dominio = null;
 
-	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
-	[PersistentState] public Usuario deseadosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
+    [PersistentState] public Usuario deseadosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
+
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 
@@ -835,8 +833,14 @@ else
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
 			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 

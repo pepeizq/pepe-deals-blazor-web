@@ -570,7 +570,7 @@ else
 			<div style="margin: -30px 0px; display: flex; flex-direction: column; gap: 30px;">
 				<Virtualize Context="juego" Items="@resultadosGestor" ItemSize="107">
 					<ItemContent>
-						<CajaJuego idioma="@idioma" juego="@juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.Filtro" userAgent="@userAgent" />
+						<CajaJuego idioma="@idioma" juego="@juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Filtro" userAgent="@userAgent" />
 					</ItemContent>
 				</Virtualize>
 			</div>
@@ -609,7 +609,11 @@ else
 	private string dominio = null;
 
 	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
 	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
 	private bool cargado = false;
 
@@ -630,8 +634,13 @@ else
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
 			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 		}
 
 		CargarDeck();

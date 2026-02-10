@@ -68,27 +68,24 @@
         <div style="margin-top: 20px;">
             <label>Tiers:</label>
 
-            @if (bundle.Tiers != null)
+            @if (bundle.Tiers?.Count > 0)
             {
-                if (bundle.Tiers.Count > 0)
+                foreach (var tier in bundle.Tiers)
                 {
-                    foreach (var tier in bundle.Tiers)
+                    if (bundle.Pick == false)
                     {
-                        if (bundle.Pick == false)
-                        {
-                            <div style="width: 10%; display: flex; margin-top: 20px;">
-                                <input @onchange="@(e => TextoCambiaTierPosicion(e, tier))" class="entrada-texto" value="@tier.Posicion" style="text-align: center; margin-right: 20px;" />
-                                <input @onchange="@(e => TextoCambiaTierPrecio(e, tier))" class="entrada-texto" value="@tier.Precio" style="text-align: center;" />
-                            </div>
-                        }
-                        else
-                        {
-                            <div style="width: 10%; display: flex; margin-top: 20px;">
-                                <input @onchange="@(e => TextoCambiaTierPosicion(e, tier))" class="entrada-texto" value="@tier.Posicion" style="text-align: center; margin-right: 20px;" />
-                                <input @onchange="@(e => TextoCambiaTierPrecio(e, tier))" class="entrada-texto" value="@tier.Precio" style="text-align: center; margin-right: 20px;" />
-                                <input @onchange="@(e => TextoCambiaTierCantidadJuegos(e, tier))" class="entrada-texto" value="@tier.CantidadJuegos" style="text-align: center;" />
-                            </div>
-                        }
+                        <div style="width: 10%; display: flex; margin-top: 20px;">
+                            <input @onchange="@(e => TextoCambiaTierPosicion(e, tier))" class="entrada-texto" value="@tier.Posicion" style="text-align: center; margin-right: 20px;" />
+                            <input @onchange="@(e => TextoCambiaTierPrecio(e, tier))" class="entrada-texto" value="@tier.Precio" style="text-align: center;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 10%; display: flex; margin-top: 20px;">
+                            <input @onchange="@(e => TextoCambiaTierPosicion(e, tier))" class="entrada-texto" value="@tier.Posicion" style="text-align: center; margin-right: 20px;" />
+                            <input @onchange="@(e => TextoCambiaTierPrecio(e, tier))" class="entrada-texto" value="@tier.Precio" style="text-align: center; margin-right: 20px;" />
+                            <input @onchange="@(e => TextoCambiaTierCantidadJuegos(e, tier))" class="entrada-texto" value="@tier.CantidadJuegos" style="text-align: center;" />
+                        </div>
                     }
                 }
             }
@@ -443,11 +440,26 @@
         }
     }
 
+    private CancellationTokenSource _cts;
+
     private async Task TextoCambiaBuscador()
     {
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var token = _cts.Token;
+
         if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {
-            List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true, true);
+            var tarea = BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 250, true);
+
+            var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
+
+            if (tareaFinalizada != tarea)
+            {
+                return;
+            }
+
+            List<global::Juegos.Juego> resultados = tarea.Result;
 
             if (resultados?.Count > 0)
             {

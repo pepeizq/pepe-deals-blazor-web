@@ -59,7 +59,7 @@
 	<div style="max-width: 1000px; margin: 20px auto 40px auto; display: flex; flex-direction: column; gap: 30px;">
 		<Virtualize Context="juego" Items="juegosMostrar" ItemSize="107">
 			<ItemContent>
-				<CajaJuego idioma="@idioma" juego="@juego" juegosUsuario="@juegosUsuario" usuarioDeseadosSteam="@deseadosUsuario?.SteamWishlist" usuarioDeseadosWeb="@deseadosUsuario?.Wishlist" usuarioDeseadosGog="@deseadosUsuario?.GogWishlist" tipo="CajaJuego.Tipo.NuevosAñadidos" userAgent="@userAgent" />
+				<CajaJuego idioma="@idioma" juego="@juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.NuevosAñadidos" userAgent="@userAgent" />
 			</ItemContent>
 		</Virtualize>
 	</div>
@@ -75,7 +75,11 @@
     private string dominio = null;
 
 	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
 	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
 	[PersistentState] public List<Juegos.Juego> juegosMostrar { get; set; }
 
@@ -90,8 +94,13 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+
 			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 		}
 
 		juegosMostrar ??= await Buscar.Ultimos("juegos", 500);
