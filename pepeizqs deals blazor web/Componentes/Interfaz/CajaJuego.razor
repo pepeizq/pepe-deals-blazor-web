@@ -225,34 +225,47 @@
 		}
 	}
 
-	bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
+	bool usuarioTieneJuego = false;
 	bool usuarioTieneDeseado = false;
 
 	string fondoColor = string.Empty;
 	string fondoDescuento = "background-color: darkgreen;";
 
-	if (string.IsNullOrEmpty(color) == true)
+	if (juegosUsuarioIndex?.EstaVacia == false)
 	{
-		if (usuarioTieneJuego == true)
+		usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
+
+		if (string.IsNullOrEmpty(color) == true)
 		{
-			fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
-			fondoDescuento = "backdrop-filter: brightness(70%);";
+			if (usuarioTieneJuego == true)
+			{
+				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
+				fondoDescuento = "backdrop-filter: brightness(70%);";
+			}
+			else
+			{
+				if (usuarioTieneDeseado == false)
+				{
+					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, Juegos.JuegoDRM.NoEspecificado);
+				}
+
+				if (usuarioTieneDeseado == false)
+				{
+					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, Juegos.JuegoDRM.NoEspecificado);
+				}
+
+				if (usuarioTieneDeseado == true)
+				{
+					fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
+					fondoDescuento = "backdrop-filter: brightness(70%);";
+				}
+			}
 		}
 		else
 		{
-			if (usuarioTieneDeseado == false)
+			if (color != "var(--fondoBotonPequeño)")
 			{
-				usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, Juegos.JuegoDRM.NoEspecificado);
-			}
-
-			if (usuarioTieneDeseado == false)
-			{
-				usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, Juegos.JuegoDRM.NoEspecificado);
-			}
-
-			if (usuarioTieneDeseado == true)
-			{
-				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
+				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
 				fondoDescuento = "backdrop-filter: brightness(70%);";
 			}
 		}
@@ -268,7 +281,7 @@
 
 	bool usuarioConectado = false;
 
-	if (juegosUsuarioIndex?.Steam?.Count > 0)
+	if (juegosUsuarioIndex?.Steam?.Count > 0 || juegosUsuarioIndex?.Gog?.Count > 0)
 	{
 		usuarioConectado = true;
 	}

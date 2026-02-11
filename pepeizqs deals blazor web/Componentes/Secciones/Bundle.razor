@@ -255,6 +255,8 @@
 			<pepeizqs_deals_blazor_web.Componentes.Admin.Bundle idioma="@idioma" bundleId="@bundle.Id" />
 		}
 
+		<img class="juego-fondo" src="@fondo" alt="Background" />
+
 		<div class="cuerpo-ancho" style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: 40px; @(DateTime.Now > bundle.FechaTermina ? "border-bottom: 0px;" : "")">
 			<div style="display: flex; align-items: center; flex-wrap: nowrap; border-top-left-radius: inherit;">
 				@if (DateTime.Now < bundle.FechaTermina)
@@ -411,7 +413,7 @@
 
 						if (bundle.Pick == true)
 						{
-							<div class="caja-bundle-contenido cuerpo-ancho bundle-espacio2" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; font-size: 18px; display: flex; align-items: center; flex-direction: row; justify-content: space-around; margin-bottom: 30px; padding: 25px;">
+							<div class="caja-bundle-contenido cuerpo-ancho bundle-espacio2" style="border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; font-size: 18px; display: flex; align-items: center; flex-direction: row; justify-content: space-around; margin-bottom: 40px; padding: 25px;">
 								@foreach (var tier2 in OrdenarTiers(bundle.Tiers))
 								{
 									<div class="caja-bundle-mensaje bundle-espacio3" style="border-radius: 20px; text-align: center; display: flex; align-items: center; gap: 5px;">
@@ -604,6 +606,7 @@
 	[PersistentState] public Bundles2.Bundle bundle { get; set; }
 
 	private string enlaceBundle = string.Empty;
+	private string fondo = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -637,7 +640,7 @@
 			if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 			{
 				enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
-			}			
+			}		
 		}
 	}
 
@@ -648,6 +651,7 @@
 		if (bundle?.Juegos != null)
 		{
 			juegosBundlePrecargados.Clear();
+			int reseñas = 0;
 
 			foreach (var item in bundle.Juegos)
 			{
@@ -657,6 +661,19 @@
 					{
 						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
 						juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
+
+						if (string.IsNullOrEmpty(juego.Analisis.Cantidad) == false)
+						{
+							string temp = juego.Analisis.Cantidad;
+							temp = temp.Replace(",", null);
+							int reseñasJuego = int.Parse(temp);
+
+							if (reseñasJuego > reseñas)
+							{
+								reseñas = reseñasJuego;
+								fondo = juego.Imagenes.Library_1920x620;
+							}
+						}
 					}
 				}
 			}

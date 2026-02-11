@@ -20,9 +20,17 @@
     .caja-registro-contenido {
         background-color: var(--fondoSubsubcabecera);
         border: 2px solid var(--fondoSubcabecera);
-        padding: 40px;
+        border-radius: 20px;
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
         max-width: 600px;
+    }
+
+    .caja-registro-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        padding: 20px 50px;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        font-size: 20px;
     }
 </style>
 
@@ -36,48 +44,50 @@
 
 @if (string.IsNullOrEmpty(usuarioId) == true)
 {
+    if (string.IsNullOrEmpty(mensajeError) == false)
+    {
+        <div style="margin-top: 40px; background-color: var(--fondoPeligro); padding: 15px 20px;">
+            @mensajeError
+        </div>
+    }
+
     <div class="caja-registro-contenido" style="margin: 40px auto;">
-        @if (string.IsNullOrEmpty(mensajeError) == false)
-        {
-            <div style="margin-bottom: 20px; background-color: var(--fondoPeligro); padding: 15px 20px;">
-                @mensajeError
-            </div>
-        }
-
-        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegistrarUsuario" FormName="register">
+        <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegistrarUsuario" FormName="register" style="border-top-left-radius: inherit; border-top-right-radius: inherit; margin: 0;">
             <DataAnnotationsValidator />
-            <div class="texto-info">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Register")</div>
-            <hr />
-            <ValidationSummary class="texto-peligro-entrada" role="alert" />
-            <div style="margin-bottom: 20px;">
-                <label for="Input.Email" class="texto-info-entrada">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Register")
-                </label>
+            <div class="caja-registro-titulo">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Register")</div>
+       
+            <div style="padding: 30px 40px 40px 40px;">
+                <ValidationSummary class="texto-peligro-entrada" role="alert" />
+                <div style="margin-bottom: 20px;">
+                    <label for="Input.Email" class="texto-info-entrada">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Register")
+                    </label>
 
-                <InputText @bind-Value="Input.Email" id="Input.Email" class="entrada-texto" autocomplete="username" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Register")" />
-                <ValidationMessage For="() => Input.Email" class="texto-peligro-entrada" />
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label for="Input.Password" class="texto-info-entrada">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Register")
-                </label>
-                <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Register")" />
-                <ValidationMessage For="() => Input.Password" class="texto-peligro-entrada" />
-            </div>
-            <div style="margin-bottom: 30px;">
-                <label for="Input.ConfirmPassword" class="texto-info-entrada">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Register")
-                </label>
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Register")" />
-                <ValidationMessage For="() => Input.ConfirmPassword" class="texto-peligro-entrada" />
-            </div>
+                    <InputText @bind-Value="Input.Email" id="Input.Email" class="entrada-texto" autocomplete="username" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Register")" />
+                    <ValidationMessage For="() => Input.Email" class="texto-peligro-entrada" />
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="Input.Password" class="texto-info-entrada">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Register")
+                    </label>
+                    <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Register")" />
+                    <ValidationMessage For="() => Input.Password" class="texto-peligro-entrada" />
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <label for="Input.ConfirmPassword" class="texto-info-entrada">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Register")
+                    </label>
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Register")" />
+                    <ValidationMessage For="() => Input.ConfirmPassword" class="texto-peligro-entrada" />
+                </div>
 
-            @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
-            {
-                <button type="submit" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Register")
-                </button>
-            } 
+                @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+                {
+                    <button type="submit" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Register")
+                    </button>
+                }
+            </div>
         </EditForm>
     </div>
 
@@ -95,7 +105,7 @@
     private IEnumerable<IdentityError> identityErrors;
 
     [SupplyParameterFromForm]
-    private InputModel Input { get; set; } = new();
+    private InputModel Input { get; set; }
 
     [SupplyParameterFromQuery]
     private string ReturnUrl { get; set; }
@@ -104,6 +114,8 @@
 
     protected override void OnInitialized()
     {
+        Input ??= new();
+
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
         usuarioId = datos.UsuarioId;

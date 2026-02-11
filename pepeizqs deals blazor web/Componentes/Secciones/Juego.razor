@@ -1352,11 +1352,19 @@
                                                             {
                                                                 if (drmG == drm.Id)
                                                                 {
-                                                                    <a href="/streaming/geforcenow/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Geforce NOW")">
-                                                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.GeforceNOW.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Geforce NOW" />
+                                                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-geforcenow-@drm.Id.ToString()')" style="width: fit-content;">
+                                                                        <a href="/streaming/geforcenow/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                                                                <img src="@APIs.GeforceNOW.Streaming.Generar().ImagenIcono" style="width: 22px; height: 22px;" alt="Geforce NOW" />
+                                                                            </div>
+                                                                        </a>
+
+                                                                        <div id="tooltip-geforcenow-@drm.Id.ToString()" class="tooltip-relleno">
+                                                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Geforce NOW")
+                                                                            </div>
                                                                         </div>
-                                                                    </a>
+                                                                    </div> 
                                                                 }
                                                             }
                                                         }
@@ -1367,11 +1375,19 @@
                                                             {
                                                                 if (drmB == drm.Id)
                                                                 {
-                                                                    <a href="/streaming/boosteroid/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Boosteroid")">
-                                                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(APIs.Boosteroid.Streaming.Generar().ImagenIcono, 22, 22)" style="width: 22px; height: 22px;"  alt="Boosteroid" />
+                                                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-boosteroid-@drm.Id.ToString()')" style="width: fit-content;">
+                                                                        <a href="/streaming/boosteroid/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                                                                <img src="@APIs.Boosteroid.Streaming.Generar().ImagenIcono" style="width: 22px; height: 22px;"  alt="Boosteroid" />
+                                                                            </div>
+                                                                        </a>
+
+                                                                        <div id="tooltip-boosteroid-@drm.Id.ToString()" class="tooltip-relleno">
+                                                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Boosteroid")
+                                                                            </div>
                                                                         </div>
-                                                                    </a>
+                                                                    </div> 
                                                                 }
                                                             }
                                                         }
@@ -1721,7 +1737,7 @@
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String23", "Game")
                             </div>
 
-                            <div style="padding: 30px;">
+                            <div style="padding: 20px 30px;">
                                 @foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
                                 {
                                     if (bundlesCache2.TryGetValue(bundle2.BundleId, out var bundle3) && bundle3 != null)
@@ -2604,8 +2620,8 @@
                 {
                     string enlaceBundleSeleccionado = "/bundle/" + bundleSeleccionado.Id + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/";
                 
-                    <div style="margin-bottom: 20px;">
-                        <div style="background-color: var(--fondoSubsubcabecera); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24); padding: 20px 30px; display: flex; align-items: center; flex-direction: row;">
+                    <div style="@(bundleSeleccionado.Pick == false ? "margin-bottom: 30px;" : "")">
+                        <div style="@(bundleSeleccionado.Pick == false ? "border-radius: 20px; border: 2px solid var(--glaseadoBorde);" : "border-top-left-radius: 20px; border-top-right-radius: 20px; border: 2px solid var(--glaseadoBorde); border-bottom: 0px;") background-color: var(--fondoSubsubcabecera); padding: 20px 30px; display: flex; align-items: center; flex-direction: row;">
                             <button @onclick="@(e => BundleCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
                                 <div style="max-width: 24px; max-height: 24px;">
                                     <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

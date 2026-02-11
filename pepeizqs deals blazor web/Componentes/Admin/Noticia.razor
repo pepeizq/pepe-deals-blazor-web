@@ -169,10 +169,6 @@
 					Telegram
 				</button>
 
-				<button @onclick="(e => EnviarDiscord(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
-					Discord
-				</button>
-
 				<button @onclick="(e => EnviarReddit(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
 					Reddit
 				</button>
@@ -374,11 +370,6 @@
 	private async Task EnviarTelegram(MouseEventArgs e)
 	{
 		await Herramientas.RedesSociales.Telegram.Postear(Configuracion, noticia, dominio);
-	}
-
-	private async Task EnviarDiscord(MouseEventArgs e)
-	{
-		await Herramientas.RedesSociales.Discord.Postear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarReddit(MouseEventArgs e)

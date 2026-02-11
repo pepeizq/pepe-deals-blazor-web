@@ -305,14 +305,10 @@ namespace Herramientas
 			if (juego == null || juego.Tipo != JuegoTipo.Game)
 				return false;
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam) &&
-				juego.IdSteam > 0 &&
-				index.Steam.Contains(juego.IdSteam))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam) && juego.IdSteam > 0 && index.Steam.Contains(juego.IdSteam))
 				return true;
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG) &&
-				juego.IdGog > 0 &&
-				index.Gog.Contains(juego.IdGog))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG) && juego.IdGog > 0 && index.Gog.Contains(juego.IdGog))
 				return true;
 
 			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Amazon) &&
@@ -347,7 +343,15 @@ namespace Herramientas
 		public HashSet<string> Epic = new();
 		public HashSet<string> Ubisoft = new();
 		public HashSet<string> Ea = new();
-    }
+
+		public bool EstaVacia =>
+			Steam.Count == 0 &&
+			Gog.Count == 0 &&
+			Amazon.Count == 0 &&
+			Epic.Count == 0 &&
+			Ubisoft.Count == 0 &&
+			Ea.Count == 0;
+	}
 
 	public class UsuarioListadosJuegos
 	{

@@ -152,6 +152,8 @@ namespace Herramientas
 
 			sb.Append(textoBundles);
 
+
+
 			string textoGratis = "<url>" + Environment.NewLine +
 					"<loc>https://" + dominio + "/free/</loc>" + Environment.NewLine +
 					"<changefreq>daily</changefreq>" + Environment.NewLine +

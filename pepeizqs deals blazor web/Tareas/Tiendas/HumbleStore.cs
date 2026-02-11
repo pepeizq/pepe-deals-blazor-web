@@ -33,7 +33,7 @@ namespace Tareas.Tiendas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					TimeSpan siguienteComprobacion = TimeSpan.FromHours(6);
+					TimeSpan siguienteComprobacion = TimeSpan.FromHours(3);
 
 					if (DateTime.Now.Hour == 19 || DateTime.Now.Hour == 20)
 					{

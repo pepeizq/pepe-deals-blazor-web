@@ -742,7 +742,7 @@
 					{
 						if (juegos?.Count > 0)
 						{
-							int analisis = 0;
+							int reseñas = 0;
 
 							foreach (var juego in juegos)
 							{
@@ -752,11 +752,11 @@
 									{
 										string temp = juego.Analisis.Cantidad;
 										temp = temp.Replace(",", null);
-										int analisisJuego = int.Parse(temp);
+										int reseñasJuego = int.Parse(temp);
 
-										if (analisisJuego > analisis)
+										if (reseñasJuego > reseñas)
 										{
-											analisis = analisisJuego;
+											reseñas = reseñasJuego;
 											fondo = juego.Imagenes.Library_1920x620;
 										}
 									}
