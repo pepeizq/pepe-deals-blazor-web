@@ -978,28 +978,6 @@
 		}
 	}
 
-	protected override async Task OnAfterRenderAsync(bool primerRender)
-	{
-		if (primerRender == true)
-		{
-			
-
-			await InvokeAsync(StateHasChanged);
-		}
-	}
-
-	private string CambiarEstilo(int pestañaClickeada)
-	{
-		if (pestañaClickeada == pestañaMostrar)
-		{
-			return "background-color: var(--botonSubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25),0px 0px 1px 0px rgba(0, 0, 0, 0.25);";
-		}
-		else
-		{
-			return "background-color: transparent;";
-		}
-	}
-
 	private async Task CambiarPestaña(MouseEventArgs e, int nuevaPestaña)
 	{
 		pestañaMostrar = nuevaPestaña;
@@ -1110,14 +1088,14 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
 
-				deseadosBundles = deseadosBundles?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
-				deseadosSuscripciones = deseadosSuscripciones?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosBundles = deseadosBundles?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosSuscripciones = deseadosSuscripciones?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1142,14 +1120,14 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
 
-				deseadosBundles = deseadosBundles?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
-				deseadosSuscripciones = deseadosSuscripciones?.AsParallel().OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosBundles = deseadosBundles?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
+				deseadosSuscripciones = deseadosSuscripciones?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1174,14 +1152,14 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderBy(x => x.Nombre).ToList();
 
-				deseadosBundles = deseadosBundles?.AsParallel().OrderBy(x => x.Nombre).ToList();
-				deseadosSuscripciones = deseadosSuscripciones?.AsParallel().OrderBy(x => x.Nombre).ToList();
+				deseadosBundles = deseadosBundles?.OrderBy(x => x.Nombre).ToList();
+				deseadosSuscripciones = deseadosSuscripciones?.OrderBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1206,14 +1184,14 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderByDescending(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderByDescending(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Nombre).ToList();
 
-				deseadosBundles = deseadosBundles?.AsParallel().OrderByDescending(x => x.Nombre).ToList();
-				deseadosSuscripciones = deseadosSuscripciones?.AsParallel().OrderByDescending(x => x.Nombre).ToList();
+				deseadosBundles = deseadosBundles?.OrderByDescending(x => x.Nombre).ToList();
+				deseadosSuscripciones = deseadosSuscripciones?.OrderByDescending(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1238,11 +1216,11 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1267,11 +1245,11 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1296,11 +1274,11 @@
 			{
 				deseadosOfertas.Clear();
 				deseadosOfertas = Filtros(false);
-				deseadosOfertas = deseadosOfertas?.AsParallel().OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
+				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
 
 				deseadosHistoricos.Clear();
 				deseadosHistoricos = Filtros(true);
-				deseadosHistoricos = deseadosHistoricos?.AsParallel().OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
+				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1588,15 +1566,6 @@
 		{
 			enseñarExportar = false;
 		}
-	}
-
-	#endregion
-
-	#region Abrir Oferta
-
-	private async void AbrirOferta(MouseEventArgs e, string enlace)
-	{
-		await JavaScript.InvokeVoidAsync("open", enlace, "_blank");
 	}
 
 	#endregion

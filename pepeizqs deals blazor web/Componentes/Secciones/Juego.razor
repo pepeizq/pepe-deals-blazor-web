@@ -1991,7 +1991,10 @@
                 </div>
             }
 
-            <JuegoMedia usuarioId="@usuarioId" mayorEdad="@juego.MayorEdad" nombre="@juego.Nombre" capturas="@juego.Media?.Capturas2" videos="@juego.Media?.Videos"/>
+            @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+            {
+                <JuegoMedia usuarioId="@usuarioId" mayorEdad="@juego.MayorEdad" nombre="@juego.Nombre" capturas="@juego.Media?.Capturas2" videos="@juego.Media?.Videos"/>
+            }
 
             <div style="display: flex; flex-direction: column; gap: 20px;">
                 @if (string.IsNullOrEmpty(juego.Caracteristicas?.Descripcion) == false)

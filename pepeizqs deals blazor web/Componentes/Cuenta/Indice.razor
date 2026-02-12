@@ -1,6 +1,8 @@
 ﻿@page "/account/"
 @page "/account/{seccion}/"
 
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @attribute [Authorize]
 
 @using Microsoft.AspNetCore.Authorization

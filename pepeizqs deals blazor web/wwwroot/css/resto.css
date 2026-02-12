@@ -571,7 +571,7 @@ select {
         display: block;
         position: fixed;
         overflow: hidden;
-        z-index: 1;
+        z-index: 1000000000000;
     }
 
 .tooltip-relleno {
@@ -579,7 +579,7 @@ select {
     color: var(--colorTexto);
     border: 1px solid var(--fondoBotonHover);
     border-radius: 5px;
-    z-index: 1;
+    z-index: 1000000000000;
 }
 
 .cargando {

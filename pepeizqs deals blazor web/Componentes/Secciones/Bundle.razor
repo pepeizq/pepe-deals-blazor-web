@@ -456,7 +456,10 @@
 								{
 									if (tipo == Tipo.Noticia || tipo == Tipo.Bundles || tipo == Tipo.Bundle)
 									{
-										bordesRedondeado = "border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;";
+										if (bundle.Tiers.Count > 1)
+										{
+											bordesRedondeado = "border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;";
+										}
 									}
 									else
 									{

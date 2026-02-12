@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-pepeizqs deals blazor web-e112752f-c00c-404b-af4c-787b6e6f5b54</UserSecretsId>
@@ -9,31 +9,11 @@
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
     <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <ServerGarbageCollection>false</ServerGarbageCollection>
-    <GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
-    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <CompressionEnabled>false</CompressionEnabled>
     <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
 <EnableMSDeployAppOffline>true</EnableMSDeployAppOffline>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="APIs\Steam\Juego.cs~RF2b23164.TMP" />
-    <None Remove="APIs\Xbox\pf02yajj.32n~" />
-    <None Remove="appsettings.json~RF184aaf6.TMP" />
-    <None Remove="Componentes\Admin\Indice.razor~RF29f0e87.TMP" />
-    <None Remove="Componentes\App.razor~RF25ea62f.TMP" />
-    <None Remove="Componentes\Cuenta\jvq35qmy.m31~" />
-    <None Remove="Componentes\Secciones\Link.razor~RF2673539.TMP" />
-    <None Remove="Componentes\Secciones\SteamDeck.razor~RF1a49bc8.TMP" />
-    <None Remove="Herramientas\Redireccionador\IndexNow.cs~RF14dd761.TMP" />
-    <None Remove="Herramientas\Sitemaps.cs~RF2e04990.TMP" />
-    <None Remove="Idiomas\Account\3ass1ow2.yzk~" />
-    <None Remove="Idiomas\Bundle\pt.json~RF152b8d4.TMP" />
-    <None Remove="Idiomas\GeforceNOW\pt.json~RF21792ef.TMP" />
-    <None Remove="Idiomas\SteamDeck\t4bemijt.yik~" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.1.0" />
@@ -42,22 +22,22 @@
     <PackageReference Include="LigerShark.WebOptimizer.Core" Version="3.0.477" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="MailKit" Version="4.14.1" />
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.2">
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="11.0.0-preview.1.26104.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="11.0.0-preview.1.26104.118" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Patreon.Net" Version="1.0.3" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.2" />
-    <PackageReference Include="System.ServiceModel.Syndication" Version="10.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="11.0.0-preview.1.26104.118" />
+    <PackageReference Include="System.ServiceModel.Syndication" Version="11.0.0-preview.1.26104.118" />
     <PackageReference Include="Telegram.Bot" Version="22.9.0" />
     <PackageReference Include="TweetinviAPI" Version="5.0.4" />
     <PackageReference Include="WebPush" Version="1.0.12" />

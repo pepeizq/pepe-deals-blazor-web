@@ -1,5 +1,7 @@
 ﻿@page "/account/sync/"
 
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @attribute [Authorize]
 
 @using Microsoft.AspNetCore.Authorization

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
@@ -389,6 +390,12 @@ if (Directory.Exists(imagenesRuta) == true)
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {
 	opciones.DisableWebSocketCompression = true;
+	opciones.ConfigureConnection = dispatcherOpciones =>
+	{
+		dispatcherOpciones.CloseOnAuthenticationExpiration = false;
+		dispatcherOpciones.AllowStatefulReconnects = true;
+		dispatcherOpciones.ApplicationMaxBufferSize = 10 * 1024 * 1024; // 10 MB
+	};
 });
 
 #region Compresion (Primero)

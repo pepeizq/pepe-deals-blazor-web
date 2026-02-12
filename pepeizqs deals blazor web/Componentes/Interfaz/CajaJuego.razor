@@ -228,7 +228,7 @@
 	bool usuarioTieneJuego = false;
 	bool usuarioTieneDeseado = false;
 
-	string fondoColor = string.Empty;
+	string fondoColor = "background-color: var(--fondoBotonPequeño)";
 	string fondoDescuento = "background-color: darkgreen;";
 
 	if (juegosUsuarioIndex?.EstaVacia == false)
@@ -263,7 +263,7 @@
 		}
 		else
 		{
-			if (color != "var(--fondoBotonPequeño)")
+			if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
 			{
 				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
 				fondoDescuento = "backdrop-filter: brightness(70%);";
@@ -272,7 +272,7 @@
 	}
 	else
 	{
-		if (color != "var(--fondoBotonPequeño)")
+		if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
 		{
 			fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
 			fondoDescuento = "backdrop-filter: brightness(70%);";
