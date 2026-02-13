@@ -52,18 +52,18 @@
             gap: 20px;
         }
     }
-</style>
 
-<style>
     :root {
         --glaseadoBorde: #FFFFFF1A;
         --glaseadoFondo: rgba(45, 47, 54, 0.70);
         --botonSeleccionado: rgba(13, 22, 33, 0.75);
+        --fondoCuentaBloque: #222e44;
+        --fondoPeligro2: rgba(132, 32, 41, 0.5);
     }
 
 	.caja-cuenta-indice-contenido {
 		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
         border: 2px solid var(--glaseadoBorde);
         border-radius: 20px;
 	}
@@ -75,6 +75,17 @@
         border-top-left-radius: inherit;
         border-top-right-radius: inherit;
 	}
+
+    .caja-cuenta-bloque {
+        background-color: var(--fondoCuentaBloque);
+        border-radius: 5px;
+        display: flex;
+        align-items: center; 
+        gap: 20px;
+        border: 1px solid var(--glaseadoBorde);
+        padding: 20px 30px;
+        justify-content: space-between;
+    }
 </style>
 
 <script>
@@ -333,7 +344,7 @@
 }
 else
 {
-    <div class="cuerpo-ancho" style="width: 100%; margin: 40px auto; background-color: var(--fondoSubsubcabecera); border-radius: 20px; border: 2px solid var(--glaseadoBorde); box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+    <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="width: 100%; margin: 40px auto;">
         <div style="display: flex; align-items: center; gap: 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit; overflow: hidden;">
             <button class="boton-pequeño" @onclick="ClickearCerrarPestaña" style="width: fit-content; padding: 18px 25px; border-top-left-radius: inherit; box-shadow: none;">
                 <div style="max-width: 24px; max-height: 24px;">
@@ -350,57 +361,57 @@ else
 
         @if (mostrarCorreo == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Correo idioma="@idioma" dominio="@dominio"/>
+            <Correo idioma="@idioma" dominio="@dominio"/>
         }
 
         @if (mostrarContraseña == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.CambioContrasena idioma="@idioma" />
+            <CambioContrasena idioma="@idioma" />
         }
 
         @if (mostrarDatosPersonales == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.DatosPersonales idioma="@idioma" />
+            <DatosPersonales idioma="@idioma" />
         }
 
         @if (mostrarIdioma == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Idioma idioma="@idioma" usuarioId="@usuarioId" />
+            <Idioma idioma="@idioma" usuarioId="@usuarioId" />
         }
 
         @if (mostrarClaves == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Claves idioma="@idioma" usuarioId="@usuarioId" />
+            <Claves idioma="@idioma" usuarioId="@usuarioId" />
         }
 
         @if (mostrarForo == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Foro idioma="@idioma" />
+            <Foro idioma="@idioma" />
         }
 
         @if (mostrarJuegos == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos idioma="@idioma" usuarioId="@usuarioId" fondoCabecera="background-color: var(--fondoSubsubcabecera);" />
+            <Juegos idioma="@idioma" usuarioId="@usuarioId" fondoCabecera="background-color: var(--fondoSubsubcabecera);" />
         }
 
         @if (mostrarPerfil == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Perfil idioma="@idioma" />
+            <Perfil idioma="@idioma" />
         }
 
         @if (mostrarNotificacionesCorreo == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Notificaciones.Correo idioma="@idioma" usuarioId="@usuarioId" />
+            <NotificacionesCorreo idioma="@idioma" usuarioId="@usuarioId" />
         }
 
         @if (mostrarNotificacionesPush == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Notificaciones.Push idioma="@idioma" />
+            <NotificacionesPush idioma="@idioma" />
         }
 
         @if (mostrarCorreoPatreon == true)
         {
-            <pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.CorreoPatreon idioma="@idioma" usuarioId="@usuarioId" />
+            <CorreoPatreon idioma="@idioma" usuarioId="@usuarioId" />
         }
     </div>
 }

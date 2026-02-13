@@ -38,5 +38,7 @@
   "String38": "Se você tiver a sincronização habilitada, os jogos serão carregados em sua conta durante a próxima sincronização automática.",
   "String39": "Excluir lista de desejos",
   "String40": "Se você tiver a sincronização habilitada, a lista de desejos será carregada em sua conta durante a próxima sincronização automática.",
-  "String41": "ID associado à conta: {0}"
+  "String41": "ID associado à conta: {0}",
+  "String42": "Dessincronize e exclua tudo",
+  "String43": "Se você selecionar esta opção, todos os {0} dados salvos em sua conta serão excluídos."
 }

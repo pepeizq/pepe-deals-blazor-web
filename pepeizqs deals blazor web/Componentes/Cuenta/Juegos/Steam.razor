@@ -288,6 +288,28 @@
 						</div>
 					</div>
 				}
+
+				<hr/>
+
+				<div style="display: flex; align-items: center; gap: 25px;">
+					<button @onclick="ClickearBorrarTodo" class="boton-pequeño" style="width: fit-content; background-color: var(--fondoPeligro); padding: 10px 20px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String42", "AccountGames")
+					</button>
+
+					<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steam6')">
+						<div style="width: 24px; height: 24px;">
+							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+								<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+							</svg>
+						</div>
+
+						<div id="tooltip-steam6" class="tooltip-relleno">
+							<div style="margin: 8px; max-width: 300px; font-size: 14px;">
+								@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String43", "AccountGames"), "Steam")
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -318,14 +340,14 @@
 	public string idioma { get; set; }
 
 	[Parameter]
-    public string usuarioId { get; set; }
+	public string usuarioId { get; set; }
 
 	private Usuario usuario = new Usuario();
 	private List<SteamUsuarioJuego> listadoJuegos = null;
 
 	private string enlaceCuenta = string.Empty;
 	private int cantidadJuegos = 0;
-    private int cantidadDeseados = 0;
+	private int cantidadDeseados = 0;
 
 	private bool enseñarImagen = false;
 
@@ -339,7 +361,7 @@
 
 		if (usuario != null)
 		{
-            usuario.Id = usuarioId;
+			usuario.Id = usuarioId;
 
 			try
 			{
@@ -348,7 +370,7 @@
 			catch
 			{ }
 
-            cantidadJuegos = listadoJuegos?.Count ?? 0;
+			cantidadJuegos = listadoJuegos?.Count ?? 0;
 
 			if (string.IsNullOrEmpty(usuario.SteamWishlist) == false)
 			{
@@ -442,9 +464,9 @@
 
 				if (id64 != null)
 				{
-					string cuentaUsa = await BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64);
+					string idAsociada = await BaseDatos.Usuarios.Buscar.CuentaSteamUsada(id64.ID64);
 
-					if (cuentaUsa == usuarioId)
+					if (idAsociada == usuarioId)
 					{
 						mensajeCargando = Herramientas.Idiomas.BuscarTexto(idioma, "Steam14", "Account");
 
@@ -456,27 +478,27 @@
 
 							bool actualizarJuegos = true;
 
-							if (usuario.SteamGamesAllow != null && usuario.SteamGamesAllow == false)
+							if (usuario.SteamGamesAllow.HasValue == true && usuario.SteamGamesAllow == false)
 							{
 								actualizarJuegos = false;
-                            }
-							
+							}
+
 							if (actualizarJuegos == true)
 							{
 								usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
-                            }
+							}
 
-                            bool actualizarDeseados = true;
+							bool actualizarDeseados = true;
 
-							if (usuario.SteamWishlistAllow != null && usuario.SteamWishlistAllow == false)
+							if (usuario.SteamWishlistAllow.HasValue == true && usuario.SteamWishlistAllow == false)
 							{
 								actualizarDeseados = false;
-                            }
-							
+							}
+
 							if (actualizarDeseados == true)
 							{
 								usuario.SteamWishlist = datos.Deseados;
-                            }
+							}
 
 							usuario.Avatar = datos.Avatar;
 							usuario.Nickname = datos.Nombre;
@@ -485,7 +507,7 @@
 							usuario.OfficialGroup2 = datos.GrupoNormal;
 							usuario.SteamId = datos.SteamId;
 
-                            await BaseDatos.Usuarios.Actualizar.Steam(usuario);
+							await BaseDatos.Usuarios.Actualizar.Steam(usuario);
 						}
 					}
 					else
@@ -510,7 +532,7 @@
 		}		
 	}
 
-    private string estadoJuegos = null;
+	private string estadoJuegos = null;
 
 	private async Task ClickearCambioJuegos()
 	{
@@ -531,7 +553,7 @@
 
 			usuario.SteamGamesAllow = estado;
 
-            await BaseDatos.Usuarios.Actualizar.Opcion("SteamGamesAllow", estado, usuario.Id); 		
+			await BaseDatos.Usuarios.Actualizar.Opcion("SteamGamesAllow", estado, usuario.Id); 		
 		}
 	}
 
@@ -562,18 +584,41 @@
 
 	private async Task ClickearBorrarJuegos(MouseEventArgs args)
 	{
-        usuario.SteamGames = null;
-        listadoJuegos.Clear();
-        cantidadJuegos = 0;
+		usuario.SteamGames = null;
+		listadoJuegos?.Clear();
+		cantidadJuegos = 0;
 
 		await BaseDatos.Usuarios.Actualizar.Opcion("SteamGames", null, usuario.Id);
-    }
+	}
 
 	private async Task ClickearBorrarDeseados(MouseEventArgs args)
 	{
 		usuario.SteamWishlist = null;
-        cantidadDeseados = 0;
+		cantidadDeseados = 0;
 
 		await BaseDatos.Usuarios.Actualizar.Opcion("SteamWishlist", null, usuario.Id);
+	}
+
+	private async Task ClickearBorrarTodo(MouseEventArgs args)
+	{
+		usuario.SteamAccount = null;
+		usuario.SteamAccountLastCheck = null;
+		usuario.SteamGames = null;
+		usuario.SteamGamesAllow = null;
+		usuario.SteamId = null;
+		usuario.SteamWishlist = null;
+		usuario.SteamWishlistAllow = null;
+
+		listadoJuegos?.Clear();
+		cantidadJuegos = 0;
+		cantidadDeseados = 0;
+
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamAccount", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamAccountLastCheck", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamGames", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamGamesAllow", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamId", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamWishlist", null, usuario.Id);
+		await BaseDatos.Usuarios.Actualizar.Opcion("SteamWishlistAllow", null, usuario.Id);
 	}
 }

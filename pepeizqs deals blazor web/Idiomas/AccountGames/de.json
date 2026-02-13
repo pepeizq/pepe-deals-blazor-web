@@ -38,5 +38,7 @@
   "String38": "Wenn Sie die Synchronisierung aktiviert haben, werden die Spiele bei der nächsten automatischen Synchronisierung auf Ihr Konto hochgeladen.",
   "String39": "Wunschliste löschen",
   "String40": "Wenn Sie die Synchronisierung aktiviert haben, wird die Wunschliste bei der nächsten automatischen Synchronisierung in Ihr Konto hochgeladen.",
-  "String41": "Mit dem Konto verknüpfte ID: {0}"
+  "String41": "Mit dem Konto verknüpfte ID: {0}",
+  "String42": "Desynchronisieren und alles löschen",
+  "String43": "Wenn Sie diese Option auswählen, werden alle in Ihrem Konto gespeicherten {0}-Daten gelöscht."
 }

@@ -561,6 +561,7 @@ select {
 .tooltip-juego {
     text-decoration: none;
     position: relative;
+    display: flex;
 }
 
     .tooltip-juego .tooltip-relleno {
@@ -775,4 +776,8 @@ select {
     .sub-subcabecera {
         padding: 15px 5px;
     }
+}
+
+.no-scroll {
+    overflow: hidden;
 }

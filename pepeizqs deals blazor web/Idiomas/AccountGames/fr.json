@@ -38,5 +38,7 @@
   "String38": "Si la synchronisation est activée, les jeux seront téléchargés sur votre compte lors de la prochaine synchronisation automatique.",
   "String39": "Supprimer la liste de souhaits",
   "String40": "Si la synchronisation est activée, la liste de souhaits sera téléchargée sur votre compte lors de la prochaine synchronisation automatique.",
-  "String41": "ID associé au compte : {0}"
+  "String41": "ID associé au compte : {0}",
+  "String42": "Désynchroniser et supprimer tout",
+  "String43": "Si vous sélectionnez cette option, toutes les {0} données enregistrées sur votre compte seront supprimées."
 }

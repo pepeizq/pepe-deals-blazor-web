@@ -4,7 +4,7 @@
   "String3": "If your language is different from the one detected by the website, you can change it here:",
   "String4": "Change language",
   "String5": "Please refresh the page to fully apply the language change",
-  "String6": "You can also select which language you want the game translations to appear in if they are available:",
-  "String7": "Language on the web",
-  "String8": "Translations in games"
+  "String6": "You can also select which language you want the game translations to appear in (if available).",
+  "String7": "Web",
+  "String8": "Games"
 }

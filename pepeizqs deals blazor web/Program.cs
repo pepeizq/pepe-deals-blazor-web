@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
@@ -49,13 +48,27 @@ builder.Services.AddWebOptimizer(
 	{
 		acciones.AddCssBundle("/css/bundle.css", new NUglify.Css.CssSettings
 		{
-			CommentMode = NUglify.Css.CssComment.None
-		}, "lib/bootstrap/dist/css/bootstrap-utilities.css", "lib/bootstrap/dist/css/bootstrap.css", "lib/bootstrap/dist/css/bootstrap-grid.css", "lib/bootstrap/dist/css/bootstrap-reboot.css", "lib/bootstrap/dist/css/bootstrap-utilities.css", "css/maestro.css", "css/cabecera_cuerpo_pie.css", "css/resto.css", "css/site.css");
+			CommentMode = NUglify.Css.CssComment.None,
+			OutputMode =  NUglify.OutputMode.SingleLine,
+			IgnoreAllErrors = true,
+			TermSemicolons = true,
+			ColorNames = NUglify.Css.CssColor.Hex
+		},
+			"lib/bootstrap/dist/css/bootstrap-reboot.css",
+			"lib/bootstrap/dist/css/bootstrap-grid.css",
+			"lib/bootstrap/dist/css/bootstrap-utilities.css",
+			"css/maestro.css",
+			"css/cabecera_cuerpo_pie.css",
+			"css/resto.css",
+			"css/site.css"
+		);
 
-		acciones.AddJavaScriptBundle("superjs.js", "lib/jquery/dist/jquery.min.js", "lib/bootstrap/dist/js/bootstrap.js");
+		acciones.AddJavaScriptBundle("/superjs.js",
+			"lib/jquery/dist/jquery.min.js",
+			"lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+		);
 
-		acciones.MinifyCssFiles("css/bundle.css");
-		acciones.MinifyJsFiles("superjs.js", "inicio.js", "video.js");
+		acciones.MinifyJsFiles("inicio.js", "video.js", "push-notifications.js");
 	});
 
 #endregion
@@ -66,16 +79,17 @@ builder.Services.AddRazorComponents(opciones =>
 }).AddInteractiveServerComponents(opciones =>
 {
 	opciones.DetailedErrors = true;
-	opciones.DisconnectedCircuitMaxRetained = 10;
-	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(10);
-	opciones.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(10);
+	opciones.DisconnectedCircuitMaxRetained = 60;
+	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(60);
+	opciones.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(60);
 	opciones.MaxBufferedUnacknowledgedRenderBatches = 3;
 }).AddHubOptions(opciones =>
 {
 	opciones.EnableDetailedErrors = true;
 	opciones.MaximumReceiveMessageSize = null;
-	opciones.ClientTimeoutInterval = TimeSpan.FromSeconds(70);
+	opciones.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
 	opciones.HandshakeTimeout = TimeSpan.FromSeconds(60);
+	opciones.KeepAliveInterval = TimeSpan.FromSeconds(20);
 }).AddCircuitOptions(opciones =>
 {
 	opciones.DetailedErrors = true;
@@ -390,12 +404,12 @@ if (Directory.Exists(imagenesRuta) == true)
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {
 	opciones.DisableWebSocketCompression = true;
-	opciones.ConfigureConnection = dispatcherOpciones =>
-	{
-		dispatcherOpciones.CloseOnAuthenticationExpiration = false;
-		dispatcherOpciones.AllowStatefulReconnects = true;
-		dispatcherOpciones.ApplicationMaxBufferSize = 10 * 1024 * 1024; // 10 MB
-	};
+	//opciones.ConfigureConnection = dispatcherOpciones =>
+	//{
+	//	dispatcherOpciones.CloseOnAuthenticationExpiration = false;
+	//	dispatcherOpciones.AllowStatefulReconnects = true;
+	//	dispatcherOpciones.ApplicationMaxBufferSize = 10 * 1024 * 1024; // 10 MB
+	//};
 });
 
 #region Compresion (Primero)
