@@ -246,12 +246,12 @@
 			{
 				if (usuarioTieneDeseado == false)
 				{
-					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, Juegos.JuegoDRM.NoEspecificado);
+					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, drmUsar);
 				}
 
 				if (usuarioTieneDeseado == false)
 				{
-					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, Juegos.JuegoDRM.NoEspecificado);
+					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, drmUsar);
 				}
 
 				if (usuarioTieneDeseado == true)

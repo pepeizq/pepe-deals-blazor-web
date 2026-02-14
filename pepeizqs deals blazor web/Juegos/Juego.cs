@@ -126,6 +126,11 @@ namespace Juegos
 		public string Cantidad { get; set; }
 	}
 
+	public class JuegoReseñas : JuegoAnalisis
+	{
+		public int IdSteam { get; set; }
+	}
+
 	public class JuegoCaracteristicas
 	{
 		public bool Windows { get; set; }

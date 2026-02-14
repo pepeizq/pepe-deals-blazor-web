@@ -86,8 +86,6 @@ namespace APIs.Gamesplanet
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0);
 
-            int juegos2 = 0;
-
             string htmluk = await Decompiladores.Estandar("https://uk.gamesplanet.com/api/v1/products/feed.xml");
 
 			if (string.IsNullOrEmpty(htmluk) == false)
@@ -99,7 +97,9 @@ namespace APIs.Gamesplanet
 
                 if (listaJuegos?.Juegos?.Count > 0)
                 {
-                    foreach (GamesplanetJuego juego in listaJuegos.Juegos)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
                     {
                         bool buscar = true;
 
@@ -180,37 +180,52 @@ namespace APIs.Gamesplanet
                                     FechaActualizacion = DateTime.Now
                                 };
 
-                                try
-                                {
-                                    await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
-                                }
-
-                                juegos2 += 1;
-
-                                try
-                                {
-                                    await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
-                                }
+                                ofertas.Add(oferta);
                             }
                         }
                     }
-                }
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
+							}
+						}
+					}
+				}
             }
 		}
 
         public static async Task BuscarOfertasFr()
         {
 			await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0);
-
-            int juegos2 = 0;
 
 			string htmlfr = await Decompiladores.Estandar("https://fr.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -223,7 +238,9 @@ namespace APIs.Gamesplanet
 
                 if (listaJuegos?.Juegos?.Count > 0)
                 {
-                    foreach (GamesplanetJuego juego in listaJuegos.Juegos)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
                     {
                         bool buscar = true;
 
@@ -304,37 +321,52 @@ namespace APIs.Gamesplanet
                                     FechaActualizacion = DateTime.Now
                                 };
 
-                                try
-                                {
-									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
-                                }
-
-                                juegos2 += 1;
-
-                                try
-                                {
-                                    await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
-                                }
-                            }
+								ofertas.Add(oferta);
+							}
                         }
                     }
-                }
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
+							}
+						}
+					}
+				}
             }
 		}
 
 		public static async Task BuscarOfertasDe()
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0);
-
-            int juegos2 = 0;
 
 			string htmlde = await Decompiladores.Estandar("https://de.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -347,7 +379,9 @@ namespace APIs.Gamesplanet
 
                 if (listaJuegos?.Juegos?.Count > 0)
                 {
-                    foreach (GamesplanetJuego juego in listaJuegos.Juegos)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
                     {
                         bool buscar = true;
 
@@ -428,37 +462,52 @@ namespace APIs.Gamesplanet
                                     FechaActualizacion = DateTime.Now
                                 };
 
-                                try
-                                {
-									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
-                                }
-
-                                juegos2 += 1;
-
-                                try
-                                {
-									await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
-                                }
-                            }
+								ofertas.Add(oferta);
+							}
                         }
                     }
-                }
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
+							}
+						}
+					}
+				}
             }
 		}
 
 		public static async Task BuscarOfertasUs()
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0);
-
-            int juegos2 = 0;
 
 			string htmlus = await Decompiladores.Estandar("https://us.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -471,7 +520,9 @@ namespace APIs.Gamesplanet
 
                 if (listaJuegos?.Juegos?.Count > 0)
                 {
-                    foreach (GamesplanetJuego juego in listaJuegos.Juegos)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
                     {
                         bool buscar = true;
 
@@ -552,29 +603,46 @@ namespace APIs.Gamesplanet
                                     FechaActualizacion = DateTime.Now
                                 };
 
-                                try
-                                {
-									await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
-                                }
-
-                                juegos2 += 1;
-
-                                try
-                                {
-									await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
-                                }
-                                catch (Exception ex)
-                                {
-                                    BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
-                                }
-                            }
+								ofertas.Add(oferta);
+							}
                         }
                     }
-                }
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
+							}
+						}
+					}
+				}
             }
 		}
     }

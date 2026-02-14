@@ -62,153 +62,164 @@ namespace APIs.IndieGala
 						listaJuegos = (IndieGalaRSS)xml.Deserialize(lector);
 					}
 
-					if (listaJuegos != null)
+					if (listaJuegos?.Canal?.Buscador?.Juegos?.Count > 0)
 					{
-						if (listaJuegos.Canal.Buscador.Juegos != null)
+						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+						foreach (IndieGalaJuego juego in listaJuegos.Canal.Buscador.Juegos)
 						{
-							if (listaJuegos.Canal.Buscador.Juegos.Count > 0)
+							bool buscar = true;
+
+							if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
 							{
-								foreach (IndieGalaJuego juego in listaJuegos.Canal.Buscador.Juegos)
+								List<string> listaPaisesRestringidos = new List<string>();
+
+								string[] datosPartidos = juego.PaisesRestringidos.Split(',');
+								listaPaisesRestringidos.AddRange(datosPartidos);
+
+								if (listaPaisesRestringidos.Count > 0)
 								{
-									bool buscar = true;
-
-									if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
+									foreach (var pais in listaPaisesRestringidos)
 									{
-										List<string> listaPaisesRestringidos = new List<string>();
-
-										string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-										listaPaisesRestringidos.AddRange(datosPartidos);
-
-										if (listaPaisesRestringidos.Count > 0)
+										if (pais.ToLower() == "es")
 										{
-											foreach (var pais in listaPaisesRestringidos)
-											{
-												if (pais.ToLower() == "es")
-												{
-													buscar = false;
-													break;
-												}
-											}
+											buscar = false;
+											break;
+										}
+									}
+								}
+							}
+
+							if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
+							{
+								List<string> listaPaisesAprobados = new List<string>();
+
+								string[] datosPartidos = juego.PaisesAprobados.Split(',');
+								listaPaisesAprobados.AddRange(datosPartidos);
+
+								if (listaPaisesAprobados.Count > 0)
+								{
+									bool encontrado = false;
+									foreach (var pais in listaPaisesAprobados)
+									{
+										if (pais.ToLower() == "es")
+										{
+											encontrado = true;
+											break;
 										}
 									}
 
-									if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
+									if (encontrado == false)
 									{
-										List<string> listaPaisesAprobados = new List<string>();
+										buscar = false;
+									}
+								}
+							}
 
-										string[] datosPartidos = juego.PaisesAprobados.Split(',');
-										listaPaisesAprobados.AddRange(datosPartidos);
+							if (buscar == true)
+							{
+								if (juego.Estado == "available")
+								{
+									decimal precioBase = decimal.Parse(juego.PrecioBase);
+									decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
+									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-										if (listaPaisesAprobados.Count > 0)
+									if (descuento > 0)
+									{
+										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+
+										string enlace = juego.Enlace;
+
+										string imagen = juego.Imagen;
+
+										if (imagen.Contains("https://www.indiegalacdn.com/") == false)
 										{
-											bool encontrado = false;
-											foreach (var pais in listaPaisesAprobados)
-											{
-												if (pais.ToLower() == "es")
-												{
-													encontrado = true;
-													break;
-												}
-											}
+											imagen = "https://www.indiegalacdn.com/" + imagen;
+										}
 
-											if (encontrado == false)
+										JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+										if (nombre.Contains("(Epic)") == true)
+										{
+											drm = JuegoDRM.Epic;
+										}
+										else if (ComprobarEpicFalsos(enlace) == true)
+										{
+											drm = JuegoDRM.Epic;
+										}
+										else if (enlace.Contains("_epic") == true)
+										{
+											drm = JuegoDRM.Epic;
+										}
+
+										if (ComprobarElderFalsos(enlace) == true)
+										{
+											drm = JuegoDRM.ElderScrolls;
+										}
+
+										if (ComprobarRockstarFalsos(enlace) == true)
+										{
+											drm = JuegoDRM.Rockstar;
+										}
+
+										JuegoPrecio oferta = new JuegoPrecio
+										{
+											Nombre = nombre,
+											Enlace = enlace,
+											Imagen = imagen,
+											Moneda = JuegoMoneda.Euro,
+											Precio = precioRebajado,
+											Descuento = descuento,
+											Tienda = Generar().Id,
+											DRM = drm,
+											FechaDetectado = DateTime.Now,
+											FechaActualizacion = DateTime.Now
+										};
+
+										if (string.IsNullOrEmpty(juego.Fecha) == false)
+										{
+											if (juego.Fecha != "None")
 											{
-												buscar = false;
+												DateTime fechaTermina = DateTime.Parse(juego.Fecha, CultureInfo.InvariantCulture);
+												oferta.FechaTermina = fechaTermina;
 											}
 										}
+
+										ofertas.Add(oferta);
 									}
+								}
+							}
+						}
 
-									if (buscar == true)
-									{
-										if (juego.Estado == "available")
-										{
-											decimal precioBase = decimal.Parse(juego.PrecioBase);
-											decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-											int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+						if (ofertas?.Count > 0)
+						{
+							int tamaño = 500;
+							var lotes = ofertas
+								.Select((oferta, indice) => new { oferta, indice })
+								.GroupBy(x => x.indice / tamaño)
+								.Select(g => g.Select(x => x.oferta).ToList())
+								.ToList();
 
-											if (descuento > 0)
-											{
-												string nombre = WebUtility.HtmlDecode(juego.Nombre);
+							foreach (var lote in lotes)
+							{
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
 
-												string enlace = juego.Enlace;
+								juegos2 += lote.Count;
 
-												string imagen = juego.Imagen;
-
-												if (imagen.Contains("https://www.indiegalacdn.com/") == false)
-												{
-													imagen = "https://www.indiegalacdn.com/" + imagen;
-												}
-
-												JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-												if (nombre.Contains("(Epic)") == true)
-												{
-													drm = JuegoDRM.Epic;
-												}
-												else if (ComprobarEpicFalsos(enlace) == true)
-												{
-													drm = JuegoDRM.Epic;
-												}
-												else if (enlace.Contains("_epic") == true)
-												{
-													drm = JuegoDRM.Epic;
-												}
-
-												if (ComprobarElderFalsos(enlace) == true)
-												{
-													drm = JuegoDRM.ElderScrolls;
-												}
-
-												if (ComprobarRockstarFalsos(enlace) == true)
-												{
-													drm = JuegoDRM.Rockstar;
-												}
-
-												JuegoPrecio oferta = new JuegoPrecio
-												{
-													Nombre = nombre,
-													Enlace = enlace,
-													Imagen = imagen,
-													Moneda = JuegoMoneda.Euro,
-													Precio = precioRebajado,
-													Descuento = descuento,
-													Tienda = Generar().Id,
-													DRM = drm,
-													FechaDetectado = DateTime.Now,
-													FechaActualizacion = DateTime.Now
-												};
-
-												if (string.IsNullOrEmpty(juego.Fecha) == false)
-												{
-													if (juego.Fecha != "None")
-													{
-														DateTime fechaTermina = DateTime.Parse(juego.Fecha, CultureInfo.InvariantCulture);
-														oferta.FechaTermina = fechaTermina;
-													}
-												}
-
-												try
-												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
-
-												juegos2 += 1;
-
-												try
-												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
-											}
-										}
-									}
+								try
+								{
+									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 								}
 							}
 						}

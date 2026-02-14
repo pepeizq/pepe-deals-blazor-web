@@ -132,10 +132,6 @@ namespace Tiendas2
             {
                 await APIs.Ubisoft.Tienda.BuscarOfertas();
             }
-			else if (id == APIs.Allyouplay.Tienda.Generar().Id)
-			{
-				await APIs.Allyouplay.Tienda.BuscarOfertas();
-			}
 			else if (id == APIs.Playsum.Tienda.Generar().Id)
 			{
 				await APIs.Playsum.Tienda.BuscarOfertas();
@@ -151,10 +147,6 @@ namespace Tiendas2
 			else if (id == APIs.Muvegames.Tienda.Generar().Id)
 			{
 				await APIs.Muvegames.Tienda.BuscarOfertas();
-			}
-			else if (id == APIs.Noctre.Tienda.Generar().Id)
-			{
-				await APIs.Noctre.Tienda.BuscarOfertas();
 			}
 			else if (id == APIs.Stove.Tienda.Generar().Id)
 			{

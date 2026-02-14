@@ -173,7 +173,7 @@ namespace BaseDatos.Juegos
 				ofertasActuales.Add(nuevaOferta);
 			}
 
-            if (ofertasHistoricas?.Count > 0)
+			if (ofertasHistoricas?.Count > 0)
             {
                 bool drmEncontrado = false;
 
@@ -183,12 +183,17 @@ namespace BaseDatos.Juegos
                     {
                         drmEncontrado = true;
 
-                        if ((minimo.Moneda == Herramientas.JuegoMoneda.Euro && nuevaOferta.Moneda == Herramientas.JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio) ||
-                            (minimo.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
-                            (minimo.Moneda == Herramientas.JuegoMoneda.Euro && nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
-                            (minimo.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.Moneda == Herramientas.JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio < minimo.PrecioCambiado))
+                        if (minimo.Moneda != JuegoMoneda.Euro && minimo.Precio > 0 && minimo.PrecioCambiado == 0)
                         {
-                            historicos = ComprobarHistoricos(historicos, nuevaOferta);
+                            minimo.PrecioCambiado = minimo.Precio;
+                        }
+
+						if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio) ||
+                            (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
+                            (minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
+                            (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio < minimo.PrecioCambiado))
+                        {
+							historicos = ComprobarHistoricos(historicos, nuevaOferta);
 
                             bool notificar = false;
 
@@ -367,7 +372,7 @@ namespace BaseDatos.Juegos
 			{
 				ahora = DateTime.Now;
 			}
-			
+
 			Juegos.Actualizar.Comprobacion(cambioPrecio, id, ofertasActuales, ofertasHistoricas, historicos, slugGOG, idGOG, slugEpic, ahora, reseñas);
 		}
 

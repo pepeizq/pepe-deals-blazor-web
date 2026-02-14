@@ -71,68 +71,79 @@ namespace APIs.GreenManGaming
                 XmlSerializer xml = new XmlSerializer(typeof(GreenManGamingJuegos));
                 listaJuegos = (GreenManGamingJuegos)xml.Deserialize(new StringReader(html));
 
-                if (listaJuegos != null)
+				if (listaJuegos?.Juegos?.Count > 0)
 				{
-					if (listaJuegos.Juegos != null)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GreenManGamingJuego juego in listaJuegos.Juegos)
 					{
-						if (listaJuegos.Juegos.Count > 0)
+						if (int.Parse(juego.Stock) > 0)
 						{
-							int juegos2 = 0;
+							decimal precioBase = decimal.Parse(juego.PrecioBase);
+							decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
 
-							foreach (GreenManGamingJuego juego in listaJuegos.Juegos)
+							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+							if (descuento > 0)
 							{
-								if (int.Parse(juego.Stock) > 0)
+								string nombre = WebUtility.HtmlDecode(juego.Nombre);
+
+								string enlace = juego.Enlace;
+
+								string imagen = juego.Imagen;
+
+								JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+								JuegoPrecio oferta = new JuegoPrecio
 								{
-									decimal precioBase = decimal.Parse(juego.PrecioBase);
-									decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
+									Nombre = nombre,
+									Enlace = enlace,
+									Imagen = imagen,
+									Moneda = JuegoMoneda.Euro,
+									Precio = precioRebajado,
+									Descuento = descuento,
+									Tienda = Generar().Id,
+									DRM = drm,
+									FechaDetectado = DateTime.Now,
+									FechaActualizacion = DateTime.Now
+								};
 
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+								ofertas.Add(oferta);
+							}
+						}
+					}
 
-									if (descuento > 0)
-									{
-										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
 
-										string enlace = juego.Enlace;
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
 
-										string imagen = juego.Imagen;
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
 
-										JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+							juegos2 += lote.Count;
 
-										JuegoPrecio oferta = new JuegoPrecio
-										{
-											Nombre = nombre,
-											Enlace = enlace,
-											Imagen = imagen,
-											Moneda = JuegoMoneda.Euro,
-											Precio = precioRebajado,
-											Descuento = descuento,
-											Tienda = Generar().Id,
-											DRM = drm,
-											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now
-										};
-
-										try
-										{
-											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-										}
-
-										juegos2 += 1;
-
-										try
-										{
-											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-										}
-									}
-								}
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}
@@ -186,7 +197,9 @@ namespace APIs.GreenManGaming
 						}
 						else
 						{
-							foreach (var juego in datos.Resultados[0].Juegos)
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+							foreach (var juego in datos.Resultados[0]?.Juegos)
 							{
 								if (juego.SinStocks.ES == false)
 								{
@@ -213,27 +226,42 @@ namespace APIs.GreenManGaming
 											FechaActualizacion = DateTime.Now
 										};
 
-										try
-										{
-											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
-										}
-
-										juegos2 += 1;
-
-										try
-										{
-											await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, juegos2);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
-										}
+										ofertas.Add(oferta);
 									}
 								}					
+							}
+
+							if (ofertas?.Count > 0)
+							{
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
+
+								foreach (var lote in lotes)
+								{
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+									}
+
+									juegos2 += lote.Count;
+
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+									}
+								}
 							}
 						}
 					}

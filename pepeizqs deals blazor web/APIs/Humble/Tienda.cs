@@ -64,7 +64,7 @@ namespace APIs.Humble
 
 		public static string ReferidoChoice(string enlace)
 		{
-            enlace = enlace + "?refc=gXsa9X&partner=pepeizq";
+            enlace = enlace + "?partner=pepeizq";
 
             enlace = enlace.Replace(":", "%3A");
             enlace = enlace.Replace("/", "%2F");
@@ -78,8 +78,6 @@ namespace APIs.Humble
 		public static async Task BuscarOfertas()
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
-
-			int juegos2 = 0;
 
 			string busqueda = "SELECT contenido, enlace FROM temporalhumble";
 
@@ -105,6 +103,8 @@ namespace APIs.Humble
 
 						if (nuevosJuegos?.Resultados?.Count > 0)
 						{
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 							foreach (var juego in nuevosJuegos.Resultados)
 							{
 								string nombre = WebUtility.HtmlDecode(juego.Nombre);
@@ -123,21 +123,16 @@ namespace APIs.Humble
 									{
 										bool añadirChoice = true;
 
-										if (juego.CosasIncompatibles != null)
+										if (juego.CosasIncompatibles?.Count > 0)
 										{
-											if (juego.CosasIncompatibles.Count > 0)
+											foreach (var cosa in juego.CosasIncompatibles)
 											{
-												foreach (var cosa in juego.CosasIncompatibles)
+												if (cosa == "subscriber-discount-coupons")
 												{
-													if (cosa == "subscriber-discount-coupons")
-													{
-														añadirChoice = false;
-													}
+													añadirChoice = false;
 												}
 											}
 										}
-
-										List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
 										foreach (string drmTexto in juego.DRMs)
 										{
@@ -206,32 +201,41 @@ namespace APIs.Humble
 												}
 											}
 										}
+									}
+								}
+							}
 
-										if (ofertas.Count > 0)
-										{
-											foreach (var oferta in ofertas)
-											{
-												try
-												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
+							if (ofertas?.Count > 0)
+							{
+								int juegos2 = 0;
 
-												juegos2 += 1;
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
 
-												try
-												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
-											}
-										}
+								foreach (var lote in lotes)
+								{
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									}
+
+									juegos2 += lote.Count;
+
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 									}
 								}
 							}

@@ -30,14 +30,11 @@ namespace APIs.GamersGate
 		public static string Referido(string enlace)
 		{
 			return enlace + "?aff=6704538";
-			//return "https://www.anrdoezrs.net/click-101212497-15785566?url=" + enlace;
 		}
 
 		public static async Task BuscarOfertas()
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
-
-            int juegos2 = 0;
 
             string html = await Decompiladores.Estandar("https://www.gamersgate.com/feeds/products?country=DEU");
 
@@ -53,7 +50,9 @@ namespace APIs.GamersGate
 
                 if (listaJuegos?.Juegos?.Count > 0)
                 {
-                    foreach (GamersGateJuego juego in listaJuegos.Juegos)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GamersGateJuego juego in listaJuegos.Juegos)
                     {
                         decimal precioBase = decimal.Parse(juego.PrecioBase);
                         decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
@@ -90,27 +89,44 @@ namespace APIs.GamersGate
                                 oferta.FechaTermina = fechaTermina;
                             }
 
-                            try
-                            {
-                                await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                            }
-                            catch (Exception ex)
-                            {
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                            }
-
-                            juegos2 += 1;
-
-                            try
-                            {
-                                await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-                            }
-                            catch (Exception ex)
-                            {
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                            }
+                            ofertas.Add(oferta);
                         }
                     }
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
+						}
+					}
                 }
             }
 		}

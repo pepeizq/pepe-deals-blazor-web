@@ -173,6 +173,9 @@ namespace APIs.Steam
 						int int2 = html.IndexOf("<!-- End List Items -->");
 						html = html.Remove(int2, html.Length - int2);
 
+						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+						List<JuegoReseñas> reseñas = new List<JuegoReseñas>();
+
 						int j = 0;
 						while (j < 50)
 						{
@@ -210,10 +213,6 @@ namespace APIs.Steam
 								{
 									enlace = "https://store.steampowered.com/app/" + Juego.LimpiarID(enlace);
 								}
-								else if (enlace.Contains("https://store.steampowered.com/bundle/") == true)
-								{
-									enlace = "https://store.steampowered.com/bundle/" + Juego.LimpiarID(enlace);
-								}
 
 								int int9 = temp4.IndexOf("<img src=");
 								string temp9 = temp4.Remove(0, int9 + 10);
@@ -233,7 +232,7 @@ namespace APIs.Steam
 
 								string imagen = temp10?.Trim();
 
-								JuegoAnalisis reseñas = new JuegoAnalisis
+								JuegoAnalisis reseña = new JuegoAnalisis
 								{
 									Cantidad = "0",
 									Porcentaje = "0"
@@ -278,27 +277,17 @@ namespace APIs.Steam
 
 										if (cantidad.Length > 1)
 										{
-											reseñas.Cantidad = cantidad;
-											reseñas.Porcentaje = porcentaje;
+											reseña.Cantidad = cantidad;
+											reseña.Porcentaje = porcentaje;
 										}
 									}
 								}
 
 								bool suficientesReseñas = false;
 
-								if (enlace.Contains("https://store.steampowered.com/app/") == true)
+								if (reseña.Cantidad.Length > 1)
 								{
-									if (reseñas.Cantidad.Length > 1)
-									{
-										suficientesReseñas = true;
-									}
-								}
-								else if (enlace.Contains("https://store.steampowered.com/bundle/") == true)
-								{
-									if (reseñas.Cantidad.Length > 3)
-									{
-										suficientesReseñas = true;
-									}
+									suficientesReseñas = true;
 								}
 
 								if (suficientesReseñas == true)
@@ -359,6 +348,13 @@ namespace APIs.Steam
 											{
 												decimal precio = decimal.Parse(temp14.Trim());
 
+												reseñas.Add(new JuegoReseñas
+												{
+													IdSteam = int.Parse(Juego.LimpiarID(enlace)),
+													Cantidad = reseña.Cantidad,
+													Porcentaje = reseña.Porcentaje
+												});
+
 												JuegoPrecio oferta = new JuegoPrecio
 												{
 													Nombre = titulo,
@@ -375,71 +371,10 @@ namespace APIs.Steam
 
 												if (enlace.Contains("https://store.steampowered.com/app/") == true)
 												{
-													try
-													{
-														await BaseDatos.Tiendas.Comprobar.Steam(oferta, reseñas, rapido);
-													}
-													catch (Exception ex)
-													{
-														BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-													}
-												}
-
-												if (enlace.Contains("https://store.steampowered.com/bundle/") == true)
-												{
-													oferta.Tienda = GenerarBundles().Id;
-
-													if (string.IsNullOrEmpty(temp4) == false)
-													{
-														JuegoSteamBundle bundle = new JuegoSteamBundle();
-
-														if (temp4.Contains("m_bMustPurchaseAsSet&quot;:1") == true)
-														{
-															bundle.Junto = false;
-														}
-														else
-														{
-															bundle.Junto = true;
-														}
-
-														if (temp4.Contains("data-bundlediscount=") == true)
-														{
-															int int15 = temp4.IndexOf("data-bundlediscount=");
-															string temp15 = temp4.Remove(0, int15 + 21);
-
-															int int16 = temp15.IndexOf(Strings.ChrW(34));
-															string temp16 = temp15.Remove(int16, temp15.Length - int16);
-
-															bundle.Descuento = int.Parse(temp16);
-														}
-														else
-														{
-															bundle.Descuento = 0;
-														}
-
-														oferta.BundleSteam = bundle;
-													}
-
-													try
-													{
-														await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-													}
-													catch (Exception ex)
-													{
-														BaseDatos.Errores.Insertar.Mensaje(GenerarBundles().Id, ex);
-													}
+													ofertas.Add(oferta);
 												}
 
 												juegos += 1;
-
-												try
-												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
 											}
 										}
 									}
@@ -451,6 +386,27 @@ namespace APIs.Steam
 							}
 
 							j += 1;
+						}
+
+						if (ofertas?.Count > 0)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Steam(ofertas, reseñas, rapido);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
+						}
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 						}
 					}
 				}
@@ -510,6 +466,10 @@ namespace APIs.Steam
 
 						if (juegos?.Count > 0)
 						{
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+							List<JuegoPrecio> bundles = new List<JuegoPrecio>();
+							List<JuegoReseñas> reseñas = new List<JuegoReseñas>();
+
 							foreach (var juego in juegos)
 							{
 								if (juego.OpcionCompraMejor != null)
@@ -527,11 +487,18 @@ namespace APIs.Steam
 
 											decimal precio = decimal.Parse(precioString);
 
-											JuegoAnalisis reseñas = new JuegoAnalisis
+											JuegoAnalisis reseña = new JuegoAnalisis
 											{
 												Cantidad = juego.Reseñas.SumarioFiltrado.ReseñasCantidad.ToString(),
 												Porcentaje = juego.Reseñas.SumarioFiltrado.ReseñasPorcentaje.ToString()
 											};
+
+											reseñas.Add(new JuegoReseñas
+											{
+												IdSteam = (int)juego.Id,
+												Cantidad = reseña.Cantidad,
+												Porcentaje = reseña.Porcentaje
+											});
 
 											JuegoPrecio oferta = new JuegoPrecio
 											{
@@ -551,25 +518,9 @@ namespace APIs.Steam
 												oferta.FechaTermina = DateTime.UnixEpoch.AddSeconds(juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate ?? 0).ToLocalTime();
 											}
 
-											try
-											{
-												await BaseDatos.Tiendas.Comprobar.Steam(oferta, reseñas, rapido);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
+											ofertas.Add(oferta);
 
 											juegos2 += 1;
-
-											try
-											{
-												await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
 										}
 									}
 								}
@@ -625,29 +576,46 @@ namespace APIs.Steam
 													BundleSteam = bundle
 												};
 
-												try
-												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
+												bundles.Add(oferta);
 
 												juegos2 += 1;
-
-												try
-												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
 											}
 										}
 									}
 								}
+							}
+
+							if (ofertas?.Count > 0)
+							{
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Steam(ofertas, reseñas, rapido);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
+							}
+
+							if (bundles?.Count > 0)
+							{
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Resto(bundles);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
+							}
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}
