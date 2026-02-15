@@ -43,65 +43,79 @@ namespace APIs._2Game
 				{
 					_2GameResultados resultados = JsonSerializer.Deserialize<_2GameResultados>(html);
 
-					if (resultados != null)
+					if (resultados?.Datos?.Productos != null)
 					{
-						if (resultados.Datos.Productos != null)
+						paginas = resultados.Datos.Productos.Paginas.TotalPaginas;
+
+						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+						foreach (var juego in resultados.Datos.Productos.Juegos)
 						{
-							paginas = resultados.Datos.Productos.Paginas.TotalPaginas;
-
-							foreach (var juego in resultados.Datos.Productos.Juegos)
+							if (juego.Precios.Datos.PrecioRebajado.Moneda.ToLower() == "eur" && juego.Precios.Datos.PrecioBase.Moneda.ToLower() == "eur")
 							{
-								if (juego.Precios.Datos.PrecioRebajado.Moneda.ToLower() == "eur" && juego.Precios.Datos.PrecioBase.Moneda.ToLower() == "eur")
+								decimal precioRebajado = juego.Precios.Datos.PrecioRebajado.Cantidad;
+								decimal precioBase = juego.Precios.Datos.PrecioBase.Cantidad;
+
+								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+								if (descuento > 0)
 								{
-                                    decimal precioRebajado = juego.Precios.Datos.PrecioRebajado.Cantidad;
-                                    decimal precioBase = juego.Precios.Datos.PrecioBase.Cantidad;
+									string imagen = juego.Imagen.Enlace;
 
-                                    int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									string enlace = "https://2game.com" + juego.Enlace;
+									enlace = enlace.Replace("/en_gb/", "/");
+									enlace = enlace.Replace("/en_es/", "/");
+									enlace = enlace.Replace("/es_es/", "/");
 
-                                    if (descuento > 0)
-                                    {
-                                        string imagen = juego.Imagen.Enlace;
+									JuegoPrecio oferta = new JuegoPrecio
+									{
+										Nombre = juego.Nombre,
+										Enlace = enlace,
+										Imagen = imagen,
+										Moneda = JuegoMoneda.Euro,
+										Precio = precioRebajado,
+										Descuento = descuento,
+										Tienda = Generar().Id,
+										DRM = JuegoDRM.Steam,
+										FechaDetectado = DateTime.Now,
+										FechaActualizacion = DateTime.Now
+									};
 
-                                        string enlace = "https://2game.com" + juego.Enlace;
-                                        enlace = enlace.Replace("/en_gb/", "/");
-                                        enlace = enlace.Replace("/en_es/", "/");
-                                        enlace = enlace.Replace("/es_es/", "/");
+									ofertas.Add(oferta);
+								}
+							}
+						}
 
-                                        JuegoPrecio oferta = new JuegoPrecio
-                                        {
-                                            Nombre = juego.Nombre,
-                                            Enlace = enlace,
-                                            Imagen = imagen,
-                                            Moneda = JuegoMoneda.Euro,
-                                            Precio = precioRebajado,
-                                            Descuento = descuento,
-                                            Tienda = Generar().Id,
-                                            DRM = JuegoDRM.Steam,
-                                            FechaDetectado = DateTime.Now,
-                                            FechaActualizacion = DateTime.Now
-                                        };
+						if (ofertas?.Count > 0)
+						{
+							int tamaño = 500;
+							var lotes = ofertas
+								.Select((oferta, indice) => new { oferta, indice })
+								.GroupBy(x => x.indice / tamaño)
+								.Select(g => g.Select(x => x.oferta).ToList())
+								.ToList();
 
-                                        try
-                                        {
-                                            await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                                        }
+							foreach (var lote in lotes)
+							{
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
 
-                                        juegos2 += 1;
+								juegos2 += lote.Count;
 
-                                        try
-                                        {
-                                            await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                                        }
-                                    }
-                                }
+								try
+								{
+									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
 							}
 						}
 					}

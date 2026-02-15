@@ -83,6 +83,8 @@ namespace APIs.Ubisoft
 
 						if (datos.Datos[0].Juegos?.Count > 0)
 						{
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 							foreach (UbisoftJuego juego in datos.Datos[0].Juegos)
 							{
 								if (juego != null)
@@ -128,26 +130,41 @@ namespace APIs.Ubisoft
 												}
 											}
 
-											try
-											{
-												await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
-
-											juegos2 += 1;
-
-											try
-											{
-												await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
+											ofertas.Add(oferta);
 										}
+									}
+								}
+							}
+
+							if (ofertas?.Count > 0)
+							{
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
+
+								foreach (var lote in lotes)
+								{
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									}
+
+									juegos2 += lote.Count;
+
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 									}
 								}
 							}

@@ -56,78 +56,92 @@ namespace APIs.Nexus
 			{
 				NexusJuegos juegos = JsonSerializer.Deserialize<NexusJuegos>(html);
 
-				if (juegos != null)
+				if (juegos?.Resultados?.Count > 0)
 				{
-					int juegos2 = 0;
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-					if (juegos.Resultados?.Count > 0)
+					foreach (var juego in juegos.Resultados)
 					{
-						foreach (var juego in juegos.Resultados)
+						decimal precioRebajado = juego.PrecioRebajado;
+						decimal precioBase = juego.PrecioBase;
+
+						int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+						if (descuento > 0)
 						{
-							decimal precioRebajado = juego.PrecioRebajado;
-							decimal precioBase = juego.PrecioBase;
+							bool drmValido = false;
 
-							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-							if (descuento > 0)
+							if (juego.DRMs.Count > 0)
 							{
-								bool drmValido = false;
-
-								if (juego.DRMs.Count > 0)
+								foreach (var drm in juego.DRMs)
 								{
-									foreach (var drm in juego.DRMs)
+									if (drm.ToLower() == "steam")
 									{
-										if (drm.ToLower() == "steam")
-										{
-											drmValido = true;
-											break;
-										}
+										drmValido = true;
+										break;
 									}
 								}
+							}
 
-								if (drmValido == true)
+							if (drmValido == true)
+							{
+								string nombre = juego.Nombre;
+								nombre = WebUtility.HtmlDecode(nombre);
+
+								string enlace = "https://www.nexus.gg/pepeizq/" + juego.Slug;
+
+								string imagen = string.Empty;
+
+								JuegoPrecio oferta = new JuegoPrecio
 								{
-									string nombre = juego.Nombre;
-									nombre = WebUtility.HtmlDecode(nombre);
+									Nombre = nombre,
+									Enlace = enlace,
+									Imagen = imagen,
+									Moneda = JuegoMoneda.Dolar,
+									Precio = precioRebajado,
+									Descuento = descuento,
+									Tienda = Generar().Id,
+									DRM = JuegoDRM.Steam,
+									FechaDetectado = DateTime.Now,
+									FechaActualizacion = DateTime.Now
+								};
 
-									string enlace = "https://www.nexus.gg/pepeizq/" + juego.Slug;
+								ofertas.Add(oferta);
+							}
+						}
+					}
 
-									string imagen = string.Empty;
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
 
-									JuegoPrecio oferta = new JuegoPrecio
-									{
-										Nombre = nombre,
-										Enlace = enlace,
-										Imagen = imagen,
-										Moneda = JuegoMoneda.Dolar,
-										Precio = precioRebajado,
-										Descuento = descuento,
-										Tienda = Generar().Id,
-										DRM = JuegoDRM.Steam,
-										FechaDetectado = DateTime.Now,
-										FechaActualizacion = DateTime.Now
-									};
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
 
-									try
-									{
-										await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
 
-									juegos2 += 1;
+							juegos2 += lote.Count;
 
-									try
-									{
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
-								}
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}

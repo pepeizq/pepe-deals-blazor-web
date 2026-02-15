@@ -59,6 +59,8 @@ namespace APIs.Stove
 
 						if (respuesta2.Datos?.Juegos?.Count > 0)
 						{
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 							foreach (var juego in respuesta2.Datos.Juegos)
 							{
 								int descuento = juego.Precio.Descuento;
@@ -85,16 +87,31 @@ namespace APIs.Stove
 										FechaActualizacion = DateTime.Now
 									};
 
+									ofertas.Add(oferta);
+								}
+							}
+
+							if (ofertas?.Count > 0)
+							{
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
+
+								foreach (var lote in lotes)
+								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+										await BaseDatos.Tiendas.Comprobar.Resto(lote);
 									}
 									catch (Exception ex)
 									{
 										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 									}
 
-									juegos2 += 1;
+									juegos2 += lote.Count;
 
 									try
 									{

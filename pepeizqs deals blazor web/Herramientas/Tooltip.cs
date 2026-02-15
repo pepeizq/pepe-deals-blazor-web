@@ -25,6 +25,22 @@ namespace Herramientas
                 SuscripcionesPasadas = null
             };
 
+			if (juego.Etiquetas != null && juego.Etiquetas.Count > 0)
+			{
+				datos.Etiquetas = new List<string>();
+
+				int i = 0;
+				foreach (var etiqueta in juego.Etiquetas)
+				{
+					if (i < 3)
+					{
+						datos.Etiquetas.Add(etiqueta);
+					}
+
+					i += 1;
+				}
+			}
+
 			if (juego.Media?.Videos?.Count > 0)
 			{
 				if (string.IsNullOrEmpty(juego.Media.Videos[0].Micro) == false)
@@ -242,7 +258,8 @@ namespace Herramientas
     public class ToolTipDatos
     {
         public string Nombre { get; set; }
-        public string Video { get; set; }
+		public List<string> Etiquetas { get; set; }
+		public string Video { get; set; }
 		public string ReviewsIcono { get; set; }
 		public string ReviewsCantidad { get; set; }
         public string BundlesActuales { get; set; }

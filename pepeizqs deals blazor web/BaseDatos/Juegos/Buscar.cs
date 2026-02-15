@@ -141,7 +141,7 @@ FROM juegos j";
 		{
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay, j.etiquetas,
 	(
         SELECT g.gratis
         FROM gratis g

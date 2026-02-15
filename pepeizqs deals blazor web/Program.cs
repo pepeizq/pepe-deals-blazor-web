@@ -79,16 +79,16 @@ builder.Services.AddRazorComponents(opciones =>
 }).AddInteractiveServerComponents(opciones =>
 {
 	opciones.DetailedErrors = true;
-	opciones.DisconnectedCircuitMaxRetained = 60;
-	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(60);
+	opciones.DisconnectedCircuitMaxRetained = 120;
+	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(5);
 	opciones.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(60);
-	opciones.MaxBufferedUnacknowledgedRenderBatches = 3;
+	opciones.MaxBufferedUnacknowledgedRenderBatches = 20;
 }).AddHubOptions(opciones =>
 {
 	opciones.EnableDetailedErrors = true;
 	opciones.MaximumReceiveMessageSize = null;
-	opciones.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
-	opciones.HandshakeTimeout = TimeSpan.FromSeconds(60);
+	opciones.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+	opciones.HandshakeTimeout = TimeSpan.FromSeconds(30);
 	opciones.KeepAliveInterval = TimeSpan.FromSeconds(20);
 }).AddCircuitOptions(opciones =>
 {
@@ -323,12 +323,12 @@ if (Directory.Exists(imagenesRuta) == true)
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {
-	opciones.DisableWebSocketCompression = true;
-	//opciones.ConfigureConnection = dispatcherOpciones =>
+	opciones.DisableWebSocketCompression = false;
+	//opciones.ConfigureConnection = dispatcherOptions =>
 	//{
-	//	dispatcherOpciones.CloseOnAuthenticationExpiration = false;
-	//	dispatcherOpciones.AllowStatefulReconnects = true;
-	//	dispatcherOpciones.ApplicationMaxBufferSize = 10 * 1024 * 1024; // 10 MB
+	//	dispatcherOptions.CloseOnAuthenticationExpiration = true;
+	//	dispatcherOptions.AllowStatefulReconnects = true;
+	//	dispatcherOptions.ApplicationMaxBufferSize = 1024 * 1024;
 	//};
 });
 

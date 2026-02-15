@@ -191,7 +191,7 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @"SELECT j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.bundles, 
+			string busqueda = @"SELECT j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles, 
 	(
         SELECT g.gratis
         FROM gratis g

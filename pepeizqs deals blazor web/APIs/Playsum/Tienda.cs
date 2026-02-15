@@ -37,8 +37,6 @@ namespace APIs.Playsum
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
-			int juegos2 = 0;
-
 			string html = await Decompiladores.Estandar("https://api.playsum.live/v1/shop/products/rss");
 
 			if (string.IsNullOrEmpty(html) == false)
@@ -51,8 +49,10 @@ namespace APIs.Playsum
 					listaJuegos = (PlaysumJuegos)xml.Deserialize(lector);
 				}
 
-				if (listaJuegos != null)
+				if (listaJuegos?.Canal?.Juegos?.Count > 0)
 				{
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 					foreach (PlaysumJuego juego in listaJuegos.Canal.Juegos)
 					{
 						bool buscar = true;
@@ -156,27 +156,44 @@ namespace APIs.Playsum
 											CodigoTexto = "PEPEIZQDEALS"
 										};
 
-										try
-										{
-											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-										}
-
-										juegos2 += 1;
-
-										try
-										{
-											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-										}
+										ofertas.Add(oferta);
 									}
 								}
+							}
+						}
+					}
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}

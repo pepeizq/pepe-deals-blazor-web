@@ -48,108 +48,119 @@ namespace APIs.GameBillet
 			{
 				GameBilletProductos juegos = JsonSerializer.Deserialize<GameBilletProductos>(html);
 
-				if (juegos != null)
+				if (juegos?.Juegos?.Count > 0)
 				{
-					if (juegos.Juegos != null)
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+					foreach (GameBilletJuego juego in juegos.Juegos)
 					{
-						if (juegos.Juegos.Count > 0)
+						if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
 						{
-							int juegos2 = 0;
+							string sPrecioBase = juego.PrecioBase;
+							sPrecioBase = sPrecioBase.Replace("€", null);
 
-							foreach (GameBilletJuego juego in juegos.Juegos)
+							string sPrecioRebajado = juego.PrecioRebajado;
+							sPrecioRebajado = sPrecioRebajado.Replace("€", null);
+
+							decimal precioBase = decimal.Parse(sPrecioBase);
+							decimal precioRebajado = decimal.Parse(sPrecioRebajado);
+
+							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+							if (descuento > 0)
 							{
-								if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
+								JuegoDRM drm1 = JuegoDRM.NoEspecificado;
+
+								if (string.IsNullOrEmpty(juego.DRM1) == false)
 								{
-									string sPrecioBase = juego.PrecioBase;
-									sPrecioBase = sPrecioBase.Replace("€", null);
-
-									string sPrecioRebajado = juego.PrecioRebajado;
-									sPrecioRebajado = sPrecioRebajado.Replace("€", null);
-
-									decimal precioBase = decimal.Parse(sPrecioBase);
-									decimal precioRebajado = decimal.Parse(sPrecioRebajado);
-
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-									if (descuento > 0)
-									{
-										JuegoDRM drm1 = JuegoDRM.NoEspecificado;
-											
-										if (string.IsNullOrEmpty(juego.DRM1) == false)
-										{
-											drm1 = JuegoDRM2.Traducir(juego.DRM1, Generar().Id);
-										}
-
-										JuegoDRM drm2 = JuegoDRM.NoEspecificado;
-
-										if (string.IsNullOrEmpty(juego.DRM2) == false)
-										{
-											drm2 = JuegoDRM2.Traducir(juego.DRM2, Generar().Id);
-										}
-
-										JuegoDRM drm3 = JuegoDRM.NoEspecificado;
-
-										if (string.IsNullOrEmpty(juego.DRM3) == false)
-										{
-											drm3 = JuegoDRM2.Traducir(juego.DRM3, Generar().Id);
-										}
-
-										if (drm1 != JuegoDRM.NoEspecificado || drm2 != JuegoDRM.NoEspecificado || drm3 != JuegoDRM.NoEspecificado)
-										{
-											JuegoDRM drmFinal = drm1;
-
-											if (drm2 != JuegoDRM.NoEspecificado)
-											{
-												drmFinal = drm2;
-											}
-
-											if (drm3 != JuegoDRM.NoEspecificado)
-											{
-												drmFinal = drm3;
-											}
-
-											JuegoPrecio oferta = new JuegoPrecio
-											{
-												Nombre = WebUtility.HtmlDecode(juego.Nombre),
-												Enlace = juego.Enlace,
-												Imagen = "nada",
-												Moneda = JuegoMoneda.Euro,
-												Precio = precioRebajado,
-												Descuento = descuento,
-												Tienda = Generar().Id,
-												DRM = drmFinal,
-												FechaDetectado = DateTime.Now,
-												FechaActualizacion = DateTime.Now
-											};
-
-											if (juego.TieneCodigoDescuento == true)
-											{
-												oferta.CodigoDescuento = (int)juego.CodigoDescuentoPorcentaje;
-												oferta.CodigoTexto = juego.CodigoDescuento;
-											}
-
-											try
-											{
-												await BaseDatos.Tiendas.Comprobar.Resto(oferta);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
-
-											juegos2 += 1;
-
-											try
-											{
-												await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-											}
-											catch (Exception ex)
-											{
-												BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-											}
-										}
-									}
+									drm1 = JuegoDRM2.Traducir(juego.DRM1, Generar().Id);
 								}
+
+								JuegoDRM drm2 = JuegoDRM.NoEspecificado;
+
+								if (string.IsNullOrEmpty(juego.DRM2) == false)
+								{
+									drm2 = JuegoDRM2.Traducir(juego.DRM2, Generar().Id);
+								}
+
+								JuegoDRM drm3 = JuegoDRM.NoEspecificado;
+
+								if (string.IsNullOrEmpty(juego.DRM3) == false)
+								{
+									drm3 = JuegoDRM2.Traducir(juego.DRM3, Generar().Id);
+								}
+
+								if (drm1 != JuegoDRM.NoEspecificado || drm2 != JuegoDRM.NoEspecificado || drm3 != JuegoDRM.NoEspecificado)
+								{
+									JuegoDRM drmFinal = drm1;
+
+									if (drm2 != JuegoDRM.NoEspecificado)
+									{
+										drmFinal = drm2;
+									}
+
+									if (drm3 != JuegoDRM.NoEspecificado)
+									{
+										drmFinal = drm3;
+									}
+
+									JuegoPrecio oferta = new JuegoPrecio
+									{
+										Nombre = WebUtility.HtmlDecode(juego.Nombre),
+										Enlace = juego.Enlace,
+										Imagen = "nada",
+										Moneda = JuegoMoneda.Euro,
+										Precio = precioRebajado,
+										Descuento = descuento,
+										Tienda = Generar().Id,
+										DRM = drmFinal,
+										FechaDetectado = DateTime.Now,
+										FechaActualizacion = DateTime.Now
+									};
+
+									if (juego.TieneCodigoDescuento == true)
+									{
+										oferta.CodigoDescuento = (int)juego.CodigoDescuentoPorcentaje;
+										oferta.CodigoTexto = juego.CodigoDescuento;
+									}
+
+									ofertas.Add(oferta);
+								}
+							}
+						}
+					}
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
+							try
+							{
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
+
+							juegos2 += lote.Count;
+
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}

@@ -52,7 +52,7 @@ namespace APIs.Muvegames
 						}
 
 						string ids = string.Empty;
-						List<MuvegamesMasOferta> ofertas = new List<MuvegamesMasOferta>();
+						List<MuvegamesMasOferta> ofertasMuve = new List<MuvegamesMasOferta>();
 						
 						foreach (var juego in datos.Juegos)
 						{
@@ -101,57 +101,74 @@ namespace APIs.Muvegames
 
 								oferta2.Oferta = oferta;
 
-								ofertas.Add(oferta2);
+								ofertasMuve.Add(oferta2);
 							}
 						}
 
-						string html2 = await Decompiladores.Estandar("https://volkanos.muve.pl/api/matrix/v1/muve/prices/?currency=EUR&country=ES" + ids);
-
-						if (string.IsNullOrEmpty(html2) == false)
+						if (ofertasMuve?.Count > 0)
 						{
-							MuvegamesPrecios precios = JsonSerializer.Deserialize<MuvegamesPrecios>(html2);
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-							if (precios != null)
+							string html2 = await Decompiladores.Estandar("https://volkanos.muve.pl/api/matrix/v1/muve/prices/?currency=EUR&country=ES" + ids);
+
+							if (string.IsNullOrEmpty(html2) == false)
 							{
-								foreach (var precio in precios.Precios)
+								MuvegamesPrecios precios = JsonSerializer.Deserialize<MuvegamesPrecios>(html2);
+
+								if (precios != null)
 								{
-									foreach (var oferta in ofertas)
+									foreach (var precio in precios.Precios)
 									{
-										if (precio.Id == oferta.Id && string.IsNullOrEmpty(precio.PrecioBase) == false && string.IsNullOrEmpty(precio.PrecioRebajado) == false)
+										foreach (var oferta in ofertasMuve)
 										{
-											decimal precioBase = decimal.Parse(precio.PrecioBase);
-											decimal precioRebajado = decimal.Parse(precio.PrecioRebajado);
-
-											int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-											if (descuento > 0)
+											if (precio.Id == oferta.Id && string.IsNullOrEmpty(precio.PrecioBase) == false && string.IsNullOrEmpty(precio.PrecioRebajado) == false)
 											{
-												oferta.Oferta.Descuento = descuento;
-												oferta.Oferta.Precio = precioRebajado;
+												decimal precioBase = decimal.Parse(precio.PrecioBase);
+												decimal precioRebajado = decimal.Parse(precio.PrecioRebajado);
 
-												try
-												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta.Oferta);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
+												int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-												juegos2 += 1;
-
-												try
+												if (descuento > 0)
 												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-												}
+													ofertas.Add(oferta.Oferta);
 
-												break;
+													break;
+												}
 											}
 										}
+									}
+								}
+							}
+
+							if (ofertas?.Count > 0)
+							{
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
+
+								foreach (var lote in lotes)
+								{
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									}
+
+									juegos2 += lote.Count;
+
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 									}
 								}
 							}

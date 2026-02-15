@@ -315,6 +315,18 @@
 						@tooltip.Nombre
 					</div>
 
+					@if (tooltip.Etiquetas?.Count > 0)
+					{
+						<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 5px 0px;">
+							@foreach (var etiqueta in tooltip.Etiquetas)
+							{
+								<div style="background-color: var(--fondoCuerpo); padding: 3px 8px; font-size: 14px; border-radius: 5px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, etiqueta, "Tags")
+								</div>
+							}
+						</div>
+					}
+
 					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
@@ -360,13 +372,13 @@
 					else if (tipo == Tipo.Bundle || tipo == Tipo.Suscripciones || tipo == Tipo.Noticia)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
-							<div style="margin-right: 20px;">
+							<div style="display: flex; margin-right: 20px;">
 								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM"  />
 							</div>
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
-								<div style="margin-right: 20px;">
+								<div style="display: flex; margin-right: 20px;">
 									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews"  />
 								</div>
 							}

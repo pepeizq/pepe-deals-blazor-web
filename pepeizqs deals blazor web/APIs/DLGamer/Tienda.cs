@@ -8,7 +8,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -43,8 +42,6 @@ namespace APIs.DLGamer
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
 
-			int juegos2 = 0;
-
 			string html = await Decompiladores.NoSeguro("https://static.dlgamer.com/feeds/general_feed_eu.json");
 
 			if (string.IsNullOrEmpty(html) == false)
@@ -62,6 +59,8 @@ namespace APIs.DLGamer
 
 				if (basedatos != null)
 				{
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 					foreach (var juegoDL in basedatos.Datos)
 					{
 						decimal precioRebajado = juegoDL.Value.PrecioRebajado;
@@ -93,16 +92,33 @@ namespace APIs.DLGamer
 								FechaActualizacion = DateTime.Now
 							};
 
+							ofertas.Add(oferta);
+						}
+					}
+
+					if (ofertas?.Count > 0)
+					{
+						int juegos2 = 0;
+
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
+						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+								await BaseDatos.Tiendas.Comprobar.Resto(lote);
 							}
 							catch (Exception ex)
 							{
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                            }
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
 
-							juegos2 += 1;
+							juegos2 += lote.Count;
 
 							try
 							{
@@ -110,8 +126,8 @@ namespace APIs.DLGamer
 							}
 							catch (Exception ex)
 							{
-                                BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-                            }
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
 						}
 					}
 				}
