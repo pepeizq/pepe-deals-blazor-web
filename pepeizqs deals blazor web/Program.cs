@@ -82,7 +82,6 @@ builder.Services.AddRazorComponents(opciones =>
 	opciones.DisconnectedCircuitMaxRetained = 120;
 	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(5);
 	opciones.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(60);
-	opciones.MaxBufferedUnacknowledgedRenderBatches = 20;
 }).AddHubOptions(opciones =>
 {
 	opciones.EnableDetailedErrors = true;
@@ -324,12 +323,6 @@ if (Directory.Exists(imagenesRuta) == true)
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {
 	opciones.DisableWebSocketCompression = false;
-	//opciones.ConfigureConnection = dispatcherOptions =>
-	//{
-	//	dispatcherOptions.CloseOnAuthenticationExpiration = true;
-	//	dispatcherOptions.AllowStatefulReconnects = true;
-	//	dispatcherOptions.ApplicationMaxBufferSize = 1024 * 1024;
-	//};
 });
 
 #region Compresion (Primero)

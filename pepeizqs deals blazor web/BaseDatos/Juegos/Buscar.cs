@@ -246,257 +246,223 @@ WHERE id=@id";
 
 		public static async Task<List<Juego>> MultiplesJuegos(List<string> ids)
         {
-            string sqlBuscar = string.Empty;
-
-            if (ids != null)
-            {
-                if (ids.Count > 0)
-                {
-                    sqlBuscar = "SELECT * FROM juegos WHERE id IN (";
-
-                    int i = 0;
-                    while (i < ids.Count)
-                    {
-                        if (i == 0)
-                        {
-                            sqlBuscar = sqlBuscar + "'" + ids[i] + "'";
-                        }
-                        else
-                        {
-                            sqlBuscar = sqlBuscar + ", '" + ids[i] + "'";
-                        }
-
-                        i += 1;
-                    }
-
-                    sqlBuscar = sqlBuscar + ")";
-                    sqlBuscar = sqlBuscar + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
-                }
-            }
-
-			if (string.IsNullOrEmpty(sqlBuscar) == false)
+			if (ids?.Count == 0)
 			{
-				try
-				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
-					});
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
-				}
+				return null;
 			}
 
-			return new List<Juego>();
+			var idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
+
+			string sqlBuscar = @"SELECT 
+        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.exeEpic, j.exeUbisoft, j.freeToPlay,
+        (
+            SELECT g.gratis
+            FROM gratis g
+            WHERE g.juegoId = j.id
+              AND g.fechaEmpieza <= GETDATE()
+              AND g.fechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS GratisActuales,
+        (
+            SELECT s.suscripcion
+            FROM suscripciones s
+            WHERE s.juegoId = j.id
+              AND s.FechaEmpieza <= GETDATE()
+              AND s.FechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS SuscripcionesActuales
+    FROM juegos j
+    WHERE id IN @Ids
+    ORDER BY CASE
+        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+    END DESC";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = idsBaseDatos })).ToList()
+				);
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
+				return null;
+			}
         }
 
         public static async Task<List<Juego>> MultiplesJuegos(List<JuegoDeseado> ids)
         {
-            List<Juego> juegos = new List<Juego>();
-            string sqlBuscar = string.Empty;
-
-            if (ids != null)
-            {
-                if (ids.Count > 0)
-                {
-                    sqlBuscar = "SELECT * FROM juegos WHERE id IN (";
-
-                    int i = 0;
-                    while (i < ids.Count)
-                    {
-                        if (i == 0)
-                        {
-                            sqlBuscar = sqlBuscar + "'" + ids[i].IdBaseDatos + "'";
-                        }
-                        else
-                        {
-                            sqlBuscar = sqlBuscar + ", '" + ids[i].IdBaseDatos + "'";
-                        }
-
-                        i += 1;
-                    }
-
-                    sqlBuscar = sqlBuscar + ")";
-                    sqlBuscar = sqlBuscar + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
-                }
-            }
-
-            if (string.IsNullOrEmpty(sqlBuscar) == false)
-            {
-				try
-				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
-					});
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
-				}
+			if (ids?.Count == 0)
+			{
+				return null;
 			}
 
-            return juegos;
+			var idsBaseDatos = ids.Select(j => int.Parse(j.IdBaseDatos)).ToList();
+
+			string sqlBuscar = @"SELECT 
+        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.exeEpic, j.exeUbisoft, j.freeToPlay,
+        (
+            SELECT g.gratis
+            FROM gratis g
+            WHERE g.juegoId = j.id
+              AND g.fechaEmpieza <= GETDATE()
+              AND g.fechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS GratisActuales,
+        (
+            SELECT s.suscripcion
+            FROM suscripciones s
+            WHERE s.juegoId = j.id
+              AND s.FechaEmpieza <= GETDATE()
+              AND s.FechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS SuscripcionesActuales
+    FROM juegos j
+    WHERE id IN @Ids
+    ORDER BY CASE
+        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+    END DESC";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = idsBaseDatos })).ToList()
+				);
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples", ex);
+				return null;
+			}
         }
 
 		public static async Task<List<Juego>> MultiplesJuegosSteam2(List<int> ids)
 		{
-			string sqlBuscar = string.Empty;
-
-			if (ids?.Count > 0)
+			if (ids?.Count == 0)
 			{
-				sqlBuscar = @"SELECT 
-    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
-    j.exeEpic, j.exeUbisoft, j.freeToPlay,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales
-FROM juegos j
-WHERE idSteam IN (";
-
-				int i = 0;
-				while (i < ids.Count)
-				{
-					if (i == 0)
-					{
-						sqlBuscar = sqlBuscar + "'" + ids[i] + "'";
-					}
-					else
-					{
-						sqlBuscar = sqlBuscar + ", '" + ids[i] + "'";
-					}
-
-					i += 1;
-				}
-
-				sqlBuscar = sqlBuscar + ")";
-				sqlBuscar = sqlBuscar + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
+				return new List<Juego>();
 			}
 
-			if (string.IsNullOrEmpty(sqlBuscar) == false)
-			{
-				try
-				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
-					});
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam", ex);
-				}
-			}
+			string sqlBuscar = @"SELECT 
+        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.exeEpic, j.exeUbisoft, j.freeToPlay,
+        (
+            SELECT g.gratis
+            FROM gratis g
+            WHERE g.juegoId = j.id
+              AND g.fechaEmpieza <= GETDATE()
+              AND g.fechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS GratisActuales,
+        (
+            SELECT s.suscripcion
+            FROM suscripciones s
+            WHERE s.juegoId = j.id
+              AND s.FechaEmpieza <= GETDATE()
+              AND s.FechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS SuscripcionesActuales
+    FROM juegos j
+    WHERE idSteam IN @Ids
+    ORDER BY CASE
+        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+    END DESC";
 
-			return new List<Juego>();
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = ids })).ToList()
+				);
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam", ex);
+				return new List<Juego>();
+			}
 		}
 
 		public static async Task<List<int>> MultiplesJuegosSteamOrdenado(List<int> ids)
 		{
-			string sqlBuscar = string.Empty;
-
-			if (ids?.Count > 0)
+			if (ids?.Count == 0)
 			{
-				sqlBuscar = "SELECT idSteam FROM juegos WHERE idSteam IN (";
-
-				int i = 0;
-				while (i < ids.Count)
-				{
-					if (i == 0)
-					{
-						sqlBuscar = sqlBuscar + "'" + ids[i] + "'";
-					}
-					else
-					{
-						sqlBuscar = sqlBuscar + ", '" + ids[i] + "'";
-					}
-
-					i += 1;
-				}
-
-				sqlBuscar = sqlBuscar + ")";
-				sqlBuscar = sqlBuscar + " ORDER BY CASE\r\n WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))\r\n END DESC";
+				return null;
 			}
 
-			if (string.IsNullOrEmpty(sqlBuscar) == false)
+			string sqlBuscar = @"SELECT idSteam FROM juegos WHERE idSteam IN @Ids 
+ORDER BY CASE
+WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+END DESC";
+
+			try
 			{
-				try
+				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						return (await conexion.QueryAsync<int>(sqlBuscar)).ToList();
-					});
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam Ordenado", ex);
-				}
+					return (await conexion.QueryAsync<int>(sqlBuscar, new { Ids = ids })).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam Ordenado", ex);
 			}
 
-			return new List<int>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> MultiplesJuegosGOG(List<string> ids)
 		{
-			string sqlBuscar = string.Empty;
-
-			if (ids != null)
+			if (ids?.Count == 0)
 			{
-				if (ids.Count > 0)
-				{
-					sqlBuscar = "SELECT * FROM juegos WHERE idGOG IN (";
-
-					int i = 0;
-					while (i < ids.Count)
-					{
-						if (i == 0)
-						{
-							sqlBuscar = sqlBuscar + "'" + ids[i] + "'";
-						}
-						else
-						{
-							sqlBuscar = sqlBuscar + ", '" + ids[i] + "'";
-						}
-
-						i += 1;
-					}
-
-					sqlBuscar = sqlBuscar + ")";
-				}
+				return null;
 			}
 
-			if (string.IsNullOrEmpty(sqlBuscar) == false)
-			{
-				try
-				{
-					return await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						return (await conexion.QueryAsync<Juego>(sqlBuscar)).ToList();
-					});
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Juego Multiples GOG", ex);
-				}
-			}
+			var idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
 
-			return new List<Juego>();
+			string sqlBuscar = @"SELECT 
+        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.exeEpic, j.exeUbisoft, j.freeToPlay,
+        (
+            SELECT g.gratis
+            FROM gratis g
+            WHERE g.juegoId = j.id
+              AND g.fechaEmpieza <= GETDATE()
+              AND g.fechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS GratisActuales,
+        (
+            SELECT s.suscripcion
+            FROM suscripciones s
+            WHERE s.juegoId = j.id
+              AND s.FechaEmpieza <= GETDATE()
+              AND s.FechaTermina >= GETDATE()
+            FOR JSON PATH
+        ) AS SuscripcionesActuales
+    FROM juegos j
+    WHERE idGOG IN @Ids
+    ORDER BY CASE
+        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+    END DESC";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = idsBaseDatos })).ToList()
+				);
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples GOG", ex);
+				return null;
+			}
 		}
 
 		public static async Task<List<JuegoUsuario>> MultiplesJuegosUsuario(List<JuegoUsuario> juegos, JuegoDRM drm, List<string> ids)

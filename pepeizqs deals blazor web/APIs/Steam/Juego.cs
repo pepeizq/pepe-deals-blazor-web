@@ -1180,6 +1180,9 @@ namespace APIs.Steam
 
 		[JsonPropertyName("original_release_date")]
 		public int Original { get; set; }
+
+		[JsonPropertyName("release_from_early_access_date")]
+		public int SteamDejaAccesoAnticipado { get; set; }
 	}
 
 	public class SteamJuegoAPI2JuegoPlataformas

@@ -29,7 +29,7 @@ namespace Herramientas
 
 				deseadosSteamJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(deseadosSteam.Select(int.Parse).ToList());
 
-				if (deseadosSteamJuegos != null)
+				if (deseadosSteamJuegos?.Count > 0)
 				{
 					int i = 0;
 
@@ -58,28 +58,29 @@ namespace Herramientas
 
 			if (deseadosWeb?.Count > 0)
 			{
-				List<Juego> deseadosWebJuegos = new List<Juego>();
+				List<Juego> deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(deseadosWeb);
 
-				deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(deseadosWeb);
-
-				int i = 0;
-
-				foreach (var deseadoWeb in deseadosWebJuegos)
+				if (deseadosWebJuegos?.Count > 0)
 				{
-					i += 1;
+					int i = 0;
 
-					JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
-
-					foreach (var deseado in deseadosWeb)
+					foreach (var deseadoWeb in deseadosWebJuegos)
 					{
-						if (deseado.IdBaseDatos == deseadoWeb.Id.ToString())
-						{
-							drmDeseado = deseado.DRM;
-							break;
-						}
-					}
+						i += 1;
 
-					deseadosGestor = AñadirJuegoMostrar(deseadosGestor, deseadoWeb, drmDeseado, false);
+						JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
+
+						foreach (var deseado in deseadosWeb)
+						{
+							if (deseado.IdBaseDatos == deseadoWeb.Id.ToString())
+							{
+								drmDeseado = deseado.DRM;
+								break;
+							}
+						}
+
+						deseadosGestor = AñadirJuegoMostrar(deseadosGestor, deseadoWeb, drmDeseado, false);
+					}
 				}
 			}
 
@@ -100,7 +101,7 @@ namespace Herramientas
 
 				deseadosGogJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(deseadosGog);
 
-				if (deseadosGogJuegos != null)
+				if (deseadosGogJuegos?.Count > 0)
 				{
 					int i = 0;
 

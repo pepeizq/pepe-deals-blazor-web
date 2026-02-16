@@ -249,14 +249,17 @@
                     {
                         c.Curator.SteamIds = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteamOrdenado(juegosSteam);
 
-                        int cantidad = 4;
-
-                        if (c.Curator.SteamIds.Count < 4)
+                        if (c.Curator.SteamIds?.Count > 0)
                         {
-                            cantidad = c.Curator.SteamIds.Count;
-                        }
+                            int cantidad = 4;
+
+                            if (c.Curator.SteamIds?.Count < 4)
+                            {
+                                cantidad = c.Curator.SteamIds.Count;
+                            }
                        
-                        c.JuegosMostrar = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(c.Curator.SteamIds.GetRange(c.Posicion, cantidad));
+                            c.JuegosMostrar = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(c.Curator.SteamIds?.GetRange(c.Posicion, cantidad));
+                        }
                     }
                 }
             }

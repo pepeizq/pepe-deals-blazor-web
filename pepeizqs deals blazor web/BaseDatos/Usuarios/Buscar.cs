@@ -1343,10 +1343,12 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			{
 				string busqueda = "SELECT BundlesSort FROM AspNetUsers WHERE id=@Id";
 
-				return await Herramientas.BaseDatos.Select(async conexion =>
+				var resultado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryFirstOrDefaultAsync<int>(busqueda, new { Id = usuarioId });
+					return await conexion.QueryFirstOrDefaultAsync<int?>(busqueda, new { Id = usuarioId });
 				});
+
+				return resultado ?? 0;
 			}
 			catch (Exception ex)
 			{

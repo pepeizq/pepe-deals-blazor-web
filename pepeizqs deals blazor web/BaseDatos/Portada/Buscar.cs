@@ -262,7 +262,8 @@ ORDER BY NEWID()";
 						Nombre = fila.nombre,
 						IdSteam = fila.idSteam,
 						IdGog = fila.idGog,
-						Caracteristicas = fila.FechaLanzamiento != null ? new JuegoCaracteristicas { FechaLanzamientoSteam = fila.FechaLanzamiento } : null
+						Caracteristicas = fila.FechaLanzamiento != null ? new JuegoCaracteristicas { FechaLanzamientoSteam = fila.FechaLanzamiento } : null,
+						Etiquetas = string.IsNullOrEmpty(fila.etiquetas) == false ? JsonSerializer.Deserialize<List<string>>(fila.etiquetas) : null
 					};
 
 					if (string.IsNullOrEmpty(fila.imagenes) == false)

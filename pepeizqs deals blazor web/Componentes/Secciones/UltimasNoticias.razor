@@ -187,9 +187,9 @@
 			@foreach (var noticiaMostrar in noticiasMostrar)
 			{
 				<div class="caja-noticia-contenido" style="padding: 30px; display: flex; align-items: center; gap: 30px;">
-					<div style="width: 50%;">
+					<div class="noticias-borrado" style="width: 50%;">
 						<a href="/news/@noticiaMostrar.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaMostrar.TituloEn, noticiaMostrar.TituloEs))/">
-							<img src="@noticiaMostrar.Imagen" class="imagen-expandir" style="width: 100%; height: 100%; border: 1px solid var(--fondoBotonPequeño);" />
+							<img src="@noticiaMostrar.Imagen" onerror="this.closest('.noticias-borrado').remove();" class="imagen-expandir" style="width: 100%; height: 100%; border: 1px solid var(--fondoBotonPequeño);" />
 						</a>
 					</div>
 
