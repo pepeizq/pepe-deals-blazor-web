@@ -15,7 +15,7 @@
   "String14": "DRMs",
   "String15": "Lojas",
   "String16": "{0} resultados",
-  "String17": "Categorias",
+  "String17": "Tipo",
   "String18": "Jogos",
   "String19": "DLCs",
   "String20": "Trilhas sonoras",
@@ -45,5 +45,8 @@
   "String44": "Opções",
   "String45": "Oculte os jogos que você já possui em {0}",
   "String46": "Plataformas",
-  "String47": "Transmissão"
+  "String47": "Transmissão",
+  "String48": "Etiquetas",
+  "String49": "Categorias",
+  "String50": "Não há mínimos históricos com sua configuração atual."
 }

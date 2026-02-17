@@ -15,7 +15,7 @@
   "String14": "DRMs",
   "String15": "Geschäfte",
   "String16": "{0} Ergebnisse",
-  "String17": "Kategorien",
+  "String17": "Typ",
   "String18": "Spiele",
   "String19": "DLCs",
   "String20": "Soundtracks",
@@ -45,5 +45,8 @@
   "String44": "Optionen",
   "String45": "Verstecken Sie die Spiele, die Sie bereits in {0} haben",
   "String46": "Plattformen",
-  "String47": "Streaming"
+  "String47": "Streaming",
+  "String48": "Schlagworte",
+  "String49": "Kategorien",
+  "String50": "Bei Ihrer aktuellen Konfiguration gibt es keine historischen Tiefststände."
 }

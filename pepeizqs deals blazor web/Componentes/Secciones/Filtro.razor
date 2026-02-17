@@ -766,16 +766,13 @@ else
 	{
 		int i = 0;
 
-		if (idsLista != null)
+		if (idsLista?.Count > 0)
 		{
-			if (idsLista.Count > 0)
+			foreach (var id in idsLista)
 			{
-				foreach (var id in idsLista)
+				if (id.Contains(letra) == true)
 				{
-					if (id.Contains(letra) == true)
-					{
-						i += 1;
-					}
+					i += 1;
 				}
 			}
 		}

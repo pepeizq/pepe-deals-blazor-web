@@ -15,7 +15,7 @@
   "String14": "DRMs",
   "String15": "Stores",
   "String16": "{0} results",
-  "String17": "Categories",
+  "String17": "Type",
   "String18": "Games",
   "String19": "DLCs",
   "String20": "Soundtracks",
@@ -45,5 +45,8 @@
   "String44": "Options",
   "String45": "Hide the games you already have in {0}",
   "String46": "Platforms",
-  "String47": "Streaming"
+  "String47": "Streaming",
+  "String48": "Tags",
+  "String49": "Categories",
+  "String50": "There are no historical lows with your current configuration."
 }

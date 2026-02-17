@@ -15,7 +15,7 @@
   "String14": "DRM",
   "String15": "Magasins",
   "String16": "{0} résultats",
-  "String17": "Catégories",
+  "String17": "Taper",
   "String18": "Jeux",
   "String19": "DLC",
   "String20": "Bandes sonores",
@@ -45,5 +45,8 @@
   "String44": "Possibilités",
   "String45": "Masquez les jeux que vous possédez déjà dans {0}",
   "String46": "Plateformes",
-  "String47": "Streaming"
+  "String47": "Streaming",
+  "String48": "Balises",
+  "String49": "Catégories",
+  "String50": "Il n’y a pas de creux historiques avec votre configuration actuelle."
 }

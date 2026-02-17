@@ -871,6 +871,33 @@ else
 				if (string.IsNullOrEmpty(opciones.IndexDRMs) == false)
 				{
 					drms = JsonSerializer.Deserialize<List<MostrarJuegoDRM>>(opciones.IndexDRMs);
+
+					if (drms?.Count > 0)
+					{
+						foreach (var drm2 in JuegoDRM2.GenerarListado())
+						{
+							bool existe = false;
+
+							foreach (var drm in drms)
+							{
+								if (drm.DRMId == drm2.Id)
+								{
+									existe = true;
+									break;
+								}
+							}
+
+							if (existe == false)
+							{
+								drms.Add(new MostrarJuegoDRM
+								{
+									DRMId = drm2.Id,
+									Estado = false,
+									Checkbox = null
+								});
+							}
+						}
+					}
 				}
 
 				if (string.IsNullOrEmpty(opciones.IndexCategories) == false)

@@ -485,7 +485,7 @@
 
 		deckListado = CrearListaSteamDeck(true, false);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, descuentoMinimo, precioMaximo, deckListado, null, 0, 0, minimoReseñas, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, 0, minimoReseñas, textoBuscador);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
@@ -598,7 +598,7 @@
 
 		deckListado = CrearListaSteamDeck(false, true);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, descuentoMinimo, precioMaximo, deckListado, null, 0, 0, minimoReseñas, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, 0, minimoReseñas, textoBuscador);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{

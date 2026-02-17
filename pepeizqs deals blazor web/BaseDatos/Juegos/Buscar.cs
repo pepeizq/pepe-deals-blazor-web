@@ -835,10 +835,10 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoCategoria> categorias = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int inteligenciaArtificial = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
+		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -919,27 +919,53 @@ FROM seccionMinimos j";
 				dondeDRMs = " (" + dondeDRMs + ")";
 			}
 
-			string dondeCategorias = string.Empty;
+			string dondeTipos = string.Empty;
 
-			if (categorias?.Count > 0)
+			if (tipos?.Count > 0)
 			{
-				foreach (var categoria in categorias)
+				foreach (var tipo in tipos)
 				{
-					if (categoria.Estado == true)
+					if (tipo.Estado == true)
 					{
-						if (string.IsNullOrEmpty(dondeCategorias) == false)
+						if (string.IsNullOrEmpty(dondeTipos) == false)
 						{
-							dondeCategorias = dondeCategorias + " OR ";
+							dondeTipos = dondeTipos + " OR ";
 						}
 
-						dondeCategorias = dondeCategorias + "tipo = '" + ((int)categoria.Categoria).ToString() + "'";
+						dondeTipos = dondeTipos + "tipo = '" + ((int)tipo.Tipo).ToString() + "'";
 					}
 				}
 			}
 
-			if (string.IsNullOrEmpty(dondeCategorias) == false)
+			if (string.IsNullOrEmpty(dondeTipos) == false)
 			{
-				dondeCategorias = " (" + dondeCategorias + ")";
+				dondeTipos = " (" + dondeTipos + ")";
+			}
+
+			string dondeCategorias = string.Empty;
+
+			if (categorias?.Count > 0)
+			{
+				string categoriasFormateadas = "\"" + string.Join("\",\"", categorias) + "\"";
+				dondeCategorias = $@" (
+					SELECT COUNT(*) 
+					FROM STRING_SPLIT(j.categorias, ',') AS e1
+					INNER JOIN STRING_SPLIT('{categoriasFormateadas}', ',') AS e2
+					ON TRIM(e1.value) = TRIM(e2.value)
+				) > 0";
+			}
+
+			string dondeEtiquetas = string.Empty;
+
+			if (etiquetas?.Count > 0)
+			{
+				string etiquetasFormateadas = "\"" + string.Join("\",\"", etiquetas) + "\"";
+				dondeEtiquetas = $@" (
+					SELECT COUNT(*) 
+					FROM STRING_SPLIT(j.etiquetas, ',') AS e1
+					INNER JOIN STRING_SPLIT('{etiquetasFormateadas}', ',') AS e2
+					ON TRIM(e1.value) = TRIM(e2.value)
+				) > 0";
 			}
 
 			string dondeMinimoDescuento = string.Empty;
@@ -1022,7 +1048,7 @@ FROM seccionMinimos j";
 				dondeSteamOS = " (" + dondeSteamOS + ")";
 			}
 
-			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeCategorias, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS }.Where(x => !string.IsNullOrEmpty(x)));
+			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeTipos, dondeCategorias, dondeEtiquetas, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS }.Where(x => !string.IsNullOrEmpty(x)));
 
 			if (lanzamiento == 1)
 			{
@@ -1037,16 +1063,6 @@ FROM seccionMinimos j";
 			if (lanzamiento == 3)
 			{
 				busqueda = busqueda + " AND (JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -24, CAST(GETDATE() as date)) OR JSON_VALUE(caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -24, CAST(GETDATE() as date))) ";
-			}
-
-			if (inteligenciaArtificial == 1)
-			{
-				busqueda = busqueda + " AND (inteligenciaArtificial = 'true')";
-			}
-
-			if (inteligenciaArtificial == 2)
-			{
-				busqueda = busqueda + " AND (inteligenciaArtificial = 'false' OR inteligenciaArtificial IS NULL)";
 			}
 
 			if (minimoReseñas != null)
@@ -1118,7 +1134,11 @@ FROM seccionMinimos j";
 				{
 					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return (await conexion.QueryAsync<Juego>(busqueda)).ToList();
+						var parametros = new { 
+							etiquetas2 = etiquetas != null ? string.Join(",", etiquetas) : "" 
+						};
+
+						return (await conexion.QueryAsync<Juego>(busqueda, parametros)).ToList();
 					});
 				}
 				catch (Exception ex)
@@ -1133,7 +1153,7 @@ FROM seccionMinimos j";
 		public static async Task<List<Juego>> MinimosStreaming(string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
 			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra,
+    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
 	(
         SELECT g.gratis
         FROM gratis g

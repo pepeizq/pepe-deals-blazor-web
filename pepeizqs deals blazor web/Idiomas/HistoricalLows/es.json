@@ -15,7 +15,7 @@
   "String14": "DRMs",
   "String15": "Tiendas",
   "String16": "{0} resultados",
-  "String17": "Categorías",
+  "String17": "Tipo",
   "String18": "Juegos",
   "String19": "DLCs",
   "String20": "Bandas Sonoras",
@@ -45,5 +45,8 @@
   "String44": "Opciones",
   "String45": "Ocultar los juegos que ya tienes en {0}",
   "String46": "Plataformas",
-  "String47": "Streaming"
+  "String47": "Streaming",
+  "String48": "Etiquetas",
+  "String49": "Categorías",
+  "String50": "No hay mínimos históricos con tu configuración actual."
 }

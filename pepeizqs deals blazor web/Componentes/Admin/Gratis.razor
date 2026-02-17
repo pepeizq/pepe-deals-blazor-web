@@ -212,7 +212,7 @@ else
             }
         }
         
-        fechaEmpiezaSeleccionadaGratis = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+        fechaEmpiezaSeleccionadaGratis = DateTime.Now.AddMinutes(-DateTime.Now.Minute).AddSeconds(-DateTime.Now.Second).ToString("yyyy-MM-ddTHH:mm:ss");
         fechaTerminaSeleccionadaGratis = GratisCargar.DevolverGratis(tipoGratis).FechaSugerencia.ToString("yyyy-MM-ddTHH:mm:ss");
         drmSeleccionadoGratis = GratisCargar.DevolverGratis(tipoGratis).DRMDefecto.ToString();
     }

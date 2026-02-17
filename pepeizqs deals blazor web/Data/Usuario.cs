@@ -142,7 +142,15 @@ public class Usuario : IdentityUser
 
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
-	public string? HistoricalLowsCategories { get; set; }
+	public string? HistoricalLowsTypes { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "nvarchar(max)")]
+	public string? HistoricalLowsTags { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "nvarchar(max)")]
+	public string? HistoricalLowsCategories2 { get; set; }
 
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
