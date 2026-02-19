@@ -7,6 +7,7 @@ using Herramientas;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static System.Collections.Specialized.BitVector32;
 
 namespace APIs.Steam
 {
@@ -773,23 +774,26 @@ namespace APIs.Steam
 			return 0;
 		}
 
-		public static async Task<SteamAnalisisAPI> CargarDatosReseñas(int id2, string idioma)
+		public static async Task<SteamReseñasApi> CargarDatosReseñas(int id2, string idioma)
 		{
 			string id = id2.ToString();
 
 			if (string.IsNullOrEmpty(id) == false)
 			{
-				string html = await Decompiladores.Estandar("https://store.steampowered.com/appreviews/" + id + "?json=1&language=" + idioma + "&num_per_page=50&filter_offtopic_activity=0");
+				string html = await Decompiladores.Estandar("https://store.steampowered.com/ajaxappreviews/" + id + "?date_range_type=all&day_range=120&start_date=-1&end_date=-1&cursor=*&filter_offtopic_activity=true&playtime_filter_max=0&playtime_filter_min=0&playtime_type=all&purchase_type=all&review_type=all&use_review_quality=true&language=" + idioma + "&hardware_os=all&hardware_cpu=all&hardware_gpu=all&hardware_device_type=all");
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
-					SteamAnalisisAPI api = null;
+					SteamReseñasApi api = null;
 					
 					try
 					{
-						api = JsonSerializer.Deserialize<SteamAnalisisAPI>(html);
+						api = JsonSerializer.Deserialize<SteamReseñasApi>(html);
 					}
-					catch { }
+					catch (Exception ex)
+					{ 
+						BaseDatos.Errores.Insertar.Mensaje("Parseo SteamReseñasApi " + id, ex);
+					}
 
 					if (api != null)
 					{
@@ -1413,82 +1417,166 @@ namespace APIs.Steam
 
 	#region Clases Reseñas
 
-	public class SteamAnalisisAPI
+	public class SteamReseñasApi
 	{
+		[JsonPropertyName("success")]
+		public int Success { get; set; }
+
+		[JsonPropertyName("bHasAppSpecificCommunityHub")]
+		public bool BHasAppSpecificCommunityHub { get; set; }
+
+		[JsonPropertyName("numReviewsPerPage")]
+		public int NumReviewsPerPage { get; set; }
+
+		[JsonPropertyName("reviewFilter")]
+		public string ReviewFilter { get; set; }
+
+		[JsonPropertyName("reviewStartDate")]
+		public int ReviewStartDate { get; set; }
+
+		[JsonPropertyName("reviewEndDate")]
+		public int ReviewEndDate { get; set; }
+
+		[JsonPropertyName("cAppRecommendationCount")]
+		public int CAppRecommendationCount { get; set; }
+
+		[JsonPropertyName("rgReviewTags")]
+		public List<object> RgReviewTags { get; set; }
+
 		[JsonPropertyName("query_summary")]
-		public SteamAnalisisAPISumario Sumario { get; set; }
+		public SteamReseñasApiSumario Sumario { get; set; }
 
 		[JsonPropertyName("reviews")]
-		public List<SteamAnalisisAPIAnalisis> Reseñas { get; set; }
+		public List<SteamReseñasApiReseña> Reseñas { get; set; }
 	}
 
-	public class SteamAnalisisAPISumario
+	public class SteamReseñasApiSumario
 	{
+		[JsonPropertyName("num_reviews")]
+		public int NumReviews { get; set; }
+
+		[JsonPropertyName("review_score")]
+		public int ReviewScore { get; set; }
+
+		[JsonPropertyName("review_score_desc")]
+		public string ReviewScoreDesc { get; set; }
+
 		[JsonPropertyName("total_positive")]
-		public int TotalPositivas { get; set; }
+		public int TotalPositivos { get; set; }
 
 		[JsonPropertyName("total_negative")]
-		public int TotalNegativas { get; set; }
+		public int TotalNegativos { get; set; }
 
 		[JsonPropertyName("total_reviews")]
-		public int TotalCantidad { get; set; }
+		public int TotalReviews { get; set; }
+
+		[JsonPropertyName("review_score_tooltip")]
+		public string ReviewScoreTooltip { get; set; }
 	}
 
-	public class SteamAnalisisAPIAnalisis
+	public class SteamReseñasApiReseña
 	{
 		[JsonPropertyName("recommendationid")]
-		public string Id { get; set; }
+		public string RecommendationId { get; set; }
 
 		[JsonPropertyName("author")]
-		public SteamAnalisisAPIAnalisisAutor Autor { get; set; }
+		public SteamReseñasApiAutor Author { get; set; }
 
 		[JsonPropertyName("language")]
-		public string Idioma { get; set; }
+		public string Language { get; set; }
 
-		[JsonPropertyName("voted_up")]
-		public bool Positiva { get; set; }
-
-		[JsonPropertyName("timestamp_created")]
-		public int TicksCreado { get; set; }
-
-		[JsonPropertyName("timestamp_updated")]
-		public int TicksActualizado { get; set; }
+		[JsonPropertyName("appid")]
+		public int AppId { get; set; }
 
 		[JsonPropertyName("review")]
-		public string Contenido { get; set; }
+		public string ReviewText { get; set; }
+
+		[JsonPropertyName("timestamp_created")]
+		public long TimestampCreated { get; set; }
+
+		[JsonPropertyName("timestamp_updated")]
+		public long TimestampUpdated { get; set; }
+
+		[JsonPropertyName("voted_up")]
+		public bool VotedUp { get; set; }
 
 		[JsonPropertyName("votes_up")]
-		public int CantidadVotosPositivos { get; set; }
+		public int VotesUp { get; set; }
 
 		[JsonPropertyName("votes_funny")]
-		public int CantidadVotosDivertidos { get; set; }
+		public int VotesFunny { get; set; }
+
+		[JsonPropertyName("comment_count")]
+		public int CommentCount { get; set; }
 
 		[JsonPropertyName("steam_purchase")]
-		public bool FueComprado { get; set; }
+		public bool SteamPurchase { get; set; }
 
 		[JsonPropertyName("received_for_free")]
-		public bool FueGratis { get; set; }
+		public bool ReceivedForFree { get; set; }
+
+		[JsonPropertyName("refunded")]
+		public bool Refunded { get; set; }
 
 		[JsonPropertyName("written_during_early_access")]
-		public bool FueAccesoAnticipado { get; set; }
+		public bool WrittenDuringEarlyAccess { get; set; }
 
 		[JsonPropertyName("primarily_steam_deck")]
-		public bool FueSteamDeck { get; set; }
+		public bool PrimarilySteamDeck { get; set; }
+
+		[JsonPropertyName("app_release_date")]
+		public string AppReleaseDate { get; set; }
+
+		[JsonPropertyName("reactions")]
+		public List<SteamReseñasApiReacion> Reactions { get; set; }
 	}
 
-	public class SteamAnalisisAPIAnalisisAutor
+	public class SteamReseñasApiAutor
 	{
 		[JsonPropertyName("steamid")]
-		public string SteamID { get; set; }
+		public string SteamId { get; set; }
+
+		[JsonPropertyName("personaname")]
+		public string PersonaName { get; set; }
+
+		[JsonPropertyName("persona_status")]
+		public string PersonaStatus { get; set; }
+
+		[JsonPropertyName("profile_url")]
+		public string ProfileUrl { get; set; }
+
+		[JsonPropertyName("num_games_owned")]
+		public int NumGamesOwned { get; set; }
+
+		[JsonPropertyName("num_reviews")]
+		public int NumReviews { get; set; }
 
 		[JsonPropertyName("playtime_forever")]
-		public int TiempoJugadoSiempre { get; set; }
+		public int TiempoJugadoTotal { get; set; }
 
 		[JsonPropertyName("playtime_last_two_weeks")]
-		public int TiempoJugado2Semanas { get; set; }
+		public int PlaytimeLastTwoWeeks { get; set; }
 
 		[JsonPropertyName("playtime_at_review")]
-		public int TiempoJugadoCuandoHizoAnalisis { get; set; }
+		public int PlaytimeAtReview { get; set; }
+
+		[JsonPropertyName("deck_playtime_at_review")]
+		public int? DeckPlaytimeAtReview { get; set; }
+
+		[JsonPropertyName("last_played")]
+		public long LastPlayed { get; set; }
+
+		[JsonPropertyName("avatar")]
+		public string Avatar { get; set; }
+	}
+
+	public class SteamReseñasApiReacion
+	{
+		[JsonPropertyName("reaction_type")]
+		public int ReactionType { get; set; }
+
+		[JsonPropertyName("count")]
+		public int Count { get; set; }
 	}
 
 	#endregion

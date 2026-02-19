@@ -2656,7 +2656,10 @@ else
 
 			if (etiqueta.Estado == true)
 			{
-				etiquetasIds.Add(etiqueta.Id);
+				if (etiquetasIds.Count < 50)
+				{
+					etiquetasIds.Add(etiqueta.Id);
+				}
 			}
 		}
 
@@ -2731,11 +2734,14 @@ else
 	{
 		List<string> nuevaLista = new List<string>();
 
-		foreach (var item in lista)
+		if (nuevaLista.Count < 50)
 		{
-			if (item.Estado == true)
+			foreach (var item in lista)
 			{
-				nuevaLista.Add(item.Id.ToString());
+				if (item.Estado == true)
+				{
+					nuevaLista.Add(item.Id.ToString());
+				}
 			}
 		}
 
@@ -2771,7 +2777,10 @@ else
 
 			if (categoria.Estado == true)
 			{
-				categoriasIds.Add(categoria.Id);
+				if (categoriasIds.Count < 50)
+				{
+					categoriasIds.Add(categoria.Id);
+				}
 			}
 		}
 
@@ -2846,11 +2855,14 @@ else
 	{
 		List<string> nuevaLista = new List<string>();
 
-		foreach (var item in lista)
+		if (nuevaLista.Count < 50)
 		{
-			if (item.Estado == true)
+			foreach (var item in lista)
 			{
-				nuevaLista.Add(item.Id.ToString());
+				if (item.Estado == true)
+				{
+					nuevaLista.Add(item.Id.ToString());
+				}
 			}
 		}
 

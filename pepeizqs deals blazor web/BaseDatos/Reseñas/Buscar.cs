@@ -9,7 +9,7 @@ namespace BaseDatos.Reseñas
 {
 	public static class Buscar
 	{
-		public static async Task<JuegoAnalisisAmpliado> Cargar(int id, string idioma)
+		public static async Task<JuegoReseñasAmpliado> Cargar(int id, string idioma)
 		{
 			try
 			{
@@ -18,13 +18,13 @@ namespace BaseDatos.Reseñas
 					return await conexion.QueryFirstOrDefaultAsync($"SELECT contenido{idioma} as Contenido, positivos{idioma} as CantidadPositivos, negativos{idioma} as CantidadNegativos FROM juegosAnalisis WHERE id=@id", new { id });
 				});
 
-				JuegoAnalisisAmpliado reseñas = new JuegoAnalisisAmpliado();
+				JuegoReseñasAmpliado reseñas = new JuegoReseñasAmpliado();
 
 				if (fila != null)
 				{
 					if (!string.IsNullOrEmpty(fila.Contenido))
 					{
-						reseñas.Contenido = JsonSerializer.Deserialize<List<SteamAnalisisAPIAnalisis>>(fila.Contenido);
+						reseñas.Contenido = JsonSerializer.Deserialize<List<SteamReseñasApiReseña>>(fila.Contenido);
 					}
 
 					reseñas.CantidadPositivos = fila.CantidadPositivos ?? 0;

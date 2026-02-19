@@ -341,14 +341,14 @@ namespace Juegos
 		public DateTime Fecha { get; set; }
 	}
 
-	public class JuegoAnalisisAmpliado
+	public class JuegoReseñasAmpliado
 	{
 		public int CantidadPositivos { get; set; }
 		public int CantidadNegativos { get; set; }
-		public List<SteamAnalisisAPIAnalisis> Contenido { get; set; }
+		public List<SteamReseñasApiReseña> Contenido { get; set; }
 	}
 
-	public class JuegoAnalisisAmpliadoIdioma
+	public class JuegoReseñasAmpliadoIdioma
 	{
 		public int CantidadPositivos { get; set; }
 		public int CantidadNegativos { get; set; }
