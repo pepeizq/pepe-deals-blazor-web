@@ -1,4 +1,8 @@
-﻿namespace APIs.GreenManGaming
+﻿using Herramientas;
+using Microsoft.VisualBasic;
+using System.Net;
+
+namespace APIs.GreenManGaming
 {
 	public static class Bundle
 	{
@@ -47,5 +51,40 @@
 
             return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?prodsku=" + sku + "&u=" + enlace;
         }
-    }
+
+        public static async Task<Bundles2.Bundle> ExtraerDatos(Bundles2.Bundle bundle)
+        {
+            if (bundle.Enlace != "https://www.greenmangamingbundles.com/")
+            {
+				string html = await Decompiladores.Estandar(bundle.Enlace);
+
+                if (string.IsNullOrEmpty(html) == false)
+                {
+                    if (html.Contains("<title>") == true)
+                    {
+                        int int1 = html.IndexOf("<title>") + 7;
+                        string temp1 = html.Remove(0, int1);
+
+                        string titulo = temp1.Substring(0, temp1.IndexOf("</title>")).Trim();
+                        titulo = titulo.Replace("| Green Man Gaming Bundles", null);
+                        titulo = titulo.Trim();
+
+						bundle.Nombre = WebUtility.HtmlDecode(titulo);
+					}
+
+                    if (html.Contains(Strings.ChrW(34) + "og:image" + Strings.ChrW(34)) == true)
+                    {
+                        int int1 = html.IndexOf(Strings.ChrW(34) + "og:image" + Strings.ChrW(34)) + 12;
+                        string temp1 = html.Remove(0, int1);
+
+                        string imagen = temp1.Substring(0, temp1.IndexOf(Strings.ChrW(34))).Trim();
+
+                        bundle.Imagen = imagen;
+					}
+				}
+			}
+
+			return bundle;
+		}
+	}
 }

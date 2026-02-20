@@ -15,6 +15,7 @@ using Microsoft.VisualBasic;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Steam
 {
@@ -31,7 +32,8 @@ namespace APIs.Steam
 				ImagenIcono = "/imagenes/tiendas/steam_icono.webp",
 				Color = "#2e4460",
                 AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				IdEstadosUnidos = "steamus"
 			};
 
 			return tienda;
@@ -49,7 +51,8 @@ namespace APIs.Steam
 				Color = "#2e4460",
 				AdminEnseñar = false,
 				AdminInteractuar = false,
-				UsuarioInteractuar = false
+				UsuarioInteractuar = false,
+				IdEstadosUnidos = "steambundlesus"
 			};
 
 			return tienda;
@@ -392,7 +395,7 @@ namespace APIs.Steam
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Steam(ofertas, reseñas, rapido);
+								await BaseDatos.Tiendas.Comprobar.Steam(TiendaRegion.Europa, ofertas, reseñas, rapido);
 							}
 							catch (Exception ex)
 							{
@@ -416,19 +419,29 @@ namespace APIs.Steam
 			}
 		}
 
-		public static async Task BuscarOfertas2()
+		public static async Task BuscarOfertas2(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			string idUsar = Generar().Id;
 
-			int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional");
-			int tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional2");
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				idUsar = Generar().IdEstadosUnidos;
+			}
+
+			await BaseDatos.Admin.Actualizar.Tiendas(idUsar, DateTime.Now, 0);
+
+			int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(idUsar, "valorAdicional");
+			int tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(idUsar, "valorAdicional2");
 
 			int juegos2 = 0;
 			bool rapido = false;
 
 			if (DateTime.Now.Hour == 19 && DateTime.Now.Minute >= 0 && DateTime.Now.Minute < 10)
 			{
-				await BuscarOfertas(true);
+				if (region == TiendaRegion.Europa)
+				{
+					await BuscarOfertas(true);
+				}
 			}
 			else
 			{
@@ -453,7 +466,14 @@ namespace APIs.Steam
 						rapidoTexto2 = ",%22include_apps%22:true,%22include_packages%22:true,%22include_bundles%22:true,%22include_dlc%22:true,%22include_software%22:true,%22include_music%22:true";
 					}
 
-					string html = await Decompiladores.Estandar("https://api.steampowered.com/IStoreQueryService/Query/v1/?input_json={%22query%22:{%22start%22:" + arranque + ",%22count%22:1000,%22filters%22:{%22released_only%22:true,%22type_filters%22:{%22include_games%22:true" + rapidoTexto2 + "},%22price_filters%22:[{%22exclude_free_items%22:true,%22min_discount_percent%22:%221%22}]}},%22context%22:{%22language%22:%22english%22,%22country_code%22:%22ES%22,%22steam_realm%22:%221%22},%22data_request%22:{" + rapidoTexto1 + "%22include_reviews%22:true}}");
+					string regionTexto = "ES";
+
+					if (region == TiendaRegion.EstadosUnidos)
+					{
+						regionTexto = "US";
+					}
+
+					string html = await Decompiladores.Estandar("https://api.steampowered.com/IStoreQueryService/Query/v1/?input_json={%22query%22:{%22start%22:" + arranque + ",%22count%22:1000,%22filters%22:{%22released_only%22:true,%22type_filters%22:{%22include_games%22:true" + rapidoTexto2 + "},%22price_filters%22:[{%22exclude_free_items%22:true,%22min_discount_percent%22:%221%22}]}},%22context%22:{%22language%22:%22english%22,%22country_code%22:%22" + regionTexto + "%22,%22steam_realm%22:%221%22},%22data_request%22:{" + rapidoTexto1 + "%22include_reviews%22:true}}");
 
 					if (string.IsNullOrEmpty(html) == false)
 					{
@@ -483,6 +503,7 @@ namespace APIs.Steam
 											string precioString = opcionCompra.PrecioFormateado;
 											precioString = precioString.Replace(",", ".");
 											precioString = precioString.Replace("€", null);
+											precioString = precioString.Replace("$", null);
 											precioString = precioString.Replace(" ", null);
 
 											decimal precio = decimal.Parse(precioString);
@@ -512,6 +533,11 @@ namespace APIs.Steam
 												FechaDetectado = DateTime.Now,
 												FechaActualizacion = DateTime.Now
 											};
+
+											if (region == TiendaRegion.EstadosUnidos)
+											{
+												oferta.Moneda = JuegoMoneda.Dolar;
+											}
 
 											if (juego.OpcionCompraMejor?.ActiveDiscounts?.Count > 0)
 											{
@@ -557,6 +583,7 @@ namespace APIs.Steam
 												{
 													precioString = precioString.Replace(",", ".");
 													precioString = precioString.Replace("€", null);
+													precioString = precioString.Replace("$", null);
 													precioString = precioString.Replace(" ", null);
 												}
 
@@ -576,6 +603,11 @@ namespace APIs.Steam
 													BundleSteam = bundle
 												};
 
+												if (region == TiendaRegion.EstadosUnidos)
+												{
+													oferta.Moneda = JuegoMoneda.Dolar;
+												}
+
 												bundles.Add(oferta);
 
 												juegos2 += 1;
@@ -589,39 +621,42 @@ namespace APIs.Steam
 							{
 								try
 								{
-									await BaseDatos.Tiendas.Comprobar.Steam(ofertas, reseñas, rapido);
+									await BaseDatos.Tiendas.Comprobar.Steam(region, ofertas, reseñas, rapido);
 								}
 								catch (Exception ex)
 								{
-									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									BaseDatos.Errores.Insertar.Mensaje(idUsar, ex);
 								}
 							}
 
-							if (bundles?.Count > 0)
+							if (region == TiendaRegion.Europa)
 							{
-								try
+								if (bundles?.Count > 0)
 								{
-									await BaseDatos.Tiendas.Comprobar.Resto(bundles);
-								}
-								catch (Exception ex)
-								{
-									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(bundles);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(idUsar, ex);
+									}
 								}
 							}
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(idUsar, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								BaseDatos.Errores.Insertar.Mensaje(idUsar, ex);
 							}
 						}
 					}
 
 					arranque += 1000;
-					await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", arranque);
+					await BaseDatos.Admin.Actualizar.TiendasValorAdicional(idUsar, "valorAdicional", arranque);
 				}
 			}
 		}

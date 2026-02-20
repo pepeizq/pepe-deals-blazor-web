@@ -105,6 +105,20 @@
         border-bottom: 2px solid var(--glaseadoCabeceraBorde);
     }
 
+    .texto-logo {
+        font-size: 22px;
+        color: var(--colorTexto);
+        text-decoration: none;
+        padding-right: 20px;
+        flex-shrink: 0;
+        background-color: transparent; 
+        border: 0;
+    }
+
+        .texto-logo:hover {
+            color: var(--colorTextoHover);
+        }
+
     .buscador-panel {
         height: calc(100% - var(--alturaCabecera));
         width: 100%;
@@ -135,6 +149,11 @@
         }
 
     @@media (max-width: 1100px) {
+        .texto-logo {
+            font-size: 18px;
+            padding-right: 10px;
+        }
+
         .boton-superior {
             float: none;
         }
@@ -298,11 +317,11 @@
 <header class="cabecera2">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm" style="padding: 0px; width: 100%;">
         <div class="cabecera-poner">
-            <a href="/" id="cabecera" class="texto-logo" style="background-color: transparent; border: 0; flex: 1 auto 1;">
+            <a href="/" id="cabecera" class="texto-logo">
                 pepe's deals
             </a>
 
-            <div style="display: flex; align-items: center; gap: 10px; flex: 1 1 auto;">
+            <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
                 <AuthorizeView>
                     <Authorized>
                         @if (string.IsNullOrEmpty(usuarioId) == false)
@@ -580,7 +599,7 @@
 
                     <AuthorizeView>
                         <Authorized>
-                            <div style="display: flex; align-items: center; margin-left: auto;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-left: auto;">
                                 <div class="menu-dropdown2">
                                     <div style="display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 15px;">
                                         @if (opcionesCabecera != null)
@@ -638,6 +657,41 @@
                                             </button>
                                         }
 
+                                        @if (usuarioAdmin == true)
+                                        {
+                                            <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+
+                                            <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
+                                                <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                                    @if (opcionesCabecera?.Currency == 0)
+                                                    {
+                                                        <div style="display: flex; width: 20px; height: 20px;">
+                                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                                <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+                                                            </svg>
+                                                        </div>
+                                                    }
+
+                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header") (€)
+                                                </div>
+                                            </button>
+
+                                            <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 1))" style="font-size: 15px; width: 100%; text-align: right;">
+                                                <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                                    @if (opcionesCabecera?.Currency == 1)
+                                                    {
+                                                        <div style="display: flex; width: 20px; height: 20px;">
+                                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                                <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+                                                            </svg>
+                                                        </div>
+                                                    }
+
+                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header") ($)
+                                                </div>
+                                            </button>
+                                        }
+
                                         <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
 
                                         @{
@@ -647,6 +701,8 @@
                                         <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceDesconectar, false))" style="font-size: 15px; width: 100%; text-align: right;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Logout", "Header")
                                         </button>
+
+                                       
                                     </div>
                                 </div>
                             </div>
@@ -671,7 +727,7 @@
 
                 <div class="botones-superiores2" style="cursor: pointer;" @onclick="(e => MostrarPanel(e))">
                     <div>
-                        <div style="width: 18px; height: 18px;">
+                        <div style="width: 18px; height: 18px; margin-left: 10px;">
                             @if (mostrarPanel == false)
                             {
                                 <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -1122,6 +1178,25 @@
         if (cronometro != null)
         {
             cronometro.Dispose();
+        }
+    }
+
+    #endregion
+
+    #region Cambiar Divisa
+
+    private async void CambiarDivisa(MouseEventArgs e, int moneda)
+    {
+        if (usuarioId != null)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("currency", moneda, usuarioId);
+
+            if (opcionesCabecera != null)
+            {
+                opcionesCabecera.Currency = moneda;
+            }
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 

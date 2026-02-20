@@ -3,7 +3,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using static Herramientas.Ficheros.Constructor;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Herramientas.Ficheros
@@ -209,8 +208,9 @@ namespace Herramientas.Ficheros
 
 				var imagenCombinada = new Image<Rgba32>(totalAncho, totalAltura);
 
-				var startColorRgba = new Rgba32(0, 32, 51, 255); // #002033
-				var endColorRgba = new Rgba32(0, 44, 71, 255);   // #002c47
+				var empiezaColorRgba = new Rgba32(0, 32, 51, 255); // #002033
+				//var terminarColorRgba = new Rgba32(0, 44, 71, 255);   // #002c47
+				var terminarColorRgba = new Rgba32(0, 32, 51, 255);
 
 				double anguloRadianes = 66 * Math.PI / 180;
 				double cosAngulo = Math.Cos(anguloRadianes);
@@ -227,9 +227,9 @@ namespace Herramientas.Ficheros
 							float ratio = (float)Math.Clamp(distancia / distanciaMaxima, 0, 1);
 
 							var colorFondo = new Rgba32(
-								(byte)((1 - ratio) * startColorRgba.R + ratio * endColorRgba.R),
-								(byte)((1 - ratio) * startColorRgba.G + ratio * endColorRgba.G),
-								(byte)((1 - ratio) * startColorRgba.B + ratio * endColorRgba.B),
+								(byte)((1 - ratio) * empiezaColorRgba.R + ratio * terminarColorRgba.R),
+								(byte)((1 - ratio) * empiezaColorRgba.G + ratio * terminarColorRgba.G),
+								(byte)((1 - ratio) * empiezaColorRgba.B + ratio * terminarColorRgba.B),
 								255
 							);
 
@@ -344,12 +344,12 @@ namespace Herramientas.Ficheros
 
 			if (modoImagen == ImagenModo.Juego)
 			{
-				int separadorY = offsetY + nuevoEncabezadoAltura + padding;
-				int separadorMargin = 30;
-				for (int x = separadorMargin; x < totalAncho - separadorMargin; x++)
-				{
-					imagenCombinada[x, separadorY] = new Rgba32(100, 100, 100, 255);
-				}
+				//int separadorY = offsetY + nuevoEncabezadoAltura + padding;
+				//int separadorMargin = 30;
+				//for (int x = separadorMargin; x < totalAncho - separadorMargin; x++)
+				//{
+				//	imagenCombinada[x, separadorY] = new Rgba32(100, 100, 100, 255);
+				//}
 			}
 
 			encabezadoRedimensionado.Dispose();

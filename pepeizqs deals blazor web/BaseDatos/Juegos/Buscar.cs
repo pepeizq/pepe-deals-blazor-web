@@ -350,25 +350,39 @@ WHERE id=@id";
 			}
 
 			string sqlBuscar = @"SELECT 
-        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media, j.etiquetas, 
         j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
-        (
-            SELECT g.gratis
-            FROM gratis g
-            WHERE g.juegoId = j.id
-              AND g.fechaEmpieza <= GETDATE()
-              AND g.fechaTermina >= GETDATE()
-            FOR JSON PATH
-        ) AS GratisActuales,
-        (
-            SELECT s.suscripcion
-            FROM suscripciones s
-            WHERE s.juegoId = j.id
-              AND s.FechaEmpieza <= GETDATE()
-              AND s.FechaTermina >= GETDATE()
-            FOR JSON PATH
-        ) AS SuscripcionesActuales
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaEmpieza <= GETDATE()
+          AND g.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS GratisActuales,
+	(
+        SELECT g.gratis
+        FROM gratis g
+        WHERE g.juegoId = j.id
+          AND g.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS GratisPasados,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaEmpieza <= GETDATE()
+          AND s.FechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesActuales,
+    (
+        SELECT s.suscripcion
+        FROM suscripciones s
+        WHERE s.juegoId = j.id
+          AND s.FechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS SuscripcionesPasados
     FROM juegos j
     WHERE idSteam IN @Ids
     ORDER BY CASE

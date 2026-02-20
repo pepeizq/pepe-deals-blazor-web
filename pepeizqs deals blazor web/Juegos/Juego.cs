@@ -67,6 +67,9 @@ namespace Juegos
 		public List<JuegoGratisPasados> GratisPasados { get; set; }
 		public List<JuegoSuscripcionActuales> SuscripcionesActuales { get; set; }
 		public List<JuegoSuscripcionPasados> SuscripcionesPasados { get; set; }
+		public List<JuegoPrecio> PrecioMinimosHistoricosUS { get; set; }
+		public List<JuegoPrecio> PrecioActualesTiendasUS { get; set; }
+		public List<JuegoHistorico> HistoricosUS { get; set; }
 	}
 
 	public static class JuegoCrear

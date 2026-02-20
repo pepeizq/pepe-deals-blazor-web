@@ -441,4 +441,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "int(4)")]
 	public int? AmazonLunaOption4 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? Currency { get; set; }
 }

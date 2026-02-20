@@ -242,6 +242,7 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
+		flex-wrap: wrap;
 		padding: 5px;
 	}
 
@@ -268,6 +269,22 @@
 		.boton-portada:hover {
 			backdrop-filter: brightness(50%);
 		}
+
+	.caja-portada-noticias {
+		margin-top: 40px;
+	}
+
+	@@media (max-width: 1100px) {
+		.caja-portada {
+			font-size: 14px;
+			border-radius: 20px;
+			gap: 10px;
+		}
+
+        .caja-portada-noticias {
+            margin-top: 0px;
+        }
+    }
 </style>
 
 <script>
@@ -438,7 +455,7 @@
 
 @if (noticias?.Count > 0)
 {
-	<div style="margin-top: 40px; padding: 30px; background-color: var(--fondoPortadaNoticias2); border-top: 1px solid var(--bordePortadaNoticias); border-bottom: 1px solid var(--bordePortadaNoticias);">
+	<div class="caja-portada-noticias" style="padding: 30px; background-color: var(--fondoPortadaNoticias2); border-top: 1px solid var(--bordePortadaNoticias); border-bottom: 1px solid var(--bordePortadaNoticias);">
 		<div style="display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
 			<div class="caja-portada" style="background-color: var(--fondoPortadaNoticias); border: 2px solid var(--bordePortadaNoticias);">
 				<button @onclick="@(e => CambiarTipo(e, Noticias.NoticiaTipo.Desconocido))" class="boton-portada" style="@CambiarEstilo(Noticias.NoticiaTipo.Desconocido) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">

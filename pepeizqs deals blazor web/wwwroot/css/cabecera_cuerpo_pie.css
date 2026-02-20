@@ -31,17 +31,6 @@
     }
 }
 
-.texto-logo {
-    font-size: 22px;
-    color: var(--colorTexto);
-    text-decoration: none;
-    padding-right: 20px;
-}
-
-.texto-logo:hover {
-    color: var(--colorTextoHover);
-}
-
 .texto-cabecera {
     font-size: var(--tamañoTexto);
     color: var(--colorTexto);

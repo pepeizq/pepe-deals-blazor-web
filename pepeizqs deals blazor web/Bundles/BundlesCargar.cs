@@ -59,6 +59,13 @@ namespace Bundles2
 
 							return nuevoBundle;
 						}
+						else if (bundle.BundleTipo == BundleTipo.GreenManGaming)
+						{
+							Bundle nuevoBundle = bundle;
+							nuevoBundle.Enlace = LimpiarEnlace(enlace);
+							nuevoBundle = await APIs.GreenManGaming.Bundle.ExtraerDatos(nuevoBundle);
+							return nuevoBundle;
+						}
 						else
 						{
 							Bundle nuevoBundle = bundle;

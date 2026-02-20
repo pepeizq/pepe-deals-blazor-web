@@ -46,7 +46,7 @@ namespace Tiendas2
 		{
 			if (id == APIs.Steam.Tienda.Generar().Id)
 			{
-				await APIs.Steam.Tienda.BuscarOfertas2();
+				await APIs.Steam.Tienda.BuscarOfertas2(TiendaRegion.Europa);
 			}
 			else if (id == APIs.GamersGate.Tienda.Generar().Id)
 			{
