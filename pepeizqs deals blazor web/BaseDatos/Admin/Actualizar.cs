@@ -21,6 +21,21 @@ namespace BaseDatos.Admin
 			}
 		}
 
+		public static async Task TiendasUS(string tienda, DateTime fecha, int cantidad)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync("UPDATE adminTiendasUS SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas US", ex, false);
+			}
+		}
+
 		public static async Task TiendasValorAdicional(string tienda, string valor, int cantidad)
 		{
 			try
@@ -33,6 +48,21 @@ namespace BaseDatos.Admin
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas Valor Adicional", ex);
+			}
+		}
+
+		public static async Task TiendasValorAdicionalUS(string tienda, string valor, int cantidad)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync($"UPDATE adminTiendasUS SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas Valor Adicional US", ex);
 			}
 		}
 

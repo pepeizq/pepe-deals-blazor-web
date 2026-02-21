@@ -18,7 +18,6 @@ namespace Tiendas2
 		public bool AdminEnseñar;
 		public bool AdminInteractuar;
 		public bool UsuarioInteractuar = true;
-		public string IdEstadosUnidos; //Región Estados Unidos
 	}
 
 	public enum TiendaRegion

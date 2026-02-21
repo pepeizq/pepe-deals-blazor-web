@@ -2,6 +2,7 @@
 
 using Dapper;
 using Juegos;
+using System.Text;
 using System.Text.Json;
 using Tiendas2;
 
@@ -64,6 +65,9 @@ namespace BaseDatos.Tiendas
 				});
 
 				var juegosEncontrados = datos.Cast<dynamic>().ToList();
+
+				var updates = new List<(string sql, DynamicParameters parametros)>();
+				int indice = 0;
 
 				foreach (var dato in juegosEncontrados)
 				{
@@ -135,7 +139,13 @@ namespace BaseDatos.Tiendas
 									historicos = JsonSerializer.Deserialize<List<JuegoHistorico>>(dato.historicos) ?? new List<JuegoHistorico>();
 								}
 
-								await Juegos.Precios.Actualizar(region, id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis);
+								var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, juego.Analisis, indice);
+								
+								if (resultado.Item1 != null && resultado.Item2 != null)
+								{
+									updates.Add((resultado.Item1, resultado.Item2));
+									indice += 1;
+								}
 							}
 							else if (region == TiendaRegion.EstadosUnidos)
 							{
@@ -170,9 +180,35 @@ namespace BaseDatos.Tiendas
 									historicosUS = JsonSerializer.Deserialize<List<JuegoHistorico>>(dato.historicosUS) ?? new List<JuegoHistorico>();
 								}
 
-								await Juegos.Precios.Actualizar(region, id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, juego.Analisis);
+								var resultado = Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, juego.Analisis, indice);
+								
+								if (resultado.Item1 != null && resultado.Item2 != null)
+								{
+									updates.Add((resultado.Item1, resultado.Item2));
+									indice += 1;
+								}
 							}
 						}
+					}
+				}
+
+				if (indice > 0)
+				{
+					foreach (var grupo in updates.Chunk(100))
+					{
+						var sqlBatch = new StringBuilder();
+						var parametrosBatch = new DynamicParameters();
+
+						foreach (var (sql, parametros2) in grupo)
+						{
+							sqlBatch.Append(sql);
+							parametrosBatch.AddDynamicParams(parametros2);
+						}
+
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
+						{
+							return await conexion.ExecuteAsync(sqlBatch.ToString(), parametrosBatch, transaction: transaccion);
+						});
 					}
 				}
 
@@ -283,6 +319,9 @@ WHERE t.enlace = @Enlace
 
 			if (resultados?.Count > 0)
 			{
+				var updates = new List<(string sql, DynamicParameters parametros)>();
+				int indice = 0;
+
 				foreach (var fila in resultados)
 				{
 					encontrado = true;
@@ -309,8 +348,31 @@ WHERE t.enlace = @Enlace
 
 					if (id > 0)
 					{
-						await Juegos.Precios.Actualizar(TiendaRegion.Europa, id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, slugGOG, idGog, slugEpic, reseñas);
+						var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, slugGOG, idGog, slugEpic, reseñas, indice);
+						
+						if (resultado.Item1 != null && resultado.Item2 != null)
+						{
+							updates.Add((resultado.Item1, resultado.Item2));
+							indice += 1;
+						}
 					}
+				}
+
+				foreach (var grupo in updates.Chunk(100))
+				{
+					var sqlBatch = new StringBuilder();
+					var parametrosBatch = new DynamicParameters();
+
+					foreach (var (sql, parametros2) in grupo)
+					{
+						sqlBatch.Append(sql);
+						parametrosBatch.AddDynamicParams(parametros2);
+					}
+
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
+					{
+						return await conexion.ExecuteAsync(sqlBatch.ToString(), parametrosBatch, transaction: transaccion);
+					});
 				}
 			}
 
@@ -417,6 +479,9 @@ WHERE t.enlace IN ({placeholders})
 
 				if (resultados?.Count > 0)
 				{
+					var updates = new List<(string sql, DynamicParameters parametros)>();
+					int indice = 0;
+
 					foreach (var fila in resultados)
 					{
 						string enlace = fila.enlace;
@@ -449,7 +514,32 @@ WHERE t.enlace IN ({placeholders})
 
 						if (id > 0)
 						{
-							await Juegos.Precios.Actualizar(TiendaRegion.Europa, id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, reseñas);
+							var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, reseñas, indice);
+
+							if (resultado.Item1 != null && resultado.Item2 != null)
+							{
+								indice += 1;
+							}
+						}
+					}
+
+					if (indice > 0)
+					{
+						foreach (var grupo in updates.Chunk(100))
+						{
+							var sqlBatch = new StringBuilder();
+							var parametrosBatch = new DynamicParameters();
+
+							foreach (var (sql, parametros2) in grupo)
+							{
+								sqlBatch.Append(sql);
+								parametrosBatch.AddDynamicParams(parametros2);
+							}
+
+							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
+							{
+								return await conexion.ExecuteAsync(sqlBatch.ToString(), parametrosBatch, transaction: transaccion);
+							});
 						}
 					}
 				}

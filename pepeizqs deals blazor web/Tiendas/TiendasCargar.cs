@@ -42,11 +42,11 @@ namespace Tiendas2
 			return tiendas;
 		}
 
-		public static async Task TareasGestionador(string id = null)
+		public static async Task TareasGestionador(TiendaRegion region = TiendaRegion.Europa, string id = null)
 		{
 			if (id == APIs.Steam.Tienda.Generar().Id)
 			{
-				await APIs.Steam.Tienda.BuscarOfertas2(TiendaRegion.Europa);
+				await APIs.Steam.Tienda.BuscarOfertas2(region);
 			}
 			else if (id == APIs.GamersGate.Tienda.Generar().Id)
 			{

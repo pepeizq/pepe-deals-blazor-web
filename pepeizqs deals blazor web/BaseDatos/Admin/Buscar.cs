@@ -67,13 +67,37 @@ namespace BaseDatos.Admin
 			return false;
 		}
 
+		public static async Task<bool> TiendasPosibleUsarUS(TimeSpan tiempo, string tiendaId)
+		{
+			try
+			{
+				DateTime? fecha = await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminTiendasUS WHERE id=@id", new { id = tiendaId });
+				});
+
+				if (fecha == null)
+				{
+					return false;
+				}
+
+				return (DateTime.Now - fecha.Value) > tiempo;
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Posible Usar US", ex);
+			}
+
+			return false;
+		}
+
 		public static async Task<List<AdminTarea>> TiendasEnUso(TimeSpan tiempo)
 		{
 			try
 			{
 				List<AdminTarea> tiendas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return (await conexion.QueryAsync<AdminTarea>("SELECT id, fecha FROM adminTiendas ORDER BY fecha DESC")).ToList();
+					return (await conexion.QueryAsync<AdminTarea>("SELECT id, fecha FROM adminTiendas UNION ALL SELECT id, fecha FROM adminTiendasUS ORDER BY fecha DESC")).ToList();
 				});
 
 				tiendas = tiendas.Where(t =>
@@ -122,7 +146,7 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas En Uso", ex);
 			}
 
-			return new List<AdminTarea>();
+			return null;
 		}
 
 		public static async Task<int> TiendasValorAdicional(string id, string valor)
@@ -149,6 +173,35 @@ namespace BaseDatos.Admin
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Valor Adicional", ex);
+			}
+
+			return 0;
+		}
+
+		public static async Task<int> TiendasValorAdicionalUS(string id, string valor)
+		{
+			try
+			{
+				var fila = await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendasUS WHERE id=@id", new { id });
+				});
+
+				if (fila == null)
+				{
+					return 0;
+				}
+
+				var diccionario = (IDictionary<string, object>)fila;
+
+				if (diccionario.ContainsKey(valor) && diccionario[valor] != null)
+				{
+					return Convert.ToInt32(diccionario[valor]);
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Valor Adicional US", ex);
 			}
 
 			return 0;
@@ -316,7 +369,7 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Ultimos 60 Segundos", ex);
 			}
 
-			return new List<AdminTarea>();
+			return null;
 		}
 
 		public static async Task<bool> TareaPosibleUsar(string id, TimeSpan tiempo)

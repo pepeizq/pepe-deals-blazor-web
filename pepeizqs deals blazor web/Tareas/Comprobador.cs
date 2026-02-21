@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Herramientas;
+using Tiendas2;
 
 namespace Tareas
 {
@@ -30,7 +31,7 @@ namespace Tareas
 
 				if (piscinaTiendas == piscinaUsada)
 				{
-					#region Tiendas
+					#region Tiendas Europa
 
 					foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 					{
@@ -366,7 +367,7 @@ namespace Tareas
 							{
 								try
 								{
-									await Tiendas2.TiendasCargar.TareasGestionador(tienda.Id);
+									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
 
 									Environment.Exit(1);
 								}
@@ -501,6 +502,39 @@ namespace Tareas
 								catch (Exception ex)
 								{
 									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + streaming.Id.ToString(), ex);
+								}
+							}
+						}
+					}
+
+					#endregion
+
+					#region Tiendas Estados Unidos
+
+					foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+					{
+						TimeSpan siguienteComprobacion = TimeSpan.Zero;
+
+						if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(12);
+						}
+
+						if (siguienteComprobacion > TimeSpan.Zero)
+						{
+							bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsarUS(siguienteComprobacion, tienda.Id);
+
+							if (sePuedeUsar == true)
+							{
+								try
+								{
+									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.EstadosUnidos, tienda.Id);
+
+									Environment.Exit(1);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + tienda.Id, ex);
 								}
 							}
 						}
