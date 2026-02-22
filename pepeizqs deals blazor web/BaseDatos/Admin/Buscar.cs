@@ -242,7 +242,45 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
 			}
 
-			return new List<AdminTarea>();
+			return null;
+		}
+
+		public static async Task<List<AdminTarea>> TareasTiendasUS()
+		{
+			try
+			{
+				string sql = null;
+
+				foreach (Tienda tienda in TiendasCargar.GenerarListado())
+				{
+					if (tienda.AdminEnseñar == true)
+					{
+						if (string.IsNullOrEmpty(sql) == true)
+						{
+							sql = $"SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendasUS WHERE id='{tienda.Id}'";
+
+						}
+						else
+						{
+							sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendasUS WHERE id='{tienda.Id}'";
+						}
+					}
+				}
+
+				if (string.IsNullOrEmpty(sql) == false)
+				{
+					return await Herramientas.BaseDatos.Select(async conexion =>
+					{
+						return (await conexion.QueryAsync<AdminTarea>(sql)).ToList();
+					});
+				}
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Tiendas", ex);
+			}
+
+			return null;
 		}
 
 		public static async Task<List<AdminTarea>> TareasSuscripciones()

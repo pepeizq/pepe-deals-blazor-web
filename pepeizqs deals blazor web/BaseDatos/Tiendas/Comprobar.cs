@@ -544,7 +544,7 @@ WHERE t.enlace IN ({placeholders})
 					}
 				}
 
-				// -----------------------------------------------------------------
+				//-----------------------------------------------------------------
 
 				var enlacesNoEncontrados = mapaOfertas.Where(kv => !enlacesEncontrados.Contains(kv.Key)).ToList();
 

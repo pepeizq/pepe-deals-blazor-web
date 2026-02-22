@@ -31,46 +31,60 @@
     }
 
     <div class="caja-admin-tareas">
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-            @if (tareasTiendas?.Count > 0)
-            {
-                foreach (AdminTarea tarea in tareasTiendas)
-                {
-                    if (tarea != null)
-                    {
-                        string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <button @onclick="(e => CambiarRegion(e, TiendaRegion.Europa))" class="boton-pequeño" style="padding: 5px 10px; width: fit-content; box-shadow: none; @(regionMostrar == TiendaRegion.Europa ? "" : "background-color: transparent;")">
+                <img src="/imagenes/banderas/europe.svg" style="width: 30px; height: 30px;" />
+            </button>
 
-                        <button @onclick="(e => ClickearTienda(e, tarea.Id))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
-                            <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
-                                <div style="display: flex; flex-direction: column; gap: 10px;">
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <img src="@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.ImagenIcono" style="height: 22px;" />
-                                        <div>@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.Nombre</div>
+            <button @onclick="(e => CambiarRegion(e, TiendaRegion.EstadosUnidos))" class="boton-pequeño" style="padding: 5px 10px; width: fit-content; box-shadow: none; @(regionMostrar == TiendaRegion.EstadosUnidos ? "" : "background-color: transparent;")">
+                <img src="/imagenes/banderas/english.svg" style="width: 30px; height: 30px;" />
+            </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            @{
+                List<AdminTarea> tareasMostrar = regionMostrar == TiendaRegion.Europa ? tareasTiendas : tareasTiendasUS;
+
+                if (tareasMostrar?.Count > 0)
+                {
+                    foreach (AdminTarea tarea in tareasMostrar)
+                    {
+                        if (tarea != null)
+                        {
+                            string tiempo = Herramientas.Calculadora.DiferenciaTiempo(tarea.Fecha, "es-ES");
+
+                            <button @onclick="(e => ClickearTienda(e, tarea.Id))" class="boton-pequeño" style="height: fit-content; padding: 15px;">
+                                <div style="display: flex; align-items: center; gap: 20px; justify-content: space-between;">
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <img src="@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.ImagenIcono" style="height: 22px;" />
+                                            <div>@Tiendas2.TiendasCargar.DevolverTienda(tarea.Id)?.Nombre</div>
+                                        </div>
+
+                                        <div>@tiempo</div>
                                     </div>
 
-                                    <div>@tiempo</div>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <div style="text-align: right;">@tarea.Cantidad</div>
+
+                                        @if (tarea.Valor1 > 0)
+                                        {
+                                            <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                                @if (tarea.Valor1 > 0)
+                                                {
+                                                    <div style="font-size: 14px;">@tarea.Valor1</div>
+                                                }
+
+                                                @if (tarea.Valor2 > 0)
+                                                {
+                                                    <div style="font-size: 14px;">@tarea.Valor2</div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
-
-                                <div style="display: flex; flex-direction: column; gap: 10px;">
-                                    <div style="text-align: right;">@tarea.Cantidad</div>
-
-                                    @if (tarea.Valor1 > 0)
-                                    {
-                                        <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                            @if (tarea.Valor1 > 0)
-                                            {
-                                                <div style="font-size: 14px;">@tarea.Valor1</div>
-                                            }
-
-                                            @if (tarea.Valor2 > 0)
-                                            {
-                                                <div style="font-size: 14px;">@tarea.Valor2</div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        </button>
+                            </button>
+                        }
                     }
                 }
             }
@@ -183,16 +197,20 @@
     public List<AdminTarea> tareasEnUso = new List<AdminTarea>();
 
     [PersistentState] public List<AdminTarea> tareasTiendas { get; set; }
+    [PersistentState] public List<AdminTarea> tareasTiendasUS { get; set; }
     [PersistentState] public List<AdminTarea> tareasSuscripciones { get; set; }
     [PersistentState] public List<AdminTarea> tareasStreaming { get; set; }
 
     private PeriodicTimer cronometro = null;
+
+    private TiendaRegion regionMostrar = TiendaRegion.Europa;
 
     protected override async Task OnInitializedAsync()
     {
         tareasTiendas ??= await BaseDatos.Admin.Buscar.TareasTiendas();
         tareasSuscripciones ??= await BaseDatos.Admin.Buscar.TareasSuscripciones();
         tareasStreaming ??= await BaseDatos.Admin.Buscar.TareasStreaming();
+        tareasTiendasUS ??= await BaseDatos.Admin.Buscar.TareasTiendasUS();
 
         Actualizar();
     }
@@ -241,5 +259,10 @@
 
             await BaseDatos.Admin.Actualizar.Tiendas(tarea.Id, fecha, tarea.Cantidad);
         }
+    }
+
+    private async Task CambiarRegion(MouseEventArgs e, TiendaRegion nuevaRegion)
+    {
+        regionMostrar = nuevaRegion;
     }
 }

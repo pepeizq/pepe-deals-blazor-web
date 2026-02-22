@@ -32,7 +32,7 @@ namespace Herramientas.Correos
 
 					try
 					{
-						cliente.Send(mensaje);
+						await cliente.SendMailAsync(mensaje);
 						return true;
 					}
 					catch (Exception ex)
@@ -54,7 +54,7 @@ namespace Herramientas.Correos
 
 					try
 					{
-						cliente.Send(mensaje);
+						await cliente.SendMailAsync(mensaje);
 						return true;
 					}
 					catch (Exception ex)

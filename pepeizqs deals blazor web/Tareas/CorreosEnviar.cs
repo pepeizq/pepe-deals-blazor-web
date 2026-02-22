@@ -139,7 +139,7 @@ namespace Tareas
 										}
 										else
 										{
-											break;
+											continue;
 										}
 									}
 								}
@@ -176,7 +176,7 @@ namespace Tareas
 										}
 										else
 										{
-											break;
+											continue;
 										}
 									}
 								}
@@ -215,7 +215,7 @@ namespace Tareas
 										}
 										else
 										{
-											break;
+											continue;
 										}
 									}
 								}

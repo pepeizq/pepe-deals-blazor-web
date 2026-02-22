@@ -76,6 +76,12 @@ namespace APIs.JoyBuggy
 
 									string enlace = juego.Enlace;
 
+									if (enlace.Contains("?") == true)
+									{
+										int int1 = enlace.IndexOf("?");
+										enlace = enlace.Remove(int1, enlace.Length - int1);
+									}
+
 									string imagen = juego.Imagen;
 
 									JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
