@@ -4,17 +4,25 @@ using Dapper;
 using Juegos;
 using System.Text.Json;
 using Tareas;
+using Tiendas2;
 
 namespace BaseDatos.Portada
 {
 	public static class Buscar
 	{
-		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(string tienda = null)
+		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(TiendaRegion region, string tienda = null)
 		{
-			string busqueda = @"SELECT j.*,
+			string precioMinimosHistoricos = "j.precioMinimosHistoricos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				precioMinimosHistoricos = "j.precioMinimosHistoricosUS";
+			}
+
+			string busqueda = @$"SELECT j.*,
        pmh.DRM as DRMElegido
 FROM juegos j
-CROSS APPLY OPENJSON(j.PrecioMinimosHistoricos)
+CROSS APPLY OPENJSON({precioMinimosHistoricos})
 WITH (
     FechaActualizacion DATETIME2 '$.FechaActualizacion',
     FechaTermina DATETIME2 '$.FechaTermina',
@@ -31,9 +39,9 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
   AND j.imagenes IS NOT NULL
   AND (j.mayorEdad = 'false' OR j.mayorEdad IS NULL)
   AND (j.freeToPlay = 'false' OR j.freeToPlay IS NULL)
-  AND j.PrecioMinimosHistoricos IS NOT NULL
-  AND j.PrecioMinimosHistoricos <> 'null'
-  AND ISJSON(j.PrecioMinimosHistoricos) = 1
+  AND {precioMinimosHistoricos} IS NOT NULL
+  AND {precioMinimosHistoricos} <> 'null'
+  AND ISJSON({precioMinimosHistoricos}) = 1
   AND (
         (pmh.FechaActualizacion >= DATEADD(hour, -24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
         (pmh.FechaActualizacion >= DATEADD(hour, -25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
@@ -63,7 +71,7 @@ AND (
 				BaseDatos.Errores.Insertar.Mensaje("Buscar Minimos", ex, false);
 			}
 
-			return new List<JuegoMinimoTarea>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> Destacados()

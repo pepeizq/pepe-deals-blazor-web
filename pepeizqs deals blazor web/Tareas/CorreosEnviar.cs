@@ -179,6 +179,11 @@ namespace Tareas
 											continue;
 										}
 									}
+
+									if (pendiente.Fecha.AddHours(24) > DateTime.Now)
+									{
+										await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
+									}
 								}
 
 								#endregion
@@ -217,6 +222,11 @@ namespace Tareas
 										{
 											continue;
 										}
+									}
+
+									if (pendiente.Fecha.AddHours(24) > DateTime.Now)
+									{
+										await BaseDatos.CorreosEnviar.Borrar.Ejecutar(pendiente.Id);
 									}
 								}
 

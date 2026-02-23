@@ -1,18 +1,33 @@
 ﻿#nullable disable
 
 using Dapper;
+using Tiendas2;
 
 namespace BaseDatos.Portada
 {
 	public static class Limpiar
 	{
-		public static async Task Total()
+		public static async Task Total(TiendaRegion region)
 		{
-			string limpiar = @"WHILE 1 = 1
+			string tabla = "seccionMinimos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "seccionMinimosUS";
+			}
+
+			string precioMinimosHistoricos = "sm.precioMinimosHistoricos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				precioMinimosHistoricos = "sm.precioMinimosHistoricosUS";
+			}
+
+			string limpiar = $@"WHILE 1 = 1
 BEGIN
     DELETE TOP (500) sm
-    FROM seccionMinimos sm
-    CROSS APPLY OPENJSON(sm.PrecioMinimosHistoricos)
+    FROM {tabla} sm
+    CROSS APPLY OPENJSON({precioMinimosHistoricos})
     WITH (
         FechaActualizacion DATETIME2 '$.FechaActualizacion',
         Tienda NVARCHAR(50) '$.Tienda'
