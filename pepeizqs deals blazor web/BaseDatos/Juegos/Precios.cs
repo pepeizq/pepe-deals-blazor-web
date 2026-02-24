@@ -414,11 +414,25 @@ namespace BaseDatos.Juegos
 				return Math.Floor(valor * 100) / 100;
 			}
 
-			if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
+			if (nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado == 0)
 			{
-				decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
-				nuevaOferta.Precio = nuevaOferta.Precio - (nuevaOferta.Precio * descuento);
-				nuevaOferta.Precio = RedondearHaciaAbajo(nuevaOferta.Precio);
+				nuevaOferta.PrecioCambiado = Herramientas.Divisas.Cambio(nuevaOferta.Precio, nuevaOferta.Moneda);
+
+				if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
+				{
+					decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
+					nuevaOferta.PrecioCambiado = nuevaOferta.PrecioCambiado - (nuevaOferta.PrecioCambiado * descuento);
+					nuevaOferta.PrecioCambiado = RedondearHaciaAbajo(nuevaOferta.PrecioCambiado);
+				}
+			}
+			else
+			{
+				if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
+				{
+					decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
+					nuevaOferta.Precio = nuevaOferta.Precio - (nuevaOferta.Precio * descuento);
+					nuevaOferta.Precio = RedondearHaciaAbajo(nuevaOferta.Precio);
+				}
 			}
 
 			#endregion
@@ -434,6 +448,18 @@ namespace BaseDatos.Juegos
 						bool cambiarFechaDetectado = false;
 
 						if (nuevaOferta.Moneda == JuegoMoneda.Dolar && precio.Moneda == JuegoMoneda.Dolar && (nuevaOferta.Precio < precio.Precio || nuevaOferta.Precio > precio.Precio))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda != JuegoMoneda.Dolar && precio.Moneda == JuegoMoneda.Dolar && (nuevaOferta.PrecioCambiado < precio.Precio || nuevaOferta.PrecioCambiado > precio.Precio))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda == JuegoMoneda.Dolar && precio.Moneda != JuegoMoneda.Dolar && (nuevaOferta.Precio < precio.PrecioCambiado || nuevaOferta.Precio > precio.PrecioCambiado))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda != JuegoMoneda.Dolar && precio.Moneda != JuegoMoneda.Dolar && (nuevaOferta.PrecioCambiado < precio.PrecioCambiado || nuevaOferta.PrecioCambiado > precio.PrecioCambiado))
 						{
 							cambiarFechaDetectado = true;
 						}
@@ -487,16 +513,28 @@ namespace BaseDatos.Juegos
 					{
 						drmEncontrado = true;
 
-						if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio))
+						if (minimo.Moneda != JuegoMoneda.Dolar && minimo.Precio > 0 && minimo.PrecioCambiado == 0)
+						{
+							minimo.PrecioCambiado = minimo.Precio;
+						}
+
+						if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio) ||
+							(minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
+							(minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
+							(minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio < minimo.PrecioCambiado))
 						{
 							historicosUS = ComprobarHistoricos(TiendaRegion.EstadosUnidos, historicosUS, nuevaOferta);
 
 							bool notificar = false;
 
-							if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio + 0.1m < minimo.Precio))
+							if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio + 0.1m < minimo.Precio) ||
+								(minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.PrecioCambiado) ||
+								(minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.Precio) ||
+								(minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio + 0.1m < minimo.PrecioCambiado))
 							{
 								notificar = true;
 							}
+
 
 							ultimaModificacion = true;
 
@@ -593,7 +631,10 @@ namespace BaseDatos.Juegos
 						}
 						else
 						{
-							if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.Precio, 2)))
+							if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.Precio, 2)) ||
+							   (minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.PrecioCambiado, 2)) ||
+							   (minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.Precio, 2)) ||
+							   (minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.PrecioCambiado, 2)))
 							{
 								int cantidadHistoricos = historicosUS?.Count ?? 0;
 								historicosUS = ComprobarHistoricos(TiendaRegion.EstadosUnidos, historicosUS, nuevaOferta);

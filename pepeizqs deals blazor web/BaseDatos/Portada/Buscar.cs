@@ -74,18 +74,32 @@ AND (
 			return null;
 		}
 
-		public static async Task<List<Juego>> Destacados()
+		public static async Task<List<Juego>> Destacados(TiendaRegion region)
 		{
-			string busqueda = @"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, precioMinimosHistoricos, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM seccionMinimos
+			string tabla = "seccionMinimos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "seccionMinimosUS";
+			}
+
+			string precioMinimosHistoricos = "precioMinimosHistoricos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+			}
+
+			string busqueda = @$"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, {precioMinimosHistoricos}, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM {tabla}
 WHERE tipo = 0 AND 
 year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 6 AND
-CONVERT(float, JSON_VALUE(precioMinimosHistoricos, '$[0].Precio')) > 1.99 AND 
-JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = 0 AND 
-CONVERT(datetime2, JSON_VALUE(precioMinimosHistoricos, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) AND 
+CONVERT(float, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
+JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
+CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
 bundles IS NULL AND 
-NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = seccionMinimos.idMaestra AND gratis.DRM = 0) AND 
-NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = seccionMinimos.idMaestra AND suscripciones.DRM = 0) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
+NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 
+NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
 ORDER BY NEWID()";
 
@@ -115,10 +129,21 @@ ORDER BY NEWID()";
 							};
 						}
 
-						if (!string.IsNullOrEmpty(fila.precioMinimosHistoricos))
+						if (region == TiendaRegion.Europa)
 						{
-							juego.PrecioMinimosHistoricos =
-								JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+							if (!string.IsNullOrEmpty(fila.precioMinimosHistoricos))
+							{
+								juego.PrecioMinimosHistoricos =
+									JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+							}
+						}
+						else if (region == TiendaRegion.EstadosUnidos)
+						{
+							if (!string.IsNullOrEmpty(fila.precioMinimosHistoricosUS))
+							{
+								juego.PrecioMinimosHistoricosUS =
+									JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
+							}
 						}
 
 						if (!string.IsNullOrEmpty(fila.video))
@@ -147,8 +172,22 @@ ORDER BY NEWID()";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
 		{
+			string tabla = "seccionMinimos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "seccionMinimosUS";
+			}
+
+			string precioMinimosHistoricos = "precioMinimosHistoricos";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+			}
+
 			string categoria = null;
 
 			if (categorias?.Count > 0)
@@ -183,11 +222,11 @@ ORDER BY NEWID()";
 				{
 					if (i == 0)
 					{
-						drm = drm + " AND (JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
+						drm = drm + $" AND (JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = " + valor;
 					}
 					else if (i > 0)
 					{
-						drm = drm + " OR JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = " + valor;
+						drm = drm + $" OR JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = " + valor;
 					}
 
 					i += 1;
@@ -199,7 +238,7 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @"SELECT j.idMaestra, j.nombre, j.imagenes, j.precioMinimosHistoricos, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles, 
+			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles, 
 	(
         SELECT g.gratis
         FROM gratis g
@@ -229,8 +268,8 @@ ORDER BY NEWID()";
         WHERE s.juegoId = j.idMaestra
           AND s.FechaTermina < GETDATE()
         FOR JSON PATH
-    ) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos j
-                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) @categoria @drm";
+    ) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
+                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) @categoria @drm";
 
 			if (tipo == 0)
 			{
@@ -279,9 +318,19 @@ ORDER BY NEWID()";
 						juego.Imagenes = JsonSerializer.Deserialize<JuegoImagenes>(fila.imagenes);
 					}
 
-					if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
+					if (region == TiendaRegion.Europa)
 					{
-						juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+						if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
+						{
+							juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+						}
+					}
+					else if (region == TiendaRegion.EstadosUnidos)
+					{
+						if (string.IsNullOrEmpty(fila.precioMinimosHistoricosUS) == false)
+						{
+							juego.PrecioMinimosHistoricosUS = JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
+						}
 					}
 
 					if (string.IsNullOrEmpty(fila.video) == false)

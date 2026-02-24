@@ -622,6 +622,15 @@
                                                     <div>@opcionesCabecera.Email</div>
                                                 }
                                             }
+
+                                            if (opcionesCabecera?.Currency == 0)
+                                            {
+                                                <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px;" />
+                                            }
+                                            else if (opcionesCabecera?.Currency == 1)
+                                            {
+                                                <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px;" />
+                                            }
                                         }
 
                                         <div style="max-width: 10px;">
@@ -657,40 +666,37 @@
                                             </button>
                                         }
 
-                                        @if (usuarioAdmin == true)
-                                        {
-                                            <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+                                        <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
 
-                                            <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
-                                                <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                                    @if (opcionesCabecera?.Currency == 0)
-                                                    {
-                                                        <div style="display: flex; width: 20px; height: 20px;">
-                                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                                                <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
-                                                            </svg>
-                                                        </div>
-                                                    }
+                                        <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
+                                            <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                                @if (opcionesCabecera?.Currency == 0)
+                                                {
+                                                    <div style="display: flex; width: 20px; height: 20px;">
+                                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                            <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+                                                        </svg>
+                                                    </div>
+                                                }
 
-                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header") (€)
-                                                </div>
-                                            </button>
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header") (€)
+                                            </div>
+                                        </button>
 
-                                            <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 1))" style="font-size: 15px; width: 100%; text-align: right;">
-                                                <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
-                                                    @if (opcionesCabecera?.Currency == 1)
-                                                    {
-                                                        <div style="display: flex; width: 20px; height: 20px;">
-                                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                                                <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
-                                                            </svg>
-                                                        </div>
-                                                    }
+                                        <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 1))" style="font-size: 15px; width: 100%; text-align: right;">
+                                            <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
+                                                @if (opcionesCabecera?.Currency == 1)
+                                                {
+                                                    <div style="display: flex; width: 20px; height: 20px;">
+                                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                                            <path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+                                                        </svg>
+                                                    </div>
+                                                }
 
-                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header") ($)
-                                                </div>
-                                            </button>
-                                        }
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header") ($)
+                                            </div>
+                                        </button>
 
                                         <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
 
@@ -1185,7 +1191,7 @@
 
     #region Cambiar Divisa
 
-    private async void CambiarDivisa(MouseEventArgs e, int moneda)
+    private async Task CambiarDivisa(MouseEventArgs e, int moneda)
     {
         if (usuarioId != null)
         {
@@ -1196,7 +1202,7 @@
                 opcionesCabecera.Currency = moneda;
             }
 
-            await InvokeAsync(StateHasChanged);
+            NavManager.NavigateTo(dominio, forceLoad: true);
         }
     }
 

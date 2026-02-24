@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using Microsoft.VisualBasic
+@using Tiendas2
 
 @inject IJSRuntime JavaScript
 
@@ -129,7 +130,7 @@
 	{
 		JuegoPrecio oferta = null;
 
-		if (juego.PrecioMinimosHistoricos != null)
+		if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
 		{
 			oferta = juego.PrecioMinimosHistoricos[0];
 
@@ -148,18 +149,51 @@
 				}
 			}
 		}
+		else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+		{
+			oferta = juego.PrecioMinimosHistoricosUS[0];
+
+			if (tipo == Tipo.PortadaProximamente)
+			{
+				if (juego.PrecioMinimosHistoricosUS.Count > 1)
+				{
+					foreach (var historico in juego.PrecioMinimosHistoricosUS)
+					{
+						if (historico.DRM == JuegoDRM.Steam)
+						{
+							oferta = historico;
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		if (oferta != null)
 		{
 			descuento = oferta.Descuento.ToString() + "%";
 
-			if (oferta.PrecioCambiado > 0)
+			if (region == TiendaRegion.Europa)
 			{
-				precio = Herramientas.Precios.Euro(oferta.PrecioCambiado);
+				if (oferta.PrecioCambiado > 0)
+				{
+					precio = Herramientas.Precios.Euro(oferta.PrecioCambiado);
+				}
+				else
+				{
+					precio = Herramientas.Precios.Euro(oferta.Precio);
+				}
 			}
-			else
+			else if (region == TiendaRegion.EstadosUnidos)
 			{
-				precio = Herramientas.Precios.Euro(oferta.Precio);
+				if (oferta.PrecioCambiado > 0)
+				{
+					precio = Herramientas.Precios.Dolar(oferta.PrecioCambiado);
+				}
+				else
+				{
+					precio = Herramientas.Precios.Dolar(oferta.Precio);
+				}
 			}
 			
 			codigoTexto = oferta.CodigoTexto;
@@ -219,9 +253,13 @@
 	}
 	else
 	{
-		if (juego.PrecioMinimosHistoricos?.Count > 0)
+		if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
 		{
 			drmUsar = juego.PrecioMinimosHistoricos[0].DRM;
+		}
+		else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+		{
+			drmUsar = juego.PrecioMinimosHistoricosUS[0].DRM;
 		}
 	}
 
@@ -383,7 +421,7 @@
 								</div>
 							}
 
-							@if (juego.PrecioMinimosHistoricos?.Count > 0)
+							@if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
 							{
 								foreach (var historico in juego.PrecioMinimosHistoricos)
 								{
@@ -398,6 +436,27 @@
 
 										<div style="text-align: center; font-size: 14px;">
 											@Herramientas.Idiomas.BuscarTexto(idioma, "String25", "Bundle") @Herramientas.Precios.Euro(precioUsar)
+										</div>
+
+										break;
+									}
+								}
+							}
+							else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+							{
+								foreach (var historico in juego.PrecioMinimosHistoricosUS)
+								{
+									if (historico.DRM == drmUsar)
+									{
+										decimal precioUsar = historico.Precio;
+
+										if (historico.PrecioCambiado > 0)
+										{
+											precioUsar = historico.PrecioCambiado;
+										}
+
+										<div style="text-align: center; font-size: 14px;">
+											@Herramientas.Idiomas.BuscarTexto(idioma, "String25", "Bundle") @Herramientas.Precios.Dolar(precioUsar)
 										</div>
 
 										break;
@@ -883,6 +942,9 @@
 	#nullable disable
 
 	private string idTooltip = string.Empty;
+
+	[Parameter]
+	public TiendaRegion region { get; set; } = TiendaRegion.Europa;
 
 	[Parameter]
 	public string idioma { get; set; }

@@ -31,7 +31,7 @@ namespace Tareas
 			string piscinaWeb = _configuracion.GetValue<string>("PoolWeb:Contenido");
 			string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromHours(6));
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(30));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{

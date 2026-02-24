@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml;
 using System.Security.Claims;
+using Tiendas2;
 
 namespace Herramientas
 {
@@ -220,7 +221,7 @@ namespace Herramientas
 
 				List<SyndicationItem> items = new List<SyndicationItem>();
 
-				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(0, 50, null, drmsUsar, cantidadReseñas);
+				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(TiendaRegion.Europa, 0, 50, null, drmsUsar, cantidadReseñas);
 
 				if (juegos.Count > 0)
 				{

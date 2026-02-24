@@ -111,6 +111,10 @@ namespace Herramientas
 			{
 				buscar = "GBP";
 			}
+			else if (moneda == JuegoMoneda.Euro)
+			{
+				buscar = "EUR";
+			}
 
 			if (buscar != string.Empty)
 			{

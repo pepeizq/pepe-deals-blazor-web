@@ -9,6 +9,16 @@ namespace BaseDatos.Divisas
 	{
 		public static Divisa Ejecutar(string id)
 		{
+			if (id.ToLower() == "eur")
+			{
+				return new Divisa
+				{
+					Id = "EUR",
+					Cantidad = 1,
+					Fecha = DateTime.Now
+				};	
+			}
+
 			if (string.IsNullOrEmpty(id) == false) 
 			{
                 string sqlBuscar = "SELECT * FROM divisas WHERE id=@id";
