@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Nexus
 {
@@ -29,9 +30,9 @@ namespace APIs.Nexus
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			HttpClient cliente = new HttpClient();
 			cliente.BaseAddress = new Uri("https://www.nexus.gg//");
@@ -126,7 +127,7 @@ namespace APIs.Nexus
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -137,7 +138,7 @@ namespace APIs.Nexus
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

@@ -5,6 +5,7 @@ using Herramientas;
 using Juegos;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.PlayStation
 {
@@ -37,7 +38,7 @@ namespace APIs.PlayStation
 
 		public static async Task Buscar()
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -79,7 +80,7 @@ namespace APIs.PlayStation
 											if (idJuegosTexto != "0")
 											{
 												cantidad += 1;
-												await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+												await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 												List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
 

@@ -80,7 +80,7 @@ builder.Services.AddRazorComponents(opciones =>
 {
 	opciones.DetailedErrors = true;
 	opciones.DisconnectedCircuitMaxRetained = 120;
-	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(5);
+	opciones.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(2);
 	opciones.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(60);
 }).AddHubOptions(opciones =>
 {
@@ -89,9 +89,6 @@ builder.Services.AddRazorComponents(opciones =>
 	opciones.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
 	opciones.HandshakeTimeout = TimeSpan.FromSeconds(30);
 	opciones.KeepAliveInterval = TimeSpan.FromSeconds(20);
-}).AddCircuitOptions(opciones =>
-{
-	opciones.DetailedErrors = true;
 });
 
 builder.Services.AddCascadingAuthenticationState();
@@ -153,9 +150,11 @@ builder.Services.Configure<HostOptions>(opciones =>
 	opciones.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
 });
 
+builder.Services.AddSingleton<Tareas.VigiladorRAM>();
 builder.Services.AddSingleton<Tareas.Comprobador>();
 builder.Services.AddSingleton<Tareas.Minimos>();
 builder.Services.AddSingleton<Tareas.LimpiezaLog>();
+builder.Services.AddSingleton<Tareas.LimpiezaCircuits>();
 builder.Services.AddSingleton<Tareas.Mantenimiento>();
 builder.Services.AddSingleton<Tareas.Pings>();
 builder.Services.AddSingleton<Tareas.CorreosEnviar>();
@@ -169,9 +168,11 @@ builder.Services.AddSingleton<Tareas.SteamBundles>();
 builder.Services.AddSingleton<Tareas.SteamDLCs>();
 builder.Services.AddSingleton<Tareas.MinimosUS>();
 
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.VigiladorRAM>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobador>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaCircuits>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Mantenimiento>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Pings>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.CorreosEnviar>());

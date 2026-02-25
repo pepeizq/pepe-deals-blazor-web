@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Ubisoft
 {
@@ -75,7 +76,7 @@ namespace APIs.Ubisoft
 
 		public static async Task Buscar()
         {
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
             int cantidad = 0;
 
@@ -127,7 +128,7 @@ namespace APIs.Ubisoft
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
@@ -183,7 +184,7 @@ namespace APIs.Ubisoft
 
 		public static async Task BuscarPremium()
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -235,7 +236,7 @@ namespace APIs.Ubisoft
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));

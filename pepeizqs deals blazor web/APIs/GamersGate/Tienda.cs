@@ -5,6 +5,7 @@ using Juegos;
 using System.Globalization;
 using System.Net;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.GamersGate
 {
@@ -32,11 +33,27 @@ namespace APIs.GamersGate
 			return enlace + "?aff=6704538";
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-            string html = await Decompiladores.Estandar("https://www.gamersgate.com/feeds/products?country=DEU");
+			string enlace = string.Empty;
+
+			if (region == TiendaRegion.Europa)
+			{
+				enlace = "https://www.gamersgate.com/feeds/products?country=DEU";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				enlace = "https://www.gamersgate.com/feeds/products?country=USA";
+			}
+
+			if (string.IsNullOrEmpty(enlace) == true)
+			{
+				return;
+			}
+
+			string html = await Decompiladores.Estandar(enlace);
 
 			if (string.IsNullOrEmpty(html) == false)
 			{
@@ -63,7 +80,7 @@ namespace APIs.GamersGate
                         {
                             string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-                            string enlace = juego.Enlace;
+                            string enlaceJuego = juego.Enlace;
 
                             string imagen = juego.ImagenGrande;
 
@@ -72,7 +89,7 @@ namespace APIs.GamersGate
                             JuegoPrecio oferta = new JuegoPrecio
                             {
                                 Nombre = nombre,
-                                Enlace = enlace,
+                                Enlace = enlaceJuego,
                                 Imagen = imagen,
                                 Moneda = JuegoMoneda.Euro,
                                 Precio = precioRebajado,
@@ -82,6 +99,11 @@ namespace APIs.GamersGate
                                 FechaDetectado = DateTime.Now,
                                 FechaActualizacion = DateTime.Now
                             };
+
+							if (region == TiendaRegion.EstadosUnidos)
+							{
+								oferta.Moneda = JuegoMoneda.Dolar;
+							}
 
                             if (juego.Fecha != null)
                             {
@@ -108,7 +130,7 @@ namespace APIs.GamersGate
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -119,7 +141,7 @@ namespace APIs.GamersGate
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

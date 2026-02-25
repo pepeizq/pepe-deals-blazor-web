@@ -5,6 +5,7 @@ using Juegos;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.WinGameStore
 {
@@ -32,9 +33,9 @@ namespace APIs.WinGameStore
 			return enlace + "?ars=pepeizqdeals";
 		}
 
-		public static async Task BuscarOfertas() 
+		public static async Task BuscarOfertas(TiendaRegion region) 
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://www.macgamestore.com/affiliate/feeds/p_C1B2A3.json");
 
@@ -149,7 +150,7 @@ namespace APIs.WinGameStore
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -160,7 +161,7 @@ namespace APIs.WinGameStore
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

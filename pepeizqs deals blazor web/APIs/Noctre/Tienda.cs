@@ -4,6 +4,7 @@ using Herramientas;
 using Juegos;
 using Microsoft.VisualBasic;
 using System.Net;
+using Tiendas2;
 
 namespace APIs.Noctre
 {
@@ -26,9 +27,9 @@ namespace APIs.Noctre
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 			int juegos2 = 0;
 
 			int i = 1;
@@ -167,7 +168,7 @@ namespace APIs.Noctre
 
 										try
 										{
-											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{

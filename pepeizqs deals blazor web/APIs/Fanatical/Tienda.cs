@@ -11,6 +11,7 @@ using Microsoft.VisualBasic;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Fanatical
 {
@@ -38,9 +39,9 @@ namespace APIs.Fanatical
 			return enlace + "?ref=pepeizq";
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://feed.fanatical.com/feed");
 
@@ -65,9 +66,9 @@ namespace APIs.Fanatical
 						{
 							autorizar = false;
 
-							foreach (string region in juego.Regiones)
+							foreach (string region2 in juego.Regiones)
 							{
-								if (region == "ES")
+								if (region2 == "ES")
 								{
 									autorizar = true;
 								}
@@ -167,7 +168,7 @@ namespace APIs.Fanatical
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(TiendaRegion.Europa, lote);
 							}
 							catch (Exception ex)
 							{
@@ -178,7 +179,7 @@ namespace APIs.Fanatical
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

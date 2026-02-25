@@ -5,6 +5,7 @@ using Juegos;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Stove
 {
@@ -27,9 +28,9 @@ namespace APIs.Stove
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 			int juegos2 = 0;
 
 			var servicio = new ServiceCollection().AddHttpClient().BuildServiceProvider();
@@ -104,7 +105,7 @@ namespace APIs.Stove
 								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 									}
 									catch (Exception ex)
 									{
@@ -115,7 +116,7 @@ namespace APIs.Stove
 
 									try
 									{
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{

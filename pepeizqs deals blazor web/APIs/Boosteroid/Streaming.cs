@@ -4,6 +4,7 @@ using Dapper;
 using Herramientas;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Boosteroid
 {
@@ -24,7 +25,7 @@ namespace APIs.Boosteroid
 
 		public static async Task Buscar()
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "boosteroid", DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -112,7 +113,7 @@ namespace APIs.Boosteroid
 										if (encontrado == true)
 										{
 											cantidad += 1;
-											await BaseDatos.Admin.Actualizar.Tiendas("boosteroid", DateTime.Now, cantidad);
+											await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "boosteroid", DateTime.Now, cantidad);
 
 											string sqlActualizar = "UPDATE streamingboosteroid " +
 																"SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE id=@id";

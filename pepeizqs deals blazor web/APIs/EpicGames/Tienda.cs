@@ -8,6 +8,7 @@ using Juegos;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.EpicGames
 {
@@ -30,9 +31,9 @@ namespace APIs.EpicGames
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			List<int> idsBorrar = new List<int>();
 
@@ -167,7 +168,7 @@ namespace APIs.EpicGames
 
 												try
 												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+													await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 												}
 												catch (Exception ex)
 												{

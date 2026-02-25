@@ -257,7 +257,7 @@
             DateTime fecha = DateTime.Now;
             fecha = fecha - TimeSpan.FromDays(1);
 
-            await BaseDatos.Admin.Actualizar.Tiendas(tarea.Id, fecha, tarea.Cantidad);
+            await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, tarea.Id, fecha, tarea.Cantidad);
         }
     }
 

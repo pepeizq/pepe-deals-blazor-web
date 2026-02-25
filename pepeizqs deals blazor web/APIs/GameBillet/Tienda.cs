@@ -11,6 +11,7 @@ using Juegos;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.GameBillet
 {
@@ -38,9 +39,9 @@ namespace APIs.GameBillet
 			return enlace + "?affiliate=64e186aa-fb0e-436f-a000-069090c06fe9";
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://www.gamebillet.com/product/jsonfeed?store=eu&guid=39A6D2B7-A4EF-4E8B-AA19-350B89788365");
 
@@ -145,7 +146,7 @@ namespace APIs.GameBillet
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -156,7 +157,7 @@ namespace APIs.GameBillet
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

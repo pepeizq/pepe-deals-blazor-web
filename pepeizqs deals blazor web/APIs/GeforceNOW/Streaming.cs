@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.GeforceNOW
 {
@@ -26,7 +27,7 @@ namespace APIs.GeforceNOW
 
         public static async Task Buscar()
         {
-            await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, 0);
+            await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "geforcenow", DateTime.Now, 0);
 
             int cantidad = 0;
             string cadena = string.Empty;
@@ -122,7 +123,7 @@ namespace APIs.GeforceNOW
 							if (encontrado == true)
 							{
 								cantidad += 1;
-								await BaseDatos.Admin.Actualizar.Tiendas("geforcenow", DateTime.Now, cantidad);
+								await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "geforcenow", DateTime.Now, cantidad);
 
 								string sqlActualizar = "UPDATE streaminggeforcenow " +
 														"SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE nombreCodigo=@nombreCodigo";

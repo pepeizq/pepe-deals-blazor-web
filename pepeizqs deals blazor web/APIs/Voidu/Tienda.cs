@@ -4,6 +4,7 @@ using Herramientas;
 using Juegos;
 using System.Net;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.Voidu
 {
@@ -26,9 +27,9 @@ namespace APIs.Voidu
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://files.channable.com/FDPJ7_Cg8Pqi90kXICkb3g==.xml");
 
@@ -123,7 +124,7 @@ namespace APIs.Voidu
 
 												try
 												{
-													await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+													await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 												}
 												catch (Exception ex)
 												{

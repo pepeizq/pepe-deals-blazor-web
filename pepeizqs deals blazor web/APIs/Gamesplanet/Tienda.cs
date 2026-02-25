@@ -4,6 +4,7 @@ using Herramientas;
 using Juegos;
 using System.Net;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.Gamesplanet
 {
@@ -82,9 +83,9 @@ namespace APIs.Gamesplanet
 			return enlace + "?ref=pepeizq";
 		}
 
-		public static async Task BuscarOfertasUk()
+		public static async Task BuscarOfertasUk(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUk().Id, DateTime.Now, 0);
 
             string htmluk = await Decompiladores.Estandar("https://uk.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -200,7 +201,7 @@ namespace APIs.Gamesplanet
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -211,7 +212,7 @@ namespace APIs.Gamesplanet
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(GenerarUk().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUk().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
@@ -223,9 +224,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-        public static async Task BuscarOfertasFr()
+        public static async Task BuscarOfertasFr(TiendaRegion region)
         {
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarFr().Id, DateTime.Now, 0);
 
 			string htmlfr = await Decompiladores.Estandar("https://fr.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -341,7 +342,7 @@ namespace APIs.Gamesplanet
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -352,7 +353,7 @@ namespace APIs.Gamesplanet
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(GenerarFr().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarFr().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
@@ -364,9 +365,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-		public static async Task BuscarOfertasDe()
+		public static async Task BuscarOfertasDe(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarDe().Id, DateTime.Now, 0);
 
 			string htmlde = await Decompiladores.Estandar("https://de.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -482,7 +483,7 @@ namespace APIs.Gamesplanet
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -493,7 +494,7 @@ namespace APIs.Gamesplanet
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(GenerarDe().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarDe().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
@@ -505,9 +506,9 @@ namespace APIs.Gamesplanet
             }
 		}
 
-		public static async Task BuscarOfertasUs()
+		public static async Task BuscarOfertasUs(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUs().Id, DateTime.Now, 0);
 
 			string htmlus = await Decompiladores.Estandar("https://us.gamesplanet.com/api/v1/products/feed.xml");
 
@@ -623,7 +624,7 @@ namespace APIs.Gamesplanet
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -634,7 +635,7 @@ namespace APIs.Gamesplanet
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(GenerarUs().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUs().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Ubisoft
 {
@@ -44,11 +45,11 @@ namespace APIs.Ubisoft
 			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + enlace;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
 			BaseDatos.Cupones.Cupon cupon = await BaseDatos.Cupones.Buscar.Activos(Generar().Id);
 
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int paginas = 10;
 			int juegos2 = 0;
@@ -149,7 +150,7 @@ namespace APIs.Ubisoft
 								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 									}
 									catch (Exception ex)
 									{
@@ -160,7 +161,7 @@ namespace APIs.Ubisoft
 
 									try
 									{
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{

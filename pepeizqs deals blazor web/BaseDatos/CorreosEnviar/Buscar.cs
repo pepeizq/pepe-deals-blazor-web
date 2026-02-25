@@ -24,6 +24,25 @@ namespace BaseDatos.CorreosEnviar
 
 			return new List<CorreoPendienteEnviar>();
 		}
+
+		public static async Task<int> Cantidad()
+		{
+			try
+			{
+				string busqueda = "SELECT COUNT(*) FROM correosEnviar";
+
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<int>(busqueda);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Correos Enviar Cantidad", ex);
+			}
+
+			return 0;
+		}
 	}
 
 	public class CorreoPendienteEnviar

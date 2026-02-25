@@ -12,6 +12,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using Tiendas2;
 
 namespace APIs.Humble
 {
@@ -75,9 +76,9 @@ namespace APIs.Humble
             return "https://humblebundleinc.sjv.io/c/1382810/2059850/25796?u=" + enlace;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string busqueda = "SELECT contenido, enlace FROM temporalhumble";
 
@@ -220,7 +221,7 @@ namespace APIs.Humble
 								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 									}
 									catch (Exception ex)
 									{
@@ -231,7 +232,7 @@ namespace APIs.Humble
 
 									try
 									{
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{

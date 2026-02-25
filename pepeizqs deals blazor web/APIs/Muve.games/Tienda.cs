@@ -5,6 +5,7 @@ using Juegos;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Muvegames
 {
@@ -28,9 +29,9 @@ namespace APIs.Muvegames
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int tope = 10;
 			int juegos2 = 0;
@@ -153,7 +154,7 @@ namespace APIs.Muvegames
 								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 									}
 									catch (Exception ex)
 									{
@@ -164,7 +165,7 @@ namespace APIs.Muvegames
 
 									try
 									{
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{

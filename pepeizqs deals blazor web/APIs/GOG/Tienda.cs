@@ -6,6 +6,7 @@ using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.GOG
 {
@@ -28,9 +29,9 @@ namespace APIs.GOG
 			return tienda;
 		}
 
-		public static async Task BuscarOfertasAntiguo()
+		public static async Task BuscarOfertasAntiguo(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -106,7 +107,7 @@ namespace APIs.GOG
 
 										try
 										{
-											await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+											await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 										}
 										catch (Exception ex)
 										{
@@ -135,9 +136,9 @@ namespace APIs.GOG
 			}
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -226,7 +227,7 @@ namespace APIs.GOG
 
 								try
 								{
-									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 								}
 								catch (Exception ex)
 								{

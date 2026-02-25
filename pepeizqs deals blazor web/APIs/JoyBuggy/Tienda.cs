@@ -4,6 +4,7 @@ using Herramientas;
 using Juegos;
 using System.Net;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.JoyBuggy
 {
@@ -31,9 +32,9 @@ namespace APIs.JoyBuggy
             return enlace + "?ref=253";
         }
 
-        public static async Task BuscarOfertas()
+        public static async Task BuscarOfertas(TiendaRegion region)
         {
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
             string html = await Decompiladores.Estandar("https://www.joybuggy.com/module/xmlfeeds/api?id=70");
 
@@ -121,7 +122,7 @@ namespace APIs.JoyBuggy
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -132,7 +133,7 @@ namespace APIs.JoyBuggy
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{

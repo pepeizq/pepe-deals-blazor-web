@@ -535,7 +535,6 @@ namespace BaseDatos.Juegos
 								notificar = true;
 							}
 
-
 							ultimaModificacion = true;
 
 							minimo.Precio = nuevaOferta.Precio;
@@ -744,9 +743,16 @@ namespace BaseDatos.Juegos
 						nuevoHistorico.Precio = nuevaOferta.Precio;
 					}
 				}
-                else				
+                else if (region == TiendaRegion.EstadosUnidos)		
                 {
-                    nuevoHistorico.Precio = nuevaOferta.Precio;
+					if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
+					{
+						nuevoHistorico.Precio = nuevaOferta.PrecioCambiado;
+					}
+					else
+					{
+						nuevoHistorico.Precio = nuevaOferta.Precio;
+					}
 				}
 
 				historicos.Add(nuevoHistorico);
@@ -760,7 +766,7 @@ namespace BaseDatos.Juegos
 
 				if (region == TiendaRegion.Europa)
                 {
-					if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro)
+					if (nuevaOferta.Moneda != JuegoMoneda.Euro)
 					{
 						if (nuevaOferta.PrecioCambiado > 0)
 						{
@@ -776,9 +782,23 @@ namespace BaseDatos.Juegos
 						nuevoHistorico.Precio = nuevaOferta.Precio;
 					}
 				}
-                else
+                else if (region == TiendaRegion.EstadosUnidos)
                 {
-					nuevoHistorico.Precio = nuevaOferta.Precio;
+					if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
+					{
+						if (nuevaOferta.PrecioCambiado > 0)
+						{
+							nuevoHistorico.Precio = nuevaOferta.PrecioCambiado;
+						}
+						else
+						{
+							nuevoHistorico.Precio = nuevaOferta.Precio;
+						}
+					}
+					else
+					{
+						nuevoHistorico.Precio = nuevaOferta.Precio;
+					}
 				}
 
                 bool mismoDRM = false;

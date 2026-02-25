@@ -3,6 +3,7 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
+using Tiendas2;
 
 namespace APIs.AmazonLuna
 {
@@ -110,7 +111,7 @@ namespace APIs.AmazonLuna
 
 			#region Standard
 
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, GenerarStandard().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			List<AmazonLunaJuego> juegosStandard = null;
 
@@ -159,7 +160,7 @@ namespace APIs.AmazonLuna
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas(GenerarStandard().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, GenerarStandard().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));
@@ -226,7 +227,7 @@ namespace APIs.AmazonLuna
 
 			#region Premium
 
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, GenerarPremium().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			cantidad = 0;
 
@@ -275,7 +276,7 @@ namespace APIs.AmazonLuna
 									foreach (var id in idJuegos)
 									{
 										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas(GenerarPremium().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, GenerarPremium().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										bool insertar = true;
 										var suscripciones = await BaseDatos.Suscripciones.Buscar.JuegoId(int.Parse(id));

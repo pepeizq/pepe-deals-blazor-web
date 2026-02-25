@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.GreenManGaming
 {
@@ -58,9 +59,9 @@ namespace APIs.GreenManGaming
 			return tienda;
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			string html = await Decompiladores.Estandar("https://api.greenmangaming.com/api/productfeed/prices/current?cc=es&cur=eur&lang=en");
 
@@ -128,7 +129,7 @@ namespace APIs.GreenManGaming
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{
@@ -139,7 +140,7 @@ namespace APIs.GreenManGaming
 
 							try
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
@@ -151,9 +152,9 @@ namespace APIs.GreenManGaming
 			}
 		}
 
-		public static async Task BuscarOfertasGold()
+		public static async Task BuscarOfertasGold(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -244,7 +245,7 @@ namespace APIs.GreenManGaming
 								{
 									try
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(lote);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 									}
 									catch (Exception ex)
 									{
@@ -255,7 +256,7 @@ namespace APIs.GreenManGaming
 
 									try
 									{
-										await BaseDatos.Admin.Actualizar.Tiendas(GenerarGold().Id, DateTime.Now, juegos2);
+										await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, juegos2);
 									}
 									catch (Exception ex)
 									{

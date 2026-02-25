@@ -1,18 +1,31 @@
 ﻿#nullable disable
 
 using Dapper;
+using System.Drawing;
+using Tiendas2;
 
 namespace BaseDatos.Admin
 {
 	public static class Actualizar
 	{
-		public static async Task Tiendas(string tienda, DateTime fecha, int cantidad)
+		public static async Task Tiendas(TiendaRegion region, string tienda, DateTime fecha, int cantidad)
 		{
+			string tabla = string.Empty;
+
+			if (region == TiendaRegion.Europa)
+			{
+				tabla = "adminTiendas";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "adminTiendasUS";
+			}
+
 			try
 			{
 				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
-					return await conexion.ExecuteAsync("UPDATE adminTiendas SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
+					return await conexion.ExecuteAsync($"UPDATE {tabla} SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
 				});
 			}
 			catch (Exception ex)
@@ -21,23 +34,19 @@ namespace BaseDatos.Admin
 			}
 		}
 
-		public static async Task TiendasUS(string tienda, DateTime fecha, int cantidad)
+		public static async Task TiendasValorAdicional(TiendaRegion region, string tienda, string valor, int cantidad)
 		{
-			try
-			{
-				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-				{
-					return await conexion.ExecuteAsync("UPDATE adminTiendasUS SET fecha=@fecha, mensaje=@mensaje WHERE id=@id", new { id = tienda, fecha = fecha, mensaje = cantidad }, transaction: sentencia);
-				});
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas US", ex, false);
-			}
-		}
+			string tabla = string.Empty;
 
-		public static async Task TiendasValorAdicional(string tienda, string valor, int cantidad)
-		{
+			if (region == TiendaRegion.Europa)
+			{
+				tabla = "adminTiendas";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "adminTiendasUS";
+			}
+
 			try
 			{
 				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
@@ -48,21 +57,6 @@ namespace BaseDatos.Admin
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas Valor Adicional", ex);
-			}
-		}
-
-		public static async Task TiendasValorAdicionalUS(string tienda, string valor, int cantidad)
-		{
-			try
-			{
-				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-				{
-					return await conexion.ExecuteAsync($"UPDATE adminTiendasUS SET {valor}=@cantidad WHERE id=@id", new { id = tienda, cantidad }, transaction: sentencia);
-				});
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Tiendas Valor Adicional US", ex);
 			}
 		}
 

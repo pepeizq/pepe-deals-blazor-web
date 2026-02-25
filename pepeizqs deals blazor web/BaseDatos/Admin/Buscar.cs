@@ -3,6 +3,7 @@
 using Dapper;
 using Streaming2;
 using Suscripciones2;
+using System.Drawing;
 using Tiendas2;
 
 namespace BaseDatos.Admin
@@ -149,13 +150,24 @@ namespace BaseDatos.Admin
 			return null;
 		}
 
-		public static async Task<int> TiendasValorAdicional(string id, string valor)
+		public static async Task<int> TiendasValorAdicional(TiendaRegion region, string id, string valor)
 		{
+			string tabla = string.Empty;
+
+			if (region == TiendaRegion.Europa)
+			{
+				tabla = "adminTiendas";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				tabla = "adminTiendasUS";
+			}
+
 			try
 			{
 				var fila = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendas WHERE id=@id", new { id });
+					return await conexion.QueryFirstOrDefaultAsync($"SELECT * FROM {tabla} WHERE id=@id", new { id });
 				});
 
 				if (fila == null)
@@ -173,35 +185,6 @@ namespace BaseDatos.Admin
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Valor Adicional", ex);
-			}
-
-			return 0;
-		}
-
-		public static async Task<int> TiendasValorAdicionalUS(string id, string valor)
-		{
-			try
-			{
-				var fila = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return await conexion.QueryFirstOrDefaultAsync("SELECT * FROM adminTiendasUS WHERE id=@id", new { id });
-				});
-
-				if (fila == null)
-				{
-					return 0;
-				}
-
-				var diccionario = (IDictionary<string, object>)fila;
-
-				if (diccionario.ContainsKey(valor) && diccionario[valor] != null)
-				{
-					return Convert.ToInt32(diccionario[valor]);
-				}
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Admin Tiendas Valor Adicional US", ex);
 			}
 
 			return 0;

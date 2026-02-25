@@ -8,6 +8,7 @@ using Juegos;
 using Microsoft.VisualBasic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Xbox
 {
@@ -40,7 +41,7 @@ namespace APIs.Xbox
 
 		public static async Task Buscar()
         {
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
             int cantidad = 0;
 
@@ -84,7 +85,7 @@ namespace APIs.Xbox
 									if (idJuegosTexto != "0")
 									{
 										cantidad += 1;
-										await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
+										await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, cantidad);
 
 										List<string> idJuegos = Herramientas.Listados.Generar(idJuegosTexto);
 

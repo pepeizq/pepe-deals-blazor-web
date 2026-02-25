@@ -40,6 +40,11 @@ namespace Tareas
 
 						await Herramientas.BaseDatos.Select(async (conexion) =>
 						{
+							return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimosUS");
+						});
+
+						await Herramientas.BaseDatos.Select(async (conexion) =>
+						{
 							return await conexion.ExecuteAsync("DBCC SHRINKFILE('pepeizq2_simply__winspace_es_1_log', 200);");
 						});
 					}

@@ -63,13 +63,13 @@ namespace APIs.Steam
 
 		public static async Task BuscarOfertas(bool mirarOfertas)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id, DateTime.Now, 0);
 
 			int juegos = 0;
 
 			bool rapido = false;
-			int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional");
-			int tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional2");
+			int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(TiendaRegion.Europa, Generar().Id, "valorAdicional");
+			int tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(TiendaRegion.Europa, Generar().Id, "valorAdicional2");
 
 			if (DateTime.Now.Hour == 19 && DateTime.Now.Minute >= 0 && DateTime.Now.Minute < 10)
 			{
@@ -162,7 +162,7 @@ namespace APIs.Steam
 					}
 				}
 
-				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional2", tope);
+				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(TiendaRegion.Europa, Generar().Id, "valorAdicional2", tope);
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -403,7 +403,7 @@ namespace APIs.Steam
 
 						try
 						{
-							await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos);
+							await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id, DateTime.Now, juegos);
 						}
 						catch (Exception ex)
 						{
@@ -413,34 +413,19 @@ namespace APIs.Steam
 				}
 
 				i += 50;
-				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", i);
+				await BaseDatos.Admin.Actualizar.TiendasValorAdicional(TiendaRegion.Europa, Generar().Id, "valorAdicional", i);
 			}
 		}
 
 		public static async Task BuscarOfertas2(TiendaRegion region)
 		{
-			if (region == TiendaRegion.Europa)
-			{
-				await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
-			}
-			else if (region == TiendaRegion.EstadosUnidos)
-			{
-				await BaseDatos.Admin.Actualizar.TiendasUS(Generar().Id, DateTime.Now, 0);
-			}
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int arranque = 0;
 			int tope = 1000;
 
-			if (region == TiendaRegion.Europa)
-			{
-				arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional");
-				tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(Generar().Id, "valorAdicional2");
-			}
-			else if (region == TiendaRegion.EstadosUnidos)
-			{
-				arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicionalUS(Generar().Id, "valorAdicional");
-				tope = await BaseDatos.Admin.Buscar.TiendasValorAdicionalUS(Generar().Id, "valorAdicional2");
-			}
+			arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(region, Generar().Id, "valorAdicional");
+			tope = await BaseDatos.Admin.Buscar.TiendasValorAdicional(region, Generar().Id, "valorAdicional2");
 
 			int juegos2 = 0;
 			bool rapido = false;
@@ -491,14 +476,7 @@ namespace APIs.Steam
 
 						tope = (int)resultado?.Respuesta?.Metadata?.CantidadTotal;
 
-						if (region == TiendaRegion.Europa)
-						{
-							await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional2", tope);
-						}
-						else if (region == TiendaRegion.EstadosUnidos)
-						{
-							await BaseDatos.Admin.Actualizar.TiendasValorAdicionalUS(Generar().Id, "valorAdicional2", tope);
-						}
+						await BaseDatos.Admin.Actualizar.TiendasValorAdicional(region, Generar().Id, "valorAdicional2", tope);
 
 						if (juegos?.Count > 0)
 						{
@@ -631,32 +609,21 @@ namespace APIs.Steam
 								}
 							}
 
-							if (region == TiendaRegion.Europa)
+							if (bundles?.Count > 0)
 							{
-								if (bundles?.Count > 0)
+								try
 								{
-									try
-									{
-										await BaseDatos.Tiendas.Comprobar.Resto(bundles);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(GenerarBundles().Id, ex);
-									}
+									await BaseDatos.Tiendas.Comprobar.Resto(region, bundles);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(GenerarBundles().Id, ex);
 								}
 							}
 
 							try
 							{
-								if (region == TiendaRegion.Europa)
-								{
-									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
-
-								}
-								else if (region == TiendaRegion.EstadosUnidos)
-								{
-									await BaseDatos.Admin.Actualizar.TiendasUS(Generar().Id, DateTime.Now, juegos2);
-								}
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 							}
 							catch (Exception ex)
 							{
@@ -666,15 +633,7 @@ namespace APIs.Steam
 					}
 
 					arranque += 1000;
-
-					if (region == TiendaRegion.Europa)
-					{
-						await BaseDatos.Admin.Actualizar.TiendasValorAdicional(Generar().Id, "valorAdicional", arranque);
-					}
-					else if (region == TiendaRegion.EstadosUnidos)
-					{
-						await BaseDatos.Admin.Actualizar.TiendasValorAdicionalUS(Generar().Id, "valorAdicional", arranque);
-					}
+					await BaseDatos.Admin.Actualizar.TiendasValorAdicional(region, Generar().Id, "valorAdicional", arranque);
 				}
 			}
 		}

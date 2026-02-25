@@ -1,12 +1,13 @@
 ﻿@page "/admin/"
 @page "/admin/{subpagina}/"
 
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [StreamRendering(true)]
 
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
+@using System.Diagnostics
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
@@ -51,6 +52,22 @@
     </HeadContent>
 
     <div class="cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
+        @if (correosEnCola > 0 || porcentajeRAM > 50)
+        {
+            <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 20px; justify-content: center;">
+                @if (correosEnCola > 0)
+                {
+                    <div style="padding: 10px 15px; background-color: var(--fondoSubsubcabecera);">
+                        Correos en cola: @correosEnCola
+                    </div>
+                }
+
+                <div style="padding: 10px 15px; @(porcentajeRAM > 70 ? "background-color: var(--fondoPeligro);" : porcentajeRAM > 50 ? "background-color: var(--fondoAlerta);" : "background-color: var(--fondoBien);")">
+                    @porcentajeRAM.ToString("F2")% RAM
+                </div>
+            </div>
+        }
+
         <div style="display: flex; align-items: start; width: 100%; font-size: 17px; gap: 40px;">
             <div style="width: 15%; display: flex; flex-direction: column; gap: 30px;">
                 <div class="caja-admin-indice">
@@ -181,6 +198,9 @@
     [Parameter]
     public string subpagina { get; set; }
 
+    private double porcentajeRAM = 0;
+    private int correosEnCola = 0;
+
     protected override async Task OnInitializedAsync()
     {
         if (Contexto == null || Contexto.HttpContext == null || Contexto.HttpContext.User == null || Contexto.HttpContext.User.Identity == null || Contexto.HttpContext.User.Identity.IsAuthenticated == false)
@@ -228,6 +248,16 @@
             {
                 subpagina = subpaginaDLCs;
             }
+
+            var process = Process.GetCurrentProcess();
+            var workingSetMB = process.WorkingSet64 / 1024 / 1024;
+            var privateMemoryMB = process.PrivateMemorySize64 / 1024 / 1024;
+
+            long limiteMB = 1024; //limite de mi pool
+
+            porcentajeRAM = (privateMemoryMB * 100.0) / limiteMB;
+
+            correosEnCola = await BaseDatos.CorreosEnviar.Buscar.Cantidad();
         }
         else
         {

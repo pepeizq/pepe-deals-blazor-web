@@ -2,6 +2,7 @@
 
 using Dapper;
 using Juegos;
+using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.Json;
 using Tiendas2;
@@ -416,11 +417,20 @@ END;
 			}
 		}
 
-		public static async Task Resto(List<JuegoPrecio> ofertas)
+		public static async Task Resto(TiendaRegion region, List<JuegoPrecio> ofertas)
 		{
 			if (ofertas == null || ofertas.Count == 0)
 			{
 				return;
+			}
+
+			string precioMinimosHistoricos = "precioMinimosHistoricos";
+			string precioActualesTiendas = "precioActualesTiendas";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+				precioActualesTiendas = "precioActualesTiendasUS";
 			}
 
 			var ofertasPorTienda = ofertas.GroupBy(o => o.Tienda).ToList();
@@ -436,8 +446,8 @@ END;
 
 				string sqlBuscar = $@"
 SELECT j.id,
-       j.precioMinimosHistoricos,
-       j.precioActualesTiendas,
+       j.{precioMinimosHistoricos},
+       j.{precioActualesTiendas},
        j.idSteam,
        j.historicos,
        j.analisis,
@@ -495,30 +505,63 @@ WHERE t.enlace IN ({placeholders})
 						int id = fila.id ?? 0;
 						int idSteam = fila.idSteam ?? 0;
 
-						var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
-
-						var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
-
-						var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
-
-						JuegoAnalisis reseñas = null;
-						if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+						if (region == TiendaRegion.Europa)
 						{
-							reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
-						}
+							var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
 
-						if (ofertasActuales?.Count == 0)
-						{
-							ofertasActuales.Add(oferta);
-						}
+							var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
 
-						if (id > 0)
-						{
-							var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, reseñas, indice);
+							var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
 
-							if (resultado.Item1 != null && resultado.Item2 != null)
+							JuegoAnalisis reseñas = null;
+							if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
 							{
-								indice += 1;
+								reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
+							}
+
+							if (ofertasActuales?.Count == 0)
+							{
+								ofertasActuales.Add(oferta);
+							}
+
+							if (id > 0)
+							{
+								var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, reseñas, indice);
+
+								if (resultado.Item1 != null && resultado.Item2 != null)
+								{
+									indice += 1;
+								}
+							}
+						}
+						else if (region == TiendaRegion.EstadosUnidos)
+						{
+							var ofertasHistoricasUS = string.IsNullOrEmpty(fila.precioMinimosHistoricosUS) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
+							
+							var ofertasActualesUS = string.IsNullOrEmpty(fila.precioActualesTiendasUS) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendasUS);
+							
+							var historicosUS = string.IsNullOrEmpty(fila.historicosUS) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicosUS);
+							
+							JuegoAnalisis reseñas = null;
+							
+							if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+							{
+								reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
+							}
+
+							if (ofertasActualesUS?.Count == 0)
+							{
+								ofertasActualesUS.Add(oferta);
+							}
+
+							if (id > 0)
+							{
+								var resultado = Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
+								
+								if (resultado.Item1 != null && resultado.Item2 != null)
+								{
+									indice += 1;
+								}
 							}
 						}
 					}

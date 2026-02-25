@@ -515,9 +515,13 @@ namespace Tareas
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.Zero;
 
-						if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						if (tienda.Id == APIs.GamersGate.Tienda.Generar().Id)
 						{
-							siguienteComprobacion = TimeSpan.FromHours(12);
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
 
 						if (siguienteComprobacion > TimeSpan.Zero)

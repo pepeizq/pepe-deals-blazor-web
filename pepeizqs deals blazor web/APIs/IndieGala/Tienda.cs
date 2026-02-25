@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Net;
 using System.Xml;
 using System.Xml.Serialization;
+using Tiendas2;
 
 namespace APIs.IndieGala
 {
@@ -36,9 +37,9 @@ namespace APIs.IndieGala
 			return enlace + "?ref=pepeizq";
 		}
 
-		public static async Task BuscarOfertas()
+		public static async Task BuscarOfertas(TiendaRegion region)
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -204,7 +205,7 @@ namespace APIs.IndieGala
 							{
 								try
 								{
-									await BaseDatos.Tiendas.Comprobar.Resto(lote);
+									await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 								}
 								catch (Exception ex)
 								{
@@ -215,7 +216,7 @@ namespace APIs.IndieGala
 
 								try
 								{
-									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id, DateTime.Now, juegos2);
+									await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 								}
 								catch (Exception ex)
 								{

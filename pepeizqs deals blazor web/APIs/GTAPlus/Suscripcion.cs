@@ -1,5 +1,6 @@
 ﻿using Juegos;
 using Suscripciones2;
+using Tiendas2;
 
 namespace APIs.GTAPlus
 {
@@ -31,7 +32,7 @@ namespace APIs.GTAPlus
 
 		public static async Task Buscar()
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, 0);
 
 			int juegos2 = 0;
 
@@ -66,7 +67,7 @@ namespace APIs.GTAPlus
 							}
 
 							juegos2 += 1;
-							await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString().ToLower(), DateTime.Now, juegos2);
+							await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString().ToLower(), DateTime.Now, juegos2);
 
 							if (insertar == true)
 							{

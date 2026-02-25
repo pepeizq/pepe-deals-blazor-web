@@ -4,6 +4,7 @@ using Dapper;
 using Herramientas;
 using Juegos;
 using System.Text.Json;
+using Tiendas2;
 
 namespace APIs.GOG
 {
@@ -24,7 +25,7 @@ namespace APIs.GOG
 
 		public static async Task Buscar()
 		{
-			await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, 0);
+			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString(), DateTime.Now, 0);
 
 			int cantidad = 0;
 
@@ -101,7 +102,7 @@ namespace APIs.GOG
 								if (encontrado == true)
 								{
 									cantidad += 1;
-									await BaseDatos.Admin.Actualizar.Tiendas(Generar().Id.ToString(), DateTime.Now, cantidad);
+									await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id.ToString(), DateTime.Now, cantidad);
 
 									string sqlActualizar = @"UPDATE streamingamazonluna 
 													SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE nombreCodigo=@nombreCodigo";
