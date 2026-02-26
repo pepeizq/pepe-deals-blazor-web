@@ -28,9 +28,6 @@ namespace Tareas
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
 		{
-			string piscinaWeb = _configuracion.GetValue<string>("PoolWeb:Contenido");
-			string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
-
 			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(30));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
@@ -42,7 +39,10 @@ namespace Tareas
 
 				try
 				{
-					if (piscinaWeb == piscinaUsada && await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", TimeSpan.FromMinutes(30)) == true)
+					string piscinaMinimos = _configuracion.GetValue<string>("PoolMinimos:Contenido");
+					string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
+
+					if (piscinaMinimos == piscinaUsada && await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", TimeSpan.FromMinutes(30)) == true)
 					{
 						await BaseDatos.Portada.Limpiar.Total(TiendaRegion.EstadosUnidos);
 

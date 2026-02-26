@@ -4,6 +4,7 @@ using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
 using System.Data;
+using Tiendas2;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
 
@@ -849,9 +850,13 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
-			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
+			string tabla = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
+			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
+			string precioActualesTiendas = region == TiendaRegion.Europa ? "precioActualesTiendas" : "precioActualesTiendasUS";
+
+			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
 	(
         SELECT g.gratis
@@ -883,7 +888,7 @@ END DESC";
           AND s.FechaTermina < GETDATE()
         FOR JSON PATH
     ) AS SuscripcionesPasados
-FROM seccionMinimos j";
+FROM {tabla} j";
 
 			string dondeTiendas = string.Empty;
 
@@ -900,7 +905,7 @@ FROM seccionMinimos j";
 							dondeTiendas = dondeTiendas + " OR ";
 						}
 
-						dondeTiendas = dondeTiendas + "JSON_VALUE(precioMinimosHistoricos, '$[0].Tienda') = '" + tienda.TiendaId + "'";
+						dondeTiendas = dondeTiendas + $"JSON_VALUE({precioMinimosHistoricos}, '$[0].Tienda') = '" + tienda.TiendaId + "'";
 					}
 				}
 			}
@@ -923,7 +928,7 @@ FROM seccionMinimos j";
 							dondeDRMs = dondeDRMs + " OR ";
 						}
 
-						dondeDRMs = dondeDRMs + "JSON_VALUE(precioMinimosHistoricos, '$[0].DRM') = '" + ((int)drm.DRMId).ToString() + "'";
+						dondeDRMs = dondeDRMs + $"JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = '" + ((int)drm.DRMId).ToString() + "'";
 					}
 				}
 			}
@@ -991,7 +996,7 @@ FROM seccionMinimos j";
 
 			if (minimoDescuento > 0)
 			{
-				dondeMinimoDescuento = "JSON_VALUE(precioMinimosHistoricos, '$[0].Descuento') >= " + minimoDescuento.ToString();
+				dondeMinimoDescuento = $"JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') >= " + minimoDescuento.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMinimoDescuento) == false)
@@ -1008,7 +1013,7 @@ FROM seccionMinimos j";
 
 			if (maximoPrecio > 0)
 			{
-				dondeMaximoPrecio = "CONVERT(decimal, JSON_VALUE(precioMinimosHistoricos, '$[0].Precio')) <= " + maximoPrecio.ToString();
+				dondeMaximoPrecio = $"CONVERT(decimal, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) <= " + maximoPrecio.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMaximoPrecio) == false)
@@ -1119,17 +1124,17 @@ FROM seccionMinimos j";
 
 			if (ordenar == 4)
 			{
-				busqueda = busqueda + " ORDER BY CASE WHEN precioMinimosHistoricos = 'null' OR precioMinimosHistoricos IS NULL THEN 1000000 ELSE CAST(JSON_VALUE(precioMinimosHistoricos, '$[0].Precio') AS decimal(18,2)) END";
+				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN 1000000 ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio') AS decimal(18,2)) END";
 			}
 
 			if (ordenar == 5)
 			{
-				busqueda = busqueda + " ORDER BY CASE WHEN precioMinimosHistoricos = 'null' OR precioMinimosHistoricos IS NULL THEN 0 ELSE CAST(JSON_VALUE(precioMinimosHistoricos, '$[0].Descuento') AS bigint) END DESC";
+				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN 0 ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') AS bigint) END DESC";
 			}
 
 			if (ordenar == 6)
 			{
-				busqueda = busqueda + " ORDER BY CASE WHEN precioMinimosHistoricos = 'null' OR precioMinimosHistoricos IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE(precioMinimosHistoricos, '$[0].FechaDetectado') AS date) END DESC";
+				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaDetectado') AS date) END DESC";
 			}
 
 			if (ordenar == 7)

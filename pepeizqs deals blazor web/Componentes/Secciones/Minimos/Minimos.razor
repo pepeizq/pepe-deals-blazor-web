@@ -404,7 +404,7 @@ else
 					<ItemContent>
 						<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 							<div style="width: 100%;">
-								<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.MinimosHistoricos" userAgent="@userAgent" />
+								<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.MinimosHistoricos" userAgent="@userAgent" />
 							</div>
 						
 							@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DeseadoImportado == false && juego.DeseadoMostrar == true)
@@ -999,6 +999,8 @@ else
 	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
 	private bool usuarioPatreon = false;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+
 	[PersistentState] public Usuario opcionesMinimos { get; set; }
 
 	[SupplyParameterFromQuery] private string DRMs { get; set; }
@@ -1029,6 +1031,7 @@ else
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
 		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		bool cargoFiltradoUsuario = false;
 
@@ -1048,6 +1051,11 @@ else
 
 			if (opcionesMinimos != null)
 			{
+				if (opcionesMinimos.Currency.HasValue == true)
+				{
+					usuarioRegion = (TiendaRegion)opcionesMinimos.Currency.Value;
+				}
+
 				#region Filtrado
 
 				if (opcionesMinimos.HistoricalLowsSort != null)
@@ -1514,7 +1522,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1524,10 +1532,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1557,7 +1575,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1568,10 +1586,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1601,7 +1629,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1612,10 +1640,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1645,7 +1683,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1656,10 +1694,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1689,7 +1737,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1700,10 +1748,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1733,7 +1791,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1744,10 +1802,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1777,7 +1845,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1788,10 +1856,20 @@ else
 				}
 				else
 				{
-					juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-						juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-						x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-					));
+					if (usuarioRegion == TiendaRegion.Europa)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+						));
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+						));
+					}
 				}
 			}
 			else
@@ -1821,7 +1899,7 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1837,10 +1915,20 @@ else
 					}
 					else
 					{
-						juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
-							juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
-							x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
-						));
+						if (usuarioRegion == TiendaRegion.Europa)
+						{
+							juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+								juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }),
+								x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricos[0].DRM }
+							));
+						}
+						else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+						{
+							juegosMostrar.AddRange(Filtros(juegosGestor).ExceptBy(
+								juegosMostrar.Select(x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }),
+								x => new { x.Juego.Id, x.Juego.PrecioMinimosHistoricosUS[0].DRM }
+							));
+						}
 					}
 				}
 				else
@@ -1875,6 +1963,11 @@ else
 
 	private List<JuegoMostrar> Filtros(List<Juegos.Juego> lista)
 	{
+		if (lista == null)
+		{
+			return null;
+		}
+
 		cargado = false;
 
 		List<JuegoMostrar> listaMostrar = new List<JuegoMostrar>();
@@ -1883,7 +1976,14 @@ else
 		{
 			if (ocultarJuegosUsuarioSteam == "checked")
 			{
-				lista = lista.Where(j => !juegosUsuario.Steam.Any(jU => jU.Id == j.IdSteam && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)).ToList();
+				if (usuarioRegion == TiendaRegion.Europa)
+				{
+					lista = lista.Where(j => !juegosUsuario.Steam.Any(jU => jU.Id == j.IdSteam && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)).ToList();
+				}
+				else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+				{
+					lista = lista.Where(j => !juegosUsuario.Steam.Any(jU => jU.Id == j.IdSteam && j.PrecioMinimosHistoricosUS[0].DRM == JuegoDRM.Steam)).ToList();
+				}
 			}
 		}
 
@@ -1891,7 +1991,14 @@ else
 		{
 			if (ocultarJuegosUsuarioGog == "checked")
 			{
-				lista = lista.Where(j => !juegosUsuario.Gog.Any(jU => jU.Id == j.IdGog && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.GOG)).ToList();
+				if (usuarioRegion == TiendaRegion.Europa)
+				{
+					lista = lista.Where(j => !juegosUsuario.Gog.Any(jU => jU.Id == j.IdGog && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.GOG)).ToList();
+				}
+				else
+				{
+					lista = lista.Where(j => !juegosUsuario.Gog.Any(jU => jU.Id == j.IdGog && j.PrecioMinimosHistoricosUS[0].DRM == JuegoDRM.GOG)).ToList();
+				}
 			}
 		}
 
@@ -1904,19 +2011,30 @@ else
 				Color = "var(--fondoBotonPequeño)"
 			};
 
-			if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, j, j.PrecioMinimosHistoricos[0].DRM) == true)
+			JuegoDRM drmUsar = JuegoDRM.NoEspecificado;
+
+			if (usuarioRegion == TiendaRegion.Europa)
+			{
+				drmUsar = j.PrecioMinimosHistoricos[0].DRM;
+			}
+			else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+			{
+				drmUsar = j.PrecioMinimosHistoricosUS[0].DRM;
+			}
+
+			if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, j, drmUsar) == true)
 			{
 				juegoMostrar.Color = "var(--fondoBien)";
 			}
 			else
 			{
-				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, j, j.PrecioMinimosHistoricos[0].DRM, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, j, drmUsar, true) == true)
 				{
 					juegoMostrar.Color = "var(--fondoAlerta)";
 					juegoMostrar.DeseadoImportado = true;
 				}
 
-				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, j, j.PrecioMinimosHistoricos[0].DRM, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, j, drmUsar, true) == true)
 				{
 					juegoMostrar.Color = "var(--fondoAlerta)";
 				}
@@ -2894,7 +3012,18 @@ else
 
 		foreach (var juego2 in juegosMostrar)
 		{
-			if (juego2.Juego.IdMaestra == juego.Juego.IdMaestra && juego2.Juego.PrecioMinimosHistoricos[0].DRM == drm)
+			JuegoDRM drmUsar = JuegoDRM.NoEspecificado;
+
+			if (usuarioRegion == TiendaRegion.Europa)
+			{
+				drmUsar = juego2.Juego.PrecioMinimosHistoricos[0].DRM;
+			}
+			else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+			{
+				drmUsar = juego2.Juego.PrecioMinimosHistoricosUS[0].DRM;
+			}
+
+			if (juego2.Juego.IdMaestra == juego.Juego.IdMaestra && drmUsar == drm)
 			{
 				if (estado == true)
 				{

@@ -145,6 +145,8 @@ builder.Services.AddSingleton<IEmailSender<Usuario>, IdentityNoOpEmailSender>();
 
 #region Tareas
 
+builder.Services.AddScoped<Servicios.Moneda>();
+
 builder.Services.Configure<HostOptions>(opciones =>
 {
 	opciones.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;

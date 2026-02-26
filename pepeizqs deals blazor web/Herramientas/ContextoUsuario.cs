@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using Tiendas2;
+
 namespace Herramientas
 {
 
@@ -13,6 +15,7 @@ namespace Herramientas
             datos.UsuarioId = contexto?.HttpContext?.User?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
             datos.UserAgent = contexto?.HttpContext?.Request?.Headers?.UserAgent.ToString();
 			datos.Dominio = contexto?.HttpContext?.Request?.Host.Value;
+			datos.Region = contexto?.HttpContext?.Request?.Cookies.TryGetValue("user_currency", out string valorRegion) == true && int.TryParse(valorRegion, out int valorRegionInt) && Enum.IsDefined(typeof(TiendaRegion), valorRegionInt) ? (TiendaRegion)valorRegionInt : TiendaRegion.Europa;
 
 			return datos;
         }
@@ -24,5 +27,6 @@ namespace Herramientas
         public string UsuarioId { get; set; }
         public string UserAgent { get; set; }
 		public string Dominio { get; set; }
+		public TiendaRegion Region { get; set; } = TiendaRegion.Europa;
 	}
 }

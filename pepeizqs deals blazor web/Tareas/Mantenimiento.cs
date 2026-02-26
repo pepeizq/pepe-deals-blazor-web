@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 
 namespace Tareas
@@ -71,6 +72,16 @@ namespace Tareas
 							}
 
 							#endregion
+
+							await Herramientas.BaseDatos.Select(async (conexion) =>
+							{
+								return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos");
+							});
+
+							await Herramientas.BaseDatos.Select(async (conexion) =>
+							{
+								return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimosUS");
+							});
 
 							await BaseDatos.Reseñas.Limpiar.Ejecutar();
 							await BaseDatos.Juegos.Limpiar.Minimos();

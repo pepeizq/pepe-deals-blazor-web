@@ -51,7 +51,7 @@ namespace APIs.Ubisoft
 				ColorDestacado = "rgba(0, 110, 245, 0.3)",
 				Enlace = "https://store.ubisoft.com/ubisoftplus",
                 DRMDefecto = JuegoDRM.Ubisoft,
-                AdminInteractuar = true,
+                AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = false,
                 Precio = 17.99,

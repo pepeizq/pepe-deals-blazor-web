@@ -94,8 +94,10 @@ AND (
 WHERE tipo = 0 AND 
 year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 6 AND
 CONVERT(float, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
+JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
 JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
-CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) AND 
+(CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
+	CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
 bundles IS NULL AND 
 NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 

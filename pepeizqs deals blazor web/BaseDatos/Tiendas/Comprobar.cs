@@ -530,6 +530,7 @@ WHERE t.enlace IN ({placeholders})
 
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
+									updates.Add((resultado.Item1, resultado.Item2));
 									indice += 1;
 								}
 							}
@@ -557,9 +558,10 @@ WHERE t.enlace IN ({placeholders})
 							if (id > 0)
 							{
 								var resultado = Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
-								
+
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
+									updates.Add((resultado.Item1, resultado.Item2));
 									indice += 1;
 								}
 							}

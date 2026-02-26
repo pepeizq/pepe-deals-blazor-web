@@ -33,15 +33,15 @@ namespace Tareas
 				{
 					try
 					{
-						await Herramientas.BaseDatos.Select(async (conexion) =>
-						{
-							return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos");
-						});
+						//await Herramientas.BaseDatos.Select(async (conexion) =>
+						//{
+						//	return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos");
+						//});
 
-						await Herramientas.BaseDatos.Select(async (conexion) =>
-						{
-							return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimosUS");
-						});
+						//await Herramientas.BaseDatos.Select(async (conexion) =>
+						//{
+						//	return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimosUS");
+						//});
 
 						await Herramientas.BaseDatos.Select(async (conexion) =>
 						{

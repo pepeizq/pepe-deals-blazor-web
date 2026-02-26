@@ -68,7 +68,11 @@ namespace APIs.Fanatical
 
 							foreach (string region2 in juego.Regiones)
 							{
-								if (region2 == "ES")
+								if (region == TiendaRegion.Europa && region2 == "ES")
+								{
+									autorizar = true;
+								}
+								else if (region == TiendaRegion.EstadosUnidos && region2 == "US")
 								{
 									autorizar = true;
 								}
@@ -113,7 +117,16 @@ namespace APIs.Fanatical
 
 									string enlace = juego.Enlace;
 
-									decimal precioRebajado = juego.PrecioRebajado.EUR ?? 0;
+									decimal precioRebajado = 0;
+
+									if (region == TiendaRegion.Europa)
+									{
+										precioRebajado = juego.PrecioRebajado?.EUR ?? 0;
+									}
+									else if (region == TiendaRegion.EstadosUnidos)
+									{
+										precioRebajado = juego.PrecioRebajado?.USD ?? 0;
+									}
 
 									if (juego.DRMs?.Count > 0 && precioRebajado > 0)
 									{
@@ -133,6 +146,11 @@ namespace APIs.Fanatical
 											FechaDetectado = DateTime.Now,
 											FechaActualizacion = DateTime.Now
 										};
+
+										if (region == TiendaRegion.EstadosUnidos)
+										{
+											oferta.Moneda = JuegoMoneda.Dolar;
+										}
 
 										if (juego.FechaTermina != null)
 										{
@@ -168,7 +186,7 @@ namespace APIs.Fanatical
 						{
 							try
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(TiendaRegion.Europa, lote);
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
 							}
 							catch (Exception ex)
 							{

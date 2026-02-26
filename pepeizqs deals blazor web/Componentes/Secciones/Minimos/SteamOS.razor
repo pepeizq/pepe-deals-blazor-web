@@ -1,6 +1,7 @@
 ﻿@page "/steamos"
 
 @using Juegos
+@using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 @using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos
@@ -366,6 +367,7 @@
 
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
 	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
 
@@ -380,6 +382,7 @@
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
 		dominio = datos.Dominio;
+        usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -399,6 +402,11 @@
 
 			if (opciones != null)
 			{
+				if (opciones.Currency.HasValue == true)
+				{
+					usuarioRegion = (TiendaRegion)opciones.Currency.Value;
+				}
+
 				if (opciones.SteamOSOption1 == true)
 				{
 					ocultarJuegosUsuario = "checked";
@@ -449,7 +457,7 @@
 
 		steamosListado = CrearListaSteamOS(true);
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, null, steamosListado, 0, minimoReseñas, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, null, steamosListado, 0, minimoReseñas, textoBuscador);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{

@@ -287,7 +287,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT HistoricalLowsOption1, HistoricalLowsOption4, HistoricalLowsOption2, HistoricalLowsOption3, HistoricalLowsDRMs, HistoricalLowsStores, HistoricalLowsTypes, HistoricalLowsTags, HistoricalLowsCategories2, HistoricalLowsSteamDeck, HistoricalLowsSteamOS, HistoricalLowsSort, HistoricalLowsRelease, HistoricalLowsAI FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, HistoricalLowsOption1, HistoricalLowsOption4, HistoricalLowsOption2, HistoricalLowsOption3, HistoricalLowsDRMs, HistoricalLowsStores, HistoricalLowsTypes, HistoricalLowsTags, HistoricalLowsCategories2, HistoricalLowsSteamDeck, HistoricalLowsSteamOS, HistoricalLowsSort, HistoricalLowsRelease, HistoricalLowsAI FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -664,7 +664,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT SteamDeckOption1, SteamDeckOption2, SteamDeckOption3, SteamDeckOption4 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, SteamDeckOption1, SteamDeckOption2, SteamDeckOption3, SteamDeckOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -688,7 +688,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT SteamOSOption1, SteamOSOption2, SteamOSOption3, SteamOSOption4 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, SteamOSOption1, SteamOSOption2, SteamOSOption3, SteamOSOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
