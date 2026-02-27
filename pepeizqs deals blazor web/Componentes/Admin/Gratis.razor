@@ -1,6 +1,7 @@
 ﻿@using Gratis2
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Data.SqlClient
+@using Tiendas2
 
 <style>
     .caja-admin-gratis {
@@ -144,7 +145,7 @@ else
 
         if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {
-            var tarea = BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 250, true);
+            var tarea = BaseDatos.Juegos.Buscar.Nombre2(TiendaRegion.Europa, textoBuscador, 250, true);
 
             var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
 

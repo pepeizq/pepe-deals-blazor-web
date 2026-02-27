@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Microsoft.VisualBasic;
+using Tiendas2;
 
 namespace Herramientas
 {
@@ -104,7 +105,7 @@ namespace Herramientas
 			return nombre;
 		}
 
-		public static string GenerarMensaje(string idioma, Juegos.Juego juego, bool buscarBundles, bool buscarGratis, bool buscarSuscripciones)
+		public static string GenerarMensaje(TiendaRegion region, string idioma, Juegos.Juego juego, bool buscarBundles, bool buscarGratis, bool buscarSuscripciones)
 		{
 			string mensaje = string.Empty;
 
@@ -194,7 +195,7 @@ namespace Herramientas
 			decimal minimoCantidad = 10000000;
 			Juegos.JuegoPrecio minimoFinal = new Juegos.JuegoPrecio();
 
-			if (juego.PrecioActualesTiendas?.Count > 0)
+			if (region == TiendaRegion.Europa && juego.PrecioActualesTiendas?.Count > 0)
 			{
 				foreach (var oferta in juego.PrecioActualesTiendas)
 				{
@@ -224,7 +225,49 @@ namespace Herramientas
 
 								if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
 								{
-									tempPrecio = Herramientas.Divisas.Cambio(tempPrecio, oferta.Moneda);
+									tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
+								}
+
+								if (tempPrecio < minimoCantidad)
+								{
+									minimoCantidad = tempPrecio;
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioActualesTiendasUS?.Count > 0)
+			{
+				foreach (var oferta in juego.PrecioActualesTiendasUS)
+				{
+					bool drmAdecuado = true;
+
+					if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
+					{
+						drmAdecuado = false;
+					}
+					else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
+					{
+						drmAdecuado = false;
+					}
+
+					if (drmAdecuado == true)
+					{
+						if (Herramientas.OfertaActiva.Verificar(oferta) == true)
+						{
+							if (oferta.Descuento > 0)
+							{
+								decimal tempPrecio = oferta.Precio;
+
+								if (oferta.PrecioCambiado > 0)
+								{
+									tempPrecio = oferta.PrecioCambiado;
+								}
+
+								if (oferta.Moneda != Herramientas.JuegoMoneda.Dolar && oferta.PrecioCambiado == 0)
+								{
+									tempPrecio = Herramientas.Divisas.CambioDolar(tempPrecio, oferta.Moneda);
 								}
 
 								if (tempPrecio < minimoCantidad)
@@ -239,34 +282,45 @@ namespace Herramientas
 
 			if (minimoCantidad > 0 && minimoCantidad < 10000000)
 			{
+				string minimoCantidadTexto = string.Empty;
+
+				if (region == TiendaRegion.Europa)
+				{
+					minimoCantidadTexto = Herramientas.Precios.Euro(minimoCantidad);
+				}
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
+					minimoCantidadTexto = Herramientas.Precios.Dolar(minimoCantidad);
+				}
+
 				if (string.IsNullOrEmpty(mensajeComplementoTipo) == false)
 				{
 					if (mensajeComplementoTipo == "bundle")
 					{
 						if (mensajeComplementoCantidadBundles == 1)
 						{
-							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage3", "Header"), Herramientas.Precios.Euro(minimoCantidad), mensajeComplementoTexto);
+							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage3", "Header"), minimoCantidadTexto, mensajeComplementoTexto);
 						}
 						else if (mensajeComplementoCantidadBundles > 1)
 						{
-							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage9", "Header"), Herramientas.Precios.Euro(minimoCantidad), mensajeComplementoCantidadBundles);
+							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage9", "Header"), minimoCantidadTexto, mensajeComplementoCantidadBundles);
 						}
 					}
 					else if (mensajeComplementoTipo == "suscripcion")
 					{
 						if (mensajeComplementoCantidadSuscripciones == 1)
 						{
-							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage4", "Header"), Herramientas.Precios.Euro(minimoCantidad), mensajeComplementoTexto);
+							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage4", "Header"), minimoCantidadTexto, mensajeComplementoTexto);
 						}
 						else if (mensajeComplementoCantidadSuscripciones > 1)
 						{
-							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage10", "Header"), Herramientas.Precios.Euro(minimoCantidad), mensajeComplementoCantidadSuscripciones);
+							return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage10", "Header"), minimoCantidadTexto, mensajeComplementoCantidadSuscripciones);
 						}
 					}
 				}
 				else
 				{
-					return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage1", "Header"), Herramientas.Precios.Euro(minimoCantidad));
+					return string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "SearchMessage1", "Header"), minimoCantidadTexto);
 				}
 			}
 

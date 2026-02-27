@@ -86,7 +86,7 @@ namespace Tareas
 							await BaseDatos.Reseñas.Limpiar.Ejecutar();
 							await BaseDatos.Juegos.Limpiar.Minimos();
 							await BaseDatos.Portapapeles.Borrar.Limpieza();
-							await Divisas.ActualizarDatos();
+							await Divisas.ActualizarDatos2();
 
 							await BaseDatos.Mantenimiento.Encoger.Ejecutar(_configuracion);
 						}

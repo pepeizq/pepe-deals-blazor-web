@@ -16,8 +16,13 @@
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 20px;">
-        <div>@dolar</div>
-        <div>@libra</div>
+        @if (listaDivisas?.Count > 0)
+        {
+            foreach (var divisa in listaDivisas)
+            {
+                <div>@divisa.Id: @divisa.Cantidad - @Herramientas.Calculadora.DiferenciaTiempo(divisa.Fecha, "es-ES")</div>
+            }
+        }
     </div>
 </div>
 
@@ -25,20 +30,17 @@
 
     #nullable disable
 
-    public string dolar { get; set; }
-    public string libra { get; set; }
+    public List<Herramientas.Divisa> listaDivisas { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        dolar = await Herramientas.Divisas.MensajeDolar();
-        libra = await Herramientas.Divisas.MensajeLibra();
+        listaDivisas = await BaseDatos.Divisas.Buscar.Todas();
     }
 
     private async Task ActualizarDivisas(MouseEventArgs e)
     {
-        await Herramientas.Divisas.ActualizarDatos();
+        await Herramientas.Divisas.ActualizarDatos2();
 
-        dolar = await Herramientas.Divisas.MensajeDolar();
-        libra = await Herramientas.Divisas.MensajeLibra();
+        listaDivisas = await BaseDatos.Divisas.Buscar.Todas();
     }
 }

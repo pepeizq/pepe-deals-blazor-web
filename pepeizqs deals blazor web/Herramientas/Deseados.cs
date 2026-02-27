@@ -209,7 +209,7 @@ namespace Herramientas
 										{
 											if (actual.Moneda != Herramientas.JuegoMoneda.Euro && actual.PrecioCambiado == 0)
 											{
-												actual.PrecioCambiado = Herramientas.Divisas.Cambio(actual.Precio, actual.Moneda);
+												actual.PrecioCambiado = Herramientas.Divisas.CambioEuro(actual.Precio, actual.Moneda);
 											}
 
 											if (precioReferencia > actual.Precio && actual.Precio > 0 && actual.Moneda == Herramientas.JuegoMoneda.Euro)
@@ -254,7 +254,7 @@ namespace Herramientas
 									}
 									else if (minimo.PrecioCambiado == 0 && minimo.Moneda != Herramientas.JuegoMoneda.Euro)
 									{
-										nuevoDeseado.HistoricoPrecio = Herramientas.Precios.Euro(Herramientas.Divisas.Cambio(minimo.Precio, minimo.Moneda));
+										nuevoDeseado.HistoricoPrecio = Herramientas.Precios.Euro(Herramientas.Divisas.CambioEuro(minimo.Precio, minimo.Moneda));
 									}
 									else
 									{

@@ -939,7 +939,7 @@
                                                 </div>
 
                                                 <div style="font-size: 15px;">
-                                                    @Herramientas.Buscador.GenerarMensaje(idioma, juego, true, true, true)
+                                                    @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
                                                 </div>
                                             </div>
                                         </div>
@@ -1072,7 +1072,7 @@
             if (string.IsNullOrEmpty(Search) == false)
             {
                 textoBuscador = Search;
-                resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(textoBuscador, 20);
+                resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, 20);
                 await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
             }
         }
@@ -1138,7 +1138,7 @@
                 return;
             }
 
-            var tarea = BaseDatos.Juegos.Buscar.Nombre2(texto, 20);
+            var tarea = BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, 20);
 
             var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
 

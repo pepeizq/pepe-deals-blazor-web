@@ -600,10 +600,25 @@ END DESC";
 			return juegos;
 		}
 
-		public static async Task<List<Juego>> Nombre2(string nombre, int cantidadResultados = 10, bool reducido = false)
+		public static async Task<List<Juego>> Nombre2(TiendaRegion region, string nombre, int cantidadResultados = 10, bool reducido = false)
 		{
-			string busqueda = @"SELECT TOP (@cantidad) 
-    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
+
+			string busqueda = $@"SELECT TOP (@cantidad) 
+    j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
     j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
 	(

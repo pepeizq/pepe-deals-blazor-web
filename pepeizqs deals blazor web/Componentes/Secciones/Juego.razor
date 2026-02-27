@@ -3723,7 +3723,7 @@
                         {
                             if (nuevoPrecio.Moneda != Herramientas.JuegoMoneda.Euro && nuevoPrecio.PrecioCambiado == 0)
                             {
-                                nuevoPrecio.PrecioCambiado = Herramientas.Divisas.Cambio(nuevoPrecio.Precio, nuevoPrecio.Moneda);
+                                nuevoPrecio.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevoPrecio.Precio, nuevoPrecio.Moneda);
                             }
                         }
 

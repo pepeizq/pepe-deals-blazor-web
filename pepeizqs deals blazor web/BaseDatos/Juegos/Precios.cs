@@ -80,7 +80,7 @@ namespace BaseDatos.Juegos
 
 			if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
             {
-                nuevaOferta.PrecioCambiado = Herramientas.Divisas.Cambio(nuevaOferta.Precio, nuevaOferta.Moneda);
+                nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevaOferta.Precio, nuevaOferta.Moneda);
 
                 if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
                 {
@@ -416,7 +416,7 @@ namespace BaseDatos.Juegos
 
 			if (nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado == 0)
 			{
-				nuevaOferta.PrecioCambiado = Herramientas.Divisas.Cambio(nuevaOferta.Precio, nuevaOferta.Moneda);
+				nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioDolar(nuevaOferta.Precio, nuevaOferta.Moneda);
 
 				if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
 				{

@@ -1031,7 +1031,7 @@
 		{
 			if (precio.Moneda != Herramientas.JuegoMoneda.Euro && precio.PrecioCambiado == 0)
 			{
-				return Herramientas.Precios.Euro(Herramientas.Divisas.Cambio(precio.Precio, precio.Moneda));
+				return Herramientas.Precios.Euro(Herramientas.Divisas.CambioEuro(precio.Precio, precio.Moneda));
 			}
 			else if (precio.Moneda != Herramientas.JuegoMoneda.Euro && precio.PrecioCambiado > 0)
 			{
