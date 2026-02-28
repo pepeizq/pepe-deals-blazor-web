@@ -84,6 +84,8 @@ namespace APIs.Humble
 
 			try
 			{
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 				IEnumerable<dynamic> filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
 					return await conexion.QueryAsync(busqueda);
@@ -104,8 +106,6 @@ namespace APIs.Humble
 
 						if (nuevosJuegos?.Resultados?.Count > 0)
 						{
-							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
 							foreach (var juego in nuevosJuegos.Resultados)
 							{
 								string nombre = WebUtility.HtmlDecode(juego.Nombre);
@@ -205,41 +205,6 @@ namespace APIs.Humble
 									}
 								}
 							}
-
-							if (ofertas?.Count > 0)
-							{
-								int juegos2 = 0;
-
-								int tamaño = 500;
-								var lotes = ofertas
-									.Select((oferta, indice) => new { oferta, indice })
-									.GroupBy(x => x.indice / tamaño)
-									.Select(g => g.Select(x => x.oferta).ToList())
-									.ToList();
-
-								foreach (var lote in lotes)
-								{
-									try
-									{
-										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
-
-									juegos2 += lote.Count;
-
-									try
-									{
-										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
-								}
-							}
 						}
 					}
 
@@ -251,6 +216,41 @@ namespace APIs.Humble
 						{
 							return await conexion.ExecuteAsync(limpieza, new { enlace = fila.enlace }, transaction: sentencia);
 						});
+					}
+				}
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+						}
 					}
 				}
 			}

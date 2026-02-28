@@ -40,5 +40,8 @@
   "String40": "Si la synchronisation est activée, la liste de souhaits sera téléchargée sur votre compte lors de la prochaine synchronisation automatique.",
   "String41": "ID associé au compte : {0}",
   "String42": "Désynchroniser et supprimer tout",
-  "String43": "Si vous sélectionnez cette option, toutes les {0} données enregistrées sur votre compte seront supprimées."
+  "String43": "Si vous sélectionnez cette option, toutes les {0} données enregistrées sur votre compte seront supprimées.",
+  "String44": "Connexion directe",
+  "String45": "Ouvrir la connexion de {0}",
+  "String46": "Si vous utilisez cette méthode pour charger vos jeux, le site Web lira uniquement les jeux de votre compte, vous pouvez vérifier le code source pour en être sûr."
 }

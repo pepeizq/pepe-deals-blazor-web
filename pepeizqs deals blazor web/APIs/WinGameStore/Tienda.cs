@@ -62,12 +62,17 @@ namespace APIs.WinGameStore
                             {
                                 foreach (var pais in listaPaisesRestringidos)
                                 {
-                                    if (pais.ToLower() == "es")
+                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
                                     {
                                         buscar = false;
                                         break;
                                     }
-                                }
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										buscar = false;
+										break;
+									}
+								}
                             }
                         }
 
@@ -83,12 +88,17 @@ namespace APIs.WinGameStore
                                 bool encontrado = false;
                                 foreach (var pais in listaPaisesAprobados)
                                 {
-                                    if (pais.ToLower() == "es")
+                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
                                     {
                                         encontrado = true;
                                         break;
                                     }
-                                }
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										encontrado = true;
+										break;
+									}
+								}
 
                                 if (encontrado == false)
                                 {

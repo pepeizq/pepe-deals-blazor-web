@@ -115,12 +115,17 @@ namespace APIs.Gamesplanet
                             {
                                 foreach (var pais in listaPaisesRestringidos)
                                 {
-                                    if (pais.ToLower() == "es")
+                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
                                     {
                                         buscar = false;
                                         break;
                                     }
-                                }
+                                    else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+                                    {
+                                        buscar = false;
+                                        break;
+									}
+								}
                             }
                         }
 
@@ -136,7 +141,12 @@ namespace APIs.Gamesplanet
                                 bool encontrado = false;
                                 foreach (var pais in listaPaisesAprobados)
                                 {
-                                    if (pais.ToLower() == "es")
+                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+                                    {
+                                        encontrado = true;
+                                        break;
+                                    }
+                                    else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
                                     {
                                         encontrado = true;
                                         break;
@@ -256,12 +266,17 @@ namespace APIs.Gamesplanet
                             {
                                 foreach (var pais in listaPaisesRestringidos)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        buscar = false;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										buscar = false;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										buscar = false;
+										break;
+									}
+								}
                             }
                         }
 
@@ -277,12 +292,17 @@ namespace APIs.Gamesplanet
                                 bool encontrado = false;
                                 foreach (var pais in listaPaisesAprobados)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        encontrado = true;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										encontrado = true;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										encontrado = true;
+										break;
+									}
+								}
 
                                 if (encontrado == false)
                                 {
@@ -397,12 +417,17 @@ namespace APIs.Gamesplanet
                             {
                                 foreach (var pais in listaPaisesRestringidos)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        buscar = false;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										buscar = false;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										buscar = false;
+										break;
+									}
+								}
                             }
                         }
 
@@ -418,12 +443,17 @@ namespace APIs.Gamesplanet
                                 bool encontrado = false;
                                 foreach (var pais in listaPaisesAprobados)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        encontrado = true;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										encontrado = true;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										encontrado = true;
+										break;
+									}
+								}
 
                                 if (encontrado == false)
                                 {
@@ -538,12 +568,17 @@ namespace APIs.Gamesplanet
                             {
                                 foreach (var pais in listaPaisesRestringidos)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        buscar = false;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										buscar = false;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										buscar = false;
+										break;
+									}
+								}
                             }
                         }
 
@@ -559,12 +594,17 @@ namespace APIs.Gamesplanet
                                 bool encontrado = false;
                                 foreach (var pais in listaPaisesAprobados)
                                 {
-                                    if (pais.ToLower() == "es")
-                                    {
-                                        encontrado = true;
-                                        break;
-                                    }
-                                }
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										encontrado = true;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									{
+										encontrado = true;
+										break;
+									}
+								}
 
                                 if (encontrado == false)
                                 {

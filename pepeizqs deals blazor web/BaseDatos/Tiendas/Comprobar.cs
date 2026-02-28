@@ -2,7 +2,6 @@
 
 using Dapper;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Text;
 using System.Text.Json;
 using Tiendas2;
@@ -530,7 +529,19 @@ WHERE t.enlace IN ({placeholders})
 
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
-									updates.Add((resultado.Item1, resultado.Item2));
+									var ofertasActualesActualizado = JsonSerializer.Deserialize<List<JuegoPrecio>>(
+										resultado.Item2.Get<string>($"@precioActualesTiendas{indice}"));
+
+									var ofertasHistoricasActualizado = JsonSerializer.Deserialize<List<JuegoPrecio>>(
+										resultado.Item2.Get<string>($"@precioMinimosHistoricos{indice}"));
+
+									var historicosActualizado = resultado.Item2.ParameterNames.Contains($"@historicos{indice}")
+										? JsonSerializer.Deserialize<List<JuegoHistorico>>(resultado.Item2.Get<string>($"@historicos{indice}"))
+										: historicos;
+
+									estadosPorJuego[id] = (ofertasActualesActualizado, ofertasHistoricasActualizado, historicosActualizado, reseñas, idSteam);
+
+									updates[id] = (resultado.Item1, resultado.Item2);
 									indice += 1;
 								}
 							}

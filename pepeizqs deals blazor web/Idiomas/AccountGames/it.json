@@ -40,5 +40,8 @@
   "String40": "Se hai abilitato la sincronizzazione, la lista dei desideri verrà caricata sul tuo account durante la successiva sincronizzazione automatica.",
   "String41": "ID associato all'account: {0}",
   "String42": "Annulla la sincronizzazione ed elimina tutto",
-  "String43": "Se selezioni questa opzione, tutti i dati {0} salvati nel tuo account verranno eliminati."
+  "String43": "Se selezioni questa opzione, tutti i dati {0} salvati nel tuo account verranno eliminati.",
+  "String44": "Connessione diretta",
+  "String45": "Apri l'accesso di {0}",
+  "String46": "Se utilizzi questo metodo per caricare i tuoi giochi, il sito web leggerà solo i giochi dal tuo account, puoi controllare il codice sorgente per essere sicuro."
 }

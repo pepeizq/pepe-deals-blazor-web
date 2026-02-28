@@ -3,16 +3,16 @@
 using Herramientas;
 using Tiendas2;
 
-namespace Tareas
+namespace Tareas.Comprobar
 {
-	public class Comprobador : BackgroundService
+	public class Europa : BackgroundService
 	{
-		private readonly ILogger<Comprobador> _logger;
+		private readonly ILogger<Europa> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
 		private readonly IConfiguration _configuracion;
 
-		public Comprobador(ILogger<Comprobador> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
+		public Europa(ILogger<Europa> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;
@@ -29,7 +29,7 @@ namespace Tareas
 				string piscinaTiendas = _configuracion.GetValue<string>("PoolTiendas:Contenido");
 				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-				if (piscinaTiendas == piscinaUsada)
+				if (piscinaTiendas == piscinaUsada && await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", TimeSpan.FromMinutes(30)) == true)
 				{
 					#region Tiendas Europa
 
@@ -369,7 +369,12 @@ namespace Tareas
 								{
 									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
 
-									Environment.Exit(1);
+									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
+									if (tareasEnUso.Count == 0)
+									{
+										Environment.Exit(1);
+									}
 								}
 								catch (Exception ex)
 								{
@@ -445,7 +450,12 @@ namespace Tareas
 										await APIs.Xbox.Suscripcion.Buscar();
 									}
 
-									Environment.Exit(1);
+									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
+									if (tareasEnUso.Count == 0)
+									{
+										Environment.Exit(1);
+									}
 								}
 								catch (Exception ex)
 								{
@@ -497,52 +507,16 @@ namespace Tareas
 										await APIs.GeforceNOW.Streaming.Buscar();
 									}
 
-									Environment.Exit(1);
+									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
+									if (tareasEnUso.Count == 0)
+									{
+										Environment.Exit(1);
+									}
 								}
 								catch (Exception ex)
 								{
 									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + streaming.Id.ToString(), ex);
-								}
-							}
-						}
-					}
-
-					#endregion
-
-					#region Tiendas Estados Unidos
-
-					foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
-					{
-						TimeSpan siguienteComprobacion = TimeSpan.Zero;
-
-						if (tienda.Id == APIs.Fanatical.Tienda.Generar().Id)
-						{
-							siguienteComprobacion = TimeSpan.FromHours(6);
-						}
-						else if (tienda.Id == APIs.GamersGate.Tienda.Generar().Id)
-						{
-							siguienteComprobacion = TimeSpan.FromHours(6);
-						}
-						else if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
-						{
-							siguienteComprobacion = TimeSpan.FromHours(6);
-						}
-
-						if (siguienteComprobacion > TimeSpan.Zero)
-						{
-							bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsarUS(siguienteComprobacion, tienda.Id);
-
-							if (sePuedeUsar == true)
-							{
-								try
-								{
-									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.EstadosUnidos, tienda.Id);
-
-									Environment.Exit(1);
-								}
-								catch (Exception ex)
-								{
-									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + tienda.Id, ex);
 								}
 							}
 						}

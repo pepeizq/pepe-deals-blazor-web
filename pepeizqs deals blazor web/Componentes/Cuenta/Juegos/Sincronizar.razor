@@ -1,4 +1,5 @@
 ﻿@page "/account/sync/"
+@page "/account/sync/{plataforma}/"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
@@ -178,6 +179,9 @@
 
 	[PersistentState] public SeccionDRM seccionActual { get; set; }
 
+	[Parameter]
+    public string plataforma { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -191,7 +195,17 @@
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 		}
 
-		await MostrarSteam();
+		if (string.IsNullOrEmpty(plataforma) == false)
+		{
+			if (Enum.TryParse(plataforma, true, out SeccionDRM resultado))
+			{
+				seccionActual = resultado;
+			}
+        }
+		else
+		{
+			await MostrarSteam();
+        }
 	}
 
 	public enum SeccionDRM

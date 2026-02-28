@@ -76,6 +76,8 @@ namespace Herramientas
 			}
 			finally
 			{
+				transaccion?.Dispose();
+
 				if (cerrar == true)
 				{
 					await conexion.CloseAsync();

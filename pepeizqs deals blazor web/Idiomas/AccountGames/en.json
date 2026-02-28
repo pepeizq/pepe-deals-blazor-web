@@ -40,5 +40,8 @@
   "String40": "If you have synchronization enabled, the wishlist will be uploaded to your account during the next automatic synchronization.",
   "String41": "ID associated with the account: {0}",
   "String42": "Unsync and delete everything",
-  "String43": "If you select this option, all {0} data saved to your account will be deleted."
+  "String43": "If you select this option, all {0} data saved to your account will be deleted.",
+  "String44": "Direct connection",
+  "String45": "Open login of {0}",
+  "String46": "If you use this method to load your games, the website will only read the games from your account; you can check the source code to be sure."
 }

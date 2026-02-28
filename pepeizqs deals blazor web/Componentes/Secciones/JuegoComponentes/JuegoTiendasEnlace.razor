@@ -117,20 +117,42 @@
                     </div>
 
                     <div class="juego-precio">
-                        @if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
+                        @if (region == TiendaRegion.Europa)
                         {
-                            <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
-                            <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precioFinalCambiadoOriginal, precio.Moneda)</div>
-                        }
-                        else
-                        {
-                            <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
-
-                            if (precioOriginalBundle > 0)
+                            if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Euro)
                             {
-                                <div style="text-align: center; font-size: 13px; margin-top: 5px; text-decoration: line-through;">
-                                    @Herramientas.Precios.Euro(precioOriginalBundle)
-                                </div>
+                                <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
+                                <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precioFinalCambiadoOriginal, precio.Moneda)</div>
+                            }
+                            else
+                            {
+                                <div style="text-align: center;">@Herramientas.Precios.Euro(precioFinal)</div>
+
+                                if (precioOriginalBundle > 0)
+                                {
+                                    <div style="text-align: center; font-size: 13px; margin-top: 5px; text-decoration: line-through;">
+                                        @Herramientas.Precios.Euro(precioOriginalBundle)
+                                    </div>
+                                }
+                            }
+                        }
+                        else if (region == TiendaRegion.EstadosUnidos)
+                        {
+                            if (precio.PrecioCambiado > 0 && precio.Moneda != Herramientas.JuegoMoneda.Dolar)
+                            {
+                                <div style="text-align: center;">@Herramientas.Precios.Dolar(precioFinal)</div>
+                                <div style="text-align: center; font-size: 13px; margin-top: 5px;">@Herramientas.Divisas.DevolverSimbolo(precioFinalCambiadoOriginal, precio.Moneda)</div>
+                            }
+                            else
+                            {
+                                <div style="text-align: center;">@Herramientas.Precios.Dolar(precioFinal)</div>
+
+                                if (precioOriginalBundle > 0)
+                                {
+                                    <div style="text-align: center; font-size: 13px; margin-top: 5px; text-decoration: line-through;">
+                                        @Herramientas.Precios.Dolar(precioOriginalBundle)
+                                    </div>
+                                }
                             }
                         }
                     </div>
@@ -143,6 +165,9 @@
 @code {
 
     #nullable disable
+
+    [Parameter]
+    public TiendaRegion region { get; set; }
 
     [Parameter]
     public JuegoPrecio precio { get; set; }

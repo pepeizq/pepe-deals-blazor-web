@@ -208,6 +208,10 @@ namespace Herramientas
 			{
 				precioTexto = "£" + cantidad.ToString();
 			}
+			else if (moneda == JuegoMoneda.Euro)
+			{
+				precioTexto = cantidad.ToString() + "€";
+			}
 
 			if (precioTexto.Contains(".") == true)
 			{

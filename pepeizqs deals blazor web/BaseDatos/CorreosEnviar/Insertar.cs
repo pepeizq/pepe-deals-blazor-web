@@ -42,5 +42,34 @@ namespace BaseDatos.CorreosEnviar
 				BaseDatos.Errores.Insertar.Mensaje2("Correos Enviar Insertar", ex, false, sql);
 			}
 		}
+
+		public static async Task Registro(string html, string titulo, string correoHacia)
+		{
+			string sql = @"
+					INSERT INTO correosRegistro 
+					(html, titulo, correoHacia) 
+					VALUES 
+					(@html, @titulo, @correoHacia);
+				";
+
+			try
+			{
+				var parametros = new
+				{
+					html,
+					titulo,
+					correoHacia
+				};
+
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(sql, parametros, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje2("Correos Registro Insertar", ex, false);
+			}
+		}
 	}
 }

@@ -40,7 +40,16 @@
 		}
 	}
 
-    List<JuegoPrecio> preciosJson = OrdenarPrecios(juego.PrecioActualesTiendas);
+    List<JuegoPrecio> preciosJson = new List<JuegoPrecio>();
+
+    if (usuarioRegion == TiendaRegion.Europa)
+    {
+        preciosJson = OrdenarPrecios(usuarioRegion, juego.PrecioActualesTiendas);
+    }
+    else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+    {
+        preciosJson = OrdenarPrecios(usuarioRegion, juego.PrecioActualesTiendasUS);
+    }
 
     if (string.IsNullOrEmpty(juego.FreeToPlay) == false)
     {
@@ -746,8 +755,17 @@
                             }
                         }  
 
-                        List<JuegoPrecio> preciosActualesDRM = OrdenarPrecios(juego.PrecioActualesTiendas, drm.Id);
-                        
+                        List<JuegoPrecio> preciosActualesDRM = new List<JuegoPrecio>();
+                            
+                        if (usuarioRegion == TiendaRegion.Europa)
+                        {
+                            preciosActualesDRM = OrdenarPrecios(usuarioRegion, juego.PrecioActualesTiendas, drm.Id);
+                        }
+                        else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+                        {
+                            preciosActualesDRM = OrdenarPrecios(usuarioRegion, juego.PrecioActualesTiendasUS, drm.Id);  
+                        }
+
                         <div id="@drm.Id">
                             @if (string.IsNullOrEmpty(mensajeMinimoDRM) == false)
                             {
@@ -950,7 +968,7 @@
                                                         @{
                                                             decimal precioMinimoValor = 100000;
 
-                                                            if (juego.PrecioMinimosHistoricos?.Count > 0)
+                                                            if (usuarioRegion == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
                                                             {
                                                                 foreach (var historico in juego.PrecioMinimosHistoricos)
                                                                 {
@@ -971,10 +989,42 @@
                                                                     }
                                                                 }
                                                             }
+                                                            else if (usuarioRegion == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+                                                            {
+                                                                foreach (var historico in juego.PrecioMinimosHistoricosUS)
+                                                                {
+                                                                    if (historico.DRM == drm.Id)
+                                                                    {
+                                                                        if (historico.Moneda != Herramientas.JuegoMoneda.Dolar && historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoValor)
+                                                                        {
+                                                                            precioMinimoValor = historico.PrecioCambiado;
+                                                                        }
+                                                                        else if (historico.Moneda != Herramientas.JuegoMoneda.Dolar && historico.PrecioCambiado == 0 && historico.Precio < precioMinimoValor)
+                                                                        {
+                                                                            precioMinimoValor = historico.Precio;
+                                                                        }
+                                                                        else if (historico.Moneda == Herramientas.JuegoMoneda.Dolar && historico.Precio >= 0 && historico.Precio < precioMinimoValor)
+                                                                        {
+                                                                            precioMinimoValor = historico.Precio;
+                                                                        }
+                                                                    }
+                                                                }                                                                
+                                                            }
 
                                                             if (precioMinimoValor < 100000)
                                                             {
-                                                                <div style="background: color-mix(in srgb, var(--fondoSubsubcabecera) 25%, var(--fondoBotonPequeño)); padding: 5px 10px">@Herramientas.Precios.Euro(precioMinimoValor)</div>
+                                                                string precioMinimoTexto = string.Empty;
+
+                                                                if (usuarioRegion == TiendaRegion.Europa)
+                                                                {
+                                                                    precioMinimoTexto = Herramientas.Precios.Euro(precioMinimoValor);
+                                                                }
+                                                                else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+                                                                {
+                                                                    precioMinimoTexto = Herramientas.Precios.Dolar(precioMinimoValor);
+                                                                }
+
+                                                                <div style="background: color-mix(in srgb, var(--fondoSubsubcabecera) 25%, var(--fondoBotonPequeño)); padding: 5px 10px">@precioMinimoTexto</div>
                                                                 <label style="font-size: 14px;">@mensajeMinimoDRM</label>
                                                             }
                                                         }
@@ -1598,7 +1648,7 @@
                                         @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                         {
                                             <div style="display: flex; flex-direction: column; gap: 15px; margin-left: auto;">
-                                                @if (HistoricoComprobar(drm.Id) == true)
+                                                @if (HistoricoComprobar(usuarioRegion, drm.Id) == true)
                                                 {
                                                     <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-historical-@drm.Id.ToString()')" style="width: fit-content;">
                                                         <button @onclick="(e => HistoricoEnseñar(e, drm.Id))" class="boton-pequeño" style="width: auto; min-width: 200px; text-align: center; font-size: 14px; padding: 10px 12px;">
@@ -1652,11 +1702,9 @@
                                         }
                                     </div>
                                 }
-
-                                
-                                <JuegoTiendas preciosActualesDRM="@preciosActualesDRM" mensajeMinimoDRM=@mensajeMinimoDRM usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+        
+                                <JuegoTiendas region="@usuarioRegion" preciosActualesDRM="@preciosActualesDRM" mensajeMinimoDRM=@mensajeMinimoDRM usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                         usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juego.Nombre"/>
-
                             </div>
                         </div>
                     }
@@ -3140,6 +3188,7 @@
 
     private bool usuarioPatreon = false;
     private bool usuarioAdmin = false;
+    private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
     [PersistentState] public List<JuegoTieneDesea> usuarioTieneDesea { get; set; }
 
@@ -3170,6 +3219,7 @@
         usuarioId = datos.UsuarioId;
         userAgent = datos.UserAgent;
         dominio = datos.Dominio;
+        usuarioRegion = datos.Region;
 
         idiomaJuego = idioma;
 
@@ -3186,6 +3236,7 @@
 
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
             usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
 
             string idiomaJuegoTemp = await BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
 
@@ -3206,8 +3257,16 @@
 
             foreach (DRM drm in JuegoDRM2.GenerarListado())
             {
-                string mensajeMinimoDRM = CogerMinimoDRM(idioma, drm.Id, juego.Id, juego.Nombre, juego.PrecioMinimosHistoricos, juego.PrecioActualesTiendas, juego.Historicos);
-                drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });                 
+                if (usuarioRegion == TiendaRegion.Europa)
+                {
+                    string mensajeMinimoDRM = CogerMinimoDRM(usuarioRegion, idioma, drm.Id, juego.Id, juego.Nombre, juego.PrecioMinimosHistoricos, juego.PrecioActualesTiendas, juego.Historicos);
+                    drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });    
+                }
+                else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+                {
+                    string mensajeMinimoDRM = CogerMinimoDRM(usuarioRegion, idioma, drm.Id, juego.Id, juego.Nombre, juego.PrecioMinimosHistoricosUS, juego.PrecioActualesTiendasUS, juego.HistoricosUS);
+                    drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });                        
+                }           
             }
 
             juego.Suscripciones = await global::BaseDatos.Suscripciones.Buscar.JuegoId(juego.Id);
@@ -3538,7 +3597,7 @@
         return false;        
     }
 
-    public static string CogerMinimoDRM(string idioma, JuegoDRM drm, int juegoId, string juegoNombre, List<JuegoPrecio> historicos, List<JuegoPrecio> actuales, List<JuegoHistorico> listaHistoricos)
+    public static string CogerMinimoDRM(TiendaRegion region, string idioma, JuegoDRM drm, int juegoId, string juegoNombre, List<JuegoPrecio> historicos, List<JuegoPrecio> actuales, List<JuegoHistorico> listaHistoricos)
     {
         string drmPreparado = null;
 
@@ -3559,12 +3618,12 @@
         {
             if (actuales?.Count > 0)
             {
-                historicosDRM = OrdenarPrecios(actuales, drm, true);
+                historicosDRM = OrdenarPrecios(region, actuales, drm, true);
             }			
         }
         else
         {
-            historicosDRM = OrdenarPrecios(historicosDRM, drm, false);            
+            historicosDRM = OrdenarPrecios(region, historicosDRM, drm, false);            
         }
 
         if (historicosDRM.Count > 0)
@@ -3642,25 +3701,52 @@
 
                         foreach (var historico in listaHistoricos)
                         {
-                            if (historico.DRM == drm && historico.Precio == historicosDRM[0].Precio && historicosDRM[0].Moneda == Herramientas.JuegoMoneda.Euro ||
-                                historico.DRM == drm && historico.Precio == historicosDRM[0].PrecioCambiado && historicosDRM[0].PrecioCambiado > 0 && historicosDRM[0].Moneda != Herramientas.JuegoMoneda.Euro)
+                            if (region == TiendaRegion.Europa)
                             {
-                                bool sePuedeAñadir = true;
-
-                                if (mismoPrecio.Count > 0)
+                                if (historico.DRM == drm && historico.Precio == historicosDRM[0].Precio && historicosDRM[0].Moneda == Herramientas.JuegoMoneda.Euro ||
+                                    historico.DRM == drm && historico.Precio == historicosDRM[0].PrecioCambiado && historicosDRM[0].PrecioCambiado > 0 && historicosDRM[0].Moneda != Herramientas.JuegoMoneda.Euro)
                                 {
-                                    foreach (var mismo in mismoPrecio)
+                                    bool sePuedeAñadir = true;
+
+                                    if (mismoPrecio.Count > 0)
                                     {
-                                        if (historico.Fecha.Subtract(mismo.Fecha) < TimeSpan.FromDays(22))
+                                        foreach (var mismo in mismoPrecio)
                                         {
-                                            sePuedeAñadir = false;
+                                            if (historico.Fecha.Subtract(mismo.Fecha) < TimeSpan.FromDays(22))
+                                            {
+                                                sePuedeAñadir = false;
+                                            }
                                         }
                                     }
-                                }
 
-                                if (sePuedeAñadir == true)
+                                    if (sePuedeAñadir == true)
+                                    {
+                                        mismoPrecio.Add(historico);
+                                    }
+                                }
+                            }
+                            else if (region == TiendaRegion.EstadosUnidos)
+                            {
+                                if (historico.DRM == drm && historico.Precio == historicosDRM[0].Precio && historicosDRM[0].Moneda == Herramientas.JuegoMoneda.Dolar ||
+                                    historico.DRM == drm && historico.Precio == historicosDRM[0].PrecioCambiado && historicosDRM[0].PrecioCambiado > 0 && historicosDRM[0].Moneda != Herramientas.JuegoMoneda.Dolar)
                                 {
-                                    mismoPrecio.Add(historico);
+                                    bool sePuedeAñadir = true;
+
+                                    if (mismoPrecio.Count > 0)
+                                    {
+                                        foreach (var mismo in mismoPrecio)
+                                        {
+                                            if (historico.Fecha.Subtract(mismo.Fecha) < TimeSpan.FromDays(22))
+                                            {
+                                                sePuedeAñadir = false;
+                                            }
+                                        }
+                                    }
+
+                                    if (sePuedeAñadir == true)
+                                    {
+                                        mismoPrecio.Add(historico);
+                                    }
                                 }
                             }
                         }
@@ -3684,7 +3770,7 @@
         return drmPreparado;
     }
 
-    public static List<JuegoPrecio> OrdenarPrecios(List<JuegoPrecio> precios, JuegoDRM drm = JuegoDRM.NoEspecificado, bool verificarActivo = true)
+    public static List<JuegoPrecio> OrdenarPrecios(TiendaRegion region, List<JuegoPrecio> precios, JuegoDRM drm = JuegoDRM.NoEspecificado, bool verificarActivo = true)
     {
         List<JuegoPrecio> preciosOrdenados = new List<JuegoPrecio>();
 
@@ -3721,9 +3807,13 @@
 
                         if (nuevoPrecio != null)
                         {
-                            if (nuevoPrecio.Moneda != Herramientas.JuegoMoneda.Euro && nuevoPrecio.PrecioCambiado == 0)
+                            if (region == TiendaRegion.Europa && nuevoPrecio.Moneda != Herramientas.JuegoMoneda.Euro && nuevoPrecio.PrecioCambiado == 0)
                             {
                                 nuevoPrecio.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevoPrecio.Precio, nuevoPrecio.Moneda);
+                            }
+                            else if (region == TiendaRegion.EstadosUnidos && nuevoPrecio.Moneda != Herramientas.JuegoMoneda.Dolar && nuevoPrecio.PrecioCambiado == 0)
+                            {
+                                nuevoPrecio.PrecioCambiado = Herramientas.Divisas.CambioDolar(nuevoPrecio.Precio, nuevoPrecio.Moneda);
                             }
                         }
 
@@ -3756,7 +3846,8 @@
             {
                 decimal precio1 = 0;
 
-                if (p1.Moneda != Herramientas.JuegoMoneda.Euro)
+                if ((region == TiendaRegion.Europa && p1.Moneda != Herramientas.JuegoMoneda.Euro) ||
+                    (region == TiendaRegion.EstadosUnidos && p1.Moneda != Herramientas.JuegoMoneda.Dolar))
                 {
                     precio1 = p1.PrecioCambiado;
                 }
@@ -3767,7 +3858,8 @@
 
                 decimal precio2 = 0;
 
-                if (p2.Moneda != Herramientas.JuegoMoneda.Euro)
+                if ((region == TiendaRegion.Europa && p2.Moneda != Herramientas.JuegoMoneda.Euro) ||
+                    (region == TiendaRegion.EstadosUnidos && p2.Moneda != Herramientas.JuegoMoneda.Dolar))
                 {
                     precio2 = p2.PrecioCambiado;
                 }
@@ -4577,13 +4669,24 @@
 
     private bool enseñarHistorico = false;
 
-    private bool HistoricoComprobar(JuegoDRM drm)
+    private bool HistoricoComprobar(TiendaRegion region, JuegoDRM drm)
     {
         bool tiene = false;
 
-        if (juego.Historicos?.Count > 0)
+        if (region == TiendaRegion.Europa && juego.Historicos?.Count > 0)
         {
             foreach (var historico in juego.Historicos)
+            {
+                if (historico.DRM == drm)
+                {
+                    tiene = true;
+                    break;
+                }
+            }
+        }
+        else if (region == TiendaRegion.EstadosUnidos && juego.HistoricosUS?.Count > 0)
+        {
+            foreach (var historico in juego.HistoricosUS)
             {
                 if (historico.DRM == drm)
                 {
@@ -4601,7 +4704,7 @@
         if (enseñarHistorico == false)
         {
             enseñarHistorico = true;
-            HistoricoCargar(drm);
+            HistoricoCargar(usuarioRegion, drm);
         }
         else
         {
@@ -4638,116 +4741,124 @@
         public string Tienda { get; set; }
     }
 
-    private void HistoricoCargar(JuegoDRM drm)
+    private void HistoricoCargar(TiendaRegion region, JuegoDRM drm)
     {
         puntos.Clear();
 
-        if (juego.Historicos != null)
+        List<JuegoHistorico> historicosMostrar = new List<JuegoHistorico>();
+
+        if (region == TiendaRegion.Europa)
         {
-            if (juego.Historicos.Count > 0)
+            historicosMostrar = juego.Historicos;           
+        }
+        else if (region == TiendaRegion.EstadosUnidos)
+        {
+            historicosMostrar = juego.HistoricosUS;              
+        }
+
+        if (historicosMostrar?.Count > 0)
+        {
+            drmGrafico = drm;
+
+            #region Añadir Años
+
+            foreach (var historico in historicosMostrar)
             {
-                drmGrafico = drm;
-
-                #region Añadir Años
-
-                foreach (var historico in juego.Historicos)
+                if (drm == historico.DRM)
                 {
-                    if (drm == historico.DRM)
+                    if (puntos.Count == 0)
                     {
-                        if (puntos.Count == 0)
+                        Punto año = new Punto();
+                        año.Año = historico.Fecha.Year;
+                        año.Puntos = new List<PuntoDatos>();
+
+                        puntos.Add(año);
+                    }		
+                    else if (puntos.Count > 0)
+                    {
+                        bool añadirAño = true;
+
+                        foreach (var punto in puntos)
+                        {
+                            if (punto.Año == historico.Fecha.Year)
+                            {
+                                añadirAño = false;
+                            }
+                        }
+
+                        if (añadirAño == true)
                         {
                             Punto año = new Punto();
                             año.Año = historico.Fecha.Year;
                             año.Puntos = new List<PuntoDatos>();
 
                             puntos.Add(año);
-                        }		
-                        else if (puntos.Count > 0)
-                        {
-                            bool añadirAño = true;
-
-                            foreach (var punto in puntos)
-                            {
-                                if (punto.Año == historico.Fecha.Year)
-                                {
-                                    añadirAño = false;
-                                }
-                            }
-
-                            if (añadirAño == true)
-                            {
-                                Punto año = new Punto();
-                                año.Año = historico.Fecha.Year;
-                                año.Puntos = new List<PuntoDatos>();
-
-                                puntos.Add(año);
-                            }
                         }
                     }
                 }
-
-                #endregion
-
-                #region Añadir Puntos
-
-                foreach (var historico in juego.Historicos)
-                {
-                    if (drm == historico.DRM)
-                    {
-                        bool añadir = true;
-
-                        var historico2 = historico;
-
-                        foreach (var historico3 in juego.Historicos)
-                        {
-                            if (drm == historico3.DRM && drm == historico2.DRM && 
-                                historico3.Fecha.Day == historico2.Fecha.Day && 
-                                historico3.Fecha.Month == historico2.Fecha.Month && 
-                                historico3.Fecha.Year == historico2.Fecha.Year &&
-                                historico3.Precio != historico2.Precio)
-                            {
-                                if (historico3.Precio < historico2.Precio)
-                                {
-                                    añadir = false;
-                                }
-                            }
-                        }
-
-                        if (añadir == true)
-                        {
-                            foreach (var punto in puntos)
-                            {
-                                if (historico2.Fecha.Year == punto.Año)
-                                {
-                                    bool duplicado = false;
-
-                                    PuntoDatos nuevoPunto = new PuntoDatos
-                                    {
-                                        Fecha = new DateTime(2000, historico2.Fecha.Month, historico2.Fecha.Day),
-                                        Precio = (double)historico2.Precio,
-                                        Tienda = historico2.Tienda
-                                    };
-
-                                    foreach (var puntoPuesto in punto.Puntos)
-                                    {
-                                        if (puntoPuesto.Precio == nuevoPunto.Precio && puntoPuesto.Fecha.AddDays(21) > nuevoPunto.Fecha)
-                                        {
-                                            duplicado = true;
-                                        }
-                                    }
-
-                                    if (duplicado == false)
-                                    {
-                                        punto.Puntos.Add(nuevoPunto);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                #endregion
             }
+
+            #endregion
+
+            #region Añadir Puntos
+
+            foreach (var historico in historicosMostrar)
+            {
+                if (drm == historico.DRM)
+                {
+                    bool añadir = true;
+
+                    var historico2 = historico;
+
+                    foreach (var historico3 in historicosMostrar)
+                    {
+                        if (drm == historico3.DRM && drm == historico2.DRM && 
+                            historico3.Fecha.Day == historico2.Fecha.Day && 
+                            historico3.Fecha.Month == historico2.Fecha.Month && 
+                            historico3.Fecha.Year == historico2.Fecha.Year &&
+                            historico3.Precio != historico2.Precio)
+                        {
+                            if (historico3.Precio < historico2.Precio)
+                            {
+                                añadir = false;
+                            }
+                        }
+                    }
+
+                    if (añadir == true)
+                    {
+                        foreach (var punto in puntos)
+                        {
+                            if (historico2.Fecha.Year == punto.Año)
+                            {
+                                bool duplicado = false;
+
+                                PuntoDatos nuevoPunto = new PuntoDatos
+                                {
+                                    Fecha = new DateTime(2000, historico2.Fecha.Month, historico2.Fecha.Day),
+                                    Precio = (double)historico2.Precio,
+                                    Tienda = historico2.Tienda
+                                };
+
+                                foreach (var puntoPuesto in punto.Puntos)
+                                {
+                                    if (puntoPuesto.Precio == nuevoPunto.Precio && puntoPuesto.Fecha.AddDays(21) > nuevoPunto.Fecha)
+                                    {
+                                        duplicado = true;
+                                    }
+                                }
+
+                                if (duplicado == false)
+                                {
+                                    punto.Puntos.Add(nuevoPunto);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
         }
 
         opcionesGrafico = new ApexChartOptions<PuntoGrafico>

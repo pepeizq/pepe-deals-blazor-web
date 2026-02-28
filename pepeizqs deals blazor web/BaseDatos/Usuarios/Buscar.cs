@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using Herramientas;
 using Juegos;
 using pepeizqs_deals_web.Data;
 
@@ -1303,6 +1302,33 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			}
 
 			return null;
+		}
+
+		public static async Task<int> OpcionInt(string usuarioId, string valor)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true && string.IsNullOrEmpty(valor) == true)
+			{
+				return 0;
+			}
+
+			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(valor) == false)
+			{
+				try
+				{
+					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id";
+
+					return await Herramientas.BaseDatos.Select(async conexion =>
+					{
+						return await conexion.QueryFirstOrDefaultAsync<int>(busqueda, new { Id = usuarioId });
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Usuario Opcion Int", ex);
+				}
+			}
+
+			return 0;
 		}
 
 		public static async Task<bool> OpcionBool(string usuarioId, string valor)

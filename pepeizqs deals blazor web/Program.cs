@@ -153,7 +153,8 @@ builder.Services.Configure<HostOptions>(opciones =>
 });
 
 builder.Services.AddSingleton<Tareas.VigiladorRAM>();
-builder.Services.AddSingleton<Tareas.Comprobador>();
+builder.Services.AddSingleton<Tareas.Comprobar.Europa>();
+builder.Services.AddSingleton<Tareas.Comprobar.EstadosUnidos>();
 builder.Services.AddSingleton<Tareas.Minimos>();
 builder.Services.AddSingleton<Tareas.LimpiezaLog>();
 builder.Services.AddSingleton<Tareas.LimpiezaCircuits>();
@@ -171,7 +172,8 @@ builder.Services.AddSingleton<Tareas.SteamDLCs>();
 builder.Services.AddSingleton<Tareas.MinimosUS>();
 
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.VigiladorRAM>());
-builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobador>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobar.Europa>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobar.EstadosUnidos>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaCircuits>());

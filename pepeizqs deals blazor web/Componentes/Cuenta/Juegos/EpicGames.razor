@@ -1,8 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
+@using System.Text
+@using System.Net.Http.Headers
+@using System.Text.Json.Serialization
+@using System.Text.Json
 @using global::Juegos
 @using pepeizqs_deals_web.Data
+
+@inject NavigationManager NavManager
 
 <style>
     .caja-cuenta-epic-contenido {
@@ -108,6 +114,38 @@
                 </div>
             </div>
         }
+
+        <div class="caja-cuenta-epic-contenido">
+            <div class="caja-cuenta-epic-titulo" style="font-size: 18px;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String44", "AccountGames")
+            </div>
+
+            <div style="padding: 20px 30px; display: flex; flex-direction: column; gap: 20px;">
+                @if (trabajando == true)
+                {
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div class="cargando" />
+                    </div>
+                }
+                else
+                {
+                    <a href="@enlaceApi" target="_blank" class="boton-pequeño" style="width: fit-content; padding: 10px 20px;">
+                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String45", "AccountGames"), "Epic Games")
+                    </a>
+
+                    <div>
+                        <div style="font-size: 14px; margin-bottom: 5px;">
+                            authorizationCode:
+                        </div>
+                        <input type="text" @bind-value="@codigoApi" @bind-value:event="oninput" @bind-value:after="DescargarJson" class="entrada-texto"/>
+                    </div>
+
+                    <a href="@enlaceCodigoFuente" target="_blank" style="text-decoration: none; font-size: 14px;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String46", "AccountGames")
+                    </a>
+                }
+            </div>
+        </div>
 
         <div class="caja-cuenta-epic-contenido">
             <div class="caja-cuenta-epic-titulo" style="display: flex; align-items: center; gap: 20px;">
@@ -383,5 +421,112 @@
 
         usuario.Id = usuarioId;
         await BaseDatos.Usuarios.Actualizar.Epic(usuario);
+    }
+
+    private string clienteId = "34a02cf8f4414e29b15921876da36f9a";
+    private string clienteSecret = "daafbccc737745039dffe53d94fc76cf";
+    private string codigoApi = string.Empty;
+    private string enlaceApi = "https://www.epicgames.com/id/api/redirect?clientId=34a02cf8f4414e29b15921876da36f9a&responseType=code";
+    private string enlaceCodigoFuente = "https://github.com/pepeizq/pepe-deals-blazor-web/blob/master/pepeizqs%20deals%20blazor%20web/Componentes/Cuenta/Juegos/EpicGames.razor";
+
+    private async Task DescargarJson()
+    {
+        if (string.IsNullOrEmpty(codigoApi) == false)
+        {
+            trabajando = true;
+
+            string credenciales = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clienteId}:{clienteSecret}"));
+
+            HttpClient clienteToken = new HttpClient();
+            clienteToken.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credenciales);
+
+            HttpResponseMessage respuestaToken = await clienteToken.PostAsync(
+                "https://account-public-service-prod.ol.epicgames.com/account/api/oauth/token",
+                new FormUrlEncodedContent(new Dictionary<string, string>
+                {
+                    ["grant_type"] = "authorization_code",
+                    ["code"] = codigoApi
+                })
+            );
+
+            string textoRespuestaToken = await respuestaToken.Content.ReadAsStringAsync();
+            EpicTokenRespuesta respuestaJson = JsonSerializer.Deserialize<EpicTokenRespuesta>(textoRespuestaToken);
+
+            HttpClient clienteJuegos = new HttpClient();
+            clienteJuegos.DefaultRequestHeaders.Authorization = 
+                new AuthenticationHeaderValue("Bearer", respuestaJson.AccessToken);
+
+            List<EpicLibreriaJuego> registros = new List<EpicLibreriaJuego>();
+            string cursor = null;
+            string textoIds = string.Empty;
+
+            do
+            {
+                var url = "https://library-service.live.use1a.on.epicgames.com/library/api/public/items?includeMetadata=true";
+                if (cursor != null) 
+                {
+                    url += $"&cursor={cursor}";
+                }
+
+                var respuestaJuegos = await clienteJuegos.GetFromJsonAsync<EpicLibreriaRespuesta>(url);
+                registros.AddRange(respuestaJuegos.Records);
+                cursor = respuestaJuegos.ResponseMetadata?.NextCursor;
+
+                if (respuestaJuegos.Records?.Count > 0)
+                {
+                    foreach (var juego in respuestaJuegos.Records)
+                    {
+                        if (string.IsNullOrEmpty(textoIds) == true)
+					    {
+						    textoIds = juego.AppName;
+					    }
+					    else
+					    {
+						    textoIds = textoIds + "," + juego.AppName;
+					    }
+
+					    cantidadJuegos += 1;	
+                    }
+                }
+            } 
+            while (string.IsNullOrEmpty(cursor) == false);    
+            
+            usuario.EpicGames = textoIds;
+			usuario.EpicGamesLastImport = DateTime.Now;
+
+			await global::BaseDatos.Usuarios.Actualizar.Epic(usuario);
+
+            trabajando = false;
+        }
+    }
+
+    public class EpicTokenRespuesta
+    {
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
+    }
+
+    public class EpicLibreriaRespuesta
+    {
+        [JsonPropertyName("responseMetadata")]
+        public EpicResponseMetadata ResponseMetadata { get; set; }
+
+        [JsonPropertyName("records")]
+        public List<EpicLibreriaJuego> Records { get; set; }
+    }
+
+    public class EpicResponseMetadata
+    {
+        [JsonPropertyName("nextCursor")]
+        public string NextCursor { get; set; }
+
+        [JsonPropertyName("stateToken")]
+        public string StateToken { get; set; }
+    }
+
+    public class EpicLibreriaJuego
+    {
+        [JsonPropertyName("appName")]
+        public string AppName { get; set; }
     }
 }
