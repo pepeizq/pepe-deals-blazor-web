@@ -79,6 +79,7 @@ namespace Herramientas
 				nombre = nombre.Replace("ô", "o");
 				nombre = nombre.Replace("õ", "o");
 				nombre = nombre.Replace("ö", "o");
+				nombre = nombre.Replace("ō", "o");
 
 				nombre = nombre.Replace("Ù", "U");
 				nombre = nombre.Replace("Ú", "U");
@@ -150,16 +151,13 @@ namespace Herramientas
 
 			if (buscarBundles == true)
 			{
-				if (juego.Bundles?.Count > 0)
+				if (juego.BundlesActuales?.Count > 0)
 				{
-					foreach (var bundle in juego.Bundles)
+					foreach (var bundle in juego.BundlesActuales)
 					{
-						if (DateTime.Now >= bundle.FechaEmpieza && DateTime.Now <= bundle.FechaTermina)
-						{
-							mensajeComplementoTipo = "bundle";
-							mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
-							mensajeComplementoCantidadBundles = mensajeComplementoCantidadBundles + 1;
-						}
+						mensajeComplementoTipo = "bundle";
+						mensajeComplementoTexto = Bundles2.BundlesCargar.DevolverBundle(bundle.bundleTipo).Tienda;
+						mensajeComplementoCantidadBundles = mensajeComplementoCantidadBundles + 1;
 					}
 				}
 			}

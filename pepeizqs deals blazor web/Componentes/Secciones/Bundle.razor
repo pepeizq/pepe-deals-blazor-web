@@ -665,7 +665,7 @@
 						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
 						juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
 
-						if (string.IsNullOrEmpty(juego.Analisis.Cantidad) == false)
+						if (string.IsNullOrEmpty(juego.Analisis?.Cantidad) == false)
 						{
 							string temp = juego.Analisis.Cantidad;
 							temp = temp.Replace(",", null);

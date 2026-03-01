@@ -99,7 +99,17 @@ JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND
 (CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
 	CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
-bundles IS NULL AND 
+NOT EXISTS (
+        SELECT b.id, b.bundleTipo
+        FROM bundles b
+        WHERE EXISTS (
+            SELECT 1
+            FROM OPENJSON(b.juegos)
+            WITH (JuegoId INT '$.JuegoId') AS jj
+            WHERE jj.JuegoId = {tabla}.idMaestra
+			)
+        FOR JSON PATH
+    ) AND 
 NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 
 NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
@@ -190,6 +200,9 @@ ORDER BY NEWID()";
 				precioMinimosHistoricos = "precioMinimosHistoricosUS";
 			}
 
+			var parametros = new DynamicParameters();
+			parametros.Add("cantidadAnalisis", cantidadReseñas);
+
 			string categoria = null;
 
 			if (categorias?.Count > 0)
@@ -240,38 +253,38 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles, 
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.idMaestra
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.idMaestra
-          AND g.fechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS GratisPasados,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.idMaestra
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.idMaestra
-          AND s.FechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
-                                    WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) @categoria @drm";
+			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles,
+			(
+				SELECT g.gratis
+				FROM gratis g
+				WHERE g.juegoId = j.idMaestra
+				  AND g.fechaEmpieza <= GETDATE()
+				  AND g.fechaTermina >= GETDATE()
+				FOR JSON PATH
+			) AS GratisActuales,
+			(
+				SELECT g.gratis
+				FROM gratis g
+				WHERE g.juegoId = j.idMaestra
+				  AND g.fechaTermina < GETDATE()
+				FOR JSON PATH
+			) AS GratisPasados,
+			(
+				SELECT s.suscripcion
+				FROM suscripciones s
+				WHERE s.juegoId = j.idMaestra
+				  AND s.FechaEmpieza <= GETDATE()
+				  AND s.FechaTermina >= GETDATE()
+				FOR JSON PATH
+			) AS SuscripcionesActuales,
+			(
+				SELECT s.suscripcion
+				FROM suscripciones s
+				WHERE s.juegoId = j.idMaestra
+				  AND s.FechaTermina < GETDATE()
+				FOR JSON PATH
+			) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
+				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) @categoria @drm";
 
 			if (tipo == 0)
 			{
@@ -288,7 +301,6 @@ ORDER BY NEWID()";
 
 			busqueda = busqueda.Replace("@categoria", categoria);
 			busqueda = busqueda.Replace("@drm", drm);
-			busqueda = busqueda.Replace("@cantidadAnalisis", cantidadReseñas.ToString());
 
 			busqueda = busqueda + @$" OFFSET {posicion} ROWS
 										FETCH NEXT 100 ROWS ONLY";
@@ -297,7 +309,7 @@ ORDER BY NEWID()";
 			{
 				var filas = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryAsync(busqueda);
+					return await conexion.QueryAsync(busqueda, parametros);
 				});
 
 				List<Juego> resultados = new List<Juego>();
@@ -343,9 +355,9 @@ ORDER BY NEWID()";
 						};
 					}
 
-					if (string.IsNullOrEmpty(fila.bundles) == false)
+					if (string.IsNullOrEmpty(fila.Bundles) == false)
 					{
-						juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(fila.bundles);
+						juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(fila.Bundles);
 					}
 
 					if (string.IsNullOrEmpty(fila.GratisActuales) == false)

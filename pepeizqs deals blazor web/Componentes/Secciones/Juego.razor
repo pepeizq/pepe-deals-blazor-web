@@ -3250,6 +3250,87 @@
 
         if (juego != null)
         {
+            if (juego.BundlesActuales?.Count > 0)
+            {
+                foreach (var bundleActual in juego.BundlesActuales)
+                {
+                    bool añadir = true;
+
+                    if (juego.Bundles?.Count > 0)
+                    {
+                        foreach (var bundle in juego.Bundles)
+                        {
+                            if (bundle.BundleId == bundleActual.id)
+                            {
+                                añadir = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (añadir == true)
+                    {
+                        if (juego.Bundles == null)
+                        {
+                            juego.Bundles = new List<Juegos.JuegoBundle>();
+                        }
+
+                        Bundles2.Bundle bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleActual.id);
+
+                        juego.Bundles.Add(new Juegos.JuegoBundle { 
+                            BundleId = bundleActual.id, 
+                            Tipo = bundle.BundleTipo,
+                            JuegoId = juego.Id,
+                            Nombre = bundle.Nombre,
+                            Imagen = bundle.Imagen,
+                            Enlace = bundle.Enlace,
+                            FechaEmpieza = bundle.FechaEmpieza,
+                            FechaTermina = bundle.FechaTermina
+                        });
+                    }                    
+                }
+            }
+            else if (juego.BundlesPasados?.Count > 0)
+            {
+                foreach (var bundlePasado in juego.BundlesPasados)
+                {
+                    bool añadir = true;
+
+                    if (juego.Bundles?.Count > 0)
+                    {
+                        foreach (var bundle in juego.Bundles)
+                        {
+                            if (bundle.BundleId == bundlePasado.id)
+                            {
+                                añadir = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (añadir == true)
+                    {
+                        if (juego.Bundles == null)
+                        {
+                            juego.Bundles = new List<Juegos.JuegoBundle>();
+                        }
+
+                        Bundles2.Bundle bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundlePasado.id);
+
+                        juego.Bundles.Add(new Juegos.JuegoBundle { 
+                            BundleId = bundlePasado.id, 
+                            Tipo = bundle.BundleTipo,
+                            JuegoId = juego.Id,
+                            Nombre = bundle.Nombre,
+                            Imagen = bundle.Imagen,
+                            Enlace = bundle.Enlace,
+                            FechaEmpieza = bundle.FechaEmpieza,
+                            FechaTermina = bundle.FechaTermina
+                        });
+                    }                    
+                }
+            }
+
             if (drmsEnseñar == null)
             {
                 drmsEnseñar = new List<DRMEnseñar>();
@@ -3317,7 +3398,7 @@
 
         #region Bundles Actual
 
-        bundlesCache1.Clear();
+        bundlesCache1?.Clear();
 
         var ids = BundlesDisponibles(juego.Bundles).Where(b => b.BundleId > 0).Select(b => b.BundleId).Distinct().ToList();
 
@@ -3331,7 +3412,7 @@
 
         #region Bundles Antiguos
 
-        bundlesCache2.Clear();
+        bundlesCache2?.Clear();
 
         foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
         {

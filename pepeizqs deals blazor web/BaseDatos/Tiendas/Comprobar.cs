@@ -488,7 +488,15 @@ WHERE t.enlace IN ({placeholders})
 
 				if (resultados?.Count > 0)
 				{
-					var updates = new List<(string sql, DynamicParameters parametros)>();
+					var estadosPorJuego = new Dictionary<int, (
+						List<JuegoPrecio> ofertasActuales,
+						List<JuegoPrecio> ofertasHistoricas,
+						List<JuegoHistorico> historicos,
+						JuegoAnalisis reseñas,
+						int idSteam
+					)>();
+
+					var updates = new Dictionary<int, (string sql, DynamicParameters parametros)>();
 					int indice = 0;
 
 					foreach (var fila in resultados)
@@ -506,26 +514,40 @@ WHERE t.enlace IN ({placeholders})
 
 						if (region == TiendaRegion.Europa)
 						{
-							var ofertasHistoricas = string.IsNullOrEmpty(fila.precioMinimosHistoricos) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
-
-							var ofertasActuales = string.IsNullOrEmpty(fila.precioActualesTiendas) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
-
-							var historicos = string.IsNullOrEmpty(fila.historicos) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
-
+							List<JuegoPrecio> ofertasHistoricasEU;
+							List<JuegoPrecio> ofertasActualesEU;
+							List<JuegoHistorico> historicosEU;
 							JuegoAnalisis reseñas = null;
-							if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
-							{
-								reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
-							}
 
-							if (ofertasActuales?.Count == 0)
+							if (estadosPorJuego.TryGetValue(id, out var estadoPrevio))
 							{
-								ofertasActuales.Add(oferta);
+								ofertasActualesEU = estadoPrevio.ofertasActuales;
+								ofertasHistoricasEU = estadoPrevio.ofertasHistoricas;
+								historicosEU = estadoPrevio.historicos;
+								reseñas = estadoPrevio.reseñas;
+								idSteam = estadoPrevio.idSteam;
+							}
+							else
+							{
+								ofertasHistoricasEU = string.IsNullOrEmpty(fila.precioMinimosHistoricos) || fila.precioMinimosHistoricos == "null"
+									? new List<JuegoPrecio>()
+									: JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
+
+								ofertasActualesEU = string.IsNullOrEmpty(fila.precioActualesTiendas) || fila.precioActualesTiendas == "null"
+									? new List<JuegoPrecio>()
+									: JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendas);
+
+								historicosEU = string.IsNullOrEmpty(fila.historicos) || fila.historicos == "null"
+									? new List<JuegoHistorico>()
+									: JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicos);
+
+								if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+									reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
 							}
 
 							if (id > 0)
 							{
-								var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActuales, ofertasHistoricas, historicos, oferta, null, null, null, reseñas, indice);
+								var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActualesEU, ofertasHistoricasEU, historicosEU, oferta, null, null, null, reseñas, indice);
 
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
@@ -537,7 +559,7 @@ WHERE t.enlace IN ({placeholders})
 
 									var historicosActualizado = resultado.Item2.ParameterNames.Contains($"@historicos{indice}")
 										? JsonSerializer.Deserialize<List<JuegoHistorico>>(resultado.Item2.Get<string>($"@historicos{indice}"))
-										: historicos;
+										: historicosEU;
 
 									estadosPorJuego[id] = (ofertasActualesActualizado, ofertasHistoricasActualizado, historicosActualizado, reseñas, idSteam);
 
@@ -548,22 +570,35 @@ WHERE t.enlace IN ({placeholders})
 						}
 						else if (region == TiendaRegion.EstadosUnidos)
 						{
-							var ofertasHistoricasUS = string.IsNullOrEmpty(fila.precioMinimosHistoricosUS) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
-							
-							var ofertasActualesUS = string.IsNullOrEmpty(fila.precioActualesTiendasUS) ? new List<JuegoPrecio>() : JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendasUS);
-							
-							var historicosUS = string.IsNullOrEmpty(fila.historicosUS) ? new List<JuegoHistorico>() : JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicosUS);
-							
+							List<JuegoPrecio> ofertasHistoricasUS;
+							List<JuegoPrecio> ofertasActualesUS;
+							List<JuegoHistorico> historicosUS;
 							JuegoAnalisis reseñas = null;
-							
-							if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
-							{
-								reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
-							}
 
-							if (ofertasActualesUS?.Count == 0)
+							if (estadosPorJuego.TryGetValue(id, out var estadoPrevio))
 							{
-								ofertasActualesUS.Add(oferta);
+								ofertasActualesUS = estadoPrevio.ofertasActuales;
+								ofertasHistoricasUS = estadoPrevio.ofertasHistoricas;
+								historicosUS = estadoPrevio.historicos;
+								reseñas = estadoPrevio.reseñas;
+								idSteam = estadoPrevio.idSteam;
+							}
+							else
+							{
+								ofertasHistoricasUS = string.IsNullOrEmpty(fila.precioMinimosHistoricosUS) || fila.precioMinimosHistoricosUS == "null"
+									? new List<JuegoPrecio>()
+									: JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
+
+								ofertasActualesUS = string.IsNullOrEmpty(fila.precioActualesTiendasUS) || fila.precioActualesTiendasUS == "null"
+									? new List<JuegoPrecio>()
+									: JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioActualesTiendasUS);
+
+								historicosUS = string.IsNullOrEmpty(fila.historicosUS) || fila.historicosUS == "null"
+									? new List<JuegoHistorico>()
+									: JsonSerializer.Deserialize<List<JuegoHistorico>>(fila.historicosUS);
+
+								if (!string.IsNullOrEmpty(fila.analisis) && fila.analisis != "null")
+									reseñas = JsonSerializer.Deserialize<JuegoAnalisis>(fila.analisis);
 							}
 
 							if (id > 0)
@@ -572,7 +607,19 @@ WHERE t.enlace IN ({placeholders})
 
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
-									updates.Add((resultado.Item1, resultado.Item2));
+									var ofertasActualesActualizadoUS = JsonSerializer.Deserialize<List<JuegoPrecio>>(
+										resultado.Item2.Get<string>($"@precioActualesTiendasUS{indice}"));
+
+									var ofertasHistoricasActualizadoUS = JsonSerializer.Deserialize<List<JuegoPrecio>>(
+										resultado.Item2.Get<string>($"@precioMinimosHistoricosUS{indice}"));
+
+									var historicosActualizadoUS = resultado.Item2.ParameterNames.Contains($"@historicosUS{indice}")
+										? JsonSerializer.Deserialize<List<JuegoHistorico>>(resultado.Item2.Get<string>($"@historicosUS{indice}"))
+										: historicosUS;
+
+									estadosPorJuego[id] = (ofertasActualesActualizadoUS, ofertasHistoricasActualizadoUS, historicosActualizadoUS, reseñas, idSteam);
+
+									updates[id] = (resultado.Item1, resultado.Item2);
 									indice += 1;
 								}
 							}
@@ -581,7 +628,7 @@ WHERE t.enlace IN ({placeholders})
 
 					if (indice > 0)
 					{
-						foreach (var grupo in updates.Chunk(100))
+						foreach (var grupo in updates.Values.Chunk(100))
 						{
 							var sqlBatch = new StringBuilder();
 							var parametrosBatch = new DynamicParameters();

@@ -75,85 +75,47 @@ namespace Herramientas
                 }
             }
 
-			if (juego.Bundles != null)
+			if (juego.BundlesActuales?.Count > 0)
 			{
-				int bundlesActuales = 0;
-                int bundlesPasados = 0;
-				string bundleExtraActual = null;
-				string bundleExtraPasado = null;
+				List<JuegoBundlesActuales> bundlesFinales = new List<JuegoBundlesActuales>();
 
-				foreach (var bundle in juego.Bundles)
+				foreach (var bundle2 in juego.BundlesActuales)
 				{
-					bool contar = true;
+					bool añadir = true;
 
-					if (idBundleDescartar > 0 && bundle.BundleId == idBundleDescartar)
+					if (idBundleDescartar > 0 && bundle2.id == idBundleDescartar)
 					{
-						contar = false;
+						añadir = false;
 					}
 
-					if (contar == true)
+					if (añadir == true)
 					{
-						if (bundle.FechaEmpieza < DateTime.Now && bundle.FechaTermina > DateTime.Now)
-						{
-							bundlesActuales += 1;
-
-							if (bundlesActuales == 1)
-							{
-								bundleExtraActual = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
-							}
-							else if (bundlesActuales > 1)
-							{
-								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda != bundleExtraActual)
-								{
-									bundleExtraActual = null;
-								}
-							}
-						}
-						else
-						{
-							bundlesPasados += 1;
-
-							if (bundlesPasados == 1)
-							{
-								bundleExtraPasado = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda;
-							}
-							else if (bundlesPasados > 1)
-							{
-								if (Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda != bundleExtraPasado)
-								{
-									bundleExtraPasado = null;
-								}
-							}
-						}
+						bundlesFinales.Add(bundle2);
 					}
 				}
 
-                if (bundlesActuales == 1)
-                {
-                    datos.BundlesActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Tooltip");
-                }
-                else if (bundlesActuales > 1)
-                {
-                    datos.BundlesActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Tooltip"), juego.Bundles.Count.ToString());
-                }
-
-				if (string.IsNullOrEmpty(bundleExtraActual) == false)
+				if (bundlesFinales?.Count > 0)
 				{
-					datos.BundlesActuales = datos.BundlesActuales + " (" + bundleExtraActual + ")";
+					if (bundlesFinales.Count == 1)
+					{
+						datos.BundlesActuales = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Tooltip") + " (" + Bundles2.BundlesCargar.DevolverBundle(bundlesFinales[0].bundleTipo).Tienda + ")";
+					}
+					else
+					{
+						datos.BundlesActuales = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Tooltip"), bundlesFinales?.Count.ToString());
+					}
 				}
+			}
 
-                if (bundlesPasados == 1)
+			if (juego.BundlesPasados?.Count > 0)
+			{
+				if (juego.BundlesPasados.Count == 1)
 				{
-					datos.BundlesPasados = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Tooltip");
+					datos.BundlesPasados = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Tooltip") + " (" + Bundles2.BundlesCargar.DevolverBundle(juego.BundlesPasados[0].bundleTipo).Tienda + ")";
 				}
-				else if (bundlesPasados > 1)
+				else
 				{
-					datos.BundlesPasados = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Tooltip"), juego.Bundles.Count.ToString());
-				}
-
-				if (string.IsNullOrEmpty(bundleExtraPasado) == false)
-				{
-					datos.BundlesPasados = datos.BundlesPasados + " (" + bundleExtraPasado + ")";
+					datos.BundlesPasados = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Tooltip"), juego.BundlesPasados?.Count.ToString());
 				}
 			}
 

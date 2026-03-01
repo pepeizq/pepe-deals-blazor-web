@@ -37,6 +37,31 @@ namespace BaseDatos.Juegos
 		WHERE s.juegoId = j.id
 		FOR JSON PATH
 	) as suscripciones,
+    (
+        SELECT b.id, b.bundleTipo
+        FROM bundles b
+        WHERE EXISTS (
+            SELECT 1
+            FROM OPENJSON(b.juegos)
+            WITH (JuegoId INT '$.JuegoId') AS jj
+            WHERE jj.JuegoId = j.id
+			)
+          AND b.fechaEmpieza <= GETDATE()
+		  AND b.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS BundlesActuales,
+	(
+        SELECT b.id, b.bundleTipo
+        FROM bundles b
+        WHERE EXISTS (
+            SELECT 1
+            FROM OPENJSON(b.juegos)
+            WITH (JuegoId INT '$.JuegoId') AS jj
+            WHERE jj.JuegoId = j.id
+			)
+		  AND b.fechaTermina < GETDATE()
+        FOR JSON PATH
+    ) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -619,8 +644,21 @@ END DESC";
 
 			string busqueda = $@"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
+    (
+        SELECT b.id, b.bundleTipo
+        FROM bundles b
+        WHERE EXISTS (
+            SELECT 1
+            FROM OPENJSON(b.juegos)
+            WITH (JuegoId INT '$.JuegoId') AS jj
+            WHERE jj.JuegoId = j.id
+			)
+          AND b.fechaEmpieza <= GETDATE()
+		  AND b.fechaTermina >= GETDATE()
+        FOR JSON PATH
+    ) AS BundlesActuales,
 	(
         SELECT g.gratis
         FROM gratis g

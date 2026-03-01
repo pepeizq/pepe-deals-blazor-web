@@ -119,6 +119,8 @@ public static class ClasesDapper
 		SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMedia>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<JuegoMediaVideo>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoBundle>>());
+		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoBundlesActuales>>());
+		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoBundlesPasados>>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoGratis>>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoGratisActuales>>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoGratisPasados>>());

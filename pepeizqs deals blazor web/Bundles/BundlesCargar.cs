@@ -111,7 +111,7 @@ namespace Bundles2
 		{
 			foreach (var bundle in GenerarListado())
 			{
-				if (bundle.BundleTipo.ToString() == bundleTipo)
+				if (bundle.BundleTipo == (BundleTipo)int.Parse(bundleTipo))
 				{
 					return bundle;
 				}

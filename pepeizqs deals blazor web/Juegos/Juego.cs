@@ -63,6 +63,8 @@ namespace Juegos
 		public DateTime? UltimaActualizacionGOG { get; set; }
 		public DateTime? UltimaActualizacion { get; set; }
 		public bool InteligenciaArtificial { get; set; }
+		public List<JuegoBundlesActuales> BundlesActuales { get; set; }
+		public List<JuegoBundlesPasados> BundlesPasados { get; set; }
 		public List<JuegoGratisActuales> GratisActuales { get; set; }
 		public List<JuegoGratisPasados> GratisPasados { get; set; }
 		public List<JuegoSuscripcionActuales> SuscripcionesActuales { get; set; }
@@ -243,6 +245,18 @@ namespace Juegos
 		public string ImagenNoticia { get; set; }
 		public Juego Juego { get; set; }
 		public int Id { get; set; }
+	}
+
+	public class JuegoBundlesActuales
+	{
+		public int id { get; set; }
+		public string bundleTipo { get; set; }
+	}
+
+	public class JuegoBundlesPasados
+	{
+		public int id { get; set; }
+		public string bundleTipo { get; set; }
 	}
 
 	public class JuegoGratisActuales
