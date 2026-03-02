@@ -3,6 +3,7 @@
 using Dapper;
 using Juegos;
 using pepeizqs_deals_web.Data;
+using Tiendas2;
 
 namespace BaseDatos.Usuarios
 {
@@ -892,7 +893,7 @@ namespace BaseDatos.Usuarios
 			return false;
 		}
 
-		public static async Task<string> UsuarioQuiereCorreos(string usuarioId, string seccion)
+		public static async Task<string> UsuarioQuiereCorreos(TiendaRegion region, string usuarioId, string seccion)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)
 			{
@@ -901,7 +902,7 @@ namespace BaseDatos.Usuarios
 
 			try
 			{
-				string busqueda = "SELECT " + seccion + " AS Notificaciones, EmailConfirmed, Email FROM AspNetUsers WHERE Id=@Id";
+				string busqueda = "SELECT " + seccion + " AS Notificaciones, EmailConfirmed, Email, Currency FROM AspNetUsers WHERE Id=@Id";
 
 				var datos = await Herramientas.BaseDatos.Select(async conexion =>
 				{
@@ -915,8 +916,9 @@ namespace BaseDatos.Usuarios
 
 				bool quiereNotificaciones = datos.Notificaciones ?? false;
 				bool correoConfirmado = datos.EmailConfirmed ?? false;
+				TiendaRegion usuarioRegion = (TiendaRegion)datos.Currency;
 
-				if (quiereNotificaciones == true && correoConfirmado == true)
+				if (quiereNotificaciones == true && correoConfirmado == true && region == usuarioRegion)
 				{
 					return datos.Email;
 				}

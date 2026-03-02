@@ -237,77 +237,77 @@ namespace BaseDatos.Juegos
 
                             if (notificar == true)
                             {
-        //                        List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
+								List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
 
-								//if (usuariosInteresados?.Count > 0)
-								//{
-								//	foreach (var usuarioInteresado in usuariosInteresados)
-								//	{
-								//		if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
-								//		{
-								//			DeseadosDatos datosDeseados = null;
+								if (usuariosInteresados?.Count > 0)
+								{
+									foreach (var usuarioInteresado in usuariosInteresados)
+									{
+										if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
+										{
+											DeseadosDatos datosDeseados = null;
 
-								//			string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
 
-								//			if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
-								//			{
-								//				datosDeseados = new DeseadosDatos();
-								//			}
-								//			else
-								//			{
-								//				try
-								//				{
-								//					datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
-								//				}
-								//				catch
-								//				{
-								//					datosDeseados = new DeseadosDatos();
-								//				}
+											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
+											{
+												datosDeseados = new DeseadosDatos();
+											}
+											else
+											{
+												try
+												{
+													datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
+												}
+												catch
+												{
+													datosDeseados = new DeseadosDatos();
+												}
 
-								//				datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
-								//				datosDeseados.UltimoJuego = DateTime.Now;
-								//			}
+												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
+												datosDeseados.UltimoJuego = DateTime.Now;
+											}
 
-								//			await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
 
-								//			string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
+											string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
 
-								//			if (string.IsNullOrEmpty(correo) == false)
-								//			{
-								//				try
-								//				{
-								//					await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
-								//				}
-								//				catch (Exception ex)
-								//				{
-								//					BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
-								//				}
-								//			}
+											if (string.IsNullOrEmpty(correo) == false)
+											{
+												try
+												{
+													await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
+												}
+											}
 
-								//			bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
+											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
 
-        //                                    if (enviarPush == true)
-        //                                    {
-        //                                        try
-        //                                        {
-        //                                            decimal precioNotificar = minimo.Precio;
+											if (enviarPush == true)
+											{
+												try
+												{
+													decimal precioNotificar = minimo.Precio;
 
-        //                                            if (minimo.PrecioCambiado > 0)
-        //                                            {
-        //                                                precioNotificar = minimo.PrecioCambiado;
-        //                                            }
+													if (minimo.PrecioCambiado > 0)
+													{
+														precioNotificar = minimo.PrecioCambiado;
+													}
 
-								//					var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-								//					await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
-								//				}
-        //                                        catch (Exception ex)
-        //                                        {
-        //                                            BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
-        //                                        }
-        //                                    }
-        //                                }
-								//	}
-								//}
+													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
+													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
+												}
+											}
+										}
+									}
+								}
 							}
                         }
                         else
@@ -400,7 +400,7 @@ namespace BaseDatos.Juegos
 			return (sql.ToString(), parametros);
 		}
 
-		public static (string sql, DynamicParameters parametros) ComprobacionUS(int id, int idSteam, List<JuegoPrecio> ofertasActualesUS, List<JuegoPrecio> ofertasHistoricasUS, List<JuegoHistorico> historicosUS, JuegoPrecio nuevaOferta,
+		public static async Task<(string sql, DynamicParameters parametros)> ComprobacionUS(int id, int idSteam, List<JuegoPrecio> ofertasActualesUS, List<JuegoPrecio> ofertasHistoricasUS, List<JuegoHistorico> historicosUS, JuegoPrecio nuevaOferta,
 			string slugGOG = null, string idGOG = null, string slugEpic = null, JuegoAnalisis reseñas = null, int indice = 0)
 		{
 			bool cambioPrecio = true;
@@ -553,80 +553,80 @@ namespace BaseDatos.Juegos
 
 							//------------------------------------------
 
-							//if (notificar == true)
-							//{
-							//	List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
+							if (notificar == true)
+							{
+								List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
 
-							//	if (usuariosInteresados?.Count > 0)
-							//	{
-							//		foreach (var usuarioInteresado in usuariosInteresados)
-							//		{
-							//			if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
-							//			{
-							//				DeseadosDatos datosDeseados = null;
+								if (usuariosInteresados?.Count > 0)
+								{
+									foreach (var usuarioInteresado in usuariosInteresados)
+									{
+										if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
+										{
+											DeseadosDatos datosDeseados = null;
 
-							//				string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
 
-							//				if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
-							//				{
-							//					datosDeseados = new DeseadosDatos();
-							//				}
-							//				else
-							//				{
-							//					try
-							//					{
-							//						datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
-							//					}
-							//					catch
-							//					{
-							//						datosDeseados = new DeseadosDatos();
-							//					}
+											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
+											{
+												datosDeseados = new DeseadosDatos();
+											}
+											else
+											{
+												try
+												{
+													datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
+												}
+												catch
+												{
+													datosDeseados = new DeseadosDatos();
+												}
 
-							//					datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
-							//					datosDeseados.UltimoJuego = DateTime.Now;
-							//				}
+												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
+												datosDeseados.UltimoJuego = DateTime.Now;
+											}
 
-							//				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
 
-							//				string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
+											string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationLows");
 
-							//				if (string.IsNullOrEmpty(correo) == false)
-							//				{
-							//					try
-							//					{
-							//						await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
-							//					}
-							//					catch (Exception ex)
-							//					{
-							//						BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
-							//					}
-							//				}
+											if (string.IsNullOrEmpty(correo) == false)
+											{
+												try
+												{
+													await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
+												}
+											}
 
-							//				bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
+											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
 
-							//				if (enviarPush == true)
-							//				{
-							//					try
-							//					{
-							//						decimal precioNotificar = minimo.Precio;
+											if (enviarPush == true)
+											{
+												try
+												{
+													decimal precioNotificar = minimo.Precio;
 
-							//						if (minimo.PrecioCambiado > 0)
-							//						{
-							//							precioNotificar = minimo.PrecioCambiado;
-							//						}
+													if (minimo.PrecioCambiado > 0)
+													{
+														precioNotificar = minimo.PrecioCambiado;
+													}
 
-							//						var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-							//						await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
-							//					}
-							//					catch (Exception ex)
-							//					{
-							//						BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
-							//					}
-							//				}
-							//			}
-							//		}
-							//	}
-							//}
+													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
+													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
+												}
+												catch (Exception ex)
+												{
+													BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
+												}
+											}
+										}
+									}
+								}
+							}
 						}
 						else
 						{

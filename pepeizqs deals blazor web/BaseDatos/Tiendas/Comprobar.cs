@@ -180,7 +180,7 @@ namespace BaseDatos.Tiendas
 									historicosUS = JsonSerializer.Deserialize<List<JuegoHistorico>>(dato.historicosUS) ?? new List<JuegoHistorico>();
 								}
 
-								var resultado = Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, juego.Analisis, indice);
+								var resultado = await Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, juego.Analisis, indice);
 								
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{
@@ -603,7 +603,7 @@ WHERE t.enlace IN ({placeholders})
 
 							if (id > 0)
 							{
-								var resultado = Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
+								var resultado = await Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
 
 								if (resultado.Item1 != null && resultado.Item2 != null)
 								{

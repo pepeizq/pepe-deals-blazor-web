@@ -38,30 +38,22 @@ namespace BaseDatos.Juegos
 		FOR JSON PATH
 	) as suscripciones,
     (
-        SELECT b.id, b.bundleTipo
-        FROM bundles b
-        WHERE EXISTS (
-            SELECT 1
-            FROM OPENJSON(b.juegos)
-            WITH (JuegoId INT '$.JuegoId') AS jj
-            WHERE jj.JuegoId = j.id
-			)
-          AND b.fechaEmpieza <= GETDATE()
-		  AND b.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS BundlesActuales,
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
 	(
-        SELECT b.id, b.bundleTipo
-        FROM bundles b
-        WHERE EXISTS (
-            SELECT 1
-            FROM OPENJSON(b.juegos)
-            WITH (JuegoId INT '$.JuegoId') AS jj
-            WHERE jj.JuegoId = j.id
-			)
-		  AND b.fechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS BundlesPasados,
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -167,39 +159,56 @@ FROM juegos j";
 		{
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay, j.etiquetas,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS GratisPasados,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesPasados
-FROM juegos j
-WHERE id=@id";
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay, j.etiquetas,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaEmpieza <= GETDATE()
+				AND b.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS BundlesActuales,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS BundlesPasados,
+		(
+			SELECT g.gratis
+			FROM gratis g
+			WHERE g.juegoId = j.id
+			  AND g.fechaEmpieza <= GETDATE()
+			  AND g.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS GratisActuales,
+		(
+			SELECT g.gratis
+			FROM gratis g
+			WHERE g.juegoId = j.id
+			  AND g.fechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS GratisPasados,
+		(
+			SELECT s.suscripcion
+			FROM suscripciones s
+			WHERE s.juegoId = j.id
+			  AND s.FechaEmpieza <= GETDATE()
+			  AND s.FechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS SuscripcionesActuales,
+		(
+			SELECT s.suscripcion
+			FROM suscripciones s
+			WHERE s.juegoId = j.id
+			  AND s.FechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS SuscripcionesPasados
+	FROM juegos j
+	WHERE id=@id";
 
 			try
 			{
@@ -220,8 +229,25 @@ WHERE id=@id";
 		{
 			string busqueda = @"SELECT
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -281,8 +307,17 @@ WHERE id=@id";
 
 			string sqlBuscar = @"SELECT 
         j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
-        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaEmpieza <= GETDATE()
+				AND b.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS BundlesActuales,
         (
             SELECT g.gratis
             FROM gratis g
@@ -330,8 +365,17 @@ WHERE id=@id";
 
 			string sqlBuscar = @"SELECT 
         j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
-        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaEmpieza <= GETDATE()
+				AND b.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS BundlesActuales,
         (
             SELECT g.gratis
             FROM gratis g
@@ -377,44 +421,61 @@ WHERE id=@id";
 
 			string sqlBuscar = @"SELECT 
         j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media, j.etiquetas, 
-        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS GratisPasados,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesPasados
-    FROM juegos j
-    WHERE idSteam IN @Ids
-    ORDER BY CASE
-        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
-        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
-    END DESC";
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaEmpieza <= GETDATE()
+				AND b.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS BundlesActuales,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS BundlesPasados,
+		(
+			SELECT g.gratis
+			FROM gratis g
+			WHERE g.juegoId = j.id
+			  AND g.fechaEmpieza <= GETDATE()
+			  AND g.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS GratisActuales,
+		(
+			SELECT g.gratis
+			FROM gratis g
+			WHERE g.juegoId = j.id
+			  AND g.fechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS GratisPasados,
+		(
+			SELECT s.suscripcion
+			FROM suscripciones s
+			WHERE s.juegoId = j.id
+			  AND s.FechaEmpieza <= GETDATE()
+			  AND s.FechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS SuscripcionesActuales,
+		(
+			SELECT s.suscripcion
+			FROM suscripciones s
+			WHERE s.juegoId = j.id
+			  AND s.FechaTermina < GETDATE()
+			FOR JSON PATH
+		) AS SuscripcionesPasados
+		FROM juegos j
+		WHERE idSteam IN @Ids
+		ORDER BY CASE
+			WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+			ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+		END DESC";
 
 			try
 			{
@@ -467,8 +528,17 @@ END DESC";
 
 			string sqlBuscar = @"SELECT 
         j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
-        j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+        j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
+		(
+			SELECT b.id, b.bundleTipo
+			FROM bundles b
+			INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+			WHERE bj.juegoId = j.id
+				AND b.fechaEmpieza <= GETDATE()
+				AND b.fechaTermina >= GETDATE()
+			FOR JSON PATH
+		) AS BundlesActuales,
         (
             SELECT g.gratis
             FROM gratis g
@@ -647,18 +717,14 @@ END DESC";
     j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
     (
-        SELECT b.id, b.bundleTipo
-        FROM bundles b
-        WHERE EXISTS (
-            SELECT 1
-            FROM OPENJSON(b.juegos)
-            WITH (JuegoId INT '$.JuegoId') AS jj
-            WHERE jj.JuegoId = j.id
-			)
-          AND b.fechaEmpieza <= GETDATE()
-		  AND b.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS BundlesActuales,
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -731,8 +797,25 @@ END DESC";
 		{
 			string busqueda = @"SELECT TOP (@cantidad) 
     j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -910,7 +993,24 @@ END DESC";
 			string precioActualesTiendas = region == TiendaRegion.Europa ? "precioActualesTiendas" : "precioActualesTiendasUS";
 
 			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.idMaestra
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.idMaestra
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -1225,7 +1325,24 @@ FROM {tabla} j";
 		public static async Task<List<Juego>> MinimosStreaming(string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
 			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.idMaestra
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.idMaestra
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g
@@ -1620,7 +1737,24 @@ AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString(
 			}
 
 			string busqueda = @"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
-    j.bundles, j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
+    j.tipo, j.analisis, j.idSteam, j.idGog, j.media, j.freeToPlay,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaEmpieza <= GETDATE()
+			AND b.fechaTermina >= GETDATE()
+		FOR JSON PATH
+	) AS BundlesActuales,
+	(
+		SELECT b.id, b.bundleTipo
+		FROM bundles b
+		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+		WHERE bj.juegoId = j.id
+			AND b.fechaTermina < GETDATE()
+		FOR JSON PATH
+	) AS BundlesPasados,
 	(
         SELECT g.gratis
         FROM gratis g

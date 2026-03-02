@@ -528,5 +528,23 @@
     {
         [JsonPropertyName("appName")]
         public string AppName { get; set; }
+
+        [JsonPropertyName("namespace")]
+        public string Namespace { get; set; }
+
+        [JsonPropertyName("catalogItemId")]
+        public string CatalogItemId { get; set; }
+    }
+
+    public class EpicCatalogItemRespuesta
+    {
+        [JsonPropertyName("title")]
+        public string Title { get; set; }
+
+        [JsonPropertyName("urlSlug")]
+        public string UrlSlug { get; set; }
+
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
     }
 }

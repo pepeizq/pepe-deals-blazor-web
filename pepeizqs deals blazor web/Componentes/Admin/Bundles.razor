@@ -577,7 +577,7 @@
                     {
                         if (await BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, int.Parse(juego.JuegoId), juego.DRM) == false)
                         {
-                            string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationWishlistBundles");
+                            string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationWishlistBundles");
 
                             if (string.IsNullOrEmpty(correo) == false)
                             {

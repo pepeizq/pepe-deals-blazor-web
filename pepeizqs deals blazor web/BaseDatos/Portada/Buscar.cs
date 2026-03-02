@@ -253,7 +253,24 @@ ORDER BY NEWID()";
 				}
 			}
 
-			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas, j.bundles,
+			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas,
+			(
+				SELECT b.id, b.bundleTipo
+				FROM bundles b
+				INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+				WHERE bj.juegoId = j.idMaestra
+				  AND b.fechaEmpieza <= GETDATE()
+				  AND b.fechaTermina >= GETDATE()
+				FOR JSON PATH
+			) AS BundlesActuales,
+			(
+				SELECT b.id, b.bundleTipo
+				FROM bundles b
+				INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+				WHERE bj.juegoId = j.idMaestra
+				  AND b.fechaTermina < GETDATE()
+				FOR JSON PATH
+			) AS BundlesPasados,
 			(
 				SELECT g.gratis
 				FROM gratis g
@@ -355,9 +372,14 @@ ORDER BY NEWID()";
 						};
 					}
 
-					if (string.IsNullOrEmpty(fila.Bundles) == false)
+					if (string.IsNullOrEmpty(fila.BundlesActuales) == false)
 					{
-						juego.Bundles = JsonSerializer.Deserialize<List<JuegoBundle>>(fila.Bundles);
+						juego.BundlesActuales = JsonSerializer.Deserialize<List<JuegoBundlesActuales>>(fila.BundlesActuales);
+					}
+
+					if (string.IsNullOrEmpty(fila.BundlesPasados) == false)
+					{
+						juego.BundlesPasados = JsonSerializer.Deserialize<List<JuegoBundlesPasados>>(fila.BundlesPasados);
 					}
 
 					if (string.IsNullOrEmpty(fila.GratisActuales) == false)

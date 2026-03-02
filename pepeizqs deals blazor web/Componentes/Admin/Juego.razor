@@ -3,6 +3,7 @@
 @using Microsoft.Data.SqlClient
 @using System.Text.Json
 @using System.Threading.Tasks
+@using Tiendas2
 @using global::Juegos
 @using pepeizqs_deals_web.Data
 
@@ -1269,8 +1270,8 @@
     {
         juego.EpicGames = await APIs.EpicGames.Juego.EpicGamesDatos(juego.SlugEpic);
         juego.Idiomas = await APIs.EpicGames.Juego.EpicGamesIdiomas(juego.SlugEpic, juego.Idiomas);
-
-        await global::BaseDatos.Juegos.Actualizar.EpicGames(juego);
+        
+        await BaseDatos.Juegos.Actualizar.EpicGames(juego);
     }
 
     private async Task ActualizarXboxApi()
@@ -1366,7 +1367,7 @@
 
                     // BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
 
-					string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(usuarioInteresado, "NotificationLows");
+					string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
 
 					if (string.IsNullOrEmpty(correo) == false)
 					{

@@ -68,7 +68,7 @@ namespace APIs.EpicGames
             return id;
         }
 
-        public static async Task<JuegoEpicGames> EpicGamesDatos(string slug)
+		public static async Task<JuegoEpicGames> EpicGamesDatos(string slug)
         {
             if (string.IsNullOrEmpty(slug) == false)
             {
