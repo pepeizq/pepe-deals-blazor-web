@@ -135,6 +135,10 @@ namespace Herramientas
 					{
 						enlace = APIs.Ubisoft.Tienda.Referido(enlace);
 					}
+					else if (tienda == APIs.Gamesporium.Tienda.Generar().Id)
+					{
+						enlace = APIs.Gamesporium.Tienda.Referido(enlace);
+					}
 				}
 			}
 			

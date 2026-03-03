@@ -155,7 +155,7 @@ builder.Services.Configure<HostOptions>(opciones =>
 builder.Services.AddSingleton<Tareas.VigiladorRAM>();
 builder.Services.AddSingleton<Tareas.Comprobar.Europa>();
 builder.Services.AddSingleton<Tareas.Comprobar.EstadosUnidos>();
-builder.Services.AddSingleton<Tareas.Minimos>();
+builder.Services.AddSingleton<Tareas.Minimos.Europa>();
 builder.Services.AddSingleton<Tareas.LimpiezaLog>();
 builder.Services.AddSingleton<Tareas.LimpiezaCircuits>();
 builder.Services.AddSingleton<Tareas.Mantenimiento>();
@@ -169,12 +169,12 @@ builder.Services.AddSingleton<Tareas.RedesSociales>();
 builder.Services.AddSingleton<Tareas.IndexNow>();
 builder.Services.AddSingleton<Tareas.SteamBundles>();
 builder.Services.AddSingleton<Tareas.SteamDLCs>();
-builder.Services.AddSingleton<Tareas.MinimosUS>();
+builder.Services.AddSingleton<Tareas.Minimos.EstadosUnidos>();
 
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.VigiladorRAM>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobar.Europa>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobar.EstadosUnidos>());
-builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos.Europa>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaCircuits>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Mantenimiento>());
@@ -188,7 +188,7 @@ builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.IndexNow>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.SteamBundles>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.SteamDLCs>());
-builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.MinimosUS>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos.EstadosUnidos>());
 
 #endregion
 
@@ -314,7 +314,7 @@ app.MapStaticAssets();
 
 #region Carpeta Imagenes
 
-string imagenesRuta = Path.Combine(AppContext.BaseDirectory, "imagenes");
+string imagenesRuta = Path.Combine(builder.Environment.ContentRootPath, "imagenes");
 
 if (Directory.Exists(imagenesRuta) == true)
 {

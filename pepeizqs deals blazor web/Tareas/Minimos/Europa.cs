@@ -8,30 +8,35 @@ using System.Text.Json;
 using Tiendas2;
 using static Dapper.SqlMapper;
 
-namespace Tareas
+namespace Tareas.Minimos
 {
-	public class MinimosUS : BackgroundService
+	public class JuegoMinimoTarea : Juego
 	{
-		private readonly ILogger<MinimosUS> _logger;
-		private readonly IServiceScopeFactory _factoria;
-		private readonly IDecompiladores _decompilador;
+		public JuegoDRM DRMElegido { get; set; }
+	}
+
+	public class Europa : BackgroundService
+    {
+        private readonly ILogger<Europa> _logger;
+        private readonly IServiceScopeFactory _factoria;
+        private readonly IDecompiladores _decompilador;
 		private readonly IConfiguration _configuracion;
 		private readonly SemaphoreSlim _semaforo = new SemaphoreSlim(1, 1);
 
-		public MinimosUS(ILogger<MinimosUS> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
-		{
-			_logger = logger;
-			_factoria = factory;
-			_decompilador = decompilador;
+		public Europa(ILogger<Europa> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
+        {
+            _logger = logger;
+            _factoria = factory;
+            _decompilador = decompilador;
 			_configuracion = configuracion;
-		}
+        }
 
 		protected override async Task ExecuteAsync(CancellationToken tokenParar)
-		{
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(30));
+        {
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
 
-			while (await timer.WaitForNextTickAsync(tokenParar))
-			{
+            while (await timer.WaitForNextTickAsync(tokenParar))
+            {
 				if (await _semaforo.WaitAsync(0) == false)
 				{
 					continue;
@@ -44,13 +49,13 @@ namespace Tareas
 
 					if (piscinaMinimos == piscinaUsada && await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", TimeSpan.FromMinutes(30)) == true)
 					{
-						await BaseDatos.Portada.Limpiar.Total(TiendaRegion.EstadosUnidos);
+						await BaseDatos.Portada.Limpiar.Total(TiendaRegion.Europa);
 
 						foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
 						{
 							List<Juego> juegosParaInsertar = new List<Juego>();
 
-							List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(TiendaRegion.EstadosUnidos, tienda.Id);
+							List<JuegoMinimoTarea> juegos = await BaseDatos.Portada.Buscar.BuscarMinimos(TiendaRegion.Europa, tienda.Id);
 
 							if (juegos == null)
 							{
@@ -60,9 +65,9 @@ namespace Tareas
 							foreach (var juego in juegos)
 							{
 								juego.IdMaestra = juego.Id;
-								juego.PrecioMinimosHistoricosUS = juego.PrecioMinimosHistoricosUS.Where(x => x.DRM == juego.DRMElegido).ToList();
+								juego.PrecioMinimosHistoricos = juego.PrecioMinimosHistoricos.Where(x => x.DRM == juego.DRMElegido).ToList();
 
-								if (juego.PrecioMinimosHistoricosUS?.Count > 0 && juego.PrecioMinimosHistoricosUS[0].Precio > 0)
+								if (juego.PrecioMinimosHistoricos?.Count > 0 && (juego.PrecioMinimosHistoricos[0].Precio > 0 || juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0))
 								{
 									juegosParaInsertar.Add(juego);
 								}
@@ -79,7 +84,7 @@ namespace Tareas
 								tabla.Columns.Add("tipo", typeof(int));
 								tabla.Columns.Add("fechaSteamAPIComprobacion", typeof(DateTime));
 								tabla.Columns.Add("imagenes", typeof(string));
-								tabla.Columns.Add("precioMinimosHistoricosUS", typeof(string));
+								tabla.Columns.Add("precioMinimosHistoricos", typeof(string));
 								tabla.Columns.Add("analisis", typeof(string));
 								tabla.Columns.Add("caracteristicas", typeof(string));
 								tabla.Columns.Add("media", typeof(string));
@@ -90,7 +95,7 @@ namespace Tareas
 								tabla.Columns.Add("maestro", typeof(string));
 								tabla.Columns.Add("freeToPlay", typeof(string));
 								tabla.Columns.Add("mayorEdad", typeof(string));
-								tabla.Columns.Add("precioActualesTiendasUS", typeof(string));
+								tabla.Columns.Add("precioActualesTiendas", typeof(string));
 								tabla.Columns.Add("categorias", typeof(string));
 								tabla.Columns.Add("etiquetas", typeof(string));
 								tabla.Columns.Add("idiomas", typeof(string));
@@ -109,7 +114,7 @@ namespace Tareas
 										(int)juego.Tipo,
 										juego.FechaSteamAPIComprobacion,
 										JsonSerializer.Serialize(juego.Imagenes),
-										JsonSerializer.Serialize(juego.PrecioMinimosHistoricosUS),
+										JsonSerializer.Serialize(juego.PrecioMinimosHistoricos),
 										JsonSerializer.Serialize(juego.Analisis),
 										JsonSerializer.Serialize(juego.Caracteristicas),
 										JsonSerializer.Serialize(juego.Media),
@@ -120,7 +125,7 @@ namespace Tareas
 										juego.Maestro,
 										juego.FreeToPlay,
 										juego.MayorEdad,
-										juego.PrecioActualesTiendasUS != null ? JsonSerializer.Serialize(juego.PrecioActualesTiendasUS) : null,
+										juego.PrecioActualesTiendas != null ? JsonSerializer.Serialize(juego.PrecioActualesTiendas) : null,
 										juego.Categorias != null ? JsonSerializer.Serialize(juego.Categorias) : null,
 										juego.Etiquetas != null ? JsonSerializer.Serialize(juego.Etiquetas) : null,
 										juego.Idiomas != null ? JsonSerializer.Serialize(juego.Idiomas) : null,
@@ -133,12 +138,12 @@ namespace Tareas
 								}
 
 								DynamicParameters parametros = new DynamicParameters();
-								parametros.Add("@Datos", tabla.AsTableValuedParameter("dbo.SeccionMinimosUSType"));
+								parametros.Add("@Datos", tabla.AsTableValuedParameter("dbo.SeccionMinimosType"));
 
 								await Herramientas.BaseDatos.Select(async conexion =>
 								{
 									return await conexion.ExecuteAsync(
-										"dbo.UpsertSeccionMinimosUSBatch",
+										"dbo.UpsertSeccionMinimosBatch",
 										parametros,
 										commandType: CommandType.StoredProcedure,
 										commandTimeout: 600
@@ -150,18 +155,18 @@ namespace Tareas
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Tarea - Minimos US", ex, false);
+					BaseDatos.Errores.Insertar.Mensaje("Tarea - Minimos", ex, false);
 				}
 				finally
 				{
 					_semaforo.Release();
 				}
 			}
-		}
+        }
 
-		public override async Task StopAsync(CancellationToken stoppingToken)
-		{
-			await base.StopAsync(stoppingToken);
-		}
-	}
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            await base.StopAsync(stoppingToken);
+        }
+    }
 }

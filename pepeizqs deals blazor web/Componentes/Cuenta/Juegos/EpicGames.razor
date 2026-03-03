@@ -477,24 +477,29 @@
                     foreach (var juego in respuestaJuegos.Records)
                     {
                         if (string.IsNullOrEmpty(textoIds) == true)
-					    {
-						    textoIds = juego.AppName;
-					    }
-					    else
-					    {
-						    textoIds = textoIds + "," + juego.AppName;
-					    }
+                        {
+                            textoIds = juego.Namespace;
+                        }
+                        else
+                        {
+                            textoIds = textoIds + "," + juego.Namespace;
+                        }
 
-					    cantidadJuegos += 1;	
+                        cantidadJuegos += 1;	
+
+                        await APIs.EpicGames.Juego.AñadirBaseDatos(juego.AppName, juego.Namespace, juego.CatalogItemId);
                     }
                 }
             } 
             while (string.IsNullOrEmpty(cursor) == false);    
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("EpicGames", textoIds, usuarioId);
+            await BaseDatos.Usuarios.Actualizar.Opcion("EpicGamesLastImport", DateTime.Now, usuarioId);
             
             usuario.EpicGames = textoIds;
 			usuario.EpicGamesLastImport = DateTime.Now;
 
-			await global::BaseDatos.Usuarios.Actualizar.Epic(usuario);
+			await BaseDatos.Usuarios.Actualizar.Epic(usuario);
 
             trabajando = false;
         }
@@ -534,17 +539,5 @@
 
         [JsonPropertyName("catalogItemId")]
         public string CatalogItemId { get; set; }
-    }
-
-    public class EpicCatalogItemRespuesta
-    {
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
-
-        [JsonPropertyName("urlSlug")]
-        public string UrlSlug { get; set; }
-
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
     }
 }

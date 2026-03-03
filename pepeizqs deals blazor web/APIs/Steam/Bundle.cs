@@ -3,6 +3,7 @@
 using Herramientas;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Steam
 {
@@ -56,7 +57,7 @@ namespace APIs.Steam
 
 									if (nuevoJuego != null)
 									{
-										await BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego);
+										await BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego, TiendaRegion.Europa);
 										Juegos.Juego nuevoJuego2 = await BaseDatos.Juegos.Buscar.UnJuego(null, idApp.ToString());
 
 										if (idsBuscar.Length > 0)

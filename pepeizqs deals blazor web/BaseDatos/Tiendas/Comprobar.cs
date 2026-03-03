@@ -264,7 +264,7 @@ namespace BaseDatos.Tiendas
 									}
 								}
 
-								await Juegos.Insertar.Ejecutar(juego);
+								await Juegos.Insertar.Ejecutar(juego, region);
 							}
 						}
 						catch { }

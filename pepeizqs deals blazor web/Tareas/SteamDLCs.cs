@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using APIs.Steam;
 using Herramientas;
 
 namespace Tareas
@@ -64,7 +63,7 @@ namespace Tareas
 
 												if (nuevoJuego != null)
 												{
-													await BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego);
+													await BaseDatos.Juegos.Insertar.Ejecutar(nuevoJuego, Tiendas2.TiendaRegion.Europa);
 													Juegos.Juego nuevoJuego2 = await BaseDatos.Juegos.Buscar.UnJuego(null, dlcMaestro.ToString());
 
 													dlc.Maestro = nuevoJuego2.Id.ToString();

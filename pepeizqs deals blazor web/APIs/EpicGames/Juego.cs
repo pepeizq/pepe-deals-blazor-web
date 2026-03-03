@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Dapper;
 using Herramientas;
 using Juegos;
 using System.Text.Json;
@@ -9,7 +10,116 @@ namespace APIs.EpicGames
 {
     public static class Juego
     {
-        public static async Task<Juegos.Juego> CargarDatos(string enlace)
+		public static async Task AñadirBaseDatos(string appName, string namespace2, string catalogItemId)
+		{
+			const string sql = @"
+                            INSERT INTO epicJuegos (AppName, Namespace, CatalogItemId)
+                            SELECT @AppName, @Namespace, @CatalogItemId
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM epicJuegos WHERE AppName = @AppName
+                            )";
+
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(sql, new
+					{
+						AppName = appName,
+						Namespace = namespace2,
+						CatalogItemId = catalogItemId
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Insertar Epic Games Juego", ex);
+			}
+		}
+
+		public static async Task ActualizarBaseDatos(string namespace2, string slug)
+		{
+			const string sql = @"
+                            UPDATE epicJuegos 
+							SET Slug=@Slug
+							WHERE Namespace=@Namespace";
+
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(sql, new
+					{
+						Slug = slug,
+						Namespace = namespace2
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games Juego 1", ex);
+			}
+
+			//const string sql2 = @"
+   //                         UPDATE juegos 
+			//				SET exeEpic=@exeEpic
+			//				WHERE id=@Namespace";
+
+			//try
+			//{
+			//	await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+			//	{
+			//		return await conexion.ExecuteAsync(sql2, new
+			//		{
+			//			Slug = slug,
+			//			Namespace = namespace2
+			//		}, transaction: sentencia);
+			//	});
+			//}
+			//catch (Exception ex)
+			//{
+			//	BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games Juego 1", ex);
+			//}
+		}
+
+		public static async Task<bool> UsuarioTieneJuegoBaseDatos(List<string> usuarioJuegos, string slug)
+		{
+			if (usuarioJuegos == null || usuarioJuegos.Count == 0)
+			{
+				return false;
+			}
+
+			var parametros = new DynamicParameters();
+			var placeholders = usuarioJuegos.Select((name, i) =>
+			{
+				parametros.Add($"@p{i}", name);
+				return $"@p{i}";
+			});
+
+			parametros.Add("@Slug", slug);
+
+			string sql = $@"
+                SELECT COUNT(*) 
+                FROM epicJuegos
+                WHERE AppName IN ({string.Join(",", placeholders)}) AND Slug = @Slug";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async (conexion) =>
+				{
+					int count = await conexion.ExecuteScalarAsync<int>(sql, parametros);
+
+					return count > 0;
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Comprobar Usuario Tiene Epic Games Juego", ex);
+				return false;
+			}
+		}
+
+		public static async Task<Juegos.Juego> CargarDatos(string enlace)
         {
             string html = await Decompiladores.Estandar("https://store-content-ipv4.ak.epicgames.com/api/en-US/content/products/" + enlace);
 

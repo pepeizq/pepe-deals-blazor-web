@@ -36,7 +36,8 @@ namespace Tiendas2
 				APIs.Nexus.Tienda.Generar(),
 				APIs._2Game.Tienda.Generar(),
 				APIs.Muvegames.Tienda.Generar(),
-				APIs.Stove.Tienda.Generar()
+				APIs.Stove.Tienda.Generar(),
+				APIs.Gamesporium.Tienda.Generar()
 			};
 
 			return tiendas;
@@ -151,6 +152,10 @@ namespace Tiendas2
 			else if (id == APIs.Stove.Tienda.Generar().Id)
 			{
 				await APIs.Stove.Tienda.BuscarOfertas(region);
+			}
+			else if (id == APIs.Gamesporium.Tienda.Generar().Id)
+			{
+				await APIs.Gamesporium.Tienda.BuscarOfertas(region);
 			}
 		}
 

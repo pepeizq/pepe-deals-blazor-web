@@ -3,7 +3,7 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
-using Tareas;
+using Tareas.Minimos;
 using Tiendas2;
 
 namespace BaseDatos.Portada

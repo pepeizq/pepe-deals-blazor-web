@@ -871,7 +871,7 @@ else
             juegoAñadir.Imagenes.Library_1920x620 = vacioLibrary_1920x620;
         }
 
-        await BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir);
+        await BaseDatos.Juegos.Insertar.Ejecutar(juegoAñadir, Tiendas2.TiendaRegion.Europa);
 
         juegoAñadir = null;
     }

@@ -3,12 +3,13 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
+using Tiendas2;
 
 namespace BaseDatos.Juegos
 {
 	public static class Insertar
 	{
-		public static async Task Ejecutar(Juego juego, string tabla = "juegos", bool noExiste = false)
+		public static async Task Ejecutar(Juego juego, TiendaRegion region, string tabla = "juegos", bool noExiste = false)
 		{
 			if (string.IsNullOrEmpty(juego.Nombre) == true)
 			{
@@ -121,17 +122,34 @@ namespace BaseDatos.Juegos
 			{
 				parametros.Add("@idMaestra", juego.IdMaestra);
 
-				sqlInsertar = $@"BEGIN TRAN
-					UPDATE {tabla}
-					SET precioMinimosHistoricos = '{JsonSerializer.Serialize(juego.PrecioMinimosHistoricos)}'
-					WHERE idMaestra={juego.IdMaestra}
-					AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
+				if (region == TiendaRegion.Europa)
+				{
+					sqlInsertar = $@"BEGIN TRAN
+						UPDATE {tabla}
+						SET precioMinimosHistoricos = '{JsonSerializer.Serialize(juego.PrecioMinimosHistoricos)}'
+						WHERE idMaestra={juego.IdMaestra}
+						AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricos[0].DRM}
 				
-				IF @@ROWCOUNT = 0
-				BEGIN
-					{sqlInsertar}
-				END
-				COMMIT;";
+					IF @@ROWCOUNT = 0
+					BEGIN
+						{sqlInsertar}
+					END
+					COMMIT;";
+				}
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
+					sqlInsertar = $@"BEGIN TRAN
+						UPDATE {tabla}
+						SET precioMinimosHistoricos = '{JsonSerializer.Serialize(juego.PrecioMinimosHistoricosUS)}'
+						WHERE idMaestra={juego.IdMaestra}
+						AND JSON_VALUE(precioMinimosHistoricos, '$[0].DRM')={(int)juego.PrecioMinimosHistoricosUS[0].DRM}
+				
+					IF @@ROWCOUNT = 0
+					BEGIN
+						{sqlInsertar}
+					END
+					COMMIT;";
+				}
 			}
 
 			try

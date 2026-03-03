@@ -37,8 +37,6 @@ namespace APIs.EpicGames
 
 			List<int> idsBorrar = new List<int>();
 
-			int juegos2 = 0;
-
 			string busqueda = "SELECT * FROM temporalepictienda";
 
 			IEnumerable<dynamic> filas = await Herramientas.BaseDatos.Select(async conexion =>
@@ -48,6 +46,8 @@ namespace APIs.EpicGames
 
 			if (filas?.Count() > 0)
 			{
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
 				foreach (var fila in filas)
 				{
 					string contenido = fila.contenido;
@@ -104,17 +104,14 @@ namespace APIs.EpicGames
 
 										int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-										string slug = juego.Enlace;
+										string slug = null;
 
-										if (string.IsNullOrEmpty(slug) == false)
+										if (juego.Enlaces2?.Mapeos?.Count > 0)
 										{
-											if (slug.Contains("/") == true)
-											{
-												int int1 = slug.IndexOf("/");
-												slug = slug.Remove(int1, slug.Length - int1);
-											}
+											slug = juego.Enlaces2.Mapeos[0].Slug;
 										}
-										else
+
+										if (string.IsNullOrEmpty(slug) == true)
 										{
 											if (juego.Enlaces?.Count > 0)
 											{
@@ -124,10 +121,7 @@ namespace APIs.EpicGames
 
 										if (string.IsNullOrEmpty(slug) == true)
 										{
-											if (juego.Enlaces2?.Mapeos != null)
-											{
-												slug = juego.Enlaces2.Mapeos[0].Slug;
-											}
+											slug = juego.Enlace;
 										}
 
 										if (descuento > 0 && string.IsNullOrEmpty(slug) == false && juego.Imagenes != null)
@@ -155,24 +149,25 @@ namespace APIs.EpicGames
 													FechaActualizacion = DateTime.Now
 												};
 
-												try
+												ofertas.Add(oferta);
+
+												bool actualizarBaseDatos = true;
+
+												if (juego.Categorias?.Count > 0)
 												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta, null, null, slug);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+													foreach (var categoria in juego.Categorias)
+													{
+														if (string.IsNullOrEmpty(categoria.Path) == false && categoria.Path.Contains("addon") == true)
+														{
+															actualizarBaseDatos = false;
+															break;
+														}
+													}
 												}
 
-												juegos2 += 1;
-
-												try
+												if (actualizarBaseDatos == true && string.IsNullOrEmpty(juego.Namespace) == false)
 												{
-													await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+													await APIs.EpicGames.Juego.ActualizarBaseDatos(juego.Namespace, slug);
 												}
 
 												string limpieza = "DELETE FROM temporalepictienda WHERE id=@id";
@@ -193,6 +188,41 @@ namespace APIs.EpicGames
 									}
 								}
 							}
+						}
+					}
+				}
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 						}
 					}
 				}
@@ -229,6 +259,9 @@ namespace APIs.EpicGames
 		[JsonPropertyName("title")]
 		public string Nombre { get; set; }
 
+		[JsonPropertyName("namespace")]
+		public string Namespace { get; set; }
+
 		[JsonPropertyName("keyImages")]
 		public List<EpicGamesStoreJuegoImagen> Imagenes { get; set; }
 
@@ -243,7 +276,13 @@ namespace APIs.EpicGames
 
         [JsonPropertyName("catalogNs")]
         public EpicGamesStoreJuegoEnlaceMapeo Enlaces2 { get; set; }
-    }
+
+		[JsonPropertyName("items")]
+		public List<EpicGamesStoreJuegoItem> Items { get; set; }
+
+		[JsonPropertyName("categories")]
+		public List<EpicGamesStoreJuegoCategoria> Categorias { get; set; }
+	}
 
 	public class EpicGamesStoreJuegoImagen
 	{
@@ -286,4 +325,16 @@ namespace APIs.EpicGames
         [JsonPropertyName("mappings")]
         public List<EpicGamesStoreJuegoEnlace> Mapeos { get; set; }
     }
+
+	public class EpicGamesStoreJuegoItem
+	{
+		[JsonPropertyName("namespace")]
+		public string Namespace { get; set; }
+	}
+
+	public class EpicGamesStoreJuegoCategoria
+	{
+		[JsonPropertyName("path")]
+		public string Path { get; set; }
+	}
 }

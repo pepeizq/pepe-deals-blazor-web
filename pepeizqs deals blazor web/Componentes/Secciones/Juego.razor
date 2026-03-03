@@ -3360,7 +3360,7 @@
 
             if (string.IsNullOrEmpty(usuarioId) == false && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
-                usuarioTieneDesea ??= GenerarTieneDesea();
+                usuarioTieneDesea ??= await GenerarTieneDesea();
             }
         }
     }
@@ -3972,7 +3972,7 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private List<JuegoTieneDesea> GenerarTieneDesea()
+    private async Task<List<JuegoTieneDesea>> GenerarTieneDesea()
     {
         List<JuegoTieneDesea> usuarioTieneDesea2 = new List<JuegoTieneDesea>();
 
@@ -4039,20 +4039,18 @@
                         }
                     }
 
-                    if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.ExeEpic) == false && juego.Tipo == JuegoTipo.Game)
+                    if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.SlugEpic) == false && juego.Tipo == JuegoTipo.Game)
                     {
                         List<string> juegosEpic = juegosUsuario.Epic;
 
-                        if (juegosEpic?.Count > 0)
+                        if (await APIs.EpicGames.Juego.UsuarioTieneJuegoBaseDatos(juegosEpic, juego.SlugEpic) == true)
                         {
-                            juegosEpic.ForEach(x => {if (x == juego.ExeEpic) {
-                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
-                                    nuevoJuegoUsuario.DRM = JuegoDRM.Epic;
-                                    nuevoJuegoUsuario.Tiene = true;
+                            JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                            nuevoJuegoUsuario.DRM = JuegoDRM.Epic;
+                            nuevoJuegoUsuario.Tiene = true;
 
-                                    usuarioTieneDesea2.Add(nuevoJuegoUsuario);
-                                    usuarioTieneDRM = true;
-                                }});
+                            usuarioTieneDesea2.Add(nuevoJuegoUsuario);
+                            usuarioTieneDRM = true;
                         }
                     }
 

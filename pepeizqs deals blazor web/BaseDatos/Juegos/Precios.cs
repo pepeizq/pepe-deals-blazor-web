@@ -247,7 +247,7 @@ namespace BaseDatos.Juegos
 										{
 											DeseadosDatos datosDeseados = null;
 
-											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.Europa, usuarioInteresado, "WishlistData");
 
 											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 											{
@@ -284,7 +284,7 @@ namespace BaseDatos.Juegos
 												}
 											}
 
-											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
+											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.Europa, usuarioInteresado, "NotificationPushLows");
 
 											if (enviarPush == true)
 											{
@@ -565,7 +565,7 @@ namespace BaseDatos.Juegos
 										{
 											DeseadosDatos datosDeseados = null;
 
-											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionString(usuarioInteresado, "WishlistData");
+											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "WishlistData");
 
 											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 											{
@@ -602,7 +602,7 @@ namespace BaseDatos.Juegos
 												}
 											}
 
-											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBool(usuarioInteresado, "NotificationPushLows");
+											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationPushLows");
 
 											if (enviarPush == true)
 											{

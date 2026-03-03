@@ -1306,6 +1306,33 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			return null;
 		}
 
+		public static async Task<string> OpcionStringRegion(TiendaRegion region, string usuarioId, string valor)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true && string.IsNullOrEmpty(valor) == true)
+			{
+				return null;
+			}
+
+			if (string.IsNullOrEmpty(usuarioId) == false && string.IsNullOrEmpty(valor) == false)
+			{
+				try
+				{
+					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id AND Currency=@Currency";
+
+					return await Herramientas.BaseDatos.Select(async conexion =>
+					{
+						return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = usuarioId, Currency = (int)region });
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Usuario Opcion String", ex);
+				}
+			}
+
+			return null;
+		}
+
 		public static async Task<int> OpcionInt(string usuarioId, string valor)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true && string.IsNullOrEmpty(valor) == true)
@@ -1333,7 +1360,7 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			return 0;
 		}
 
-		public static async Task<bool> OpcionBool(string usuarioId, string valor)
+		public static async Task<bool> OpcionBoolRegion(TiendaRegion region, string usuarioId, string valor)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true && string.IsNullOrEmpty(valor) == true)
 			{
@@ -1344,11 +1371,11 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			{
 				try
 				{
-					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id";
+					string busqueda = $"SELECT {valor} FROM AspNetUsers WHERE id=@Id AND Currency=@Currency";
 
 					return await Herramientas.BaseDatos.Select(async conexion =>
 					{
-						return await conexion.QueryFirstOrDefaultAsync<bool?>(busqueda, new { Id = usuarioId });
+						return await conexion.QueryFirstOrDefaultAsync<bool?>(busqueda, new { Id = usuarioId, Currency = (int)region });
 					}) ?? false;
 				}
 				catch (Exception ex)

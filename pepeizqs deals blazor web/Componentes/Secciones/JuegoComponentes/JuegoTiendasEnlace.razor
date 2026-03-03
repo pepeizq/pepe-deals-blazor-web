@@ -264,21 +264,43 @@
 
         if (precioFinal == 0)
         {
-            if (precio.Moneda == Herramientas.JuegoMoneda.Euro)
+            if (region == TiendaRegion.Europa)
             {
-                precioFinal = precio.Precio;
-            }
-            else
-            {
-                if (precio.PrecioCambiado > 0)
-                {
-                    precioFinal = precio.PrecioCambiado;
-                    precioFinalCambiadoOriginal = precio.Precio;
-                }
-                else
+                if (precio.Moneda == Herramientas.JuegoMoneda.Euro)
                 {
                     precioFinal = precio.Precio;
                 }
+                else
+                {
+                    if (precio.PrecioCambiado > 0)
+                    {
+                        precioFinal = precio.PrecioCambiado;
+                        precioFinalCambiadoOriginal = precio.Precio;
+                    }
+                    else
+                    {
+                        precioFinal = precio.Precio;
+                    }
+                }
+            }
+            else if (region == TiendaRegion.EstadosUnidos)
+            {
+                if (precio.Moneda == Herramientas.JuegoMoneda.Dolar)
+                {
+                    precioFinal = precio.Precio;
+                }
+                else
+                {
+                    if (precio.PrecioCambiado > 0)
+                    {
+                        precioFinal = precio.PrecioCambiado;
+                        precioFinalCambiadoOriginal = precio.Precio;
+                    }
+                    else
+                    {
+                        precioFinal = precio.Precio;
+                    }
+                }                
             }
         }
 

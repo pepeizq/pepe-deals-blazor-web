@@ -82,11 +82,47 @@ namespace APIs.IndieGala
 								{
 									foreach (var pais in listaPaisesRestringidos)
 									{
-										if (pais.ToLower() == "es")
+										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
 										{
 											buscar = false;
 											break;
 										}
+										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+										{
+											buscar = true;
+											break;
+										}
+									}
+								}
+							}
+
+							if (string.IsNullOrEmpty(juego.PaisesStockAprobados) == false)
+							{
+								List<string> listaPaisesAprobados = new List<string>();
+
+								string[] datosPartidos = juego.PaisesStockAprobados.Split(',');
+								listaPaisesAprobados.AddRange(datosPartidos);
+
+								if (listaPaisesAprobados.Count > 0)
+								{
+									bool encontrado = false;
+									foreach (var pais in listaPaisesAprobados)
+									{
+										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+										{
+											encontrado = true;
+											break;
+										}
+										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+										{
+											encontrado = true;
+											break;
+										}
+									}
+
+									if (encontrado == false)
+									{
+										buscar = false;
 									}
 								}
 							}
@@ -103,7 +139,12 @@ namespace APIs.IndieGala
 									bool encontrado = false;
 									foreach (var pais in listaPaisesAprobados)
 									{
-										if (pais.ToLower() == "es")
+										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+										{
+											encontrado = true;
+											break;
+										}
+										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
 										{
 											encontrado = true;
 											break;
@@ -121,9 +162,22 @@ namespace APIs.IndieGala
 							{
 								if (juego.Estado == "available")
 								{
-									decimal precioBase = decimal.Parse(juego.PrecioBase);
-									decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									int descuento = 0;
+									decimal precioBase = 10000000000;
+									decimal precioRebajado = 10000000000;
+
+									if (region == TiendaRegion.Europa)
+									{
+										precioBase = decimal.Parse(juego.PrecioBase);
+										precioRebajado = decimal.Parse(juego.PrecioRebajado);
+										descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									}
+									else if (region == TiendaRegion.EstadosUnidos)
+									{
+										precioBase = decimal.Parse(juego.PrecioBaseUS);
+										precioRebajado = decimal.Parse(juego.PrecioRebajadoUS);
+										descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+									}
 
 									if (descuento > 0)
 									{
@@ -176,6 +230,11 @@ namespace APIs.IndieGala
 											FechaDetectado = DateTime.Now,
 											FechaActualizacion = DateTime.Now
 										};
+
+										if (region == TiendaRegion.EstadosUnidos)
+										{
+											oferta.Moneda = JuegoMoneda.Dolar;
+										}
 
 										if (string.IsNullOrEmpty(juego.Fecha) == false)
 										{
@@ -336,6 +395,15 @@ namespace APIs.IndieGala
 		[XmlElement("priceEUR")]
 		public string PrecioBase { get; set; }
 
+		[XmlElement("discountPercentUSD")]
+		public string DescuentoUS { get; set; }
+
+		[XmlElement("discountPriceUSD")]
+		public string PrecioRebajadoUS { get; set; }
+
+		[XmlElement("priceUSD")]
+		public string PrecioBaseUS { get; set; }
+
 		[XmlElement("boximg")]
 		public string Imagen { get; set; }
 
@@ -349,6 +417,9 @@ namespace APIs.IndieGala
 		public string Estado { get; set; }
 
 		[XmlElement("regionStockAvailable")]
+		public string PaisesStockAprobados { get; set; }
+
+		[XmlElement("regionAvailable")]
 		public string PaisesAprobados { get; set; }
 
 		[XmlElement("notAvailableRegions")]
