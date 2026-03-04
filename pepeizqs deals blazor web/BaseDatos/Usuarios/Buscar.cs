@@ -712,7 +712,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT GeforceNOWOption1, GeforceNOWOption2, GeforceNOWOption3, GeforceNOWOption4 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, GeforceNOWOption1, GeforceNOWOption2, GeforceNOWOption3, GeforceNOWOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -736,7 +736,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT BoosteroidOption1, BoosteroidOption2, BoosteroidOption3, BoosteroidOption4 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, BoosteroidOption1, BoosteroidOption2, BoosteroidOption3, BoosteroidOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -760,7 +760,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT AmazonLunaOption1, AmazonLunaOption2, AmazonLunaOption3, AmazonLunaOption4 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT Currency, AmazonLunaOption1, AmazonLunaOption2, AmazonLunaOption3, AmazonLunaOption4 FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{

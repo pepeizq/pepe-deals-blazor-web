@@ -231,8 +231,12 @@
 							borde1 = "border-right: 5px solid color-mix(in srgb, var(--colorTexto) 50%, transparent);";
 						}
 
-						<button @onclick="(e => MostrarPestañaPrecios(e, 1))" class="boton-pequeño" style="padding: 10px 15px; @borde1">
-							Actuales
+						<button @onclick="(e => MostrarPestañaPrecios(e, 1))" class="boton-pequeño" style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; @borde1">                           
+                            <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px;" />
+
+                            <div>
+                                Actuales
+                            </div>	
 						</button>
 
 						string borde2 = string.Empty;
@@ -242,8 +246,42 @@
 							borde2 = "border-right: 5px solid color-mix(in srgb, var(--colorTexto) 50%, transparent);";
 						}
 
-						<button @onclick="(e => MostrarPestañaPrecios(e, 2))" class="boton-pequeño" style="padding: 10px 15px; @borde2">
-							Historicos
+						<button @onclick="(e => MostrarPestañaPrecios(e, 2))" class="boton-pequeño" style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; @borde2">
+                            <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px;" />
+
+                            <div>
+                                Historicos
+                            </div>	
+						</button>
+
+                        string borde3 = string.Empty;
+
+						if (pestañaMostrarPrecios == 3)
+						{
+							borde3 = "border-right: 5px solid color-mix(in srgb, var(--colorTexto) 50%, transparent);";
+						}
+
+						<button @onclick="(e => MostrarPestañaPrecios(e, 3))" class="boton-pequeño" style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; @borde3">
+                            <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px;" />
+
+                            <div>
+                                Actuales
+                            </div>	
+						</button>
+
+                        string borde4 = string.Empty;
+
+						if (pestañaMostrarPrecios == 4)
+						{
+							borde4 = "border-right: 5px solid color-mix(in srgb, var(--colorTexto) 50%, transparent);";
+						}
+
+						<button @onclick="(e => MostrarPestañaPrecios(e, 4))" class="boton-pequeño" style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; @borde4">
+                            <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px;" />
+
+                            <div>
+                                Historicos
+                            </div>	
 						</button>
 					}
 				</div>
@@ -887,6 +925,20 @@
                 textoPrecios = JsonSerializer.Serialize(juego.PrecioMinimosHistoricos);
             }			
         }
+        else if (pestañaMostrarPrecios == 3)
+        {
+            if (juego.PrecioActualesTiendasUS != null)
+            {
+                textoPrecios = JsonSerializer.Serialize(juego.PrecioActualesTiendasUS);
+            }			
+        }
+        else if (pestañaMostrarPrecios == 4)
+        {
+            if (juego.PrecioMinimosHistoricosUS != null)
+            {
+                textoPrecios = JsonSerializer.Serialize(juego.PrecioMinimosHistoricosUS);
+            }			
+        }
     }
 
     private async void TextoCambiaPrecios(ChangeEventArgs texto)
@@ -905,6 +957,16 @@
             else if (pestañaMostrarPrecios == 2)
             {
                 juego.PrecioMinimosHistoricos = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
+                await BaseDatos.Juegos.Actualizar.PreciosHistoricos(juego);
+            }
+            else if (pestañaMostrarPrecios == 3)
+            {
+                juego.PrecioActualesTiendasUS = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
+                await BaseDatos.Juegos.Actualizar.PreciosHistoricos(juego);
+            }
+            else if (pestañaMostrarPrecios == 4)
+            {
+                juego.PrecioMinimosHistoricosUS = JsonSerializer.Deserialize<List<global::Juegos.JuegoPrecio>>(textoPrecios);
                 await BaseDatos.Juegos.Actualizar.PreciosHistoricos(juego);
             }
         }

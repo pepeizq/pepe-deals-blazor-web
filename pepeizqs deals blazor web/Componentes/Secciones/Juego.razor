@@ -3925,37 +3925,75 @@
         {
             preciosOrdenados.Sort(delegate (JuegoPrecio p1, JuegoPrecio p2)
             {
-                decimal precio1 = 0;
-
-                if ((region == TiendaRegion.Europa && p1.Moneda != Herramientas.JuegoMoneda.Euro) ||
-                    (region == TiendaRegion.EstadosUnidos && p1.Moneda != Herramientas.JuegoMoneda.Dolar))
+                if (region == TiendaRegion.Europa)
                 {
-                    precio1 = p1.PrecioCambiado;
+                    decimal precio1 = 0;
+
+                    if (region == TiendaRegion.Europa && p1.Moneda != Herramientas.JuegoMoneda.Euro)
+                    {
+                        precio1 = p1.PrecioCambiado;
+                    }
+                    else
+                    {
+                        precio1 = p1.Precio;
+                    }
+
+                    decimal precio2 = 0;
+
+                    if (region == TiendaRegion.Europa && p2.Moneda != Herramientas.JuegoMoneda.Euro)
+                    {
+                        precio2 = p2.PrecioCambiado;
+                    }
+                    else
+                    {
+                        precio2 = p2.Precio;
+                    }
+
+                    if (precio1 == precio2)
+                    {
+                        return p2.FechaDetectado.CompareTo(p1.FechaDetectado);
+                    }
+                    else
+                    {
+                        return precio1.CompareTo(precio2);
+                    }
+                }
+                else if (region == TiendaRegion.EstadosUnidos)
+                {
+                    decimal precio1 = 0;
+
+                    if (region == TiendaRegion.EstadosUnidos && p1.Moneda != Herramientas.JuegoMoneda.Dolar)
+                    {
+                        precio1 = p1.PrecioCambiado;
+                    }
+                    else
+                    {
+                        precio1 = p1.Precio;
+                    }
+
+                    decimal precio2 = 0;
+
+                    if (region == TiendaRegion.EstadosUnidos && p2.Moneda != Herramientas.JuegoMoneda.Dolar)
+                    {
+                        precio2 = p2.PrecioCambiado;
+                    }
+                    else
+                    {
+                        precio2 = p2.Precio;
+                    }
+
+                    if (precio1 == precio2)
+                    {
+                        return p2.FechaDetectado.CompareTo(p1.FechaDetectado);
+                    }
+                    else
+                    {
+                        return precio1.CompareTo(precio2);
+                    }
                 }
                 else
-                {
-                    precio1 = p1.Precio;
-                }
-
-                decimal precio2 = 0;
-
-                if ((region == TiendaRegion.Europa && p2.Moneda != Herramientas.JuegoMoneda.Euro) ||
-                    (region == TiendaRegion.EstadosUnidos && p2.Moneda != Herramientas.JuegoMoneda.Dolar))
-                {
-                    precio2 = p2.PrecioCambiado;
-                }
-                else
-                {
-                    precio2 = p2.Precio;
-                }
-
-                if (precio1 == precio2)
                 {
                     return p2.FechaDetectado.CompareTo(p1.FechaDetectado);
-                }
-                else
-                {
-                    return precio1.CompareTo(precio2);
                 }
             });
         }
@@ -4029,28 +4067,30 @@
                         if (juegosAmazon?.Count > 0)
                         {
                             juegosAmazon.ForEach(x => {if (x == juego.IdAmazon.ToString()) {
-                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
-                                    nuevoJuegoUsuario.DRM = JuegoDRM.Amazon;
-                                    nuevoJuegoUsuario.Tiene = true;
+                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                nuevoJuegoUsuario.DRM = JuegoDRM.Amazon;
+                                nuevoJuegoUsuario.Tiene = true;
 
-                                    usuarioTieneDesea2.Add(nuevoJuegoUsuario);
-                                    usuarioTieneDRM = true;
-                                }});
+                                usuarioTieneDesea2.Add(nuevoJuegoUsuario);
+                                usuarioTieneDRM = true;
+                            }});
                         }
                     }
 
-                    if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.SlugEpic) == false && juego.Tipo == JuegoTipo.Game)
+                    if (drm.Id == JuegoDRM.Epic && string.IsNullOrEmpty(juego.ExeEpic) == false && juego.Tipo == JuegoTipo.Game)
                     {
                         List<string> juegosEpic = juegosUsuario.Epic;
 
-                        if (await APIs.EpicGames.Juego.UsuarioTieneJuegoBaseDatos(juegosEpic, juego.SlugEpic) == true)
+                        if (juegosEpic?.Count > 0)
                         {
-                            JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
-                            nuevoJuegoUsuario.DRM = JuegoDRM.Epic;
-                            nuevoJuegoUsuario.Tiene = true;
+                            juegosEpic.ForEach(x => {if (x == juego.ExeEpic.ToString()) {
+                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                nuevoJuegoUsuario.DRM = JuegoDRM.Epic;
+                                nuevoJuegoUsuario.Tiene = true;
 
-                            usuarioTieneDesea2.Add(nuevoJuegoUsuario);
-                            usuarioTieneDRM = true;
+                                usuarioTieneDesea2.Add(nuevoJuegoUsuario);
+                                usuarioTieneDRM = true;
+                            }});
                         }
                     }
 
@@ -4061,13 +4101,13 @@
                         if (juegosUbisoft?.Count > 0)
                         {
                             juegosUbisoft.ForEach(x => {if (x == juego.ExeUbisoft) {
-                                    JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
-                                    nuevoJuegoUsuario.DRM = JuegoDRM.Ubisoft;
-                                    nuevoJuegoUsuario.Tiene = true;
+                                JuegoTieneDesea nuevoJuegoUsuario = new JuegoTieneDesea();
+                                nuevoJuegoUsuario.DRM = JuegoDRM.Ubisoft;
+                                nuevoJuegoUsuario.Tiene = true;
 
-                                    usuarioTieneDesea2.Add(nuevoJuegoUsuario);
-                                    usuarioTieneDRM = true;
-                                }});
+                                usuarioTieneDesea2.Add(nuevoJuegoUsuario);
+                                usuarioTieneDRM = true;
+                            }});
                         }
                     }
 

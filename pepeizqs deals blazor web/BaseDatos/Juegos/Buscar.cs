@@ -1322,9 +1322,13 @@ FROM {tabla} j";
 			return null;
 		}
 
-		public static async Task<List<Juego>> MinimosStreaming(string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
+		public static async Task<List<Juego>> MinimosStreaming(TiendaRegion region, string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null)
 		{
-			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.Media,
+			string tablaMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
+			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
+			string precioActualesTiendas = region == TiendaRegion.Europa ? "precioActualesTiendas" : "precioActualesTiendasUS";
+
+			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
     j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
 	(
 		SELECT b.id, b.bundleTipo
@@ -1373,7 +1377,7 @@ FROM {tabla} j";
           AND s.FechaTermina < GETDATE()
         FOR JSON PATH
     ) AS SuscripcionesPasados
-FROM seccionMinimos j
+FROM {tablaMinimos} j
 WHERE j.Tipo = 0
 AND EXISTS (
     SELECT 1
@@ -1382,13 +1386,13 @@ AND EXISTS (
       AND sgn.fecha BETWEEN DATEADD(DAY, -3, GETDATE()) AND DATEADD(DAY, 3, GETDATE())
       AND EXISTS (
             SELECT 1
-            FROM OPENJSON(j.precioMinimosHistoricos)
+            FROM OPENJSON(j.{precioMinimosHistoricos})
                  WITH (DRM INT '$.DRM') p
             INNER JOIN OPENJSON(sgn.drms2) d
                 ON d.value = p.DRM
       )
 )
-AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString();
+AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = " + ((int)drm).ToString();
 
 			string dondeMinimoDescuento = string.Empty;
 
@@ -1399,7 +1403,7 @@ AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString(
 
 			if (minimoDescuento > 0)
 			{
-				dondeMinimoDescuento = "JSON_VALUE(j.precioMinimosHistoricos, '$[0].Descuento') >= " + minimoDescuento.ToString();
+				dondeMinimoDescuento = $"JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') >= " + minimoDescuento.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMinimoDescuento) == false)
@@ -1416,7 +1420,7 @@ AND JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = " + ((int)drm).ToString(
 
 			if (maximoPrecio > 0)
 			{
-				dondeMaximoPrecio = "CONVERT(decimal, JSON_VALUE(j.precioMinimosHistoricos, '$[0].Precio')) <= " + maximoPrecio.ToString();
+				dondeMaximoPrecio = $"CONVERT(decimal, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) <= " + maximoPrecio.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMaximoPrecio) == false)

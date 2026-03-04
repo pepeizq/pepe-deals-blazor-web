@@ -1,6 +1,7 @@
 ﻿@page "/boosteroid"
 
 @using Juegos
+@using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 @using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos
@@ -149,7 +150,7 @@
 						<ItemContent>
 							<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 								<div style="width: 100%;">
-									<CajaJuego idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Boosteroid" userAgent="@userAgent" />
+									<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Boosteroid" userAgent="@userAgent" />
 								</div>
 
 								@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DeseadoImportado == false && juego.DeseadoMostrar == true)
@@ -374,6 +375,7 @@
 
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
 	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
 	[PersistentState] public JuegoDRM drmActual { get; set; }
@@ -389,6 +391,7 @@
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
 		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -408,6 +411,11 @@
 
 			if (opciones != null)
 			{
+				if (opciones.Currency.HasValue == true)
+				{
+					usuarioRegion = (TiendaRegion)opciones.Currency.Value;
+				}
+
 				if (opciones.BoosteroidOption1 == true)
 				{
 					ocultarJuegosUsuario = "checked";
@@ -472,7 +480,7 @@
 			posicionJuegos = 0;
 		}
 
-		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming("streamingboosteroid", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador);
+		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming(usuarioRegion, "streamingboosteroid", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{

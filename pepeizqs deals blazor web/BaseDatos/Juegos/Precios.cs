@@ -513,11 +513,6 @@ namespace BaseDatos.Juegos
 					{
 						drmEncontrado = true;
 
-						if (minimo.Moneda != JuegoMoneda.Dolar && minimo.Precio > 0 && minimo.PrecioCambiado == 0)
-						{
-							minimo.PrecioCambiado = minimo.Precio;
-						}
-
 						if ((minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda == JuegoMoneda.Dolar && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio) ||
 							(minimo.Moneda != JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
 							(minimo.Moneda == JuegoMoneda.Dolar && nuevaOferta.Moneda != JuegoMoneda.Dolar && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
@@ -536,6 +531,15 @@ namespace BaseDatos.Juegos
 							}
 
 							ultimaModificacion = true;
+
+							if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
+							{
+								minimo.PrecioCambiado = nuevaOferta.PrecioCambiado;
+							}
+							else
+							{
+								minimo.PrecioCambiado = 0;
+							}
 
 							minimo.Precio = nuevaOferta.Precio;
 							minimo.Moneda = nuevaOferta.Moneda;
@@ -616,7 +620,7 @@ namespace BaseDatos.Juegos
 													}
 
 													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
+													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Dolar(precioNotificar), minimo.Enlace);
 												}
 												catch (Exception ex)
 												{

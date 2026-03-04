@@ -71,6 +71,10 @@ namespace Tareas.Comprobar
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
+						else if (tienda.Id == APIs.DLGamer.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
 						else if (tienda.Id == APIs.Gamesporium.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);

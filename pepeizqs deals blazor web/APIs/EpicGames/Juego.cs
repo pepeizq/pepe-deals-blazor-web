@@ -60,62 +60,44 @@ namespace APIs.EpicGames
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games Juego 1", ex);
 			}
 
-			//const string sql2 = @"
-   //                         UPDATE juegos 
-			//				SET exeEpic=@exeEpic
-			//				WHERE id=@Namespace";
+			const string sql2 = @"
+							SELECT idJuegos FROM tiendaepicgamesstore 
+							WHERE enlace=@enlace";
 
-			//try
-			//{
-			//	await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-			//	{
-			//		return await conexion.ExecuteAsync(sql2, new
-			//		{
-			//			Slug = slug,
-			//			Namespace = namespace2
-			//		}, transaction: sentencia);
-			//	});
-			//}
-			//catch (Exception ex)
-			//{
-			//	BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games Juego 1", ex);
-			//}
-		}
-
-		public static async Task<bool> UsuarioTieneJuegoBaseDatos(List<string> usuarioJuegos, string slug)
-		{
-			if (usuarioJuegos == null || usuarioJuegos.Count == 0)
-			{
-				return false;
-			}
-
-			var parametros = new DynamicParameters();
-			var placeholders = usuarioJuegos.Select((name, i) =>
-			{
-				parametros.Add($"@p{i}", name);
-				return $"@p{i}";
-			});
-
-			parametros.Add("@Slug", slug);
-
-			string sql = $@"
-                SELECT COUNT(*) 
-                FROM epicJuegos
-                WHERE AppName IN ({string.Join(",", placeholders)}) AND Slug = @Slug";
+			string enlaceBuscar = "https://store.epicgames.com/p/" + slug;
 
 			try
 			{
-				return await Herramientas.BaseDatos.Select(async (conexion) =>
+				var ids = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					int count = await conexion.ExecuteScalarAsync<int>(sql, parametros);
-
-					return count > 0;
+					return await conexion.QueryFirstOrDefaultAsync<string>(sql2, new { enlace = enlaceBuscar });
 				});
+
+				if (string.IsNullOrEmpty(ids) == false)
+				{
+					if (ids == "0" || ids.Contains(",") == true)
+					{
+						return;
+					}
+
+					const string sql3 = @"
+                            UPDATE juegos 
+							SET exeEpic=@exeEpic
+							WHERE id=@id";
+
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+					{
+						return await conexion.ExecuteAsync(sql3, new
+						{
+							id = ids,
+							exeEpic = namespace2
+						}, transaction: sentencia);
+					});
+				}
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Comprobar Usuario Tiene Epic Games Juego", ex);
-				return false;
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Epic Games Juego2", ex);
 			}
 		}
 

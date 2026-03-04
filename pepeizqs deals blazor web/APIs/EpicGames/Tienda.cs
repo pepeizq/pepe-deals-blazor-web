@@ -159,6 +159,7 @@ namespace APIs.EpicGames
 													{
 														if (string.IsNullOrEmpty(categoria.Path) == false && categoria.Path.Contains("addon") == true)
 														{
+															oferta.Enlace = "https://store.epicgames.com/p/" + juego.Enlace;
 															actualizarBaseDatos = false;
 															break;
 														}

@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Componentes\Secciones\Juego.razor~RF1b38eee.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageReference Include="czf.RedditSharp" Version="3.0.0" />
     <PackageReference Include="Dapper" Version="2.1.66" />

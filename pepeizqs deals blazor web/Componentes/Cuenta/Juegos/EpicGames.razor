@@ -435,6 +435,8 @@
         {
             trabajando = true;
 
+            cantidadJuegos = 0;
+
             string credenciales = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clienteId}:{clienteSecret}"));
 
             HttpClient clienteToken = new HttpClient();
@@ -495,11 +497,6 @@
 
             await BaseDatos.Usuarios.Actualizar.Opcion("EpicGames", textoIds, usuarioId);
             await BaseDatos.Usuarios.Actualizar.Opcion("EpicGamesLastImport", DateTime.Now, usuarioId);
-            
-            usuario.EpicGames = textoIds;
-			usuario.EpicGamesLastImport = DateTime.Now;
-
-			await BaseDatos.Usuarios.Actualizar.Epic(usuario);
 
             trabajando = false;
         }

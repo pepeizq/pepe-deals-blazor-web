@@ -7,7 +7,6 @@ using Herramientas;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static System.Collections.Specialized.BitVector32;
 
 namespace APIs.Steam
 {
