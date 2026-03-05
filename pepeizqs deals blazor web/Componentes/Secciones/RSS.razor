@@ -1,6 +1,7 @@
 ﻿@page "/rss/"
 
 @using Microsoft.AspNetCore.Components.Web
+@using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 
 @inject IHttpContextAccessor Contexto
@@ -165,6 +166,8 @@
 	private string usuarioId = null;
 	private string dominio = null;
 
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+
 	private string enlaceNoticiasEn = null;
 	private string enlaceNoticiasEs = null;
 
@@ -176,17 +179,27 @@
 		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
-        dominio = datos.Dominio;
-
-		enlaceNoticiasEn = "https://" + dominio + "/rss-en.xml";
-		enlaceNoticiasEs = "https://" + dominio + "/rss-es.xml";
-
-		enlaceOfertas1 = "https://" + dominio + "/rss/steam/1000";
-		enlaceOfertas2 = "https://" + dominio + "/rss/steam,gog/1000";
+		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+		}
+
+		enlaceNoticiasEn = "https://" + dominio + "/rss-en.xml";
+		enlaceNoticiasEs = "https://" + dominio + "/rss-es.xml";
+
+		if (usuarioRegion == TiendaRegion.Europa)
+		{
+			enlaceOfertas1 = "https://" + dominio + "/rss/eu/steam/1000";
+			enlaceOfertas2 = "https://" + dominio + "/rss/eu/steam,gog/1000";
+		}
+		else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+		{
+			enlaceOfertas1 = "https://" + dominio + "/rss/us/steam/1000";
+			enlaceOfertas2 = "https://" + dominio + "/rss/us/steam,gog/1000";
 		}
 	}
 

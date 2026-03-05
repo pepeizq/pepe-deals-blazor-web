@@ -3,12 +3,13 @@
 using Juegos;
 using pepeizqs_deals_web.Data;
 using System.Text.Json;
+using Tiendas2;
 
 namespace Herramientas
 {
 	public static class Deseados
 	{
-		public static async Task<List<JuegoDeseadoMostrar>> LeerJuegos(string usuarioId)
+		public static async Task<List<JuegoDeseadoMostrar>> LeerJuegos(TiendaRegion region, string usuarioId)
 		{
 			Usuario deseadosUsuario = await global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
@@ -27,7 +28,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosSteamJuegos = new List<Juego>();
 
-				deseadosSteamJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(deseadosSteam.Select(int.Parse).ToList());
+				deseadosSteamJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(region, deseadosSteam.Select(int.Parse).ToList());
 
 				if (deseadosSteamJuegos?.Count > 0)
 				{
@@ -58,7 +59,7 @@ namespace Herramientas
 
 			if (deseadosWeb?.Count > 0)
 			{
-				List<Juego> deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(deseadosWeb);
+				List<Juego> deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(region, deseadosWeb);
 
 				if (deseadosWebJuegos?.Count > 0)
 				{
@@ -99,7 +100,7 @@ namespace Herramientas
 			{
 				List<Juego> deseadosGogJuegos = new List<Juego>();
 
-				deseadosGogJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(deseadosGog);
+				deseadosGogJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(region, deseadosGog);
 
 				if (deseadosGogJuegos?.Count > 0)
 				{

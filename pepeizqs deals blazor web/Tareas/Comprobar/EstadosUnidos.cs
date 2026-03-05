@@ -35,7 +35,11 @@ namespace Tareas.Comprobar
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.Zero;
 
-						if (tienda.Id == APIs.Fanatical.Tienda.Generar().Id)
+						if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Fanatical.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
@@ -63,11 +67,11 @@ namespace Tareas.Comprobar
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
-						else if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						else if (tienda.Id == APIs.WinGameStore.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
-						else if (tienda.Id == APIs.WinGameStore.Tienda.Generar().Id)
+						else if (tienda.Id == APIs.GameBillet.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}

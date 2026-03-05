@@ -182,9 +182,16 @@ namespace Herramientas
         #endregion
 
         [ResponseCache(Duration = 3000)]
-        [HttpGet("rss/{drm}/{cantidadReseñas}")]
-        public async Task<IActionResult> GenerarUltimasOfertas(string drm, int cantidadReseñas)
+        [HttpGet("rss/{region2}/{drm}/{cantidadReseñas}")]
+        public async Task<IActionResult> GenerarUltimasOfertas(string region2, string drm, int cantidadReseñas)
         {
+            TiendaRegion region = TiendaRegion.Europa;
+
+            if (region2 == "us")
+            {
+                region = TiendaRegion.EstadosUnidos;
+			}
+
 			string dominio = "https://" + HttpContext.Request.Host.Value;
 
 			List<string> drmsUsar = new List<string>();
@@ -221,7 +228,7 @@ namespace Herramientas
 
 				List<SyndicationItem> items = new List<SyndicationItem>();
 
-				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(TiendaRegion.Europa, 0, 50, null, drmsUsar, cantidadReseñas);
+				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(region, 3, 50, null, drmsUsar, cantidadReseñas);
 
 				if (juegos.Count > 0)
 				{
@@ -230,7 +237,17 @@ namespace Herramientas
 						string enlace = dominio + "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
 
 						string titulo = juego.Nombre;
-						string contenido = juego.PrecioMinimosHistoricos[0].Descuento.ToString() + "% - " + Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].Precio);
+						string contenido = string.Empty;
+
+                        if (region == TiendaRegion.Europa)
+                        {
+                            contenido = juego.PrecioMinimosHistoricos[0].Descuento.ToString() + "% - " + Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].Precio);
+                        }
+                        else if (region == TiendaRegion.EstadosUnidos)
+                        {
+                            contenido = juego.PrecioMinimosHistoricosUS[0].Descuento.ToString() + "% - " + Herramientas.Precios.Dolar(juego.PrecioMinimosHistoricosUS[0].Precio);
+						}
+
 						Uri enlaceUri = null;
 
 						if (enlace != null)

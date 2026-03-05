@@ -714,7 +714,10 @@
 				enlaceIngles = "https://" + dominio + "/news/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEn) + "/";
 				enlaceEspañol = "https://" + dominio + "/news/" + id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEs) + "/";
 
-				juegos ??= await BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
+				if (string.IsNullOrEmpty(noticia.Juegos) == false)
+				{
+					juegos ??= await BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
+				}
 
 				if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{

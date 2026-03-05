@@ -42,7 +42,7 @@ namespace APIs.GTAPlus
 
 				if (juegosIdsSteam.Count > 0)
 				{
-					List<Juegos.Juego> juegos = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(juegosIdsSteam);
+					List<Juegos.Juego> juegos = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(TiendaRegion.Europa, juegosIdsSteam);
 			
 					if (juegos?.Count > 0)
 					{

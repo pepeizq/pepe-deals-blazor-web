@@ -360,7 +360,7 @@
 													</div>
 
 													<div style="padding: 5px 15px; min-width: 110px; text-align: center; font-size: 18px;">
-														@MensajeMinimo(juego.Precio, false)
+														@MensajeMinimo(usuarioRegion, juego.Precio, false)
 													</div>
 												</div>
 
@@ -741,6 +741,8 @@
 	private string dominio = null;
 
 	private bool usuarioPatreon = false;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+
 	[PersistentState] public Usuario opciones { get; set; }
 	[PersistentState] public DateTime ultimaVisita { get; set; }
 
@@ -773,6 +775,7 @@
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		dominio = datos.Dominio;
+        usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -806,7 +809,12 @@
 				}
 			}
 
-			if (opciones.WishlistPosition != null)
+			if (opciones.Currency.HasValue == true)
+			{
+				usuarioRegion = (TiendaRegion)opciones.Currency.Value;
+			}
+
+			if (opciones.WishlistPosition.HasValue == true)
 			{
 				pestañaMostrar = (int)opciones.WishlistPosition;
 			}
@@ -818,7 +826,7 @@
 				deseadosGestor = new List<JuegoDeseadoMostrar>();
 			}
 
-			deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioId);
+			deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
 
 			#region Filtrado
 
@@ -1012,22 +1020,9 @@
 		}
 	}
 
-	private JuegoPrecio SacarMinimo(Juegos.Juego juego, Juegos.JuegoDRM drm)
+	private string MensajeMinimo(TiendaRegion region, JuegoPrecio precio, bool moneda)
 	{
-		foreach (var minimo in juego.PrecioMinimosHistoricos)
-		{
-			if (drm == minimo.DRM)
-			{
-				return minimo;
-			}
-		}
-
-		return null;
-	}
-
-	private string MensajeMinimo(JuegoPrecio precio, bool moneda)
-	{
-		if (precio != null)
+		if (region == TiendaRegion.Europa && precio != null)
 		{
 			if (precio.Moneda != Herramientas.JuegoMoneda.Euro && precio.PrecioCambiado == 0)
 			{
@@ -1039,6 +1034,19 @@
 			}
 
 			return Herramientas.Precios.Euro(precio.Precio);
+		}
+		else if (region == TiendaRegion.EstadosUnidos && precio != null)
+		{
+			if (precio.Moneda != Herramientas.JuegoMoneda.Dolar && precio.PrecioCambiado == 0)
+			{
+				return Herramientas.Precios.Dolar(Herramientas.Divisas.CambioDolar(precio.Precio, precio.Moneda));
+			}
+			else if (precio.Moneda != Herramientas.JuegoMoneda.Dolar && precio.PrecioCambiado > 0)
+			{
+				return Herramientas.Precios.Dolar(precio.PrecioCambiado);
+			}
+
+			return Herramientas.Precios.Dolar(precio.Precio);
 		}
 
 		return null;

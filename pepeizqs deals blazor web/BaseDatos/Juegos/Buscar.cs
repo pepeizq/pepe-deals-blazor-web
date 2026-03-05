@@ -4,6 +4,7 @@ using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
 using System.Data;
+using System.Drawing;
 using Tiendas2;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
@@ -354,17 +355,31 @@ WHERE id=@id";
 			}
         }
 
-        public static async Task<List<Juego>> MultiplesJuegos(List<JuegoDeseado> ids)
+        public static async Task<List<Juego>> MultiplesJuegos(TiendaRegion region, List<JuegoDeseado> ids)
         {
 			if (ids?.Count == 0)
 			{
 				return null;
 			}
 
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
 			var idsBaseDatos = ids.Select(j => int.Parse(j.IdBaseDatos)).ToList();
 
-			string sqlBuscar = @"SELECT 
-        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+			string sqlBuscar = $@"SELECT 
+        j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.media,
         j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
 		(
@@ -412,15 +427,29 @@ WHERE id=@id";
 			}
         }
 
-		public static async Task<List<Juego>> MultiplesJuegosSteam2(List<int> ids)
+		public static async Task<List<Juego>> MultiplesJuegosSteam2(TiendaRegion region, List<int> ids)
 		{
 			if (ids?.Count == 0)
 			{
 				return new List<Juego>();
 			}
 
-			string sqlBuscar = @"SELECT 
-        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media, j.etiquetas, 
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
+			string sqlBuscar = $@"SELECT 
+        j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.media, j.etiquetas, 
         j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
 		(
@@ -517,17 +546,31 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> MultiplesJuegosGOG(List<string> ids)
+		public static async Task<List<Juego>> MultiplesJuegosGOG(TiendaRegion region, List<string> ids)
 		{
 			if (ids?.Count == 0)
 			{
 				return null;
 			}
 
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
 			var idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
 
-			string sqlBuscar = @"SELECT 
-        j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas, j.media,
+			string sqlBuscar = $@"SELECT 
+        j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.media,
         j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
         j.exeEpic, j.exeUbisoft, j.freeToPlay,
 		(

@@ -92,26 +92,26 @@ AND (
 
 			string busqueda = @$"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, {precioMinimosHistoricos}, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM {tabla}
 WHERE tipo = 0 AND 
-year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 6 AND
+year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
 CONVERT(float, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
 JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
 JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
 (CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
 	CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
-NOT EXISTS (
-        SELECT b.id, b.bundleTipo
+(NOT EXISTS (
+        SELECT 1
         FROM bundles b
         WHERE EXISTS (
             SELECT 1
-            FROM OPENJSON(b.juegos)
-            WITH (JuegoId INT '$.JuegoId') AS jj
-            WHERE jj.JuegoId = {tabla}.idMaestra
+            FROM bundlesJuegos bj
+            WHERE bj.JuegoId = {tabla}.idMaestra
 			)
-        FOR JSON PATH
-    ) AND 
+			AND b.fechaTermina > DATEADD(YEAR, -1, GETDATE())
+    ) OR bundles IS NULL) AND 
 NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 
-NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 29999) AND 
+NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) 
+	OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 9999) AND 
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
 ORDER BY NEWID()";
 
@@ -314,6 +314,10 @@ ORDER BY NEWID()";
 			else if (tipo == 2)
 			{
 				busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) DESC";
+			}
+			else if (tipo == 3)
+			{
+				busqueda = busqueda + $" ORDER BY CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) DESC";
 			}
 
 			busqueda = busqueda.Replace("@categoria", categoria);

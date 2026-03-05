@@ -17,7 +17,8 @@ namespace Gratis2
 		IndieGala,
 		Behavior,
 		SquareEnix,
-		Stove
+		Stove,
+		Digiphile
 	}
 
 	public class GratisCargar
@@ -39,7 +40,8 @@ namespace Gratis2
 				APIs.IndieGala.Gratis.Generar(),
 				APIs.Behavior.Gratis.Generar(),
 				APIs.SquareEnix.Gratis.Generar(),
-				APIs.Stove.Gratis.Generar()
+				APIs.Stove.Gratis.Generar(),
+				APIs.Digiphile.Gratis.Generar()
 			};
 
 			return gratis;

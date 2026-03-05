@@ -9,6 +9,7 @@
 @using global::Juegos
 
 @inject IHttpContextAccessor Contexto
+@inject IJSRuntime JavaScript
 
 <style>
 	:root {
@@ -66,6 +67,12 @@
 			transform: scale(1.01);
 		}
 </style>
+
+<script>
+	window.ChangeUrl = function (url) {
+		history.pushState(null, '', url);
+	}
+</script>
 
 @{
 	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Account") + " • pepe's deals";
@@ -180,7 +187,7 @@
 	[PersistentState] public SeccionDRM seccionActual { get; set; }
 
 	[Parameter]
-    public string plataforma { get; set; }
+	public string plataforma { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -200,12 +207,49 @@
 			if (Enum.TryParse(plataforma, true, out SeccionDRM resultado))
 			{
 				seccionActual = resultado;
+
+				if (seccionActual == SeccionDRM.Steam)
+				{
+					await MostrarSteam();
+				}
+				else if (seccionActual == SeccionDRM.GOG)
+				{
+					await MostrarGOG();
+				}
+				else if (seccionActual == SeccionDRM.Amazon)
+				{
+					await MostrarAmazon();
+				}
+				else if (seccionActual == SeccionDRM.Epic)
+				{
+					await MostrarEpic();
+				}
+				else if (seccionActual == SeccionDRM.Ubisoft)
+				{
+					await MostrarUbisoft();
+				}
+				else if (seccionActual == SeccionDRM.EA)
+				{
+					await MostrarEA();
+				}
 			}
-        }
+		}
 		else
 		{
 			await MostrarSteam();
-        }
+		}
+	}
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (string.IsNullOrEmpty(plataforma) == true)
+		{
+			await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/sync/");
+		}
+		else
+		{
+			await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/sync/" + plataforma + "/");
+		}
 	}
 
 	public enum SeccionDRM
@@ -223,7 +267,7 @@
 		fondoSteam = "background: transparent;";
 		fondoGOG = "background: transparent;";
 		fondoAmazon = "background: transparent;";
-        fondoEpic = "background: transparent;";
+		fondoEpic = "background: transparent;";
 		fondoUbisoft = "background: transparent;";
 		fondoEA = "background: transparent;";
 	}
@@ -235,6 +279,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.Steam;
+        plataforma = seccionActual.ToString();
 		fondoSteam = "background: var(--botonSeleccionado);";
 	}
 
@@ -255,6 +300,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.GOG;
+		plataforma = seccionActual.ToString();
 		fondoGOG = "background: var(--botonSeleccionado);";
 	}
 
@@ -275,6 +321,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.Amazon;
+		plataforma = seccionActual.ToString();
 		fondoAmazon = "background: var(--botonSeleccionado);";
 	}
 
@@ -295,6 +342,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.Epic;
+		plataforma = seccionActual.ToString();
 		fondoEpic = "background: var(--botonSeleccionado);";
 	}
 
@@ -315,6 +363,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.Ubisoft;
+		plataforma = seccionActual.ToString();
 		fondoUbisoft = "background: var(--botonSeleccionado);";
 	}
 
@@ -335,6 +384,7 @@
 	{
 		TransparentarFondos();
 		seccionActual = SeccionDRM.EA;
+		plataforma = seccionActual.ToString();
 		fondoEA = "background: var(--botonSeleccionado);";
 	}
 

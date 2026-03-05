@@ -43,125 +43,146 @@ namespace APIs.GameBillet
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-			string html = await Decompiladores.Estandar("https://www.gamebillet.com/product/jsonfeed?store=eu&guid=39A6D2B7-A4EF-4E8B-AA19-350B89788365");
+			string enlace = string.Empty;
 
-			if (string.IsNullOrEmpty(html) == false)
+			if (region == TiendaRegion.Europa)
 			{
-				GameBilletProductos juegos = JsonSerializer.Deserialize<GameBilletProductos>(html);
+				enlace = "https://www.gamebillet.com/product/jsonfeed?store=eu&guid=39A6D2B7-A4EF-4E8B-AA19-350B89788365";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				enlace = "https://www.gamebillet.com/product/jsonfeed?store=us&guid=39A6D2B7-A4EF-4E8B-AA19-350B89788365";
+			}
 
-				if (juegos?.Juegos?.Count > 0)
+			if (string.IsNullOrEmpty(enlace) == false)
+			{
+				string html = await Decompiladores.Estandar(enlace);
+
+				if (string.IsNullOrEmpty(html) == false)
 				{
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+					GameBilletProductos juegos = JsonSerializer.Deserialize<GameBilletProductos>(html);
 
-					foreach (GameBilletJuego juego in juegos.Juegos)
+					if (juegos?.Juegos?.Count > 0)
 					{
-						if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
+						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+						foreach (GameBilletJuego juego in juegos.Juegos)
 						{
-							string sPrecioBase = juego.PrecioBase;
-							sPrecioBase = sPrecioBase.Replace("€", null);
-
-							string sPrecioRebajado = juego.PrecioRebajado;
-							sPrecioRebajado = sPrecioRebajado.Replace("€", null);
-
-							decimal precioBase = decimal.Parse(sPrecioBase);
-							decimal precioRebajado = decimal.Parse(sPrecioRebajado);
-
-							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-							if (descuento > 0)
+							if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
 							{
-								JuegoDRM drm1 = JuegoDRM.NoEspecificado;
+								string sPrecioBase = juego.PrecioBase;
+								sPrecioBase = sPrecioBase.Replace("€", null);
+								sPrecioBase = sPrecioBase.Replace("$", null);
 
-								if (string.IsNullOrEmpty(juego.DRM1) == false)
+								string sPrecioRebajado = juego.PrecioRebajado;
+								sPrecioRebajado = sPrecioRebajado.Replace("€", null);
+								sPrecioRebajado = sPrecioRebajado.Replace("$", null);
+
+								decimal precioBase = decimal.Parse(sPrecioBase);
+								decimal precioRebajado = decimal.Parse(sPrecioRebajado);
+
+								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+								if (descuento > 0)
 								{
-									drm1 = JuegoDRM2.Traducir(juego.DRM1, Generar().Id);
-								}
+									JuegoDRM drm1 = JuegoDRM.NoEspecificado;
 
-								JuegoDRM drm2 = JuegoDRM.NoEspecificado;
-
-								if (string.IsNullOrEmpty(juego.DRM2) == false)
-								{
-									drm2 = JuegoDRM2.Traducir(juego.DRM2, Generar().Id);
-								}
-
-								JuegoDRM drm3 = JuegoDRM.NoEspecificado;
-
-								if (string.IsNullOrEmpty(juego.DRM3) == false)
-								{
-									drm3 = JuegoDRM2.Traducir(juego.DRM3, Generar().Id);
-								}
-
-								if (drm1 != JuegoDRM.NoEspecificado || drm2 != JuegoDRM.NoEspecificado || drm3 != JuegoDRM.NoEspecificado)
-								{
-									JuegoDRM drmFinal = drm1;
-
-									if (drm2 != JuegoDRM.NoEspecificado)
+									if (string.IsNullOrEmpty(juego.DRM1) == false)
 									{
-										drmFinal = drm2;
+										drm1 = JuegoDRM2.Traducir(juego.DRM1, Generar().Id);
 									}
 
-									if (drm3 != JuegoDRM.NoEspecificado)
+									JuegoDRM drm2 = JuegoDRM.NoEspecificado;
+
+									if (string.IsNullOrEmpty(juego.DRM2) == false)
 									{
-										drmFinal = drm3;
+										drm2 = JuegoDRM2.Traducir(juego.DRM2, Generar().Id);
 									}
 
-									JuegoPrecio oferta = new JuegoPrecio
-									{
-										Nombre = WebUtility.HtmlDecode(juego.Nombre),
-										Enlace = juego.Enlace,
-										Imagen = "nada",
-										Moneda = JuegoMoneda.Euro,
-										Precio = precioRebajado,
-										Descuento = descuento,
-										Tienda = Generar().Id,
-										DRM = drmFinal,
-										FechaDetectado = DateTime.Now,
-										FechaActualizacion = DateTime.Now
-									};
+									JuegoDRM drm3 = JuegoDRM.NoEspecificado;
 
-									if (juego.TieneCodigoDescuento == true)
+									if (string.IsNullOrEmpty(juego.DRM3) == false)
 									{
-										oferta.CodigoDescuento = (int)juego.CodigoDescuentoPorcentaje;
-										oferta.CodigoTexto = juego.CodigoDescuento;
+										drm3 = JuegoDRM2.Traducir(juego.DRM3, Generar().Id);
 									}
 
-									ofertas.Add(oferta);
+									if (drm1 != JuegoDRM.NoEspecificado || drm2 != JuegoDRM.NoEspecificado || drm3 != JuegoDRM.NoEspecificado)
+									{
+										JuegoDRM drmFinal = drm1;
+
+										if (drm2 != JuegoDRM.NoEspecificado)
+										{
+											drmFinal = drm2;
+										}
+
+										if (drm3 != JuegoDRM.NoEspecificado)
+										{
+											drmFinal = drm3;
+										}
+
+										JuegoPrecio oferta = new JuegoPrecio
+										{
+											Nombre = WebUtility.HtmlDecode(juego.Nombre),
+											Enlace = juego.Enlace,
+											Imagen = "nada",
+											Moneda = JuegoMoneda.Euro,
+											Precio = precioRebajado,
+											Descuento = descuento,
+											Tienda = Generar().Id,
+											DRM = drmFinal,
+											FechaDetectado = DateTime.Now,
+											FechaActualizacion = DateTime.Now
+										};
+
+										if (region == TiendaRegion.EstadosUnidos)
+										{
+											oferta.Moneda = JuegoMoneda.Dolar;
+										}
+
+										if (juego.TieneCodigoDescuento == true)
+										{
+											oferta.CodigoDescuento = (int)juego.CodigoDescuentoPorcentaje;
+											oferta.CodigoTexto = juego.CodigoDescuento;
+										}
+
+										ofertas.Add(oferta);
+									}
 								}
 							}
 						}
-					}
 
-					if (ofertas?.Count > 0)
-					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (ofertas?.Count > 0)
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-							}
+							int juegos2 = 0;
 
-							juegos2 += lote.Count;
+							int tamaño = 500;
+							var lotes = ofertas
+								.Select((oferta, indice) => new { oferta, indice })
+								.GroupBy(x => x.indice / tamaño)
+								.Select(g => g.Select(x => x.oferta).ToList())
+								.ToList();
 
-							try
+							foreach (var lote in lotes)
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
+
+								juegos2 += lote.Count;
+
+								try
+								{
+									await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
 							}
 						}
 					}

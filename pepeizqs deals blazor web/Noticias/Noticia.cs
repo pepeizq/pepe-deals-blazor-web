@@ -31,6 +31,7 @@ namespace Noticias
 		public int BundleId { get; set; }
 		public string GratisIds { get; set; }
 		public string SuscripcionesIds { get; set; }
+		public List<NoticiaCaja> Cajas { get; set; }
 	}
 
 	public class NoticiaMostrar
@@ -38,4 +39,12 @@ namespace Noticias
         public NoticiaTipo Tipo;
 		public bool Mostrar;
     }
+
+	public class NoticiaCaja
+	{
+		public string Titulo { get; set; }
+		public string TituloEnlace { get; set; }
+		public string Contenido { get; set; }
+		public string Imagen { get; set; }
+	}
 }

@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.VisualBasic
+@using Tiendas2
 @using pepeizqs_deals_web.Data
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 
@@ -268,6 +269,7 @@
 	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
 	private bool usuarioPatreon = false;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
 	[Parameter]
 	public string slug { get; set; }
@@ -290,6 +292,7 @@
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
 		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -303,6 +306,7 @@
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
 		}
 
 		if (string.IsNullOrEmpty(slug) == false)
@@ -338,7 +342,7 @@
 				}
 			}
 
-			juegosCurator ??= await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(curator.SteamIds);
+			juegosCurator ??= await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(usuarioRegion, curator.SteamIds);
 
 			if (juegosCurator.Count > 0)
 			{

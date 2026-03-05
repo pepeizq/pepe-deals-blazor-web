@@ -2569,13 +2569,13 @@
                                 string enlacePCGamingWiki = "https://pcgamingwiki.com/api/appid.php?appid=" + juego.IdSteam.ToString();
                         
                                 <a class="boton-pequeño" title="SteamDB" href="@enlaceSteamDB" target="_blank" style="width: fit-content; padding: 10px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/webs/steamdb.webp", 30, 30)" style="width: 30px; height: 30px;"  alt="steamdb"/>
+                                    <img src="/imagenes/webs/steamdb.webp" style="width: 30px; height: 30px;" alt="SteamDB"/>
                                 </a>
                                 <a class="boton-pequeño" title="ProtonDB" href="@enlaceProtonDB" target="_blank" style="width: fit-content; padding: 10px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/webs/protondb.webp", 30, 30)" style="width: 30px; height: 30px;"  alt="protondb"/>
+                                    <img src="/imagenes/webs/protondb.webp" style="width: 30px; height: 30px;" alt="ProtonDB"/>
                                 </a>
                                 <a class="boton-pequeño" title="PCGamingWiki" href="@enlacePCGamingWiki" target="_blank" style="width: fit-content; padding: 10px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/webs/pcgamingwiki.webp", 30, 30)" style="width: 30px; height: 30px;"  alt="pcgamingwiki"/>
+                                    <img src="/imagenes/webs/pcgamingwiki.webp" style="width: 30px; height: 30px;" alt="PCGamingWiki"/>
                                 </a>
                             }
 
@@ -2584,7 +2584,7 @@
                                 string enlaceGogDB = "https://www.gogdb.org/product/" + juego.IdGog.ToString();
 
                                 <a class="boton-pequeño" title="GogDB" href="@enlaceGogDB" target="_blank" style="width: fit-content; padding: 10px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/webs/gogdb.webp", 30, 30)" style="width: 30px; height: 30px;"  alt="gogdb"/>
+                                    <img src="/imagenes/webs/gogdb.webp" style="width: 30px; height: 30px;" alt="GogDB"/>
                                 </a>
                             }
 
@@ -2593,7 +2593,13 @@
                                 string enlaceSteamGifts = "https://www.steamgifts.com/app/" + juego.IdSteam.ToString();
 
                                 <a class="boton-pequeño" title="SteamGifts" href="@enlaceSteamGifts" target="_blank" style="width: fit-content; padding: 10px;">
-                                    <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/webs/steamgifts.webp", 30, 30)" style="width: 30px; height: 30px;"  alt="isthereanydeal"/>
+                                    <img src="/imagenes/webs/steamgifts.webp" style="width: 30px; height: 30px;" alt="SteamGifts"/>
+                                </a>
+
+                                string enlaceSteamInputDB = "https://www.steaminputdb.com/app/" + juego.IdSteam.ToString();
+
+                                <a class="boton-pequeño" title="SteamInputDB" href="@enlaceSteamInputDB" target="_blank" style="width: fit-content; padding: 10px;">
+                                    <img src="/imagenes/webs/steaminputdb.webp" style="width: 30px; height: 30px;" alt="SteamInputDB"/>
                                 </a>
                             }
                         </div>
@@ -2603,7 +2609,7 @@
 
             @if (cargarComponentes == true)
             {
-                <JuegoCurators usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent" juego="@juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex"/>
+                <JuegoCurators region="@usuarioRegion" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent" juego="@juego" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex"/>
 
                 <JuegoReseñas usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent" juego="@juego" usuarioAdmin="@usuarioAdmin" usuarioPatreon="@usuarioPatreon"/>
             }  
