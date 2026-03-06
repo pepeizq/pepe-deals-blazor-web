@@ -69,7 +69,12 @@ namespace APIs.Playsum
 							{
 								foreach (var pais in listaPaisesRestringidos)
 								{
-									if (pais.ToLower() == "es")
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										buscar = false;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
 									{
 										buscar = false;
 										break;
@@ -90,7 +95,12 @@ namespace APIs.Playsum
 								bool encontrado = false;
 								foreach (var pais in listaPaisesAprobados)
 								{
-									if (pais.ToLower() == "es")
+									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
+									{
+										encontrado = true;
+										break;
+									}
+									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
 									{
 										encontrado = true;
 										break;
@@ -106,7 +116,18 @@ namespace APIs.Playsum
 
 						if (buscar == true)
 						{
-							if (juego.Moneda == "EUR")
+							bool monedaCorrecta = false;
+
+							if (region == TiendaRegion.Europa && juego.Moneda == "EUR")
+							{
+								monedaCorrecta = true;
+							}
+							else if (region == TiendaRegion.EstadosUnidos && juego.Moneda == "USD")
+							{
+								monedaCorrecta = true;
+							}
+
+							if (monedaCorrecta == true)
 							{
 								if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
 								{

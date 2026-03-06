@@ -32,13 +32,24 @@ namespace APIs.PlanetPlay
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
+			string enlace = string.Empty;
+
+			if (region == TiendaRegion.Europa)
+			{
+				enlace = "https://prod-ecs-api.planetplay.com/assets/fetch-new?offer=discount&country=es&page=";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				enlace = "https://prod-ecs-api.planetplay.com/assets/fetch-new?offer=discount&country=us&page=";
+			}
+
 			int tope = 10;
 			int juegos2 = 0;
 
 			int i = 0;
 			while (i < tope)
 			{
-				string html = await Decompiladores.Estandar("https://prod-ecs-api.planetplay.com/assets/fetch-new?order=relevancy&offer=discount&page=" + i.ToString());
+				string html = await Decompiladores.Estandar(enlace + i.ToString());
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
@@ -63,7 +74,7 @@ namespace APIs.PlanetPlay
 								{
 									string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-									string enlace = juego.Enlace;
+									string enlaceJuego = juego.Enlace;
 
 									bool parar = false;
 
@@ -81,7 +92,7 @@ namespace APIs.PlanetPlay
 										JuegoPrecio oferta = new JuegoPrecio
 										{
 											Nombre = nombre,
-											Enlace = enlace,
+											Enlace = enlaceJuego,
 											Imagen = imagen,
 											Moneda = JuegoMoneda.Euro,
 											Precio = precioRebajado,
@@ -91,6 +102,11 @@ namespace APIs.PlanetPlay
 											FechaDetectado = DateTime.Now,
 											FechaActualizacion = DateTime.Now
 										};
+
+										if (region == TiendaRegion.EstadosUnidos)
+										{
+											oferta.Moneda = JuegoMoneda.Dolar;
+										}
 
 										ofertas.Add(oferta);
 									}
