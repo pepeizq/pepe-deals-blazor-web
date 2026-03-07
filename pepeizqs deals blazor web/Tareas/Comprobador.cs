@@ -3,16 +3,16 @@
 using Herramientas;
 using Tiendas2;
 
-namespace Tareas.Comprobar
+namespace Tareas
 {
-	public class Europa : BackgroundService
+	public class Comprobador : BackgroundService
 	{
-		private readonly ILogger<Europa> _logger;
+		private readonly ILogger<Comprobador> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
 		private readonly IConfiguration _configuracion;
 
-		public Europa(ILogger<Europa> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
+		public Comprobador(ILogger<Comprobador> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;
@@ -369,12 +369,7 @@ namespace Tareas.Comprobar
 								{
 									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
 
-									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
-
-									if (tareasEnUso.Count == 0)
-									{
-										Environment.Exit(1);
-									}
+									Environment.Exit(1);
 								}
 								catch (Exception ex)
 								{
@@ -517,6 +512,91 @@ namespace Tareas.Comprobar
 								catch (Exception ex)
 								{
 									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + streaming.Id.ToString(), ex);
+								}
+							}
+						}
+					}
+
+					#endregion
+
+					#region Tiendas Estados Unidos
+
+					foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+					{
+						TimeSpan siguienteComprobacion = TimeSpan.Zero;
+
+						if (tienda.Id == APIs.Steam.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Fanatical.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.GamersGate.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Gamesplanet.Tienda.GenerarUk().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Gamesplanet.Tienda.GenerarFr().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Gamesplanet.Tienda.GenerarDe().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Gamesplanet.Tienda.GenerarUs().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.IndieGala.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.WinGameStore.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.GameBillet.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Playsum.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.PlanetPlay.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.DLGamer.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.Gamesporium.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+
+						if (siguienteComprobacion > TimeSpan.Zero)
+						{
+							bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsarUS(siguienteComprobacion, tienda.Id);
+
+							if (sePuedeUsar == true)
+							{
+								try
+								{
+									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.EstadosUnidos, tienda.Id);
+
+									Environment.Exit(1);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Comprobador: " + tienda.Id, ex);
 								}
 							}
 						}
