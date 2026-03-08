@@ -31,7 +31,8 @@ namespace Noticias
 		public int BundleId { get; set; }
 		public string GratisIds { get; set; }
 		public string SuscripcionesIds { get; set; }
-		public List<NoticiaCaja> Cajas { get; set; }
+		public NoticiaSteam SteamEn { get; set; }
+		public NoticiaSteam SteamEs { get; set; }
 	}
 
 	public class NoticiaMostrar
@@ -40,11 +41,10 @@ namespace Noticias
 		public bool Mostrar;
     }
 
-	public class NoticiaCaja
+	public class NoticiaSteam
 	{
 		public string Titulo { get; set; }
-		public string TituloEnlace { get; set; }
+		public string Subtitulo { get; set; }
 		public string Contenido { get; set; }
-		public string Imagen { get; set; }
 	}
 }

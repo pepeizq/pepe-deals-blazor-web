@@ -1,8 +1,4 @@
-﻿using ApexCharts;
-using Dapper;
-using Herramientas.Redireccionador;
-using Juegos;
-using Microsoft.Data.SqlClient;
+﻿using Dapper;
 
 namespace BaseDatos.Noticias
 {
@@ -65,7 +61,26 @@ namespace BaseDatos.Noticias
 			}
 		}
 
-        public static async Task Enlace(string id, string enlace)
+		public static async Task ImagenImgur(string id, string imagen)
+		{
+			string actualizar = "UPDATE noticias " +
+					"SET imagenImgur=@imagenImgur " +
+					"WHERE id=@id";
+
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(actualizar, new { id, imagen }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Actualizar Imagen Imgur", ex);
+			}
+		}
+
+		public static async Task Enlace(string id, string enlace)
         {
             string actualizar = "UPDATE noticias " +
                     "SET enlace=@enlace " +

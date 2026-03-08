@@ -34,7 +34,9 @@
   "Subscription5": "The subscription service",
   "Subscription6": "has added the following game:",
   "Subscription7": "has added the following games:",
-  "Goodbye1": "{0} is being removed from official stores on {1} {2}",
-  "Goodbye2": "Unfortunately, the game {0} is going to be removed from sale in official stores. You can find more information at <a href=\"{1}\" target=\"_blank\">this link</a>.",
-  "Goodbye3": "This doesn't mean it's going to disappear from your accounts, but time is running out to buy it and you can check if there are any deals available on the <a href=\"{0}\" target=\"_blank\">game's page</a>."
+  "Steam1": "New bundle at {0}",
+  "Steam2": "New free stuff at {0}",
+  "Steam3": "New subscriptions on {0}",
+  "Steam4": "New updates on the website",
+  "Steam5": "Other things"
 }

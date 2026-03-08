@@ -33,7 +33,9 @@
   "Subscription5": "El servicio de suscripción",
   "Subscription6": "ha añadido el siguiente juego:",
   "Subscription7": "ha añadido los siguientes juegos:",
-  "Goodbye1": "{0} va a ser retirado de ser vendido en tiendas oficiales el día {2} de {1}",
-  "Goodbye2": "Por desgracia el juego {0} va a ser retirado de la venta en las tiendas oficiales, en <a href=\"{1}\" target=\"_blank\">este enlace</a> tenéis más información.",
-  "Goodbye3": "Esto no significa que vaya a desaparecer de vuestras cuentas, pero el tiempo se acaba para comprarlo y podéis echar un ojo si quedan ofertas disponibles en <a href=\"{0}\" target=\"_blank\">la ficha del juego</a>."
+  "Steam1": "Nuevo bundle en {0}",
+  "Steam2": "Nuevo gratis en {0}",
+  "Steam3": "Nuevas suscripciones en {0}",
+  "Steam4": "Nuevas actualizaciones en la web",
+  "Steam5": "Otras cosas"
 }
