@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Noticias;
+using System.Text.Json;
 
 namespace BaseDatos.Noticias
 {
@@ -58,25 +60,6 @@ namespace BaseDatos.Noticias
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Noticias Actualizar Imagen", ex);
-			}
-		}
-
-		public static async Task ImagenImgur(string id, string imagen)
-		{
-			string actualizar = "UPDATE noticias " +
-					"SET imagenImgur=@imagenImgur " +
-					"WHERE id=@id";
-
-			try
-			{
-				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-				{
-					return await conexion.ExecuteAsync(actualizar, new { id, imagen }, transaction: sentencia);
-				});
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Noticias Actualizar Imagen Imgur", ex);
 			}
 		}
 
@@ -229,6 +212,29 @@ namespace BaseDatos.Noticias
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Noticias Actualizar SuscripcionesIds", ex);
+			}
+		}
+
+		public static async Task Steam(Noticia noticia)
+		{
+			string actualizar = "UPDATE noticias " +
+					"SET steamEn=@steamEn, steamEs=@steamEs " +
+					"WHERE id=@id";
+
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync(actualizar, new {
+						id = noticia.Id,
+						steamEn = JsonSerializer.Serialize(noticia.SteamEn),
+						steamEs = JsonSerializer.Serialize(noticia.SteamEs)
+					}, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Noticias Actualizar Steam", ex);
 			}
 		}
 	}

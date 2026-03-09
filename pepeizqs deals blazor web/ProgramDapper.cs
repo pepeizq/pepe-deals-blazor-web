@@ -3,6 +3,7 @@
 using Bundles2;
 using Dapper;
 using Juegos;
+using Noticias;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Text;
@@ -135,6 +136,7 @@ public static class ClasesDapper
 		SqlMapper.AddTypeHandler(new JuegoHandler<List<JuegoIdioma>>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<JuegoEpicGames>());
 		SqlMapper.AddTypeHandler(new JuegoHandler<JuegoXbox>());
+		SqlMapper.AddTypeHandler(new JuegoHandler<NoticiaSteam>());
 		SqlMapper.AddTypeHandler(new BundleHandler<BundleJuego>());
 		SqlMapper.AddTypeHandler(new BundleHandler<BundleTier>());
 		SqlMapper.AddTypeHandler(new JuegoDRMHandler());

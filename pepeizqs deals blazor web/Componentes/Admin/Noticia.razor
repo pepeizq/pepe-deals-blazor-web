@@ -178,6 +178,18 @@
 				</button>
 			</div>
 		</div>
+
+		<div style="display: flex; align-items: center; gap: 20px;">
+			<div style="width: 15%; text-align: right;">
+				Steam
+			</div>
+
+			<div style="width: 85%; display: flex; align-items: center; gap: 20px;">
+				<button @onclick="ActualizarSteam" class="boton-pequeño" style="width: fit-content; padding: 10px 20px;">
+					Actualizar
+				</button>
+			</div>
+		</div>
 	</div>
 }
 
@@ -380,5 +392,12 @@
 	private async Task EnviarNotificacionesPush(MouseEventArgs e)
 	{
 		await Push.EnviarNoticia(noticia, dominio);
+	}
+
+	private async Task ActualizarSteam()
+	{
+		noticia = await global::Noticias.Steam.GenerarNoticia(noticia);
+
+		await BaseDatos.Noticias.Actualizar.Steam(noticia);
 	}
 }

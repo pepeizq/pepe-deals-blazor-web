@@ -114,7 +114,9 @@
 					juego.Juego = juegosBundlePrecargados.TryGetValue(int.Parse(juego.JuegoId), out var juegoPrecargado) ? juegoPrecargado : null;
 				}
 
-				if (juego.Juego != null)
+				if (juego.Juego != null && juego.Juego.Analisis != null &&
+					string.IsNullOrEmpty(juego.Juego.Analisis.Porcentaje) == false && 
+					string.IsNullOrEmpty(juego.Juego.Analisis.Cantidad) == false)
 				{
 					reseñasMediaJson = (reseñasMediaJson + decimal.Parse(juego.Juego.Analisis.Porcentaje) / 20) / 2;
 
