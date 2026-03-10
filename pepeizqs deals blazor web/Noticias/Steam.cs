@@ -1,6 +1,8 @@
-﻿namespace Noticias
-{
+﻿using Juegos;
+using System.Text.RegularExpressions;
 
+namespace Noticias
+{
 	public static class Steam
 	{
 		public static async Task<Noticia> GenerarNoticia(Noticia noticia)
@@ -64,21 +66,36 @@
 
 			if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 			{
-				noticia.SteamEn.Contenido = await GenerarBundle(noticia.BundleId, "en");
-				noticia.SteamEs.Contenido = await GenerarBundle(noticia.BundleId, "es");
+				noticia.SteamEn.Contenido = await GenerarBundle(noticia.BundleId, "en", noticia.Id);
+				noticia.SteamEs.Contenido = await GenerarBundle(noticia.BundleId, "es", noticia.Id);
+			}
+			else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
+			{
+				noticia.SteamEn.Contenido = await GenerarGratis(noticia.GratisIds, "en", noticia.Id);
+				noticia.SteamEs.Contenido = await GenerarGratis(noticia.GratisIds, "es", noticia.Id);
+			}
+			else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
+			{
+				noticia.SteamEn.Contenido = await GenerarSuscripciones(noticia.SuscripcionesIds, "en", noticia.Id);
+				noticia.SteamEs.Contenido = await GenerarSuscripciones(noticia.SuscripcionesIds, "es", noticia.Id);
+			}
+			else
+			{
+				noticia.SteamEn.Contenido = await GenerarMensaje(noticia.ContenidoEn, "en", noticia.Id);
+				noticia.SteamEs.Contenido = await GenerarMensaje(noticia.ContenidoEs, "es", noticia.Id);
 			}
 
 			return noticia;
 		}
 
-		private static async Task<string> GenerarBundle(int bundleId, string idioma)
+		private static async Task<string> GenerarBundle(int bundleId, string idioma, int noticiaId)
 		{
 			string contenido = string.Empty;
 			Bundles2.Bundle bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
 
 			if (bundle?.Tiers?.Count > 0)
 			{
-				contenido = contenido + $@"[p][url=""https://pepe.deals/bundle/{bundle.Id.ToString()}/"" style=""pill"" buttoncolor=""#293751""]{Herramientas.Idiomas.BuscarTexto(idioma, "Steam6", "NewsTemplates")}[/url][/p]";
+				contenido = contenido + $@"[p][url=""https://pepe.deals/news/{noticiaId.ToString()}/"" style=""pill"" buttoncolor=""#293751""]{Herramientas.Idiomas.BuscarTexto(idioma, "Steam6", "NewsTemplates")}[/url][/p]";
 
 				if (bundle.Pick == false)
 				{
@@ -118,12 +135,6 @@
 						{
 							string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]DRM: " + juego.DRM.ToString() + "[/p]";
 							string imagen = $@"[img src=""{juego.Juego.Imagenes.Header_460x215}""][/img]";
-							string reseñas = string.Empty;
-
-							if (juego.Juego.Analisis != null)
-							{
-								reseñas = juego.Juego.Analisis.Porcentaje + "%";
-							}
 
 							contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
 						}
@@ -132,6 +143,99 @@
 					contenido = contenido + "[/table][/p]";
 				}
 			}
+
+			return contenido;
+		}
+
+		private static async Task<string> GenerarGratis(string gratisIds, string idioma, int noticiaId)
+		{
+			List<string> gratisIds2 = Herramientas.Listados.Generar(gratisIds);
+			string contenido = string.Empty;
+
+			if (gratisIds2?.Count > 0)
+			{
+				contenido = contenido + $@"[p][url=""https://pepe.deals/news/{noticiaId.ToString()}/"" style=""pill"" buttoncolor=""#293751""]{Herramientas.Idiomas.BuscarTexto(idioma, "Steam8", "NewsTemplates")}[/url][/p]";
+				contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][/th][th colwidth=""450""][p][/p][/th][/tr]";
+
+				foreach (var gratisId in gratisIds2)
+				{
+					JuegoGratis gratis = await BaseDatos.Gratis.Buscar.UnGratis(gratisId);
+
+					if (gratis != null)
+					{
+						string nombre = "[p]" + gratis.Nombre + "[/p]";
+						string imagen = $@"[img src=""{gratis.Imagen}""][/img]";
+
+						contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
+					}
+				}
+
+				contenido = contenido + "[/table][/p]";
+			}
+
+			return contenido;
+		}
+
+		private static async Task<string> GenerarSuscripciones(string suscripcionesIds, string idioma, int noticiaId)
+		{
+			List<string> suscripcionesIds2 = Herramientas.Listados.Generar(suscripcionesIds);
+			string contenido = string.Empty;
+
+			if (suscripcionesIds2?.Count > 0)
+			{
+				contenido = contenido + $@"[p][url=""https://pepe.deals/news/{noticiaId.ToString()}/"" style=""pill"" buttoncolor=""#293751""]{Herramientas.Idiomas.BuscarTexto(idioma, "Steam9", "NewsTemplates")}[/url][/p]";
+				contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][/th][th colwidth=""450""][p][/p][/th][/tr]";
+
+				foreach (var suscripcionId in suscripcionesIds2)
+				{
+					JuegoSuscripcion suscripcion = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(suscripcionId));
+
+					if (suscripcion != null)
+					{
+						string nombre = "[p]" + suscripcion.Nombre + "[/p]";
+						string imagen = $@"[img src=""{suscripcion.Imagen}""][/img]";
+
+						contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
+					}
+				}
+
+				contenido = contenido + "[/table][/p]";
+			}
+
+			return contenido;
+		}
+
+		private static async Task<string> GenerarMensaje(string contenidoHtml, string idioma, int noticiaId)
+		{
+			string contenido = string.Empty;
+
+			contenido = contenido + $@"[p][url=""https://pepe.deals/news/{noticiaId.ToString()}/"" style=""pill"" buttoncolor=""#293751""]{Herramientas.Idiomas.BuscarTexto(idioma, "Steam10", "NewsTemplates")}[/url][/p]";
+
+			contenidoHtml = Regex.Replace(contenidoHtml, @"<a[^>]*href=[""'](.*?)[""'][^>]*>(.*?)</a>", "[url=$1]$2[/url]", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+			contenidoHtml = Regex.Replace(contenidoHtml, @"<img[^>]*src=[""'](.*?)[""'][^>]*>", "[img]$1[/img]", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+			contenidoHtml = Regex.Replace(contenidoHtml, @"<ul[^>]*>(.*?)</ul>", "[list]$1[/list]", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			contenidoHtml = Regex.Replace(contenidoHtml, @"<li[^>]*>(.*?)</li>", "[*]$1", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+			contenidoHtml = Regex.Replace(contenidoHtml, @"<p[^>]*>(.*?)</p>", "[p]$1[/p]", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+						
+			string anterior;
+			do
+			{
+				anterior = contenidoHtml;
+				contenidoHtml = Regex.Replace(
+					contenidoHtml,
+					@"<div[^>]*>((?:(?!<div)[\s\S])*?)</div>",
+					"[p]$1[/p]", 
+					RegexOptions.IgnoreCase
+				);
+			} while (contenidoHtml != anterior);
+
+
+			contenidoHtml = contenidoHtml.Replace("\n", null);
+
+			contenido = contenido + contenidoHtml;
 
 			return contenido;
 		}

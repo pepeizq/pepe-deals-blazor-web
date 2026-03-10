@@ -3,6 +3,7 @@
 using Dapper;
 using Noticias;
 using System.Net;
+using System.Text.Json;
 
 namespace BaseDatos.Noticias
 {

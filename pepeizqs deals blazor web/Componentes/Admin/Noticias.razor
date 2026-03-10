@@ -790,6 +790,9 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
         int id = await BaseDatos.Noticias.Insertar.Ejecutar(noticiaAñadir);
         noticiaAñadir.Id = id;
 
+        noticiaAñadir = await global::Noticias.Steam.GenerarNoticia(noticiaAñadir);
+        await BaseDatos.Noticias.Actualizar.Steam(noticiaAñadir);
+
         idNoticiaEnviada = id;
 
         List<Usuario> usuariosNotificar = await BaseDatos.Usuarios.Buscar.UsuariosNotificacionesCorreo();

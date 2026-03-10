@@ -577,6 +577,10 @@ namespace Tareas
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
+						else if (tienda.Id == APIs.JoyBuggy.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
 						else if (tienda.Id == APIs.Gamesporium.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);

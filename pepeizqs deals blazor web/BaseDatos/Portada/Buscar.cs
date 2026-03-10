@@ -12,17 +12,17 @@ namespace BaseDatos.Portada
 	{
 		public static async Task<List<JuegoMinimoTarea>> BuscarMinimos(TiendaRegion region, string tienda = null)
 		{
-			string precioMinimosHistoricos = "j.precioMinimosHistoricos";
+			string precioMinimosHistoricos = "precioMinimosHistoricos";
 
 			if (region == TiendaRegion.EstadosUnidos)
 			{
-				precioMinimosHistoricos = "j.precioMinimosHistoricosUS";
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
 			}
 
 			string busqueda = @$"SELECT j.*,
        pmh.DRM as DRMElegido
 FROM juegos j
-CROSS APPLY OPENJSON({precioMinimosHistoricos})
+CROSS APPLY OPENJSON(j.{precioMinimosHistoricos})
 WITH (
     FechaActualizacion DATETIME2 '$.FechaActualizacion',
     FechaTermina DATETIME2 '$.FechaTermina',
@@ -39,9 +39,9 @@ WHERE j.ultimaModificacion >= DATEADD(day, -3, GETDATE())
   AND j.imagenes IS NOT NULL
   AND (j.mayorEdad = 'false' OR j.mayorEdad IS NULL)
   AND (j.freeToPlay = 'false' OR j.freeToPlay IS NULL)
-  AND {precioMinimosHistoricos} IS NOT NULL
-  AND {precioMinimosHistoricos} <> 'null'
-  AND ISJSON({precioMinimosHistoricos}) = 1
+  AND j.{precioMinimosHistoricos} IS NOT NULL
+  AND j.{precioMinimosHistoricos} <> 'null'
+  AND ISJSON(j.{precioMinimosHistoricos}) = 1
   AND (
         (pmh.FechaActualizacion >= DATEADD(hour, -24, GETDATE()) AND (pmh.Tienda = 'steam' OR pmh.Tienda = 'steambundles')) OR
         (pmh.FechaActualizacion >= DATEADD(hour, -25, GETDATE()) AND (pmh.Tienda = 'humblestore' OR pmh.Tienda = 'humblechoice')) OR
@@ -100,18 +100,15 @@ JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND
 	CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
 (CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
 (NOT EXISTS (
-        SELECT 1
-        FROM bundles b
-        WHERE EXISTS (
-            SELECT 1
-            FROM bundlesJuegos bj
-            WHERE bj.JuegoId = {tabla}.idMaestra
-			)
-			AND b.fechaTermina > DATEADD(YEAR, -1, GETDATE())
-    ) OR bundles IS NULL) AND 
+    SELECT 1
+    FROM bundles b
+    INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+    WHERE bj.JuegoId = {tabla}.idMaestra
+    AND b.fechaTermina > DATEADD(YEAR, -1, GETDATE())
+) OR bundles IS NULL) AND 
 NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 
 NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) 
-	OR CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 9999) AND 
+) AND 
 (ocultarPortada IS NULL OR ocultarPortada = 'false') 
 ORDER BY NEWID()";
 

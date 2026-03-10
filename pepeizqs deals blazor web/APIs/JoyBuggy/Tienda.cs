@@ -36,7 +36,18 @@ namespace APIs.JoyBuggy
         {
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-            string html = await Decompiladores.Estandar("https://www.joybuggy.com/module/xmlfeeds/api?id=70");
+			string enlace = string.Empty;
+
+			if (region == TiendaRegion.Europa)
+			{
+				enlace = "https://www.joybuggy.com/modules/xmlfeeds/api/xml.php?id=70";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				enlace = "https://www.joybuggy.com/modules/xmlfeeds/api/xml.php?id=59";
+			}
+
+            string html = await Decompiladores.Estandar(enlace);
 
             if (string.IsNullOrEmpty(html) == false)
             {
@@ -62,12 +73,23 @@ namespace APIs.JoyBuggy
 
 					foreach (JoyBuggyJuego juego in listaJuegos.Datos.Juegos)
 					{
-						if (string.IsNullOrEmpty(juego.Disponibilidad) == true)
+						if (string.IsNullOrEmpty(juego.Disponibilidad) == false && juego.Disponibilidad == "in stock")
 						{
 							if (string.IsNullOrEmpty(juego.PrecioBase) == false && string.IsNullOrEmpty(juego.PrecioRebajado) == false)
 							{
-								decimal precioBase = decimal.Parse(juego.PrecioBase);
-								decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
+								string tempPrecioBase = juego.PrecioBase;
+								tempPrecioBase = tempPrecioBase.Replace("EUR", null);
+								tempPrecioBase = tempPrecioBase.Replace("USD", null);
+								tempPrecioBase = tempPrecioBase.Trim();
+
+								decimal precioBase = decimal.Parse(tempPrecioBase);
+
+								string tempPrecioRebajado = juego.PrecioRebajado;
+								tempPrecioRebajado = tempPrecioRebajado.Replace("EUR", null);
+								tempPrecioRebajado = tempPrecioRebajado.Replace("USD", null);
+								tempPrecioRebajado = tempPrecioRebajado.Trim();
+
+								decimal precioRebajado = decimal.Parse(tempPrecioRebajado);
 
 								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
@@ -75,12 +97,12 @@ namespace APIs.JoyBuggy
 								{
 									string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-									string enlace = juego.Enlace;
+									string enlaceJuego = juego.Enlace;
 
-									if (enlace.Contains("?") == true)
+									if (enlaceJuego.Contains("?") == true)
 									{
-										int int1 = enlace.IndexOf("?");
-										enlace = enlace.Remove(int1, enlace.Length - int1);
+										int int1 = enlaceJuego.IndexOf("?");
+										enlaceJuego = enlaceJuego.Remove(int1, enlaceJuego.Length - int1);
 									}
 
 									string imagen = juego.Imagen;
@@ -90,7 +112,7 @@ namespace APIs.JoyBuggy
 									JuegoPrecio oferta = new JuegoPrecio
 									{
 										Nombre = nombre,
-										Enlace = enlace,
+										Enlace = enlaceJuego,
 										Imagen = imagen,
 										Moneda = JuegoMoneda.Euro,
 										Precio = precioRebajado,
@@ -100,6 +122,11 @@ namespace APIs.JoyBuggy
 										FechaDetectado = DateTime.Now,
 										FechaActualizacion = DateTime.Now
 									};
+
+									if (region == TiendaRegion.EstadosUnidos)
+									{
+										oferta.Moneda = JuegoMoneda.Dolar;
+									}
 
 									ofertas.Add(oferta);
 								}
@@ -170,10 +197,10 @@ namespace APIs.JoyBuggy
         [XmlElement("link")]
         public string Enlace { get; set; }
 
-        [XmlElement("sale_price")]
+        [XmlElement("Currency_saleprice")]
         public string PrecioRebajado { get; set; }
 
-        [XmlElement("price")]
+        [XmlElement("Currency_nodiscount")]
         public string PrecioBase { get; set; }
 
         [XmlElement("id")]
