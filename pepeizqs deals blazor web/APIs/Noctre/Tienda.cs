@@ -157,7 +157,7 @@ namespace APIs.Noctre
 
 										try
 										{
-											await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+											await BaseDatos.Tiendas.Comprobar.Resto(region, oferta);
 										}
 										catch (Exception ex)
 										{

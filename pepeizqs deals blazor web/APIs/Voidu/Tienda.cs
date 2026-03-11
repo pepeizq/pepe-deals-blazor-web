@@ -113,7 +113,7 @@ namespace APIs.Voidu
 
 												try
 												{
-													await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+													await BaseDatos.Tiendas.Comprobar.Resto(region, oferta);
 												}
 												catch (Exception ex)
 												{

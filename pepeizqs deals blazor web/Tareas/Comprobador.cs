@@ -553,6 +553,18 @@ namespace Tareas
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
+						else if (tienda.Id == APIs.GreenManGaming.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.GreenManGaming.Tienda.GenerarGold().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+						else if (tienda.Id == APIs.GOG.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
 						else if (tienda.Id == APIs.IndieGala.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
@@ -581,9 +593,18 @@ namespace Tareas
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
+						else if (tienda.Id == APIs.Battlenet.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
 						else if (tienda.Id == APIs.Gamesporium.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
+
+						if (DateTime.Now.Hour == 18 || DateTime.Now.Hour == 19)
+						{
+							siguienteComprobacion = TimeSpan.Zero;
 						}
 
 						if (siguienteComprobacion > TimeSpan.Zero)

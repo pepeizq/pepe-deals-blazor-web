@@ -96,7 +96,7 @@ namespace APIs.GOG
 
 										try
 										{
-											await BaseDatos.Tiendas.Comprobar.Resto(oferta, juego.Id, slug);
+											await BaseDatos.Tiendas.Comprobar.Resto(region, oferta, juego.Id, slug);
 										}
 										catch (Exception ex)
 										{
@@ -146,7 +146,16 @@ namespace APIs.GOG
 			int limite = 100;
 			while (i < limite + 1)
 			{
-				string enlace2 = "https://catalog.gog.com/v1/catalog?limit=48&order=desc:trending&discounted=eq:true&productType=in:game,pack,dlc,extras&page=" + i.ToString() + "&countryCode=ES&locale=en-US&currencyCode=EUR";
+				string enlace2 = string.Empty;
+
+				if (region == TiendaRegion.Europa)
+				{
+					enlace2 = "https://catalog.gog.com/v1/catalog?limit=48&order=desc:trending&discounted=eq:true&productType=in:game,pack,dlc,extras&page=" + i.ToString() + "&countryCode=ES&locale=en-US&currencyCode=EUR";
+				}
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
+					enlace2 = "https://catalog.gog.com/v1/catalog?limit=48&order=desc:trending&discounted=eq:true&productType=in:game,pack,dlc,extras&page=" + i.ToString() + "&countryCode=US&locale=en-US&currencyCode=USD";
+				}
 
                 string html = await Decompiladores.Estandar(enlace2);
 
@@ -179,8 +188,13 @@ namespace APIs.GOG
 						{
 							string precioBaseTexto = juego.Precios.PrecioBase;
 							precioBaseTexto = precioBaseTexto.Replace("€", null);
+							precioBaseTexto = precioBaseTexto.Replace("$", null);
+							precioBaseTexto = precioBaseTexto.Trim();
+
 							string precioRebajadoTexto = juego.Precios.PrecioRebajado;
 							precioRebajadoTexto = precioRebajadoTexto.Replace("€", null);
+							precioRebajadoTexto = precioRebajadoTexto.Replace("$", null);
+							precioRebajadoTexto = precioRebajadoTexto.Trim();
 
 							decimal precioBase = decimal.Parse(precioBaseTexto);
 							decimal precioRebajado = decimal.Parse(precioRebajadoTexto);
@@ -207,15 +221,20 @@ namespace APIs.GOG
 									FechaActualizacion = DateTime.Now
 								};
 
+								if (region == TiendaRegion.EstadosUnidos)
+								{
+									oferta.Moneda = JuegoMoneda.Dolar;
+								}
+
 								try
 								{
 									if (juego.Tipo == "game" || juego.Tipo == "dlc")
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(oferta, juego.Id, juego.Slug);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, oferta, juego.Id, juego.Slug);
 									}
 									else
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(oferta);
+										await BaseDatos.Tiendas.Comprobar.Resto(region, oferta);
 									}
 								}
 								catch (Exception ex)

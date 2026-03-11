@@ -2,6 +2,8 @@
 
 using Herramientas;
 using Juegos;
+using Servicios;
+using System.Drawing;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -63,88 +65,107 @@ namespace APIs.GreenManGaming
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-			string html = await Decompiladores.Estandar("https://api.greenmangaming.com/api/productfeed/prices/current?cc=es&cur=eur&lang=en");
+			string enlace = string.Empty;
 
-			if (string.IsNullOrEmpty(html) == false)
+			if (region == TiendaRegion.Europa)
 			{
-                GreenManGamingJuegos listaJuegos = new GreenManGamingJuegos();
+				enlace = "https://api.greenmangaming.com/api/productfeed/prices/current?cc=es&cur=eur&lang=en";
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				enlace = "https://api.greenmangaming.com/api/productfeed/prices/current?cc=us&cur=usd&lang=en";
+			}
 
-                XmlSerializer xml = new XmlSerializer(typeof(GreenManGamingJuegos));
-                listaJuegos = (GreenManGamingJuegos)xml.Deserialize(new StringReader(html));
+			if (string.IsNullOrEmpty(enlace) == false)
+			{
+				string html = await Decompiladores.Estandar(enlace);
 
-				if (listaJuegos?.Juegos?.Count > 0)
+				if (string.IsNullOrEmpty(html) == false)
 				{
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+					GreenManGamingJuegos listaJuegos = new GreenManGamingJuegos();
 
-					foreach (GreenManGamingJuego juego in listaJuegos.Juegos)
+					XmlSerializer xml = new XmlSerializer(typeof(GreenManGamingJuegos));
+					listaJuegos = (GreenManGamingJuegos)xml.Deserialize(new StringReader(html));
+
+					if (listaJuegos?.Juegos?.Count > 0)
 					{
-						if (int.Parse(juego.Stock) > 0)
+						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+						foreach (GreenManGamingJuego juego in listaJuegos.Juegos)
 						{
-							decimal precioBase = decimal.Parse(juego.PrecioBase);
-							decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-							int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-							if (descuento > 0)
+							if (int.Parse(juego.Stock) > 0)
 							{
-								string nombre = WebUtility.HtmlDecode(juego.Nombre);
+								decimal precioBase = decimal.Parse(juego.PrecioBase);
+								decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
 
-								string enlace = juego.Enlace;
+								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-								string imagen = juego.Imagen;
-
-								JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-								JuegoPrecio oferta = new JuegoPrecio
+								if (descuento > 0)
 								{
-									Nombre = nombre,
-									Enlace = enlace,
-									Imagen = imagen,
-									Moneda = JuegoMoneda.Euro,
-									Precio = precioRebajado,
-									Descuento = descuento,
-									Tienda = Generar().Id,
-									DRM = drm,
-									FechaDetectado = DateTime.Now,
-									FechaActualizacion = DateTime.Now
-								};
+									string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-								ofertas.Add(oferta);
+									string enlaceJuego = juego.Enlace;
+
+									string imagen = juego.Imagen;
+
+									JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+									JuegoPrecio oferta = new JuegoPrecio
+									{
+										Nombre = nombre,
+										Enlace = enlaceJuego,
+										Imagen = imagen,
+										Moneda = JuegoMoneda.Euro,
+										Precio = precioRebajado,
+										Descuento = descuento,
+										Tienda = Generar().Id,
+										DRM = drm,
+										FechaDetectado = DateTime.Now,
+										FechaActualizacion = DateTime.Now
+									};
+
+									if (region == TiendaRegion.EstadosUnidos)
+									{
+										oferta.Moneda = JuegoMoneda.Dolar;
+									}
+
+									ofertas.Add(oferta);
+								}
 							}
 						}
-					}
 
-					if (ofertas?.Count > 0)
-					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (ofertas?.Count > 0)
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-							}
+							int juegos2 = 0;
 
-							juegos2 += lote.Count;
+							int tamaño = 500;
+							var lotes = ofertas
+								.Select((oferta, indice) => new { oferta, indice })
+								.GroupBy(x => x.indice / tamaño)
+								.Select(g => g.Select(x => x.oferta).ToList())
+								.ToList();
 
-							try
+							foreach (var lote in lotes)
 							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								try
+								{
+									await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
+
+								juegos2 += lote.Count;
+
+								try
+								{
+									await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+								}
+								catch (Exception ex)
+								{
+									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								}
 							}
 						}
 					}
@@ -157,7 +178,7 @@ namespace APIs.GreenManGaming
 			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
-
+	
 			for (decimal precioMin = 0; precioMin < 80; precioMin += 1)
 			{
 				HttpClient cliente = new HttpClient();
@@ -166,110 +187,167 @@ namespace APIs.GreenManGaming
 
 				decimal precioMax = precioMin + 1;
 
-				string peticionEnBruto = $@"{{
-					""requests"":[{{
-						""indexName"":""prod_ProductSearch_ES_Mrp_ASC"",
-						""params"":""query=xp-view-all&ruleContexts=%5B%22EUR%22%2C%22EUR_ES%22%2C%22ES%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3AES%20AND%20NOT%20ExcludeCountryCodes%3AES&hitsPerPage=1000&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.ES.ReleaseDateStatus%22%2C%22Regions.ES.Mrp%22%2C%22Regions.ES.IsOnSaleVip%22%2C%22Regions.ES.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22DrmName%3ASteam%22%5D%5D&numericFilters=%5B%22Regions.ES.Mrp%3E%3D{precioMin}%22,%22Regions.ES.Mrp%3C{precioMax}%22%5D"" 
-					}}]
-				}}";
+				string peticionEnBruto = string.Empty;
 
-				HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://sczizsp09z-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(4.5.1)%3B%20Browser%20(lite)%3B%20instantsearch.js%20(4.8.3)%3B%20JS%20Helper%20(3.2.2)&x-algolia-api-key=3bc4cebab2aa8cddab9e9a3cfad5aef3&x-algolia-application-id=SCZIZSP09Z");
-				peticion.Content = new StringContent(peticionEnBruto, Encoding.UTF8, "application/json");
-
-				HttpResponseMessage respuesta = await cliente.SendAsync(peticion);
-
-				string html = string.Empty;
-
-				try
+				if (region == TiendaRegion.Europa)
 				{
-					html = await respuesta.Content.ReadAsStringAsync();
+					string region2 = "ES";  
+					string moneda2 = "EUR";
+
+					peticionEnBruto = $@"{{
+						""requests"":[{{
+							""indexName"":""prod_ProductSearch_{region2}_Mrp_ASC"",
+							""params"":""query=xp-view-all&ruleContexts=%5B%22{moneda2}%22%2C%22{moneda2}_{region2}%22%2C%22{region2}%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3A{region2}%20AND%20NOT%20ExcludeCountryCodes%3A{region}&hitsPerPage=1000&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.{region2}.ReleaseDateStatus%22%2C%22Regions.{region2}.Mrp%22%2C%22Regions.{region2}.IsOnSaleVip%22%2C%22Regions.{region}.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22DrmName%3ASteam%22%5D%5D&numericFilters=%5B%22Regions.{region2}.Mrp%3E%3D{precioMin}%22,%22Regions.{region2}.Mrp%3C{precioMax}%22%5D""
+						}}]
+					}}";
 				}
-				catch { }
-
-				if (string.IsNullOrEmpty(html) == false)
+				else if (region == TiendaRegion.EstadosUnidos)
 				{
-					GreenManGamingGold datos = JsonSerializer.Deserialize<GreenManGamingGold>(html);
+					string region2 = "US";
+					string moneda2 = "USD";
 
-					if (datos != null)
+					peticionEnBruto = $@"{{
+						""requests"":[{{
+							""indexName"":""prod_ProductSearch_{region2}_Mrp_ASC"",
+							""params"":""query=xp-view-all&ruleContexts=%5B%22{moneda2}%22%2C%22{moneda2}_{region2}%22%2C%22{region2}%22%5D&filters=IsSellable%3Atrue%20AND%20AvailableRegions%3A{region2}%20AND%20NOT%20ExcludeCountryCodes%3A{region}&hitsPerPage=1000&distinct=true&analytics=false&clickAnalytics=true&maxValuesPerFacet=10&facets=%5B%22Franchise%22%2C%22IsEarlyAccess%22%2C%22Genre%22%2C%22PlatformName%22%2C%22PublisherName%22%2C%22SupportedVrs%22%2C%22Regions.{region2}.ReleaseDateStatus%22%2C%22Regions.{region2}.Mrp%22%2C%22Regions.{region2}.IsOnSaleVip%22%2C%22Regions.{region}.IsXpOffer%22%2C%22DrmName%22%5D&tagFilters=&facetFilters=%5B%5B%22DrmName%3ASteam%22%5D%5D&numericFilters=%5B%22Regions.{region2}.Mrp%3E%3D{precioMin}%22,%22Regions.{region2}.Mrp%3C{precioMax}%22%5D""
+						}}]
+					}}";
+				}
+
+				if (string.IsNullOrEmpty(peticionEnBruto) == false)
+				{
+					HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://sczizsp09z-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(4.5.1)%3B%20Browser%20(lite)%3B%20instantsearch.js%20(4.8.3)%3B%20JS%20Helper%20(3.2.2)&x-algolia-api-key=3bc4cebab2aa8cddab9e9a3cfad5aef3&x-algolia-application-id=SCZIZSP09Z");
+					peticion.Content = new StringContent(peticionEnBruto, Encoding.UTF8, "application/json");
+
+					HttpResponseMessage respuesta = await cliente.SendAsync(peticion);
+
+					string html = string.Empty;
+
+					try
 					{
-						if (datos.Resultados[0].Juegos.Count == 0)
-						{
-							break;
-						}
-						else
-						{
-							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+						html = await respuesta.Content.ReadAsStringAsync();
+					}
+					catch { }
 
-							foreach (var juego in datos.Resultados[0]?.Juegos)
+					if (string.IsNullOrEmpty(html) == false)
+					{
+						GreenManGamingGold datos = JsonSerializer.Deserialize<GreenManGamingGold>(html);
+
+						if (datos != null)
+						{
+							if (datos.Resultados[0].Juegos.Count == 0)
 							{
-								if (juego.SinStocks.ES == false)
-								{
-									decimal precioBase = juego.Regiones.ES.PrecioBase;
-									decimal precioRebajado = juego.Regiones.ES.PrecioRebajado;
-
-									int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-									if (descuento > 0)
-									{
-										JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-										JuegoPrecio oferta = new JuegoPrecio
-										{
-											Nombre = WebUtility.HtmlDecode(juego.Nombre),
-											Enlace = "https://www.greenmangaming.com" + juego.Enlace,
-											Imagen = "https://images.greenmangaming.com" + juego.Imagen,
-											Moneda = JuegoMoneda.Euro,
-											Precio = precioRebajado,
-											Descuento = descuento,
-											Tienda = GenerarGold().Id,
-											DRM = drm,
-											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now
-										};
-
-										ofertas.Add(oferta);
-									}
-								}					
+								break;
 							}
-
-							if (ofertas?.Count > 0)
+							else
 							{
-								int tamaño = 500;
-								var lotes = ofertas
-									.Select((oferta, indice) => new { oferta, indice })
-									.GroupBy(x => x.indice / tamaño)
-									.Select(g => g.Select(x => x.oferta).ToList())
-									.ToList();
+								List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-								foreach (var lote in lotes)
+								foreach (var juego in datos.Resultados[0]?.Juegos)
 								{
-									try
+									foreach (var regionJuego in juego.Regiones)
 									{
-										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
-									}
+										if (regionJuego.Key == "ES" && region == TiendaRegion.Europa && juego.RegionesNoStock.TryGetValue("ES", out bool noStock) && noStock == false)
+										{
+											decimal precioBase = juego.Regiones["ES"].Rrp;
+											decimal precioRebajado = juego.Regiones["ES"].Mrp;
 
-									juegos2 += lote.Count;
+											int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-									try
-									{
-										await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, juegos2);
+											if (descuento > 0)
+											{
+												JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+												JuegoPrecio oferta = new JuegoPrecio
+												{
+													Nombre = WebUtility.HtmlDecode(juego.Nombre),
+													Enlace = "https://www.greenmangaming.com" + juego.Enlace,
+													Imagen = "https://images.greenmangaming.com" + juego.Imagen,
+													Moneda = JuegoMoneda.Euro,
+													Precio = precioRebajado,
+													Descuento = descuento,
+													Tienda = GenerarGold().Id,
+													DRM = drm,
+													FechaDetectado = DateTime.Now,
+													FechaActualizacion = DateTime.Now
+												};
+
+												ofertas.Add(oferta);
+											}
+										}
+										else if (regionJuego.Key == "US" && region == TiendaRegion.EstadosUnidos && juego.RegionesNoStock.TryGetValue("US", out bool noStockUS) && noStockUS == false)
+										{
+											if (juego.Regiones["US"].CurrencyCode == "USD" && juego.Regiones["US"].CountryCode == "US")
+											{
+												decimal precioBase = juego.Regiones["US"].Rrp;
+												decimal precioRebajado = juego.Regiones["US"].Mrp;
+
+												int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+												if (descuento > 0)
+												{
+													JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+													JuegoPrecio oferta = new JuegoPrecio
+													{
+														Nombre = WebUtility.HtmlDecode(juego.Nombre),
+														Enlace = "https://www.greenmangaming.com" + juego.Enlace,
+														Imagen = "https://images.greenmangaming.com" + juego.Imagen,
+														Moneda = JuegoMoneda.Dolar,
+														Precio = precioRebajado,
+														Descuento = descuento,
+														Tienda = GenerarGold().Id,
+														DRM = drm,
+														FechaDetectado = DateTime.Now,
+														FechaActualizacion = DateTime.Now
+													};
+
+													ofertas.Add(oferta);
+												}
+											}
+										}
 									}
-									catch (Exception ex)
+								}
+
+								if (ofertas?.Count > 0)
+								{
+									int tamaño = 500;
+									var lotes = ofertas
+										.Select((oferta, indice) => new { oferta, indice })
+										.GroupBy(x => x.indice / tamaño)
+										.Select(g => g.Select(x => x.oferta).ToList())
+										.ToList();
+
+									foreach (var lote in lotes)
 									{
-										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+										try
+										{
+											await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+										}
+
+										juegos2 += lote.Count;
+
+										try
+										{
+											await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, juegos2);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-				else
-				{
-					break;
+					else
+					{
+						break;
+					}
 				}
 			}
 		}
@@ -324,6 +402,7 @@ namespace APIs.GreenManGaming
 		public List<GreenManGamingGoldJuego> Juegos { get; set; }
 	}
 
+	[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Skip)]
 	public class GreenManGamingGoldJuego
 	{
 		[JsonPropertyName("DisplayName")]
@@ -339,31 +418,26 @@ namespace APIs.GreenManGaming
 		public string DRM { get; set; }
 
 		[JsonPropertyName("Regions")]
-		public GreenManGamingGoldJuegoRegiones Regiones { get; set; }
+		public Dictionary<string, GreenManGamingGoldJuegoRegion> Regiones { get; set; }
 
 		[JsonPropertyName("OutOfStockRegions")]
-		public GreenManGamingGoldJuegoStocks SinStocks { get; set; }
+		public Dictionary<string, bool> RegionesNoStock { get; set; }
 	}
 
-	public class GreenManGamingGoldJuegoRegiones
+	[JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Skip)]
+	public class GreenManGamingGoldJuegoRegion
 	{
-		[JsonPropertyName("ES")]
-		public GreenManGamingGoldJuegoPrecios ES { get; set; }
-	}
+		[JsonPropertyName("CountryCode")]
+		public string CountryCode { get; set; }
 
-	public class GreenManGamingGoldJuegoPrecios
-	{
+		[JsonPropertyName("CurrencyCode")]
+		public string CurrencyCode { get; set; }
+
 		[JsonPropertyName("Mrp")]
-		public decimal PrecioRebajado { get; set; }
+		public decimal Mrp { get; set; }
 
 		[JsonPropertyName("Rrp")]
-		public decimal PrecioBase { get; set; }
-	}
-
-	public class GreenManGamingGoldJuegoStocks
-	{
-		[JsonPropertyName("ES")]
-		public bool ES { get; set; }
+		public decimal Rrp { get; set; }
 	}
 
 	#endregion

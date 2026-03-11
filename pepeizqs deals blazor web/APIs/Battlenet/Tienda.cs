@@ -63,132 +63,160 @@ namespace APIs.Battlenet
 
 			foreach (var slug in listaSlugs)
 			{
-				string html = await Decompiladores.Estandar("https://eu.shop.battle.net/api/product/" + slug + "?platform=Web&locale=en-us");
+				string enlace = string.Empty;
 
-				if (string.IsNullOrEmpty(html) == false)
+				if (region == TiendaRegion.Europa)
 				{
-					BattlenetJuego juegobattle = null;
+					enlace = "https://eu.shop.battle.net/api/product/" + slug + "?platform=Web&locale=en-us";
+				}
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
+					enlace = "https://us.shop.battle.net/api/product/" + slug + "?platform=Web&locale=en-us";
+				}
 
-					try
+				if (string.IsNullOrEmpty(enlace) == false)
+				{
+					string html = await Decompiladores.Estandar(enlace);
+
+					if (string.IsNullOrEmpty(html) == false)
 					{
-						juegobattle = JsonSerializer.Deserialize<BattlenetJuego>(html);
-					}
-					catch { }
+						BattlenetJuego juegobattle = null;
 
-					if (juegobattle != null)
-					{
-						string nombreFamilia = juegobattle.Nombre;
-
-						if (juegobattle.Productos?.Count > 0)
+						try
 						{
-							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+							juegobattle = JsonSerializer.Deserialize<BattlenetJuego>(html);
+						}
+						catch { }
 
-							foreach (var producto in juegobattle.Productos)
+						if (juegobattle != null)
+						{
+							string nombreFamilia = juegobattle.Nombre;
+
+							if (juegobattle.Productos?.Count > 0)
 							{
-								if (producto.Precio.Precio != null)
+								List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+								foreach (var producto in juegobattle.Productos)
 								{
-									string textoPrecioRebajado = producto.Precio.Precio.PrecioRebajado;
-
-									if (string.IsNullOrEmpty(textoPrecioRebajado) == false)
+									if (producto.Precio.Precio != null)
 									{
-										textoPrecioRebajado = textoPrecioRebajado.Replace("€", null);
-										textoPrecioRebajado = textoPrecioRebajado.Replace("EUR", null);
-										textoPrecioRebajado = textoPrecioRebajado.Trim();
-									}
+										string textoPrecioRebajado = producto.Precio.Precio.PrecioRebajado;
 
-									string textoPrecioBase = producto.Precio.Precio.PrecioBase;
-
-									if (string.IsNullOrEmpty(textoPrecioBase) == false)
-									{
-										textoPrecioBase = textoPrecioBase.Replace("€", null);
-										textoPrecioBase = textoPrecioBase.Replace("EUR", null);
-										textoPrecioBase = textoPrecioBase.Trim();
-									}
-
-									if (string.IsNullOrEmpty(textoPrecioRebajado) == false && string.IsNullOrEmpty(textoPrecioBase) == false)
-									{
-										decimal precioRebajado = decimal.Parse(textoPrecioRebajado);
-										decimal precioBase = decimal.Parse(textoPrecioBase);
-
-										int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-										if (descuento > 0)
+										if (string.IsNullOrEmpty(textoPrecioRebajado) == false)
 										{
-											string nombre = nombreFamilia;
+											textoPrecioRebajado = textoPrecioRebajado.Replace("€", null);
+											textoPrecioRebajado = textoPrecioRebajado.Replace("EUR", null);
+											textoPrecioRebajado = textoPrecioRebajado.Replace("$", null);
+											textoPrecioRebajado = textoPrecioRebajado.Replace("USD", null);
+											textoPrecioRebajado = textoPrecioRebajado.Trim();
+										}
 
-											if (string.IsNullOrEmpty(producto.Subnombre) == false)
+										string textoPrecioBase = producto.Precio.Precio.PrecioBase;
+
+										if (string.IsNullOrEmpty(textoPrecioBase) == false)
+										{
+											textoPrecioBase = textoPrecioBase.Replace("€", null);
+											textoPrecioBase = textoPrecioBase.Replace("EUR", null);
+											textoPrecioBase = textoPrecioBase.Replace("$", null);
+											textoPrecioBase = textoPrecioBase.Replace("USD", null);
+											textoPrecioBase = textoPrecioBase.Trim();
+										}
+
+										if (string.IsNullOrEmpty(textoPrecioRebajado) == false && string.IsNullOrEmpty(textoPrecioBase) == false)
+										{
+											decimal precioRebajado = decimal.Parse(textoPrecioRebajado);
+											decimal precioBase = decimal.Parse(textoPrecioBase);
+
+											int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+											if (descuento > 0)
 											{
-												if (producto.Subnombre != nombre)
+												string nombre = nombreFamilia;
+
+												if (string.IsNullOrEmpty(producto.Subnombre) == false)
 												{
-													nombre = nombre + " - " + producto.Subnombre;
+													if (producto.Subnombre != nombre)
+													{
+														nombre = nombre + " - " + producto.Subnombre;
+													}
 												}
-											}
 
-											nombre = WebUtility.HtmlDecode(nombre);
+												nombre = WebUtility.HtmlDecode(nombre);
 
-											string enlace = "https://eu.shop.battle.net/en-us/product/" + slug + "?p=" + producto.Id;
+												string enlaceJuego = "https://eu.shop.battle.net/en-us/product/" + slug + "?p=" + producto.Id;
 
-											string imagen = producto.Imagen;
-
-											if (string.IsNullOrEmpty(imagen) == false)
-											{
-												if (imagen.Contains("https:") == false)
+												if (region == TiendaRegion.EstadosUnidos)
 												{
-													imagen = "https:" + imagen;
+													enlaceJuego = "https://us.shop.battle.net/en-us/product/" + slug + "?p=" + producto.Id;
 												}
+
+												string imagen = producto.Imagen;
+
+												if (string.IsNullOrEmpty(imagen) == false)
+												{
+													if (imagen.Contains("https:") == false)
+													{
+														imagen = "https:" + imagen;
+													}
+												}
+
+												JuegoDRM drm = JuegoDRM.BattleNet;
+
+												JuegoPrecio oferta = new JuegoPrecio
+												{
+													Nombre = nombre,
+													Enlace = enlaceJuego,
+													Imagen = imagen,
+													Moneda = JuegoMoneda.Euro,
+													Precio = precioRebajado,
+													Descuento = descuento,
+													Tienda = Generar().Id,
+													DRM = drm,
+													FechaDetectado = DateTime.Now,
+													FechaActualizacion = DateTime.Now
+												};
+
+												if (region == TiendaRegion.EstadosUnidos)
+												{
+													oferta.Moneda = JuegoMoneda.Dolar;
+												}
+
+												ofertas.Add(oferta);
 											}
-
-											JuegoDRM drm = JuegoDRM.BattleNet;
-
-											JuegoPrecio oferta = new JuegoPrecio
-											{
-												Nombre = nombre,
-												Enlace = enlace,
-												Imagen = imagen,
-												Moneda = JuegoMoneda.Euro,
-												Precio = precioRebajado,
-												Descuento = descuento,
-												Tienda = Generar().Id,
-												DRM = drm,
-												FechaDetectado = DateTime.Now,
-												FechaActualizacion = DateTime.Now
-											};
-
-											ofertas.Add(oferta);
 										}
 									}
 								}
-							}
 
-							if (ofertas?.Count > 0)
-							{
-								int tamaño = 500;
-								var lotes = ofertas
-									.Select((oferta, indice) => new { oferta, indice })
-									.GroupBy(x => x.indice / tamaño)
-									.Select(g => g.Select(x => x.oferta).ToList())
-									.ToList();
-
-								foreach (var lote in lotes)
+								if (ofertas?.Count > 0)
 								{
-									try
-									{
-										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
+									int tamaño = 500;
+									var lotes = ofertas
+										.Select((oferta, indice) => new { oferta, indice })
+										.GroupBy(x => x.indice / tamaño)
+										.Select(g => g.Select(x => x.oferta).ToList())
+										.ToList();
 
-									juegos2 += lote.Count;
+									foreach (var lote in lotes)
+									{
+										try
+										{
+											await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
 
-									try
-									{
-										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										juegos2 += lote.Count;
+
+										try
+										{
+											await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
 									}
 								}
 							}
