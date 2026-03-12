@@ -13,6 +13,7 @@ namespace BaseDatos.Extension
 		public List<ExtensionPrecio> MinimosHistoricos { get; set; }
 		public List<ExtensionPrecio> PreciosActuales { get; set; }
 		public List<ExtensionBundle> Bundles { get; set; }
+		public int BundlesPasados { get; set; }	
 		public List<ExtensionGratis> Gratis { get; set; }
 		public List<ExtensionSuscripcion> Suscripciones { get; set; }
 		public int IdSteam { get; set; }
@@ -30,10 +31,9 @@ namespace BaseDatos.Extension
 
 	public class ExtensionBundle
 	{
-		public JuegoBundle Datos { get; set; }
-		public string NombreBundle { get; set; }
-		public string TiendaBundle { get; set; }
-		public string IconoBundle { get; set; }
+		public string Nombre { get; set; }
+		public string Tienda { get; set; }
+		public string Enlace { get; set; }
 	}
 
 	public class ExtensionGratis
@@ -53,6 +53,139 @@ namespace BaseDatos.Extension
 
 	public static class Buscar
 	{
+		public static async Task<Extension> Steam3(string region, string id)
+		{
+			string precioMinimosHistoricos = string.Empty;
+			string precioActualesTiendas = string.Empty;
+
+			if (region == "eu")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricos";
+				precioActualesTiendas = "precioActualesTiendas";
+			}
+			else if (region == "us")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+				precioActualesTiendas = "precioActualesTiendasUS";
+			}
+
+			string buscar = $@"SELECT j.id, j.nombre, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, 
+(
+	SELECT b.tienda, b.nombre, b.enlace
+	FROM bundles b
+	INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+	WHERE bj.juegoId = j.id
+		AND b.fechaEmpieza <= GETDATE()
+		AND b.fechaTermina >= GETDATE()
+	FOR JSON PATH
+) AS bundles2,
+(
+	SELECT COUNT(*)
+	FROM bundles b
+	INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+	WHERE bj.juegoId = j.id
+		AND b.fechaTermina < GETDATE()
+) AS bundlesPasados,
+(
+    SELECT g.*, g.gratis AS Tipo
+    FROM gratis g
+    WHERE g.juegoId = j.id
+    FOR JSON PATH
+) as gratis2, 
+(
+    SELECT s.*, s.suscripcion AS Tipo
+    FROM suscripciones s
+    WHERE s.juegoId = j.id
+    FOR JSON PATH
+) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
+
+			return await GenerarDatos(buscar, "Steam " + id);
+		}
+
+		public static async Task<Extension> Gog3(string region, string slug)
+		{
+			string precioMinimosHistoricos = string.Empty;
+			string precioActualesTiendas = string.Empty;
+
+			if (region == "eu")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricos";
+				precioActualesTiendas = "precioActualesTiendas";
+			}
+			else if (region == "us")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+				precioActualesTiendas = "precioActualesTiendasUS";
+			}
+
+			string buscar = $@"SELECT j.id, j.nombre, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
+(
+	SELECT b.tienda, b.nombre, b.enlace
+	FROM bundles b
+	INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+	WHERE bj.juegoId = j.id
+		AND b.fechaEmpieza <= GETDATE()
+		AND b.fechaTermina >= GETDATE()
+	FOR JSON PATH
+) AS bundles2,
+(
+    SELECT g.*, g.gratis AS Tipo
+    FROM gratis g
+    WHERE g.juegoId = j.id
+    FOR JSON PATH
+) as gratis2, 
+(
+    SELECT s.*, s.suscripcion AS Tipo
+    FROM suscripciones s
+    WHERE s.juegoId = j.id
+    FOR JSON PATH
+) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
+
+			return await GenerarDatos(buscar, "GOG " + slug);
+		}
+
+		public static async Task<Extension> EpicGames3(string region, string slug)
+		{
+			string precioMinimosHistoricos = string.Empty;
+			string precioActualesTiendas = string.Empty;
+
+			if (region == "eu")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricos";
+				precioActualesTiendas = "precioActualesTiendas";
+			}
+			else if (region == "us")
+			{
+				precioMinimosHistoricos = "precioMinimosHistoricosUS";
+				precioActualesTiendas = "precioActualesTiendasUS";
+			}
+
+			string buscar = $@"SELECT j.id, j.nombre, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
+(
+	SELECT b.tienda, b.nombre, b.enlace
+	FROM bundles b
+	INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+	WHERE bj.juegoId = j.id
+		AND b.fechaEmpieza <= GETDATE()
+		AND b.fechaTermina >= GETDATE()
+	FOR JSON PATH
+) AS bundles2,
+(
+    SELECT g.*, g.gratis AS Tipo
+    FROM gratis g
+    WHERE g.juegoId = j.id
+    FOR JSON PATH
+) as gratis2, 
+(
+    SELECT s.*, s.suscripcion AS Tipo
+    FROM suscripciones s
+    WHERE s.juegoId = j.id
+    FOR JSON PATH
+) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
+
+			return await GenerarDatos(buscar, "Epic " + slug);
+		}
+
 		public static async Task<Extension> Steam2(string id)
 		{
 			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
@@ -167,33 +300,18 @@ namespace BaseDatos.Extension
 					extension.PreciosActuales
 				);
 
-				var jsonBundles = CogerString("bundles");
+				var jsonBundles = CogerString("bundles2");
 				if (string.IsNullOrEmpty(jsonBundles) == false)
 				{
-					var lista = JsonSerializer.Deserialize<List<JuegoBundle>>(jsonBundles);
-
-					if (lista?.Count > 0)
+					var opciones = new JsonSerializerOptions
 					{
-						extension.Bundles = new List<ExtensionBundle>();
+						PropertyNameCaseInsensitive = true
+					};
 
-						foreach (var bundle in lista)
-						{
-							var datosBundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle.BundleId);
-							if (datosBundle != null)
-							{
-								bundle.Enlace = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.Tipo, false, false);
-
-								extension.Bundles.Add(new ExtensionBundle
-								{
-									Datos = bundle,
-									NombreBundle = datosBundle.Nombre,
-									TiendaBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).Tienda,
-									IconoBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.Tipo).ImagenIcono
-								});
-							}
-						}
-					}
+					extension.Bundles = JsonSerializer.Deserialize<List<ExtensionBundle>>(jsonBundles, opciones);
 				}
+
+				extension.BundlesPasados = CogerInt("bundlesPasados");
 
 				var jsonGratis = CogerString("gratis2");
 				if (string.IsNullOrEmpty(jsonGratis) == false)

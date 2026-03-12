@@ -330,15 +330,15 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 	opciones.DisableWebSocketCompression = false;
 });
 
-#region Compresion (Primero)
+#region Optimizador
 
-app.UseResponseCompression();
+app.UseWebOptimizer();
 
 #endregion
 
-#region Optimizador (Despues Compresion)
+#region Compresion
 
-app.UseWebOptimizer();
+app.UseResponseCompression();
 
 #endregion
 
@@ -412,6 +412,76 @@ app.MapGet("extension/epic2/{slug}/{clave}/", async (string slug, string clave) 
 	if (clave == claveExtension)
 	{
 		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.EpicGames2(slug);
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+#endregion
+
+#region Extension v3
+
+app.MapGet("extension/steam3/{id}/{region}/{clave}/", async (int id, string region, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Steam3(region, id.ToString());
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+app.MapGet("extension/gog3/{slug}/{region}/{clave}/", async (string slug, string region, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Gog3(region, slug);
+
+		if (juego != null)
+		{
+			if (juego.Id > 0)
+			{
+				return Results.Json(juego);
+			}
+		}
+	}
+
+	return Results.NotFound();
+});
+
+app.MapGet("extension/epic3/{slug}/{region}/{clave}/", async (string slug, string region, string clave) =>
+{
+	#nullable disable
+
+	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
+
+	if (clave == claveExtension)
+	{
+		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.EpicGames3(region, slug);
 
 		if (juego != null)
 		{
@@ -522,6 +592,6 @@ app.Use(async (context, next) =>
 
 app.MapHealthChecks("/vida");
 
-app.UseStatusCodePagesWithRedirects("/");
+app.UseStatusCodePagesWithReExecute("/");
 
 app.Run();
