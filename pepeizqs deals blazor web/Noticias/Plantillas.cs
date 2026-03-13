@@ -63,7 +63,7 @@ namespace Noticias
 						plantilla.ContenidoEn = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("en", "Bundle2", "NewsTemplates"), bundle.Tienda) + "</div>";
 						plantilla.ContenidoEs = "<div style=" + Strings.ChrW(34) + "margin-bottom: 15px;" + Strings.ChrW(34) + ">" + string.Format(Idiomas.BuscarTexto("es", "Bundle2", "NewsTemplates"), bundle.Tienda) + "</div>";
 
-						foreach (var tier in bundle.Tiers.OrderBy(x => x.Posicion))
+						foreach (var tier in bundle.Tiers.OrderBy(b => b.Posicion))
 						{
 							string precio = tier.Precio;
 							precio = precio.Replace(".", ",");

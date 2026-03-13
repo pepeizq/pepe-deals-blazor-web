@@ -28,8 +28,9 @@ namespace APIs.Fanatical
 				ImagenIcono = "/imagenes/tiendas/fanatical_icono.webp",
 				Color = "#ffcf89",
 				AdminEnseñar = true,
-				AdminInteractuar = true
-            };
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
+			};
 
 			return tienda;
 		}

@@ -120,7 +120,7 @@ namespace Noticias
 					contenido = contenido + "[/list]";
 				}
 
-				foreach (var tier in bundle.Tiers)
+				foreach (var tier in bundle.Tiers.OrderBy(b => b.Posicion))
 				{
 					contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][p]Tier {tier.Posicion.ToString()}[/p][/th][th colwidth=""450""][p][/p][/th][/tr]";
 

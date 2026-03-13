@@ -28,7 +28,8 @@ namespace APIs.Ubisoft
 				ImagenIcono = "/imagenes/tiendas/ubisoft_icono.webp",
 				Color = "#0a0a0a",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;

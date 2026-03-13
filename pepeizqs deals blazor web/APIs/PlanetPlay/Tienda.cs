@@ -22,7 +22,8 @@ namespace APIs.PlanetPlay
 				ImagenIcono = "/imagenes/tiendas/planetplay_icono.webp",
 				Color = "#00CC7E",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

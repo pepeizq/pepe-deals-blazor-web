@@ -22,8 +22,9 @@ namespace APIs.Battlenet
                 ImagenIcono = "/imagenes/tiendas/battlenet_icono.webp",
                 Color = "#005aad",
                 AdminEnseñar = true,
-                AdminInteractuar = true
-            };
+                AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
+			};
 
             return tienda;
         }

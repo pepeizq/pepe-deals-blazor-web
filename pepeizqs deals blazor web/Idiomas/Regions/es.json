@@ -1,0 +1,12 @@
+{
+  "String1": "Regiones",
+  "String2": "Os especifico como diferencio las diferentes regiones a las que puedo dar soporte en mi web.",
+  "String3": "Dada la cantidad de regiones que hay en el mundo y mis recursos limitados creo que era necesario especificaros como diferencio las regiones y trabajo con ellas en la web. Por que no solo se trata de las diferentes monedas, sino de cada región ofrece juegos restringido a ciertos países y eso puede suponer un problema grave en vuestras compras.",
+  "String4": "Estas son las regiones a las que actualmente doy soporte en la web:",
+  "String5": "Europa",
+  "String6": "Europa. Usando de referencia el país España obtengo los precios en Euros y los juegos que os enseño no tienen restricciones regionales en todos los países de la Unión Europea excepto Alemania, donde sus absurdas restricciones en videojuegos pueden afectar a juegos.",
+  "String7": "Estados Unidos",
+  "String8": "Estados Unidos. Os muestro los juegos en dólares americanos y los juegos que se pueden jugar allí sin restricciones regionales. No os puedo garantizar que funcionen los juegos en países cercanos como México o Canadá.",
+  "String9": "Tiendas",
+  "String10": "Por desgracia no os puedo ofrecer todas las ofertas de todas las tiendas en todas las regiones. La principal razón es por falta de comunicación con las tiendas, así que lo mejor que puedo hacer es enseñaros una tabla con las regiones en las que soy capaz de leer sus ofertas."
+}

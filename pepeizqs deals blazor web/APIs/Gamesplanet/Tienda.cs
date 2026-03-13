@@ -21,7 +21,8 @@ namespace APIs.Gamesplanet
 				ImagenIcono = "/imagenes/tiendas/gamesplanet_icono.webp",
 				Color = "#000",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;
@@ -38,7 +39,8 @@ namespace APIs.Gamesplanet
 				ImagenIcono = "/imagenes/tiendas/gamesplanet_icono.webp",
 				Color = "#000",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;
@@ -55,7 +57,8 @@ namespace APIs.Gamesplanet
 				ImagenIcono = "/imagenes/tiendas/gamesplanet_icono.webp",
 				Color = "#000",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;
@@ -72,7 +75,8 @@ namespace APIs.Gamesplanet
 				ImagenIcono = "/imagenes/tiendas/gamesplanet_icono.webp",
 				Color = "#000",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

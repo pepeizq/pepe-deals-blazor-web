@@ -32,7 +32,8 @@ namespace APIs.Steam
 				ImagenIcono = "/imagenes/tiendas/steam_icono.webp",
 				Color = "#2e4460",
                 AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

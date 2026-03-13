@@ -2,8 +2,6 @@
 
 using Herramientas;
 using Juegos;
-using Servicios;
-using System.Drawing;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
@@ -27,7 +25,8 @@ namespace APIs.GreenManGaming
 				ImagenIcono = "/imagenes/tiendas/greenmangaming_icono.webp",
 				Color = "#97ff9a",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;
@@ -55,7 +54,8 @@ namespace APIs.GreenManGaming
 				ImagenIcono = "/imagenes/tiendas/greenmangaming_icono.webp",
 				Color = "#97ff9a",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

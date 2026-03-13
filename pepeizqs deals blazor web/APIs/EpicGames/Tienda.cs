@@ -25,7 +25,8 @@ namespace APIs.EpicGames
 				ImagenIcono = "/imagenes/tiendas/epic_icono.ico",
 				Color = "#101014",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;

@@ -18,6 +18,7 @@ namespace Tiendas2
 		public bool AdminEnseñar;
 		public bool AdminInteractuar;
 		public bool UsuarioInteractuar = true;
+		public List<TiendaRegion> Regiones;
 	}
 
 	public enum TiendaRegion

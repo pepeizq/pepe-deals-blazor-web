@@ -216,7 +216,7 @@
 	}
 </HeadContent>
 
-@code {
+	@code {
 
 	#nullable disable
 
@@ -446,6 +446,7 @@
 		Patreon,
 		Portada,
 		Privacidad,
+		Regiones,
 		RSS,
 		SteamDeck,
 		SteamOS,
@@ -576,7 +577,7 @@
 			{
 				descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String104", "Game");
 			}
-			
+
 			enlace ??= "https://" + dominio + "/game/" + idJuego.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombreJuego) + "/";
 			imagen ??= imagenJuego;
 			keywords2 ??= JuegoKeywords(categoriasJuego);
@@ -630,11 +631,19 @@
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywordsVacias;
 		}
+		else if (tipo == Tipo.Regiones)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Regions");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Regions");
+			enlace ??= "https://" + dominio + "/regions/";
+			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
+			keywords2 ??= keywordsVacias;
+		}
 		else if (tipo == Tipo.RSS)
 		{
 			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "RSS");
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "RSS");
-			enlace ??= "https://" + dominio + "/rss";
+			enlace ??= "https://" + dominio + "/rss/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywordsVacias;
 		}

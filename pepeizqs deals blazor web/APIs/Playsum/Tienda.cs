@@ -23,7 +23,8 @@ namespace APIs.Playsum
 				ImagenIcono = "/imagenes/tiendas/playsum_icono.ico",
 				Color = "#a91aff",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

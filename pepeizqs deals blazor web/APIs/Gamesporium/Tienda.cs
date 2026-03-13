@@ -21,7 +21,8 @@ namespace APIs.Gamesporium
 				ImagenIcono = "/imagenes/tiendas/gamesporium_icono.webp",
 				Color = "#141414",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

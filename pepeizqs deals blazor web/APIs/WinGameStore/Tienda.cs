@@ -22,7 +22,8 @@ namespace APIs.WinGameStore
 				ImagenIcono = "/imagenes/tiendas/wingamestore_icono.webp",
 				Color = "#265c92",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

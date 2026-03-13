@@ -22,7 +22,8 @@ namespace APIs.Stove
 				ImagenIcono = "/imagenes/tiendas/stove_icono.ico",
 				Color = "#fc4420",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;

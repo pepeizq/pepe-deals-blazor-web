@@ -28,7 +28,8 @@ namespace APIs.GameBillet
 				ImagenIcono = "/imagenes/tiendas/gamebillet_icono.webp",
 				Color = "#F1652A",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

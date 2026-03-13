@@ -1,0 +1,182 @@
+﻿@page "/regions/"
+
+@using Tiendas2
+@using pepeizqs_deals_blazor_web.Componentes.Interfaz
+
+@inject IHttpContextAccessor Contexto
+
+<Titulo tipo="@Titulo.Tipo.Regiones" idioma="@idioma" dominio="@dominio"/>
+
+<style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+		--glaseadoFondo: rgba(45, 47, 54, 0.70);
+	}
+
+	.caja-regiones-contenido {
+		background-color: var(--fondoSubsubcabecera);
+		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+		border-radius: 20px;
+		border: 2px solid var(--glaseadoBorde);
+	}
+
+	.caja-regiones-titulo {
+		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+		font-size: 18px;
+		padding: 20px 30px;
+		border-top-left-radius: inherit;
+		border-top-right-radius: inherit;
+	}
+
+	.tabla-tiendas th,
+	.tabla-tiendas td {
+		padding: 10px 15px;
+	}
+
+	.tabla-tiendas tr:nth-child(even) {
+		background-color: rgba(0, 0, 0, 0.25);
+	}
+
+	.tabla-tiendas :is(th, td):nth-child(2),
+	.tabla-tiendas :is(th, td):nth-child(3) {
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.tabla-tiendas td:nth-child(2) > div,
+	.tabla-tiendas td:nth-child(3) > div {
+		margin: 0 auto;
+	}
+</style>
+
+<div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 40px; margin-top: 40px; margin-bottom: 40px;">
+	<div class="caja-regiones-contenido">
+		<div class="caja-regiones-titulo">
+			@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Regions")
+		</div>
+
+		<div style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Regions")
+			</div>
+
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Regions")
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background-color: rgba(0, 0, 0, 0.25);">
+				<img src="/imagenes/banderas/europe.svg" style="width: 40px; height: 40px;" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Regions")" />
+
+				<div>
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Regions")
+				</div>
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background-color: rgba(0, 0, 0, 0.25);">
+				<img src="/imagenes/banderas/english.svg" style="width: 40px; height: 40px;" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Regions")" />
+
+				<div>
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Regions")
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="caja-regiones-contenido">
+		<div class="caja-regiones-titulo">
+			@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Regions")
+		</div>
+
+		<div style="padding: 30px; display: flex; flex-direction: column; gap: 20px;">
+			<div>
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Regions")
+			</div>
+
+			@{
+				var tiendas = Tiendas2.TiendasCargar.GenerarListado()
+                    .Where(t => t.Regiones?.Count > 0)
+					.OrderBy(t => t.Nombre).ToList();
+			}
+
+			<table class="tabla-tiendas">
+				<tr>
+					<th></th>
+					<th>
+						<img src="/imagenes/banderas/europe.svg" style="width: 30px; height: 30px;" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Regions")" />
+					</th>
+					<th>
+						<img src="/imagenes/banderas/english.svg" style="width: 30px; height: 30px;" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Regions")" />
+					</th>
+				</tr>
+				@for (int i = 0; i < tiendas.Count; i++)
+				{
+					var tienda = tiendas[i];
+
+					<tr class="@(i % 2 == 0 ? "fila-par" : "")">
+						<td>
+							<div style="display: flex; align-items: center; gap: 20px;">
+								<img src="@tienda.ImagenIcono" style="width: 20px; height: 20px;" alt="@tienda.Nombre" />
+
+								<div>
+									@tienda.Nombre
+								</div>
+							</div>
+						</td>
+						<td>
+							@foreach (var region in tienda.Regiones)
+							{
+								if (region == TiendaRegion.Europa)
+								{
+									<div style="width: 30px; height: 30px;">
+										<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+											<path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+										</svg>
+									</div>
+								}
+							}
+						</td>
+						<td>
+							@foreach (var region in tienda.Regiones)
+							{
+								if (region == TiendaRegion.EstadosUnidos)
+								{
+									<div style="width: 30px; height: 30px;">
+										<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+											<path d="M530.8 134.1C545.1 144.5 548.3 164.5 537.9 178.8L281.9 530.8C276.4 538.4 267.9 543.1 258.5 543.9C249.1 544.7 240 541.2 233.4 534.6L105.4 406.6C92.9 394.1 92.9 373.8 105.4 361.3C117.9 348.8 138.2 348.8 150.7 361.3L252.2 462.8L486.2 141.1C496.6 126.8 516.6 123.6 530.9 134z" />
+										</svg>
+									</div>
+								}
+							}
+						</td>
+					</tr>
+				}
+			</table>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	#nullable disable
+
+	private string idioma = "en";
+	private string usuarioId = null;
+	private string dominio = null;
+
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+		idioma = datos.Idioma;
+		usuarioId = datos.UsuarioId;
+		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+		}
+	}
+}

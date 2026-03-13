@@ -21,7 +21,8 @@ namespace APIs._2Game
 				ImagenIcono = "/imagenes/tiendas/2game_icono.webp",
 				Color = "#beb2f1",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;

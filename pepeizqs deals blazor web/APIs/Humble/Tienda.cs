@@ -29,7 +29,8 @@ namespace APIs.Humble
 				ImagenIcono = "/imagenes/tiendas/humblestore_icono.webp",
 				Color = "#ea9192",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;
@@ -57,7 +58,8 @@ namespace APIs.Humble
 				ImagenIcono = "/imagenes/tiendas/humblestore_icono.webp",
 				Color = "#ea9192",
 				AdminEnseñar = false,
-				AdminInteractuar = false
+				AdminInteractuar = false,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
 			};
 
 			return tienda;

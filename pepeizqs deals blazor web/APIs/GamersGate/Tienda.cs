@@ -22,7 +22,8 @@ namespace APIs.GamersGate
 				ImagenIcono = "/imagenes/tiendas/gamersgate_icono.ico",
 				Color = "#232A3E",
 				AdminEnseñar = true,
-				AdminInteractuar = true
+				AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

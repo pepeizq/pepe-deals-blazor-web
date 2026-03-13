@@ -36,8 +36,9 @@ namespace APIs.EA
                 ImagenIcono = "/imagenes/tiendas/ea_icono.webp",
                 Color = "#ff4747",
                 AdminEnseñar = true,
-                AdminInteractuar = true
-            };
+                AdminInteractuar = true,
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
+			};
 
             return tienda;
         }
