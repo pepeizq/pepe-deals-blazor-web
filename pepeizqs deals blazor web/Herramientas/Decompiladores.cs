@@ -82,6 +82,14 @@ namespace Herramientas
 			}
 			catch (Exception ex)
 			{
+				bool es404 = respuesta?.StatusCode == HttpStatusCode.NotFound;
+				bool esGidSteam = enlace.StartsWith("https://steamcommunity.com/gid/", StringComparison.OrdinalIgnoreCase);
+
+				if (es404 == true && esGidSteam== true)
+				{
+					return null;
+				}
+
 				string cuerpo = null;
 
 				if (respuesta != null)
