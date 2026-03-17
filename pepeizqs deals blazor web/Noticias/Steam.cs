@@ -1,5 +1,8 @@
-﻿using Juegos;
+﻿#nullable disable
+
+using Juegos;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace Noticias
 {
@@ -85,6 +88,45 @@ namespace Noticias
 				noticia.SteamEs.Contenido = await GenerarMensaje(noticia.ContenidoEs, "es", noticia.Id);
 			}
 
+			if (string.IsNullOrEmpty(noticia.Imagen) == false)
+			{
+				try
+				{
+					var httpCliente = new HttpClient();
+					httpCliente.Timeout = TimeSpan.FromSeconds(15);
+
+					var imagenBytes = await httpCliente.GetByteArrayAsync(noticia.Imagen);
+					var imagenBase64 = Convert.ToBase64String(imagenBytes);
+
+					var contenido = new FormUrlEncodedContent(new[]
+					{
+						new KeyValuePair<string, string>("key",     "8ca0b57a6bb9c4c33cd9e7ab8e6a7f05"),
+						new KeyValuePair<string, string>("o",       "2b819584285c102318568238c7d4a4c7"),
+						new KeyValuePair<string, string>("m",       "fb733cccce28e7db3ff9f17d7ccff3d1"),
+						new KeyValuePair<string, string>("version", "1.0.1"),
+						new KeyValuePair<string, string>("name",    "image"),
+						new KeyValuePair<string, string>("type",    "jpg"),
+						new KeyValuePair<string, string>("image",   imagenBase64)
+					});
+
+					var respuesta = await httpCliente.PostAsync("http://api.postimage.org/1/upload", contenido);
+					var xmlTexto = await respuesta.Content.ReadAsStringAsync();
+
+					var xml = XDocument.Parse(xmlTexto);
+					var hotlink = xml.Descendants("hotlink").FirstOrDefault()?.Value;
+
+					if (!string.IsNullOrEmpty(hotlink))
+					{
+						noticia.SteamEn.Contenido = "[p][img]" + hotlink + "[/img][/p]" + noticia.SteamEn.Contenido;
+						noticia.SteamEs.Contenido = "[p][img]" + hotlink + "[/img][/p]" + noticia.SteamEs.Contenido;
+					}
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje("Noticias Subir Imagen Steam", ex);
+				}
+			}
+
 			return noticia;
 		}
 
@@ -133,7 +175,7 @@ namespace Noticias
 
 						if (tier.Posicion == juego.Tier.Posicion)
 						{
-							string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]DRM: " + juego.DRM.ToString() + "[/p]";
+							string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]" + juego.DRM.ToString() + "[/p]";
 							string imagen = $@"[img src=""{juego.Juego.Imagenes.Header_460x215}""][/img]";
 
 							contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
@@ -244,5 +286,11 @@ namespace Noticias
 
 			return contenido;
 		}
+	}
+
+	public class PostImagesRespuesta
+	{
+		public string status { get; set; }
+		public string url { get; set; }
 	}
 }

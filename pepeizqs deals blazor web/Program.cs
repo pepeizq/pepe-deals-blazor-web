@@ -91,6 +91,11 @@ builder.Services.AddRazorComponents(opciones =>
 	opciones.KeepAliveInterval = TimeSpan.FromSeconds(20);
 });
 
+builder.Services.AddSignalR(options =>
+{
+	options.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+});
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<UsuarioAcceso>();
 builder.Services.AddScoped<IdentityRedirectManager>();

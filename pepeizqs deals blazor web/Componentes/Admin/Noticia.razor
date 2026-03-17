@@ -18,9 +18,15 @@
 @if (noticia != null)
 {
 	<div class="caja-admin-noticia cuerpo-ancho" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px;">
-		<div style="display: flex; align-items: center;">
-			<div style="width: 100%;">
+		<div style="display: flex; align-items: center; justify-content: space-between;">
+			<div>
 				Admin Editar • @noticia.TituloEs
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 20px">
+				<a href="/api/news/@noticia.Id" target="_blank" style="text-decoration: none;">
+					Api Web
+				</a>
 			</div>
 		</div>
 

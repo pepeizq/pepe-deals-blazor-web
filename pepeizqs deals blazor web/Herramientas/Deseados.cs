@@ -9,286 +9,230 @@ namespace Herramientas
 {
 	public static class Deseados
 	{
+		
+
 		public static async Task<List<JuegoDeseadoMostrar>> LeerJuegos(TiendaRegion region, string usuarioId)
 		{
 			Usuario deseadosUsuario = await global::BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
-			List<JuegoDeseadoMostrar> deseadosGestor = new List<JuegoDeseadoMostrar>();
+			Task<List<JuegoDeseadoMostrar>> tareaSteam = CargarDeseadosSteam(deseadosUsuario, region);
+			Task<List<JuegoDeseadoMostrar>> tareaWeb = CargarDeseadosWeb(deseadosUsuario, region);
+			Task<List<JuegoDeseadoMostrar>> tareaGog = CargarDeseadosGog(deseadosUsuario, region);
 
-			#region Deseados Steam
+			await Task.WhenAll(tareaSteam, tareaWeb, tareaGog);
 
-			List<string> deseadosSteam = new List<string>();
-
-			if (string.IsNullOrEmpty(deseadosUsuario.SteamWishlist) == false)
-			{
-				deseadosSteam = Herramientas.Listados.Generar(deseadosUsuario.SteamWishlist);
-			}
-
-			if (deseadosSteam?.Count > 0)
-			{
-				List<Juego> deseadosSteamJuegos = new List<Juego>();
-
-				deseadosSteamJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(region, deseadosSteam.Select(int.Parse).ToList());
-
-				if (deseadosSteamJuegos?.Count > 0)
-				{
-					int i = 0;
-
-					foreach (var juego in deseadosSteamJuegos)
-					{
-						i += 1;
-
-						if (juego != null)
-						{
-							deseadosGestor = AñadirJuegoMostrar(deseadosGestor, juego, JuegoDRM.Steam, true);
-						}
-					}
-				}
-			}
-
-			#endregion
-
-			#region Deseados Web
-
-			List<JuegoDeseado> deseadosWeb = new List<JuegoDeseado>();
-
-			if (string.IsNullOrEmpty(deseadosUsuario.Wishlist) == false)
-			{
-				deseadosWeb = JsonSerializer.Deserialize<List<JuegoDeseado>>(deseadosUsuario.Wishlist);
-			}
-
-			if (deseadosWeb?.Count > 0)
-			{
-				List<Juego> deseadosWebJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(region, deseadosWeb);
-
-				if (deseadosWebJuegos?.Count > 0)
-				{
-					int i = 0;
-
-					foreach (var deseadoWeb in deseadosWebJuegos)
-					{
-						i += 1;
-
-						JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
-
-						foreach (var deseado in deseadosWeb)
-						{
-							if (deseado.IdBaseDatos == deseadoWeb.Id.ToString())
-							{
-								drmDeseado = deseado.DRM;
-								break;
-							}
-						}
-
-						deseadosGestor = AñadirJuegoMostrar(deseadosGestor, deseadoWeb, drmDeseado, false);
-					}
-				}
-			}
-
-			#endregion
-
-			#region Deseados GOG
-
-			List<string> deseadosGog = new List<string>();
-
-			if (string.IsNullOrEmpty(deseadosUsuario.GogWishlist) == false)
-			{
-				deseadosGog = Herramientas.Listados.Generar(deseadosUsuario.GogWishlist);
-			}
-
-			if (deseadosGog?.Count > 0)
-			{
-				List<Juego> deseadosGogJuegos = new List<Juego>();
-
-				deseadosGogJuegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(region, deseadosGog);
-
-				if (deseadosGogJuegos?.Count > 0)
-				{
-					int i = 0;
-
-					foreach (var juego in deseadosGogJuegos)
-					{
-						i += 1;
-
-						if (juego != null)
-						{
-							deseadosGestor = AñadirJuegoMostrar(deseadosGestor, juego, JuegoDRM.GOG, true);
-						}
-					}
-				}
-			}
-
-			#endregion
-
-			return deseadosGestor;
+			return tareaSteam.Result
+				.Concat(tareaWeb.Result)
+				.Concat(tareaGog.Result)
+				.ToList();
 		}
 
-		private static List<JuegoDeseadoMostrar> AñadirJuegoMostrar(List<JuegoDeseadoMostrar> deseadosGestor, Juego juego, JuegoDRM drm, bool importado)
+		private static async Task<List<JuegoDeseadoMostrar>> CargarDeseadosSteam(Usuario deseadosUsuario, TiendaRegion region)
 		{
-			bool yaEsta = false;
+			List<JuegoDeseadoMostrar> resultado = new List<JuegoDeseadoMostrar>();
+			HashSet<(string, JuegoDRM)> deseadosHash = new HashSet<(string, JuegoDRM)>();
 
-			if (deseadosGestor.Count > 0)
+			if (string.IsNullOrEmpty(deseadosUsuario.SteamWishlist) == true)
 			{
-				foreach (var deseado in deseadosGestor)
+				return resultado;
+			}
+
+			List<int> ids = Herramientas.Listados.Generar(deseadosUsuario.SteamWishlist).Select(int.Parse).ToList();
+
+			if (ids.Count == 0)
+			{
+				return resultado;
+			}
+
+			List<Juego> juegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(region, ids);
+
+			foreach (var juego in juegos.Where(j => j != null))
+			{
+				AñadirJuegoMostrar(resultado, deseadosHash, juego, JuegoDRM.Steam, true, region);
+			}
+
+			return resultado;
+		}
+
+		private static async Task<List<JuegoDeseadoMostrar>> CargarDeseadosWeb(Usuario deseadosUsuario, TiendaRegion region)
+		{
+			List<JuegoDeseadoMostrar> resultado = new List<JuegoDeseadoMostrar>();
+			HashSet<(string, JuegoDRM)> deseadosHash = new HashSet<(string, JuegoDRM)>();
+
+			if (string.IsNullOrEmpty(deseadosUsuario.Wishlist) == true)
+			{
+				return resultado;
+			}
+
+			List<JuegoDeseado> deseadosWeb = JsonSerializer.Deserialize<List<JuegoDeseado>>(deseadosUsuario.Wishlist);
+
+			if (deseadosWeb?.Count == 0)
+			{
+				return resultado;
+			}
+
+			Dictionary<string, JuegoDeseado> deseadosWebDicc = deseadosWeb.ToDictionary(d => d.IdBaseDatos);
+
+			List<Juego> juegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(region, deseadosWeb);
+
+			foreach (var juego in juegos.Where(j => j != null))
+			{
+				JuegoDRM drm = deseadosWebDicc.TryGetValue(juego.Id.ToString(), out var deseado) ? deseado.DRM : JuegoDRM.NoEspecificado;
+
+				AñadirJuegoMostrar(resultado, deseadosHash, juego, drm, false, region);
+			}
+
+			return resultado;
+		}
+
+		private static async Task<List<JuegoDeseadoMostrar>> CargarDeseadosGog(Usuario deseadosUsuario, TiendaRegion region)
+		{
+			List<JuegoDeseadoMostrar> resultado = new List<JuegoDeseadoMostrar>();
+			HashSet<(string, JuegoDRM)> deseadosHash = new HashSet<(string, JuegoDRM)>();
+
+			if (string.IsNullOrEmpty(deseadosUsuario.GogWishlist) == true)
+			{
+				return resultado;
+			}
+
+			List<string> ids = Herramientas.Listados.Generar(deseadosUsuario.GogWishlist);
+
+			if (ids.Count == 0)
+			{
+				return resultado;
+			}
+
+			List<Juego> juegos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosGOG(region, ids);
+
+			foreach (var juego in juegos.Where(j => j != null))
+			{
+				AñadirJuegoMostrar(resultado, deseadosHash, juego, JuegoDRM.GOG, true, region);
+			}
+
+			return resultado;
+		}
+
+		private static void AñadirJuegoMostrar(List<JuegoDeseadoMostrar> deseadosGestor, HashSet<(string id, JuegoDRM DRM)> deseadosHash,
+			Juego juego, JuegoDRM drm, bool importado, TiendaRegion region)
+		{
+			if (deseadosHash.Add((juego.Id.ToString(), drm)) == false)
+			{
+				return;
+			}
+
+			JuegoDeseadoMostrar nuevoDeseado = null;
+			JuegoPrecio historico = null;
+
+			if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
+			{
+				historico = juego.PrecioMinimosHistoricos.FirstOrDefault(h => h.DRM == drm);			
+			}
+			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count	> 0)
+			{
+				historico = juego.PrecioMinimosHistoricosUS.FirstOrDefault(h => h.DRM == drm);
+			}
+
+			if (historico != null && Herramientas.OfertaActiva.Verificar(historico))
+			{
+				nuevoDeseado = new JuegoDeseadoMostrar
 				{
-					if (deseado.Id == juego.Id && deseado.DRM == drm)
+					Id = juego.Id,
+					IdSteam = juego.IdSteam,
+					IdGog = juego.IdGog,
+					SlugEpic = juego.SlugEpic,
+					Nombre = juego.Nombre,
+					Imagen = juego.Imagenes.Header_460x215,
+					DRM = drm,
+					Precio = historico,
+					Historico = true,
+					Importado = importado
+				};
+			}
+
+			JuegoPrecio precioFinal = null;
+
+			if (nuevoDeseado == null && region == TiendaRegion.Europa && juego.PrecioActualesTiendas?.Count > 0)
+			{
+				precioFinal = juego.PrecioActualesTiendas
+					.Where(p => p != null && p.DRM == drm && Herramientas.OfertaActiva.Verificar(p) && p.Precio > 0)
+					.Select(p =>
 					{
-						yaEsta = true;
-						break;
+						if (p.Moneda != Herramientas.JuegoMoneda.Euro && p.PrecioCambiado == 0)
+							p.PrecioCambiado = Herramientas.Divisas.CambioEuro(p.Precio, p.Moneda);
+						return p;
+					})
+					.Where(p => p.Moneda == Herramientas.JuegoMoneda.Euro ? p.Precio > 0 : p.PrecioCambiado > 0)
+					.OrderBy(p => p.Moneda == Herramientas.JuegoMoneda.Euro ? p.Precio : p.PrecioCambiado)
+					.FirstOrDefault();
+			}
+			else if (nuevoDeseado == null && region == TiendaRegion.EstadosUnidos && juego.PrecioActualesTiendasUS?.Count > 0)
+			{
+				precioFinal = juego.PrecioActualesTiendasUS
+					.Where(p => p != null && p.DRM == drm && Herramientas.OfertaActiva.Verificar(p) && p.Precio > 0)
+					.Select(p =>
+					{
+						if (p.Moneda != Herramientas.JuegoMoneda.Dolar && p.PrecioCambiado == 0)
+							p.PrecioCambiado = Herramientas.Divisas.CambioDolar(p.Precio, p.Moneda);
+						return p;
+					})
+					.Where(p => p.Moneda == Herramientas.JuegoMoneda.Dolar ? p.Precio > 0 : p.PrecioCambiado > 0)
+					.OrderBy(p => p.Moneda == Herramientas.JuegoMoneda.Dolar ? p.Precio : p.PrecioCambiado)
+					.FirstOrDefault();
+			}
+
+			if (precioFinal != null)
+			{
+				nuevoDeseado = new JuegoDeseadoMostrar
+				{
+					Id = juego.Id,
+					IdSteam = juego.IdSteam,
+					IdGog = juego.IdGog,
+					SlugEpic = juego.SlugEpic,
+					Nombre = juego.Nombre,
+					Imagen = juego.Imagenes.Header_460x215,
+					DRM = drm,
+					Precio = precioFinal,
+					Historico = false,
+					Importado = importado
+				};
+
+				var minimo = juego.PrecioMinimosHistoricos?.FirstOrDefault(m => m.DRM == drm);
+
+				if (minimo != null)
+				{
+					if (region == TiendaRegion.Europa)
+					{
+						nuevoDeseado.HistoricoPrecio = minimo.PrecioCambiado > 0 && minimo.Moneda != Herramientas.JuegoMoneda.Euro
+							? Herramientas.Precios.Euro(minimo.PrecioCambiado)
+							: minimo.PrecioCambiado == 0 && minimo.Moneda != Herramientas.JuegoMoneda.Euro
+								? Herramientas.Precios.Euro(Herramientas.Divisas.CambioEuro(minimo.Precio, minimo.Moneda))
+								: Herramientas.Precios.Euro(minimo.Precio);
+					}
+					else if (region == TiendaRegion.EstadosUnidos)
+					{
+						nuevoDeseado.HistoricoPrecio = minimo.PrecioCambiado > 0 && minimo.Moneda != Herramientas.JuegoMoneda.Dolar
+							? Herramientas.Precios.Dolar(minimo.PrecioCambiado)
+							: minimo.PrecioCambiado == 0 && minimo.Moneda != Herramientas.JuegoMoneda.Dolar
+								? Herramientas.Precios.Dolar(Herramientas.Divisas.CambioDolar(minimo.Precio, minimo.Moneda))
+								: Herramientas.Precios.Dolar(minimo.Precio);
 					}
 				}
 			}
 
-			if (yaEsta == false)
+			if (nuevoDeseado == null)
 			{
-				bool añadido = false;
-
-				if (juego?.PrecioMinimosHistoricos?.Count > 0)
-				{
-					foreach (var historico in juego.PrecioMinimosHistoricos)
-					{
-						if (historico.DRM == drm)
-						{
-							if (Herramientas.OfertaActiva.Verificar(historico) == true)
-							{
-								JuegoDeseadoMostrar nuevoDeseado = new JuegoDeseadoMostrar();
-								nuevoDeseado.Id = juego.Id;
-								nuevoDeseado.IdSteam = juego.IdSteam;
-								nuevoDeseado.IdGog = juego.IdGog;
-								nuevoDeseado.SlugEpic = juego.SlugEpic;
-								nuevoDeseado.Nombre = juego.Nombre;
-								nuevoDeseado.Imagen = juego.Imagenes.Header_460x215;
-								nuevoDeseado.DRM = drm;
-								nuevoDeseado.Precio = historico;
-								nuevoDeseado.Historico = true;
-								nuevoDeseado.Importado = importado;
-
-								if (juego.Analisis != null)
-								{
-									if (string.IsNullOrEmpty(juego.Analisis.Porcentaje) == false)
-									{
-										nuevoDeseado.ReseñasPorcentaje = juego.Analisis.Porcentaje.Replace("%", null);
-									}
-
-									if (string.IsNullOrEmpty(juego.Analisis.Cantidad) == false)
-									{
-										nuevoDeseado.ReseñasCantidad = juego.Analisis.Cantidad.Replace(",", null);
-									}
-								}
-								else
-								{
-									nuevoDeseado.ReseñasPorcentaje = "0";
-									nuevoDeseado.ReseñasCantidad = "0";
-								}
-
-								deseadosGestor.Add(nuevoDeseado);
-
-								añadido = true;
-							}
-
-							break;
-						}
-					}
-				}
-
-				if (añadido == false)
-				{
-					if (juego.PrecioActualesTiendas?.Count > 0)
-					{
-						JuegoPrecio precioFinal = null;
-						decimal precioReferencia = 1000000;
-
-						foreach (var actual in juego.PrecioActualesTiendas)
-						{
-							if (actual != null)
-							{
-								if (actual.DRM == drm)
-								{
-									if (Herramientas.OfertaActiva.Verificar(actual) == true)
-									{
-										if (actual.Precio > 0)
-										{
-											if (actual.Moneda != Herramientas.JuegoMoneda.Euro && actual.PrecioCambiado == 0)
-											{
-												actual.PrecioCambiado = Herramientas.Divisas.CambioEuro(actual.Precio, actual.Moneda);
-											}
-
-											if (precioReferencia > actual.Precio && actual.Precio > 0 && actual.Moneda == Herramientas.JuegoMoneda.Euro)
-											{
-												precioReferencia = actual.Precio;
-												precioFinal = actual;
-												precioFinal.Precio = actual.Precio;
-											}
-											else if (precioReferencia > actual.PrecioCambiado && actual.PrecioCambiado > 0 && actual.Moneda != Herramientas.JuegoMoneda.Euro)
-											{
-												precioReferencia = actual.PrecioCambiado;
-												precioFinal = actual;
-												precioFinal.Precio = actual.Precio;
-												precioFinal.PrecioCambiado = actual.PrecioCambiado;
-											}
-										}
-									}
-								}
-							}
-						}
-
-						if (precioFinal != null)
-						{
-							JuegoDeseadoMostrar nuevoDeseado = new JuegoDeseadoMostrar();
-							nuevoDeseado.Id = juego.Id;
-							nuevoDeseado.IdSteam = juego.IdSteam;
-							nuevoDeseado.IdGog = juego.IdGog;
-							nuevoDeseado.SlugEpic = juego.SlugEpic;
-							nuevoDeseado.Nombre = juego.Nombre;
-							nuevoDeseado.Imagen = juego.Imagenes.Header_460x215;
-							nuevoDeseado.DRM = drm;
-							nuevoDeseado.Precio = precioFinal;
-							nuevoDeseado.Historico = false;
-
-							foreach (var minimo in juego.PrecioMinimosHistoricos)
-							{
-								if (drm == minimo.DRM)
-								{
-									if (minimo.PrecioCambiado > 0 && minimo.Moneda != Herramientas.JuegoMoneda.Euro)
-									{
-										nuevoDeseado.HistoricoPrecio = Herramientas.Precios.Euro(minimo.PrecioCambiado);
-									}
-									else if (minimo.PrecioCambiado == 0 && minimo.Moneda != Herramientas.JuegoMoneda.Euro)
-									{
-										nuevoDeseado.HistoricoPrecio = Herramientas.Precios.Euro(Herramientas.Divisas.CambioEuro(minimo.Precio, minimo.Moneda));
-									}
-									else
-									{
-										nuevoDeseado.HistoricoPrecio = Herramientas.Precios.Euro(minimo.Precio);
-									}
-								}
-							}
-
-							nuevoDeseado.Importado = importado;
-
-							if (juego.Analisis != null)
-							{
-								nuevoDeseado.ReseñasPorcentaje = juego.Analisis?.Porcentaje?.Replace("%", null);
-								nuevoDeseado.ReseñasCantidad = juego.Analisis?.Cantidad?.Replace(",", null);
-							}
-
-							if (string.IsNullOrEmpty(nuevoDeseado.ReseñasPorcentaje) == true)
-							{
-								nuevoDeseado.ReseñasPorcentaje = "0";
-							}
-
-							if (string.IsNullOrEmpty(nuevoDeseado.ReseñasCantidad) == true)
-							{
-								nuevoDeseado.ReseñasCantidad = "0";
-							}
-
-							deseadosGestor.Add(nuevoDeseado);
-						}
-					}
-				}
+				return;
 			}
 
-			return deseadosGestor;
+			AsignarReseñas(nuevoDeseado, juego.Analisis);
+
+			deseadosGestor.Add(nuevoDeseado);
+		}
+
+		private static void AsignarReseñas(JuegoDeseadoMostrar deseado, JuegoAnalisis analisis)
+		{
+			deseado.ReseñasPorcentaje = analisis?.Porcentaje?.Replace("%", null) ?? "0";
+			deseado.ReseñasCantidad = analisis?.Cantidad?.Replace(",", null) ?? "0";
 		}
 
 		public static bool ComprobarSiEstaImportado(Usuario deseados, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado, bool usarIdMaestra = false)
