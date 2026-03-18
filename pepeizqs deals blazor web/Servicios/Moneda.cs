@@ -3,7 +3,6 @@ using Tiendas2;
 
 namespace Servicios
 {
-
 	public class Moneda
 	{
 		private readonly IJSRuntime _js;

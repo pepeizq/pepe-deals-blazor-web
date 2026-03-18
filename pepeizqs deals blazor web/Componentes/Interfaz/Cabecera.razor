@@ -314,6 +314,16 @@
             transform: rotate(360deg);
         }
     }
+
+    .buscador-inactivo {
+        background-color: var(--fondoEntrada);
+        border: 2px solid var(--glaseadoCabeceraBorde);
+    }
+
+    .buscador-activo {
+        background-color: var(--fondoBotonPequeñoHover);
+        border: 2px solid var(--fondoBoton);
+    }
 </style>
 
 <header class="cabecera2">
@@ -342,8 +352,15 @@
 
                 @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                 {
-                    <div style="@fondoBuscador padding: 0px 15px 0px 5px; border-radius: 15px; display: flex; align-items: center; gap: 10px; transition: background-color 0.1s ease, border-color 0.3s ease; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                    <div class="@claseBuscador" style="padding: 0px 15px 0px 5px; border-radius: 15px; display: flex; align-items: center; gap: 10px; transition: background-color 0.1s ease, border-color 0.3s ease; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                         <input @ref="inputBuscador" type="text" @bind-value="@textoBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto buscador-placeholder" style="background-color: transparent; min-width: 50%; font-size: 14px; border: 0px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "SearchPlaceholder", "Header")" autocomplete="off"/>
+
+                        @if (cargandoBusqueda == true)
+                        {
+                            <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: space-around;">
+                                <div class="cargando-busqueda" />
+                            </div>
+                        }
 
                         @if (resultadosMostrar == null || resultadosMostrar?.Count == 0)
                         {
@@ -354,13 +371,7 @@
                                         <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
                                     </svg>
                                 </div>
-                            }
-                            else
-                            {
-                                <div style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: space-around;">
-			                        <div class="cargando-busqueda" />
-		                        </div>                                
-                            }                           
+                            }                        
                         }
                         else
                         {
@@ -1100,71 +1111,142 @@
 
     private ElementReference inputBuscador;
     private DotNetObjectReference<Cabecera> cabeceraReferencia;
-    [PersistentState] public List<Juegos.Juego> resultadosMostrar { get; set; }
+
+    [PersistentState]
+    public List<Juegos.Juego> resultadosMostrar { get; set; }
+
     public string textoBuscador { get; set; } = string.Empty;
-    private string fondoBuscador = "background-color: var(--fondoEntrada); border: 2px solid var(--glaseadoCabeceraBorde);";
+
+    private bool buscadorActivo = false;
     private bool cargandoBusqueda = false;
+
+    private CancellationTokenSource cts;
+    private int busquedaActualId = 0;
+    private const int retraso = 150;
+    private const int minimosCaracteresBusqueda = 2;
+    private const int resultadosMaximos = 20;
+
+    private string claseBuscador => buscadorActivo || string.IsNullOrEmpty(textoBuscador) == false ? "buscador-activo" : "buscador-inactivo";
 
     private void ClickBuscador()
     {
-        fondoBuscador = "background-color: var(--fondoBotonPequeñoHover); border: 2px solid var(--fondoBoton);";
+        buscadorActivo = true;
     }
 
     private void PerderBuscador()
     {
         if (string.IsNullOrEmpty(textoBuscador) == true)
         {
-            fondoBuscador = "background-color: var(--fondoEntrada); border: 2px solid var(--glaseadoCabeceraBorde);";
+            buscadorActivo = false;
         }
     }
-
-    private CancellationTokenSource _cts;
 
     [JSInvokable]
     public async Task EventoTecleoBuscador(string texto)
     {
-        cargandoBusqueda = true;
-        _cts?.Cancel();
-        _cts = new CancellationTokenSource();
-        var token = _cts.Token;
+        CancelarBusquedaAnterior();
+    
+        var busquedaId = ++busquedaActualId; 
+        var token = cts.Token;
 
         try
         {
-            if (texto.Length < 2)
+            if (texto.Length < minimosCaracteresBusqueda)
             {
-                cargandoBusqueda = false;
-                resultadosMostrar?.Clear();
-                await InvokeAsync(StateHasChanged);
+                await LimpiarResultados();
                 return;
             }
 
-            var tarea = BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, 20);
+            cargandoBusqueda = true;
+            StateHasChanged();
 
-            var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
+            await Task.Delay(retraso, token);
 
-            if (tareaFinalizada != tarea)
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos);
+
+            if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
-                return;
-            }
-
-            resultadosMostrar = tarea.Result;
-
-            if (token.IsCancellationRequested == false)
-            {
-                cargandoBusqueda = false;
-                await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
-                await InvokeAsync(StateHasChanged);
+                resultadosMostrar = resultados ?? new();
+                await ActualizarScrollBody(resultadosMostrar.Any());
             }
         }
-        catch (TaskCanceledException) { }
+        catch
+        {
+            if (busquedaId == busquedaActualId)
+            {
+                resultadosMostrar?.Clear();
+            }
+        }
+        finally
+        {
+            if (busquedaId == busquedaActualId)
+            {
+                cargandoBusqueda = false;
+                StateHasChanged();
+            }
+        }
     }
+
+    private void CancelarBusquedaAnterior()
+    {
+        if (cts != null)
+        {
+            try
+            {
+                if (cts.IsCancellationRequested == false)
+                {
+                    cts.Cancel();
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                
+            }
+            finally
+            {
+                try
+                {
+                    cts.Dispose();
+                }
+                catch (ObjectDisposedException)
+                {
+                   
+                }
+            }
+        }
+    
+        cts = new CancellationTokenSource();
+    }
+
 
     private async Task LimpiarBusqueda(MouseEventArgs e)
     {
+        cts?.Cancel();
+        cts?.Dispose();
+        busquedaActualId++; 
+    
         textoBuscador = string.Empty;
+        await LimpiarResultados();
+        buscadorActivo = false;
+    }
+
+    private async Task LimpiarResultados()
+    {
+        cargandoBusqueda = false;
         resultadosMostrar?.Clear();
-        fondoBuscador = "background-color: var(--fondoEntrada); border: 2px solid var(--glaseadoCabeceraBorde);";
-        await JavaScript.InvokeVoidAsync("toggleBodyScroll", false);
+        await ActualizarScrollBody(false);
+        StateHasChanged();
+    }
+
+    private async Task ActualizarScrollBody(bool desactivar)
+    {
+        await JavaScript.InvokeVoidAsync("toggleBodyScroll", desactivar);
+    }
+
+    public void Dispose()
+    {
+        cts?.Cancel();
+        cts?.Dispose();
     }
 
     #endregion

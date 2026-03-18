@@ -248,7 +248,7 @@
 		}
 		else
 		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/sync/" + plataforma + "/");
+			await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/sync/" + plataforma.ToLower() + "/");
 		}
 	}
 

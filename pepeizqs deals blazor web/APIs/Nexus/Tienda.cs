@@ -10,7 +10,6 @@ using Tiendas2;
 
 namespace APIs.Nexus
 {
-
 	public static class Tienda
 	{
 		public static Tiendas2.Tienda Generar()
@@ -25,7 +24,7 @@ namespace APIs.Nexus
 				Color = "#3BB9AC",
 				AdminEnseñar = true,
 				AdminInteractuar = true,
-				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;
@@ -36,7 +35,7 @@ namespace APIs.Nexus
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			HttpClient cliente = new HttpClient();
-			cliente.BaseAddress = new Uri("https://www.nexus.gg//");
+			cliente.BaseAddress = new Uri("https://www.nexus.gg/");
 			cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			cliente.DefaultRequestHeaders.Add("x-algolia-api-key", "3bb19265d0e5978fa8b4af145f8209a5");
 			cliente.DefaultRequestHeaders.Add("x-algolia-application-id", "KZU3CQXW7F");

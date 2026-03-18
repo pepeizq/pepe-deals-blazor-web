@@ -262,6 +262,7 @@
 
             await BaseDatos.Usuarios.Actualizar.Opcion("EpicGames", textoIds, usuarioId);
             await BaseDatos.Usuarios.Actualizar.Opcion("EpicGamesLastImport", DateTime.Now, usuarioId);
+            usuario.EpicGamesLastImport = DateTime.Now;
 
             trabajando = false;
         }

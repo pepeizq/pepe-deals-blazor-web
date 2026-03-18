@@ -45,14 +45,14 @@ namespace Tareas
 						{
 							List<Juegos.Juego> juegosDiaSteam = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.Steam);
 
-							if (juegosDiaSteam?.Count > 0)
+							if (juegosDiaSteam?.Count > 3)
 							{
 								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaSteam, Juegos.JuegoDRM.Steam);
 							}
 
 							List<Juegos.Juego> juegosDiaGog = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.GOG);
 
-							if (juegosDiaGog?.Count > 0)
+							if (juegosDiaGog?.Count > 3)
 							{
 								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaGog, Juegos.JuegoDRM.GOG);
 							}
