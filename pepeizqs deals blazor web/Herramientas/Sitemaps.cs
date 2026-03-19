@@ -139,46 +139,44 @@ namespace Herramientas
 			sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"\r\n        xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\">\r\n");
 
 			string textoIndex = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoIndex);
 
 			string textoBundles = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/bundles/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/bundles/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoBundles);
 
-
-
 			string textoGratis = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/free/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/free/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoGratis);
 
 			string textoSuscripciones = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/subscriptions/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/subscriptions/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoSuscripciones);
 
 			string textoSuscripciones2 = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/subscriptions/archive/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/subscriptions/archive/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoSuscripciones2);
 
 			string textoSuscripciones3 = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/subscriptions/last-added/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/subscriptions/last-added/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoSuscripciones3);
 
@@ -196,102 +194,108 @@ namespace Herramientas
 			}
 
 			string textoStreaming = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/streaming/</loc>" + Environment.NewLine +
-					"<changefreq>daily</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/streaming/</loc>" + Environment.NewLine +
+				"<changefreq>daily</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoStreaming);
 
 			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
 			{
 				string textoStreaming2 = "<url>" + Environment.NewLine +
-						"<loc>https://" + dominio + "/streaming/" + Herramientas.EnlaceAdaptador.Nombre(streaming.Id.ToString().ToLower()) + "/</loc>" + Environment.NewLine +
-						"<changefreq>daily</changefreq>" + Environment.NewLine +
-						"</url>";
+					"<loc>https://" + dominio + "/streaming/" + Herramientas.EnlaceAdaptador.Nombre(streaming.Id.ToString().ToLower()) + "/</loc>" + Environment.NewLine +
+					"<changefreq>daily</changefreq>" + Environment.NewLine +
+					"</url>";
 
 				sb.Append(textoStreaming2);
 			}
 
 			string textoMinimos = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/historical-lows/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/historical-lows/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoMinimos);
 
 			string textoSteamDeck = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/steamdeck/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/steamdeck/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoSteamDeck);
 
 			string textoSteamOS = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/steamos/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/steamos/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoSteamOS);
 
 			string textoGeforceNOW = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/geforcenow/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/geforcenow/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoGeforceNOW);
 
 			string textoBoosteroid = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/boosteroid/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/boosteroid/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoBoosteroid);
 
 			string textoAmazonLuna = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/luna/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/luna/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoAmazonLuna);
 
 			string textoNoticias = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/last-news/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/last-news/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoNoticias);
 
 			string textoActualizaciones = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/last-updates/</loc>" + Environment.NewLine +
-					"<changefreq>weekly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/last-updates/</loc>" + Environment.NewLine +
+				"<changefreq>weekly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoActualizaciones);
 
 			string textoAñadidos = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/last-added/</loc>" + Environment.NewLine +
-					"<changefreq>hourly</changefreq>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/last-added/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoAñadidos);
 
 			string textoPatreon = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/patreon/</loc>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/patreon/</loc>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoPatreon);
 
 			string textoComparador = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/compare/</loc>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/compare/</loc>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoComparador);
 
 			string textoApi = "<url>" + Environment.NewLine +
-					"<loc>https://" + dominio + "/api/</loc>" + Environment.NewLine +
-					"</url>";
+				"<loc>https://" + dominio + "/api/</loc>" + Environment.NewLine +
+				"</url>";
 
 			sb.Append(textoApi);
+
+			string textoRegiones = "<url>" + Environment.NewLine +
+				"<loc>https://" + dominio + "/regions/</loc>" + Environment.NewLine +
+				"</url>";
+
+			sb.Append(textoRegiones);
 
 			sb.Append("</urlset>");
 

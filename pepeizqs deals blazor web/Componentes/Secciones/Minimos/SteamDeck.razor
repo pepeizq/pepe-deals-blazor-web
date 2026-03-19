@@ -297,17 +297,24 @@
 								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
 
 								<datalist id="precios">
-									<option value="5" label="5€"></option>
-									<option value="20" label="20€"></option>
-									<option value="40" label="40€"></option>
-									<option value="60" label="60€"></option>
-									<option value="80" label="80€"></option>
-									<option value="100" label="100€"></option>
+									<option value="5" label="5"></option>
+									<option value="20" label="20"></option>
+									<option value="40" label="40"></option>
+									<option value="60" label="60"></option>
+									<option value="80" label="80"></option>
+									<option value="100" label="100"></option>
 								</datalist>
 							</div>
 
 							<div style="width: 20%; text-align: center;">
-								@precioMaximo€
+								@if (usuarioRegion == TiendaRegion.Europa)
+								{
+									@(precioMaximo.ToString() + "€")
+								}
+								else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+								{
+									@("$" + precioMaximo.ToString())
+								}
 							</div>
 						</div>
 					</div>

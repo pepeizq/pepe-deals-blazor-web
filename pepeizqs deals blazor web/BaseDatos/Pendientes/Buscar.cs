@@ -57,7 +57,67 @@ namespace BaseDatos.Pendientes
 			return "0";
 		}
 
-        public static async Task<int> TiendasCantidad()
+		public static async Task<int> Cantidad()
+		{
+			var sentencias = new List<string>();
+
+			// Tiendas
+			foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+			{
+				if (tienda.Id != APIs.Steam.Tienda.Generar().Id &&
+					tienda.Id != APIs.Steam.Tienda.GenerarBundles().Id)
+				{
+					sentencias.Add($"SELECT COUNT(*) FROM tienda{tienda.Id} WHERE idJuegos = '0' AND descartado = 'no'");
+				}
+			}
+
+			// Suscripciones
+			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
+			{
+				if (suscripcion.AdminPendientes == true)
+				{
+					sentencias.Add($"SELECT COUNT(*) FROM temporal{suscripcion.Id}");
+				}
+			}
+
+			// Streaming
+			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
+			{
+				sentencias.Add($"SELECT COUNT(*) FROM streaming{streaming.Id} WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)");
+			}
+
+			// Plataformas
+			foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
+			{
+				sentencias.Add($"SELECT COUNT(*) FROM temporal{plataforma.Id}juegos");
+			}
+
+			if (sentencias.Count == 0)
+			{
+				return 0;
+			}
+
+			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias)
+						 + " OPTION (MAXDOP 8);";
+
+			try
+			{
+				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<int>(sql)).ToList();
+				});
+
+				return resultados.Sum();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Total Cantidad", ex);
+			}
+
+			return 0;
+		}
+
+		public static async Task<int> TiendasCantidad()
         {
 			List<string> sentencias = new List<string>();
 

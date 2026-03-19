@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.Data.SqlClient
 @using Tiendas2
+@using global::Juegos
 
 <style>
     .caja-admin-pendientes {
@@ -158,9 +159,9 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
                         @if (string.IsNullOrEmpty(idsPendiente) == false)
                         {
-                            if (resultados?.Count > 0)
+                            if (seleccionados?.Count > 0)
                             {
-                                foreach (var resultado in resultados)
+                                foreach (var resultado in seleccionados)
                                 {
                                     if (resultado != null)
                                     {
@@ -185,194 +186,66 @@
 
     <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" />
 
-    @if (ocupadoBuscador == true)
+    @if (buscadorBuscando)
     {
         <div style="margin-top: 20px;">
             Buscando...
         </div>
     }
-    else
+    else if (string.IsNullOrEmpty(textoBuscador) == false)
     {
-        if (string.IsNullOrEmpty(textoBuscador) == false)
+        @if (pestañasBuscador.Values.All(p => p.resultados.Count == 0))
+        {
+            <div style="margin-top: 20px;">
+                No hay resultados
+            </div>
+        }
+        else
         {
             <div style="display: flex; align-items: center; gap: 20px; margin: 20px 0px;">
-                <button @onclick="@(e => CambiarPestañas(e, 0))" class="boton-pequeño" style="width: 130px; text-align: center; box-shadow: none; @estiloJuegos">Juegos (@buscadorPendientesJuegos.Count.ToString())</button>
-
-                <button @onclick="@(e => CambiarPestañas(e, 1))" class="boton-pequeño" style="width: 130px; text-align: center; box-shadow: none; @estiloDLCs">DLCs (@buscadorPendientesDLCs.Count.ToString())</button>
-
-                <button @onclick="@(e => CambiarPestañas(e, 2))" class="boton-pequeño" style="width: 180px; text-align: center; box-shadow: none; @estiloBandasSonoras">Bandas Sonoras (@buscadorPendientesBandasSonoras.Count.ToString())</button>
-
-                <button @onclick="@(e => CambiarPestañas(e, 3))" class="boton-pequeño" style="width: 130px; text-align: center; box-shadow: none; @estiloSoftware">Software (@buscadorPendientesSoftware.Count.ToString())</button>
+                @foreach (var (tipo, info) in ObtenerInfoPestañas())
+                {
+                    var pestaña = pestañasBuscador[tipo];
+                    <button @onclick="@(e => CambiarPestañas(e, info.Indice))" class="boton-pequeño" style="width: @(info.Ancho)px; text-align: center; box-shadow: none; @pestaña.ObtenerEstilo()">
+                        @info.Titulo (@pestaña.resultados.Count)
+                    </button>
+                }
             </div>
 
-            @if (pestañaJuegos == true)
-            {
-                if (buscadorPendientesJuegos?.Count > 0)
-                {
-                    <div>
-                        @foreach (var juego in buscadorPendientesJuegos)
-                        {
-                            <hr />
-
-                            <div class="perfil-flexible-centrado" style="flex-wrap: wrap;">
-                                <div style="width: 150px; min-width: 150px;">
-                                    <button @onclick="@(e => ClickearIdPendientes(e, juego))" class="boton-pequeño" style="text-align: center;">
-                                        Añadir ID
-
-                                        <div style="font-size: 13px;">
-                                            @juego.Id
-                                        </div>
-                                    </button>
-                                </div>
-
-                                <div style="padding-left: 15px;">
-                                    <a href="/game/@juego.Id.ToString()" target="_blank">
-                                        <img src="@juego.Imagenes.Header_460x215" style="width: 230px; height: 112px;" />
-                                    </a>
-                                </div>
-
-                                <div style="width: 100%; padding: 5px 10px; flex: 1;">
-                                    @juego.Nombre
-                                </div>
-
-                                <div class="admin-busqueda-juego-derecha">
-                                    <button @onclick="@(e => ClickearBorrarPendientes(e, juego.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
-                                        Borrar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            }
-
-            @if (pestañaDLCs == true)
-            {
-                if (buscadorPendientesDLCs?.Count > 0)
-                {
-                    <div>
-                        @foreach (var dlc in buscadorPendientesDLCs)
-                        {
-                            <hr />
-
-                            <div class="perfil-flexible-centrado" style="flex-wrap: wrap;">
-                                <div style="width: 150px; min-width: 150px;">
-                                    <button @onclick="@(e => ClickearIdPendientes(e, dlc))" class="boton-pequeño" style="text-align: center;">
-                                        Añadir ID
-
-                                        <div style="font-size: 13px;">
-                                            @dlc.Id
-                                        </div>
-                                    </button>
-                                </div>
-
-                                <div style="padding-left: 15px;">
-                                    <a href="/game/@dlc.Id.ToString()" target="_blank">
-                                        <img src="@dlc.Imagenes.Header_460x215" style="width: 230px; height: 112px;" />
-                                    </a>
-                                </div>
-
-                                <div style="width: 100%; padding: 5px 10px; flex: 1;">
-                                    @dlc.Nombre
-                                </div>
-
-                                <div class="admin-busqueda-juego-derecha">
-                                    <button @onclick="@(e => ClickearBorrarPendientes(e, dlc.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
-                                        Borrar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            }
-
-            @if (pestañaBandasSonoras == true)
-            {
-                if (buscadorPendientesBandasSonoras?.Count > 0)
-                {
-                    <div>
-                        @foreach (var bandaSonora in buscadorPendientesBandasSonoras)
-                        {
-                            <hr />
-
-                            <div class="perfil-flexible-centrado" style="flex-wrap: wrap;">
-                                <div style="width: 150px; min-width: 150px;">
-                                    <button @onclick="@(e => ClickearIdPendientes(e, bandaSonora))" class="boton-pequeño" style="text-align: center;">
-                                        Añadir ID
-
-                                        <div style="font-size: 13px;">
-                                            @bandaSonora.Id
-                                        </div>
-                                    </button>
-                                </div>
-
-                                <div style="padding-left: 15px;">
-                                    <a href="/game/@bandaSonora.Id.ToString()" target="_blank">
-                                        <img src="@bandaSonora.Imagenes.Header_460x215" style="width: 230px; height: 112px;" />
-                                    </a>
-                                </div>
-
-                                <div style="width: 100%; padding: 5px 10px; flex: 1;">
-                                    @bandaSonora.Nombre
-                                </div>
-
-                                <div class="admin-busqueda-juego-derecha">
-                                    <button @onclick="@(e => ClickearBorrarPendientes(e, bandaSonora.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
-                                        Borrar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            }
-
-            @if (pestañaSoftware == true)
-            {
-                if (buscadorPendientesSoftware?.Count > 0)
-                {
-                    <div>
-                        @foreach (var software in buscadorPendientesSoftware)
-                        {
-                            <hr />
-
-                            <div class="perfil-flexible-centrado" style="flex-wrap: wrap;">
-                                <div style="width: 150px; min-width: 150px;">
-                                    <button @onclick="@(e => ClickearIdPendientes(e, software))" class="boton-pequeño" style="text-align: center;">
-                                        Añadir ID
-
-                                        <div style="font-size: 13px;">
-                                            @software.Id
-                                        </div>
-                                    </button>
-                                </div>
-
-                                <div style="padding-left: 15px;">
-                                    <a href="/game/@software.Id.ToString()" target="_blank">
-                                        <img src="@software.Imagenes.Header_460x215" style="width: 230px; height: 112px;" />
-                                    </a>
-                                </div>
-
-                                <div style="width: 100%; padding: 5px 10px; flex: 1;">
-                                    @software.Nombre
-                                </div>
-
-                                <div class="admin-busqueda-juego-derecha">
-                                    <button @onclick="@(e => ClickearBorrarPendientes(e, software.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
-                                        Borrar
-                                    </button>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            }
-
-            @if (buscadorPendientesJuegos?.Count == 0 && buscadorPendientesDLCs?.Count == 0 && buscadorPendientesBandasSonoras?.Count == 0 && buscadorPendientesSoftware?.Count == 0)
+            foreach (var pestaña in pestañasBuscador.Values.Where(p => p.activa && p.resultados.Count > 0))
             {
                 <div>
-                    <label>No hay resultados</label>
+                    @foreach (var item in pestaña.resultados)
+                    {
+                        <hr />
+                        <div class="perfil-flexible-centrado" style="flex-wrap: wrap;">
+                            <div style="width: 150px; min-width: 150px;">
+                                <button @onclick="@(e => ClickearIdPendientes(e, item))" class="boton-pequeño" style="text-align: center;">
+                                    Añadir ID
+
+                                    <div style="font-size: 13px;">
+                                        @item.Id
+                                    </div>
+                                </button>
+                            </div>
+
+                            <div style="padding-left: 15px;">
+                                <a href="/game/@item.Id" target="_blank">
+                                    <img src="@item.Imagenes.Header_460x215" style="width: 230px; height: 112px;" />
+                                </a>
+                            </div>
+
+                            <div style="width: 100%; padding: 5px 10px; flex: 1;">
+                                @item.Nombre
+                            </div>
+
+                            <div class="admin-busqueda-juego-derecha">
+                                <button @onclick="@(e => ClickearBorrarPendientes(e, item.Id.ToString()))" class="boton-pequeño" style="background-color: var(--fondoPeligro); text-align: center;">
+                                    Borrar
+                                </button>
+                            </div>
+                        </div>
+                    }
                 </div>
             }
         }
@@ -403,6 +276,8 @@
     protected override async Task OnInitializedAsync()
     {
         ocupado = true;
+
+        InicializarPestañasBuscador();
 
         #region Tiendas
 
@@ -545,7 +420,7 @@
     {
         ocupado = true;
 
-        resultados.Clear();
+        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -592,7 +467,7 @@
     {
         ocupado = true;
 
-        resultados.Clear();
+        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -639,7 +514,7 @@
     {
         ocupado = true;
 
-        resultados.Clear();
+        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -686,7 +561,7 @@
     {
         ocupado = true;
 
-        resultados.Clear();
+        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -794,7 +669,7 @@
     {
         ocupado = true;
 
-        resultados.Clear();
+        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(idTiendaPendiente) == false)
         {
@@ -891,7 +766,9 @@
         ocupado = false;
     }
 
-    private List<global::Juegos.Juego> resultados = new List<global::Juegos.Juego>();
+    #region Seleccionados
+
+    private List<global::Juegos.Juego> seleccionados = new List<global::Juegos.Juego>();
 
     private async Task TextoCambiaPendientes(ChangeEventArgs texto)
     {
@@ -910,282 +787,263 @@
         string[] datosPartidos = idsPendiente.Split(',');
         lista.AddRange(datosPartidos);
 
-        if (resultados == null)
+        if (seleccionados == null)
         {
-            resultados = new List<global::Juegos.Juego>();
+            seleccionados = new List<global::Juegos.Juego>();
         }
 
         if (lista?.Count > 0)
         {
-            var idsJuegos = new HashSet<int>(resultados?.Select(j => j.Id));
+            var idsJuegos = new HashSet<int>(seleccionados?.Select(j => j.Id));
 
-            var noExistentes = lista.Where(id => !idsJuegos.Contains(int.Parse(id))).ToList();
+            var noExistentes = lista.Where(id => idsJuegos.Contains(int.Parse(id)) == false).ToList();
 
             if (noExistentes?.Count > 0)
             {
                 foreach (var noExiste in noExistentes)
                 {
-                    resultados.Add(await BaseDatos.Juegos.Buscar.UnJuegoReducido(int.Parse(noExiste)));
+                    seleccionados.Add(await BaseDatos.Juegos.Buscar.UnJuegoReducido(int.Parse(noExiste)));
                 }
             }
         }
     }
 
-    #region Buscador
+    #endregion
 
-    private bool pestañaJuegos = true;
-    private bool pestañaDLCs = false;
-    private bool pestañaBandasSonoras = false;
-    private bool pestañaSoftware = false;
+    #region Buscador 
 
-    private string estiloJuegos = null;
-    private string estiloDLCs = null;
-    private string estiloBandasSonoras = null;
-    private string estiloSoftware = null;
-
-    private void CambiarPestañas(MouseEventArgs e, int id)
+    private class PestañaBuscador
     {
-        pestañaJuegos = false;
-        pestañaDLCs = false;
-        pestañaBandasSonoras = false;
-        pestañaSoftware = false;
+        public JuegoTipo tipo { get; set; }
+        public bool activa { get; set; }
+        public bool visible { get; set; }
+        public List<global::Juegos.Juego> resultados { get; set; } = new();
 
-        if (estiloJuegos != "display: none;")
+        public string ObtenerEstilo()
         {
-            estiloJuegos = "background-color: transparent;";
-        }
+            if (visible == false) 
+            {
+                return "display: none;";
+            }
 
-        if (estiloDLCs != "display: none;")
-        {
-            estiloDLCs = "background-color: transparent;";
-        }
-
-        if (estiloBandasSonoras != "display: none;")
-        {
-            estiloBandasSonoras = "background-color: transparent;";
-        }
-
-        if (estiloSoftware != "display: none;")
-        {
-            estiloSoftware = "background-color: transparent;";
-        }
-
-        if (id == 0)
-        {
-            pestañaJuegos = true;
-            estiloJuegos = "background-color: var(--fondoBotonPequeño);";
-        }
-        else if (id == 1)
-        {
-            pestañaDLCs = true;
-            estiloDLCs = "background-color: var(--fondoBotonPequeño);";
-        }
-        else if (id == 2)
-        {
-            pestañaBandasSonoras = true;
-            estiloBandasSonoras = "background-color: var(--fondoBotonPequeño);";
-        }
-        else if (id == 3)
-        {
-            pestañaSoftware = true;
-            estiloSoftware = "background-color: var(--fondoBotonPequeño);";
+            return activa ? "background-color: var(--fondoBotonPequeño);" : "background-color: transparent;";
         }
     }
 
-    private bool ocupadoBuscador = false;
+    private Dictionary<JuegoTipo, PestañaBuscador> pestañasBuscador;
 
-    private List<global::Juegos.Juego> buscadorPendientesJuegos = new List<global::Juegos.Juego>();
-    private List<global::Juegos.Juego> buscadorPendientesDLCs = new List<global::Juegos.Juego>();
-    private List<global::Juegos.Juego> buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
-    private List<global::Juegos.Juego> buscadorPendientesSoftware = new List<global::Juegos.Juego>();
+    private void InicializarPestañasBuscador()
+    {
+        pestañasBuscador = new Dictionary<JuegoTipo, PestañaBuscador>
+        {
+            [JuegoTipo.Game] = new() { tipo = JuegoTipo.Game, activa = true, visible = true },
+            [JuegoTipo.DLC] = new() { tipo = JuegoTipo.DLC },
+            [JuegoTipo.Music] = new() { tipo = JuegoTipo.Music },
+            [JuegoTipo.Software] = new() { tipo = JuegoTipo.Software }
+        };
+    }
 
-    private string textoBuscador = string.Empty;
+    private bool pestañaJuegos => pestañasBuscador[JuegoTipo.Game].activa;
+    private bool pestañaDLCs => pestañasBuscador[JuegoTipo.DLC].activa;
+    private bool pestañaBandasSonoras => pestañasBuscador[JuegoTipo.Music].activa;
+    private bool pestañaSoftware => pestañasBuscador[JuegoTipo.Software].activa;
+
+    private string estiloJuegos => pestañasBuscador[JuegoTipo.Game].ObtenerEstilo();
+    private string estiloDLCs => pestañasBuscador[JuegoTipo.DLC].ObtenerEstilo();
+    private string estiloBandasSonoras => pestañasBuscador[JuegoTipo.Music].ObtenerEstilo();
+    private string estiloSoftware => pestañasBuscador[JuegoTipo.Software].ObtenerEstilo();
+
+    private void CambiarPestañas(MouseEventArgs e, int id)
+    {
+        var tipos = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software };
+
+        foreach (var pestaña in pestañasBuscador.Values)
+        {
+            pestaña.activa = false;
+        }
+
+        if (id >= 0 && id < tipos.Length)
+        {
+            pestañasBuscador[tipos[id]].activa = true;
+        }
+    }
+
+    private bool buscadorBuscando = false;
+    private string _textoBuscador = string.Empty;
     private CancellationTokenSource _cts;
+    private HashSet<int> idsPendientes = new(); 
+
+    public string textoBuscador
+    {
+        get => _textoBuscador;
+        set
+        {
+            _textoBuscador = value;
+            _ = TextoCambiaBuscador();
+        }
+    }
 
     private async Task TextoCambiaBuscador()
     {
-        ocupadoBuscador = true;
+        buscadorBuscando = true;
 
         _cts?.Cancel();
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
 
-        if (textoBuscador.Trim().Length > 2)
+        try
         {
-            var tarea = BaseDatos.Juegos.Buscar.Nombre2(TiendaRegion.Europa, textoBuscador, 250, true);
+            if (_textoBuscador.Trim().Length <= 2)
+            {
+                LimpiarResultados();
+                return;
+            }
 
-            var tareaFinalizada = await Task.WhenAny(tarea, Task.Delay(-1, token));
+            await Task.Delay(100, token);
 
-            if (tareaFinalizada != tarea)
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(TiendaRegion.Europa, _textoBuscador, 250, true);
+
+            if (token.IsCancellationRequested == true)
             {
                 return;
             }
 
-            List<global::Juegos.Juego> resultados =  tarea.Result;
+            ActualizarResultados(resultados);
+            ActivarPrimeraPestañaDisponible();
+        }
+        catch (TaskCanceledException)
+        {
 
-            if (resultados.Count > 0)
+        }
+        finally
+        {
+            buscadorBuscando = false;
+        }
+    }
+
+    private void ActualizarResultados(List<global::Juegos.Juego> resultados)
+    {
+        string nombreLimpio = Herramientas.Buscador.LimpiarNombre(_textoBuscador);
+
+        foreach (PestañaBuscador pestaña in pestañasBuscador?.Values)
+        {
+            pestaña.resultados.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != nombreLimpio);
+        }
+
+        var resultadosPorTipo = resultados.GroupBy(j => j.Tipo).ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var (tipo, pestaña) in pestañasBuscador)
+        {
+            if (resultadosPorTipo.TryGetValue(tipo, out var nuevosResultados))
             {
-                buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-                buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
+                var resultadosNuevos = nuevosResultados.Where(x => !pestaña.resultados.Any(y => y.Nombre == x.Nombre)).ToList();
 
-                buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
-                buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
-                buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
-                buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
-
-                if (buscadorPendientesJuegos.Count == 0)
-                {
-                    estiloJuegos = "display: none;";
-                }
-                else
-                {
-                    estiloJuegos = "background-color: transparent;";
-                }
-
-                if (buscadorPendientesDLCs.Count == 0)
-                {
-                    estiloDLCs = "display: none;";
-                }
-                else
-                {
-                    estiloDLCs = "background-color: transparent;";
-                }
-
-                if (buscadorPendientesBandasSonoras.Count == 0)
-                {
-                    estiloBandasSonoras = "display: none;";
-                }
-                else
-                {
-                    estiloBandasSonoras = "background-color: transparent;";
-                }
-
-                if (buscadorPendientesSoftware.Count == 0)
-                {
-                    estiloSoftware = "display: none;";
-                }
-                else
-                {
-                    estiloSoftware = "background-color: transparent;";
-                }
-
-                pestañaJuegos = false;
-                pestañaDLCs = false;
-                pestañaBandasSonoras = false;
-                pestañaSoftware = false;
-
-                if (buscadorPendientesJuegos.Count > 0)
-                {
-                    pestañaJuegos = true;
-                    estiloJuegos = "background-color: var(--fondoBotonPequeño);";
-                }
-                else if (buscadorPendientesJuegos.Count == 0)
-                {
-                    if (buscadorPendientesDLCs.Count > 0)
-                    {
-                        pestañaDLCs = true;
-                        estiloDLCs = "background-color: var(--fondoBotonPequeño);";
-                    }
-                    else if (buscadorPendientesDLCs.Count == 0)
-                    {
-                        if (buscadorPendientesBandasSonoras.Count > 0)
-                        {
-                            pestañaBandasSonoras = true;
-                            estiloBandasSonoras = "background-color: var(--fondoBotonPequeño);";
-                        }
-                        else if (buscadorPendientesBandasSonoras.Count == 0)
-                        {
-                            if (buscadorPendientesSoftware.Count > 0)
-                            {
-                                pestañaSoftware = true;
-                                estiloSoftware = "background-color: var(--fondoBotonPequeño);";
-                            }
-                        }
-                    }
-                }
+                pestaña.resultados.AddRange(resultadosNuevos);
+                pestaña.visible = pestaña.resultados.Count > 0;
             }
             else
             {
-                buscadorPendientesJuegos = new List<global::Juegos.Juego>();
-                buscadorPendientesDLCs = new List<global::Juegos.Juego>();
-                buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
-                buscadorPendientesSoftware = new List<global::Juegos.Juego>();
+                pestaña.visible = pestaña.resultados.Count > 0;
             }
         }
-        else
+    }
+
+    private void ActivarPrimeraPestañaDisponible()
+    {
+        foreach (var pestaña in pestañasBuscador.Values)
         {
-            buscadorPendientesJuegos = new List<global::Juegos.Juego>();
-            buscadorPendientesDLCs = new List<global::Juegos.Juego>();
-            buscadorPendientesBandasSonoras = new List<global::Juegos.Juego>();
-            buscadorPendientesSoftware = new List<global::Juegos.Juego>();
+            pestaña.activa = false;
         }
 
-        ocupadoBuscador = false;
+        var orden = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software };
+
+        foreach (var tipo in orden)
+        {
+            if (pestañasBuscador[tipo].visible)
+            {
+                pestañasBuscador[tipo].activa = true;
+                break;
+            }
+        }
+    }
+
+    private void LimpiarResultados()
+    {
+        foreach (var pestaña in pestañasBuscador.Values)
+        {
+            pestaña.resultados.Clear();
+            pestaña.visible = false;
+            pestaña.activa = false;
+        }
+
+        pestañasBuscador[JuegoTipo.Game].activa = true; 
+    }
+
+    private void AgregarIdPendiente(global::Juegos.Juego juego)
+    {
+        idsPendientes.Add(juego.Id);
+
+        idsPendiente = ObtenerIdsPendientesComoString();
+        seleccionados.Add(juego);
+    }
+
+    private string ObtenerIdsPendientesComoString()
+    {
+        return idsPendientes.Count > 0 ? string.Join(",", idsPendientes) : "0";
     }
 
     private async Task ClickearIdPendientes(MouseEventArgs e, global::Juegos.Juego juego)
     {
-        ocupado = true;
-
-        resultados.Add(juego);
-
-        if (string.IsNullOrEmpty(idsPendiente) == true)
+        if (buscadorBuscando == true)
         {
-            idsPendiente = juego.Id.ToString();
-        }
-        else
-        {
-            if (idsPendiente != "0")
-            {
-                if (idsPendiente.Contains(",") == false)
-                {
-                    if (idsPendiente.Contains(juego.Id.ToString()) == false)
-                    {
-                        idsPendiente = idsPendiente + "," + juego.Id.ToString();
-                    }
-                }
-                else
-                {
-                    if (idsPendiente.Contains(juego.Id.ToString() + ",") == false)
-                    {
-                        idsPendiente = idsPendiente + "," + juego.Id.ToString();
-                    }
-                }
-            }
-            else
-            {
-                idsPendiente = juego.Id.ToString();
-            }
+            return;
         }
 
-        ocupado = false;
+        buscadorBuscando = true;
+
+        try
+        {      
+            AgregarIdPendiente(juego);
+        }
+        finally
+        {
+            buscadorBuscando = false;
+        }
     }
 
     private async Task ClickearBorrarPendientes(MouseEventArgs e, string id)
     {
-        ocupado = true;
-
-        await BaseDatos.Juegos.Borrar.Ejecutar(id);
-
-        List<global::Juegos.Juego> resultados = await BaseDatos.Juegos.Buscar.Nombre(textoBuscador, 250, true, -1, true);
-
-        if (resultados.Count > 0)
+        if (buscadorBuscando == true)
         {
-            buscadorPendientesJuegos.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-            buscadorPendientesDLCs.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-            buscadorPendientesBandasSonoras.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-            buscadorPendientesSoftware.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != Herramientas.Buscador.LimpiarNombre(textoBuscador));
-
-            buscadorPendientesJuegos.AddRange(resultados.Where(x => buscadorPendientesJuegos.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Game).ToList());
-            buscadorPendientesDLCs.AddRange(resultados.Where(x => buscadorPendientesDLCs.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.DLC).ToList());
-            buscadorPendientesBandasSonoras.AddRange(resultados.Where(x => buscadorPendientesBandasSonoras.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Music).ToList());
-            buscadorPendientesSoftware.AddRange(resultados.Where(x => buscadorPendientesSoftware.FirstOrDefault(y => y.Nombre == x.Nombre) == null && x.Tipo == global::Juegos.JuegoTipo.Software).ToList());
+            return;
         }
+    
+        buscadorBuscando = true;
 
-        ocupado = false;
+        try
+        {
+            await BaseDatos.Juegos.Borrar.Ejecutar(id);
+        
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(TiendaRegion.Europa, _textoBuscador, 250, true);
+
+            ActualizarResultados(resultados);
+        }
+        finally
+        {
+            buscadorBuscando = false;
+        }
     }
 
-    #endregion   
+    private IEnumerable<(JuegoTipo Tipo, (int Indice, string Titulo, int Ancho) Info)> ObtenerInfoPestañas()
+    {
+        return new[]
+        {
+            (JuegoTipo.Game, (0, "Juegos", 130)),
+            (JuegoTipo.DLC, (1, "DLCs", 130)),
+            (JuegoTipo.Music, (2, "Bandas Sonoras", 180)),
+            (JuegoTipo.Software, (3, "Software", 130))
+        };
+    }
+
+    #endregion
 }

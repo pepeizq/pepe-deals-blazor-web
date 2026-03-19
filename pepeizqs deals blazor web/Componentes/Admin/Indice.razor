@@ -235,7 +235,7 @@
                 subpagina = subpaginaDuplicados;
             }
 
-            nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.TiendasCantidad() + await BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + await BaseDatos.Pendientes.Buscar.StreamingCantidad() + await BaseDatos.Pendientes.Buscar.PlataformaCantidad();
+            nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.Cantidad();
 
             if (nuevosPendientesCantidad > 0)
             {
@@ -505,7 +505,7 @@
         mostrarPendientes = true;
         estiloPendientes = fondo;
 
-        nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.TiendasCantidad() + await BaseDatos.Pendientes.Buscar.SuscripcionCantidad() + await BaseDatos.Pendientes.Buscar.StreamingCantidad() + await BaseDatos.Pendientes.Buscar.PlataformaCantidad();
+        nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.Cantidad();
         await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaPendientes + "/");
     }
 

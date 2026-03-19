@@ -383,57 +383,76 @@ namespace Noticias
 
 				if (lista.Count == 1)
                 {
-                    plantilla.TituloEn = suscripcion1.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = suscripcion1.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription1", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					Random azarTitulo = new Random();
+					int azarTitulo2 = azarTitulo.Next(1, 8);
+
+					plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "Subscription1." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre);
+                    plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "Subscription1." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre);
                 }
                 else if (lista.Count == 2)
                 {
+					Random azarTitulo = new Random();
+					int azarTitulo2 = azarTitulo.Next(1, 5);
+
 					JuegoSuscripcion suscripcion2 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1]));
 
-					plantilla.TituloEn = suscripcion1.Nombre + " " + Idiomas.BuscarTexto("en", "Subscription2", "NewsTemplates") + " " +
-						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = suscripcion1.Nombre + " " + Idiomas.BuscarTexto("es", "Subscription2", "NewsTemplates") + " " +
-						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription3", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "Subscription2." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre);
+                    plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "Subscription2." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre);
                 }
-                else if (lista.Count > 2)
+				else if (lista.Count == 3)
+				{
+					Random azarTitulo = new Random();
+					int azarTitulo2 = azarTitulo.Next(1, 3);
+
+					JuegoSuscripcion suscripcion2 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1]));
+					JuegoSuscripcion suscripcion3 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[2]));
+
+					plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "Subscription3." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre, suscripcion3.Nombre);
+					plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "Subscription3." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre, suscripcion3.Nombre);
+				}
+                else if (lista.Count > 3)
                 {
+					Random azarTitulo = new Random();
+					int azarTitulo2 = azarTitulo.Next(1, 2);
+
 					JuegoSuscripcion suscripcion2 = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(lista[1]));
 
-					plantilla.TituloEn = suscripcion1.Nombre + ", " +
-						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("en", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.TituloEs = suscripcion1.Nombre + ", " +
-						suscripcion2.Nombre + " " + string.Format(Idiomas.BuscarTexto("es", "Subscription4", "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                }
+					plantilla.TituloEn = string.Format(Idiomas.BuscarTexto("en", "Subscription4." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre);
+                    plantilla.TituloEs = string.Format(Idiomas.BuscarTexto("es", "Subscription4." + azarTitulo2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre, suscripcion1.Nombre, suscripcion2.Nombre);
+				}
 
                 #endregion
 
                 #region Contenido
 
-                plantilla.ContenidoEn = Idiomas.BuscarTexto("en", "Subscription5", "NewsTemplates") + " " + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre + " ";
-                plantilla.ContenidoEs = Idiomas.BuscarTexto("es", "Subscription5", "NewsTemplates") + " " + Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre + " ";
-
                 if (lista.Count == 1)
                 {
-                    plantilla.ContenidoEn = plantilla.ContenidoEn + Idiomas.BuscarTexto("en", "Subscription6", "NewsTemplates");
-                    plantilla.ContenidoEs = plantilla.ContenidoEs + Idiomas.BuscarTexto("es", "Subscription6", "NewsTemplates");
-                }
+					Random azarContenido = new Random();
+					int azarContenido2 = azarContenido.Next(1, 4);
+
+					plantilla.ContenidoEn = plantilla.ContenidoEn + string.Format(Idiomas.BuscarTexto("en", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.ContenidoEs = plantilla.ContenidoEs + string.Format(Idiomas.BuscarTexto("en", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+				}
                 else if (lista.Count > 1)
                 {
-                    plantilla.ContenidoEn = plantilla.ContenidoEn + Idiomas.BuscarTexto("en", "Subscription7", "NewsTemplates");
-                    plantilla.ContenidoEs = plantilla.ContenidoEs + Idiomas.BuscarTexto("es", "Subscription7", "NewsTemplates");
-                }
+					Random azarContenido = new Random();
+					int azarContenido2 = azarContenido.Next(1, 4);
 
-                plantilla.ContenidoEn = plantilla.ContenidoEn + Environment.NewLine + "<ul>" + Environment.NewLine;
+					plantilla.ContenidoEn = plantilla.ContenidoEn + string.Format(Idiomas.BuscarTexto("en", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					plantilla.ContenidoEs = plantilla.ContenidoEs + string.Format(Idiomas.BuscarTexto("en", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+				}
+
+				plantilla.ContenidoEn = plantilla.ContenidoEn + Environment.NewLine + "<ul>" + Environment.NewLine;
                 plantilla.ContenidoEs = plantilla.ContenidoEs + Environment.NewLine + "<ul>" + Environment.NewLine;
 
                 foreach (var juego in lista)
                 {
-                    Juegos.JuegoSuscripcion suscripcion = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(juego));
+                    Juegos.JuegoSuscripcion juegoSuscripcion = await BaseDatos.Suscripciones.Buscar.Id(int.Parse(juego));
 
-                    if (suscripcion != null)
+                    if (juegoSuscripcion != null)
                     {
-                        plantilla.ContenidoEn = plantilla.ContenidoEn + "<li>" + suscripcion.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(suscripcion.DRM) + ")</li>" + Environment.NewLine;
-                        plantilla.ContenidoEs = plantilla.ContenidoEs + "<li>" + suscripcion.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(suscripcion.DRM) + ")</li>" + Environment.NewLine;
+                        plantilla.ContenidoEn = plantilla.ContenidoEn + "<li>" + juegoSuscripcion.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juegoSuscripcion.DRM) + ")</li>" + Environment.NewLine;
+                        plantilla.ContenidoEs = plantilla.ContenidoEs + "<li>" + juegoSuscripcion.Nombre + " (" + Juegos.JuegoDRM2.DevolverDRM(juegoSuscripcion.DRM) + ")</li>" + Environment.NewLine;
                     }
                 }
 
