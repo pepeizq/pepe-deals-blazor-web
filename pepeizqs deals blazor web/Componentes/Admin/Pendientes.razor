@@ -411,16 +411,20 @@
         idStreamingPendiente = null;
         idPlataformaPendiente = null;
 
-        await ClickearTiendaPendientes(idTiendaPendiente);
+        await ClickearTiendaPendientes(idTiendaPendiente, false);
 
         ocupado = false;
     }
 
-    private async Task ClickearTiendaPendientes(string id)
+    private async Task ClickearTiendaPendientes(string id, bool limpiar)
     {
         ocupado = true;
 
-        seleccionados.Clear();
+        if (limpiar == true)
+        {
+            seleccionados.Clear();
+            idsPendientes.Clear();
+        }
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -458,16 +462,20 @@
         idStreamingPendiente = null;
         idPlataformaPendiente = null;
 
-        await ClickearSuscripcionPendientes(idSuscripcionPendiente);
+        await ClickearSuscripcionPendientes(idSuscripcionPendiente, false);
 
         ocupado = false;
     }
 
-    private async Task ClickearSuscripcionPendientes(string id)
+    private async Task ClickearSuscripcionPendientes(string id, bool limpiar)
     {
         ocupado = true;
 
-        seleccionados.Clear();
+        if (limpiar == true)
+        {
+            seleccionados.Clear();
+            idsPendientes.Clear();
+        }
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -505,16 +513,20 @@
         idStreamingPendiente = id;
         idPlataformaPendiente = null;
 
-        await ClickearStreamingPendientes(idStreamingPendiente);
+        await ClickearStreamingPendientes(idStreamingPendiente, false);
 
         ocupado = false;
     }
 
-    private async Task ClickearStreamingPendientes(string id)
+    private async Task ClickearStreamingPendientes(string id, bool limpiar)
     {
         ocupado = true;
 
-        seleccionados.Clear();
+        if (limpiar == true)
+        {
+            seleccionados.Clear();
+            idsPendientes.Clear();
+        }
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -552,16 +564,20 @@
         idStreamingPendiente = null;
         idPlataformaPendiente = id;
 
-        await ClickearPlataformaPendientes(idPlataformaPendiente);
+        await ClickearPlataformaPendientes(idPlataformaPendiente, false);
 
         ocupado = false;
     }
 
-    private async Task ClickearPlataformaPendientes(string id)
+    private async Task ClickearPlataformaPendientes(string id, bool limpiar)
     {
         ocupado = true;
 
-        seleccionados.Clear();
+        if (limpiar == true)
+        {
+            seleccionados.Clear();
+            idsPendientes.Clear();
+        }
 
         if (string.IsNullOrEmpty(id) == false)
         {
@@ -612,7 +628,7 @@
                 }
             }
 
-            await ClickearTiendaPendientes(idTiendaPendiente);
+            await ClickearTiendaPendientes(idTiendaPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
@@ -627,7 +643,7 @@
                 }
             }
 
-            await ClickearSuscripcionPendientes(idSuscripcionPendiente);
+            await ClickearSuscripcionPendientes(idSuscripcionPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idStreamingPendiente) == false)
@@ -642,7 +658,7 @@
                 }
             }
 
-            await ClickearStreamingPendientes(idStreamingPendiente);
+            await ClickearStreamingPendientes(idStreamingPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
@@ -659,7 +675,7 @@
                 }
             }
 
-            await ClickearPlataformaPendientes(idPlataformaPendiente);
+            await ClickearPlataformaPendientes(idPlataformaPendiente, true);
         }
 
         ocupado = false;
@@ -668,8 +684,6 @@
     private async Task ClickearActualizarPendientes(MouseEventArgs e, string enlace)
     {
         ocupado = true;
-
-        seleccionados.Clear();
 
         if (string.IsNullOrEmpty(idTiendaPendiente) == false)
         {
@@ -695,7 +709,7 @@
                 }
             }
 
-            await ClickearTiendaPendientes(idTiendaPendiente);
+            await ClickearTiendaPendientes(idTiendaPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
@@ -710,7 +724,7 @@
                 }
             }
 
-            await ClickearSuscripcionPendientes(idSuscripcionPendiente);
+            await ClickearSuscripcionPendientes(idSuscripcionPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idStreamingPendiente) == false)
@@ -725,7 +739,7 @@
                 }
             }
 
-            await ClickearStreamingPendientes(idStreamingPendiente);
+            await ClickearStreamingPendientes(idStreamingPendiente, true);
         }
 
         if (string.IsNullOrEmpty(idPlataformaPendiente) == false)
@@ -760,7 +774,7 @@
                 }
             }
 
-            await ClickearPlataformaPendientes(idPlataformaPendiente);
+            await ClickearPlataformaPendientes(idPlataformaPendiente, true);
         }
 
         ocupado = false;
@@ -794,7 +808,12 @@
 
         if (lista?.Count > 0)
         {
-            var idsJuegos = new HashSet<int>(seleccionados?.Select(j => j.Id));
+            var idsJuegos = new HashSet<int>();
+
+            if (seleccionados.Count > 0)
+            {
+                idsJuegos = new HashSet<int>(seleccionados?.Select(j => j.Id) ?? []);
+            }
 
             var noExistentes = lista.Where(id => idsJuegos.Contains(int.Parse(id)) == false).ToList();
 
@@ -802,7 +821,12 @@
             {
                 foreach (var noExiste in noExistentes)
                 {
-                    seleccionados.Add(await BaseDatos.Juegos.Buscar.UnJuegoReducido(int.Parse(noExiste)));
+                    var juegoAñadir = await BaseDatos.Juegos.Buscar.UnJuegoReducido(int.Parse(noExiste));
+
+                    if (juegoAñadir != null)
+                    {
+                        seleccionados.Add(juegoAñadir);
+                    }
                 }
             }
         }

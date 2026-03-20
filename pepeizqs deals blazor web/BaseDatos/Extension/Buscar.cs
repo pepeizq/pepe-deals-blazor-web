@@ -186,63 +186,6 @@ namespace BaseDatos.Extension
 			return await GenerarDatos(buscar, "Epic " + slug);
 		}
 
-		public static async Task<Extension> Steam2(string id)
-		{
-			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
-(
-    SELECT g.*, g.gratis AS Tipo
-    FROM gratis g
-    WHERE g.juegoId = j.id
-    FOR JSON PATH
-) as gratis2, 
-(
-    SELECT s.*, s.suscripcion AS Tipo
-    FROM suscripciones s
-    WHERE s.juegoId = j.id
-    FOR JSON PATH
-) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
-
-			return await GenerarDatos(buscar, "Steam " + id);
-		}
-
-		public static async Task<Extension> Gog2(string slug)
-		{
-			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
-(
-    SELECT g.*, g.gratis AS Tipo
-    FROM gratis g
-    WHERE g.juegoId = j.id
-    FOR JSON PATH
-) as gratis2, 
-(
-    SELECT s.*, s.suscripcion AS Tipo
-    FROM suscripciones s
-    WHERE s.juegoId = j.id
-    FOR JSON PATH
-) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
-
-			return await GenerarDatos(buscar, "GOG " + slug);
-		}
-
-		public static async Task<Extension> EpicGames2(string slug)
-		{
-			string buscar = @"SELECT j.id, j.nombre, j.precioMinimosHistoricos, j.precioActualesTiendas, j.bundles, 
-(
-    SELECT g.*, g.gratis AS Tipo
-    FROM gratis g
-    WHERE g.juegoId = j.id
-    FOR JSON PATH
-) as gratis2, 
-(
-    SELECT s.*, s.suscripcion AS Tipo
-    FROM suscripciones s
-    WHERE s.juegoId = j.id
-    FOR JSON PATH
-) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
-
-			return await GenerarDatos(buscar, "Epic " + slug);
-		}
-
 		private static async Task<Extension> GenerarDatos(string buscar, string id)
 		{
 			if (buscar == null)

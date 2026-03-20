@@ -205,10 +205,15 @@ namespace Noticias
 
 					if (gratis != null)
 					{
-						string nombre = "[p]" + gratis.Nombre + "[/p]";
-						string imagen = $@"[img src=""{gratis.Imagen}""][/img]";
+						Juego juego = await BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
 
-						contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
+						if (juego != null)
+						{
+							string nombre = "[p]" + juego.Nombre + "[/p]";
+							string imagen = $@"[img src=""{juego.Imagenes.Header_460x215}""][/img]";
+
+							contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
+						}
 					}
 				}
 

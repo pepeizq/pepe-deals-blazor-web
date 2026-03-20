@@ -430,16 +430,16 @@ namespace Noticias
 					Random azarContenido = new Random();
 					int azarContenido2 = azarContenido.Next(1, 4);
 
-					plantilla.ContenidoEn = plantilla.ContenidoEn + string.Format(Idiomas.BuscarTexto("en", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-                    plantilla.ContenidoEs = plantilla.ContenidoEs + string.Format(Idiomas.BuscarTexto("en", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					plantilla.ContenidoEn = string.Format(Idiomas.BuscarTexto("en", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+                    plantilla.ContenidoEs = string.Format(Idiomas.BuscarTexto("es", "Subscription5." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
 				}
                 else if (lista.Count > 1)
                 {
 					Random azarContenido = new Random();
 					int azarContenido2 = azarContenido.Next(1, 4);
 
-					plantilla.ContenidoEn = plantilla.ContenidoEn + string.Format(Idiomas.BuscarTexto("en", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
-					plantilla.ContenidoEs = plantilla.ContenidoEs + string.Format(Idiomas.BuscarTexto("en", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					plantilla.ContenidoEn = string.Format(Idiomas.BuscarTexto("en", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
+					plantilla.ContenidoEs = string.Format(Idiomas.BuscarTexto("es", "Subscription6." + azarContenido2.ToString(), "NewsTemplates"), Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(tipoSeleccionado).Nombre);
 				}
 
 				plantilla.ContenidoEn = plantilla.ContenidoEn + Environment.NewLine + "<ul>" + Environment.NewLine;

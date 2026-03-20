@@ -12,6 +12,7 @@ using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 ClasesDapper.Registrar();
@@ -364,76 +365,6 @@ app.MapAdditionalIdentityEndpoints();
 
 #region Extension
 
-app.MapGet("extension/steam2/{id}/{clave}/", async (int id, string clave) =>
-{
-	#nullable disable
-
-	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
-
-	if (clave == claveExtension)
-	{
-		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Steam2(id.ToString());
-
-		if (juego != null)
-		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
-		}
-	}
-
-	return Results.NotFound();
-});
-
-app.MapGet("extension/gog2/{slug}/{clave}/", async (string slug, string clave) =>
-{
-	#nullable disable
-
-	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
-
-	if (clave == claveExtension)
-	{
-		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Gog2(slug);
-
-		if (juego != null)
-		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
-		}
-	}
-
-	return Results.NotFound();
-});
-
-app.MapGet("extension/epic2/{slug}/{clave}/", async (string slug, string clave) =>
-{
-	#nullable disable
-
-	string claveExtension = builder.Configuration.GetValue<string>("Extension:Clave");
-
-	if (clave == claveExtension)
-	{
-		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.EpicGames2(slug);
-
-		if (juego != null)
-		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
-		}
-	}
-
-	return Results.NotFound();
-});
-
-#endregion
-
-#region Extension v3
-
 app.MapGet("extension/steam3/{id}/{region}/{clave}/", async (int id, string region, string clave) =>
 {
 	#nullable disable
@@ -591,6 +522,144 @@ app.Use(async (context, next) =>
 	}
 
 	await next();
+});
+
+#endregion
+
+#region Manifest
+
+app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
+{
+	string idioma = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+
+	var manifest = new
+	{
+		name = "pepe's deals",
+		short_name = "pepe's deals",
+		description = Idiomas.BuscarTexto(idioma, "String1", "Manifest"),
+		lang = idioma,
+		dir = "ltr",
+		start_url = "/",
+		scope = "/",
+		theme_color = "#002033",
+		background_color = "#002033",
+		display = "standalone",
+		display_override = new[] { "window-controls-overlay", "standalone" },
+		categories = new[] { "utilities" },
+		id = "pepesdeals",
+		orientation = "any",
+		icons = new[]
+		{
+			new { src = "/favicons/favicon-192x192.png", sizes = "192x192", type = "image/png" },
+			new { src = "/favicons/favicon-512x512.png", sizes = "512x512", type = "image/png" },
+			new { src = "/favicons/android-icon-192x192.png", sizes = "192x192", type = "image/png" },
+			new { src = "/favicons/favicon-192x192.webp", sizes = "192x192", type = "image/webp" },
+			new { src = "/favicons/favicon-512x512.webp", sizes = "512x512", type = "image/webp" },
+			new { src = "/favicons/android-icon-192x192.webp", sizes = "192x192", type = "image/webp" }
+		},
+		screenshots = new[]
+		{
+			new {
+				src = "/imagenes/screenshots/pepe.deals_.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String2", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_phone.webp",
+				sizes = "750x1334",
+				type = "image/webp",
+				form_factor = "narrow",
+				label = Idiomas.BuscarTexto(idioma, "String2", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_bundle_humblebundle.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String3", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_bundles.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String4", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_game.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String5", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_historicallows.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String6", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_search.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String7", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_steamdeck.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String8", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_subscriptions.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String9", "Manifest")
+			},
+			new {
+				src = "/imagenes/screenshots/pepe.deals_subscriptions_humblechoice.webp",
+				sizes = "1280x720",
+				type = "image/webp",
+				form_factor = "wide",
+				label = Idiomas.BuscarTexto(idioma, "String10", "Manifest")
+			}
+		},
+		prefer_related_applications = false,
+		related_applications = new object[]
+		{
+			new Dictionary<string, string>
+			{
+				["platform"] = "chrome_web_store",
+				["url"] = configuracion.GetValue<string>("Extension:Chrome"),
+				["id"] = configuracion.GetValue<string>("Extension:ChromeId")
+			},
+			new Dictionary<string, string>
+			{
+				["platform"] = "firefox",
+				["url"] = configuracion.GetValue<string>("Extension:Firefox"),
+				["id"] = configuracion.GetValue<string>("Extension:FirefoxId")
+			},
+			new Dictionary<string, string>
+			{
+				["platform"] = "edge",
+				["url"] = configuracion.GetValue<string>("Extension:Edge")
+			}
+		}
+	};
+
+	var json = JsonSerializer.Serialize(manifest, new JsonSerializerOptions
+	{
+		WriteIndented = true,
+		PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+	});
+
+	return Results.Content(json, "application/manifest+json");
 });
 
 #endregion

@@ -78,6 +78,14 @@
         <script src="@Assets["/video.js"]"></script>
         <script src="@Assets["/push-notifications.js"]"></script>
         <script src="@Assets["/cookies.js"]"></script>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js');
+                });
+            }
+        </script>
     }
     else
     {
