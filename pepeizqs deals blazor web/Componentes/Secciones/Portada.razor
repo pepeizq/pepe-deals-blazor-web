@@ -1031,7 +1031,7 @@ else
 					juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
 				}
 			}
-			
+
 			if (juegosDestacadosMostrar?.Count > 0)
 			{
 				posicionMostrarDestacados = 0;
@@ -1120,7 +1120,7 @@ else
 	{
 		if (primerRender == true)
 		{
-			
+
 		}
 	}
 
@@ -1259,7 +1259,7 @@ else
 						}
 					}
 				}
-				
+
 				cronometroContador = 0;
 			}
 
@@ -1442,11 +1442,17 @@ else
 
 				if (usuarioRegion == TiendaRegion.Europa)
 				{
-					drmGestor = juego.PrecioMinimosHistoricos[0].DRM;
+					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					{
+						drmGestor = juego.PrecioMinimosHistoricos[0].DRM;
+					}
 				}
 				else if (usuarioRegion == TiendaRegion.EstadosUnidos)
 				{
-					drmGestor = juego.PrecioMinimosHistoricosUS[0].DRM;
+					if (juego.PrecioMinimosHistoricosUS?.Count > 0)
+					{
+						drmGestor = juego.PrecioMinimosHistoricosUS[0].DRM;
+					}
 				}
 
 				bool ocultar = false;

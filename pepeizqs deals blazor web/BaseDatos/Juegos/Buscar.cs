@@ -738,7 +738,7 @@ END DESC";
 			return juegos;
 		}
 
-		public static async Task<List<Juego>> Nombre2(TiendaRegion region, string nombre, int cantidadResultados = 10, bool reducido = false)
+		public static async Task<List<Juego>> Nombre2(TiendaRegion region, string nombre, int cantidadJuegos = 10, bool reducido = false, bool añadirCurators = false, int cantidadCurators = 10)
 		{
 			string precioMinimosHistoricos = region switch
 			{
@@ -754,49 +754,75 @@ END DESC";
 				_ => string.Empty
 			};
 
-
-			string busqueda = $@"SELECT TOP (@cantidad) 
-    j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
-    j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
-    j.exeEpic, j.exeUbisoft, j.freeToPlay,
-    (
-		SELECT b.id, b.bundleTipo
-		FROM bundles b
-		INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
-		WHERE bj.juegoId = j.id
-			AND b.fechaEmpieza <= GETDATE()
-			AND b.fechaTermina >= GETDATE()
-		FOR JSON PATH
-	) AS BundlesActuales,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales
-FROM juegos j
-WHERE 1=1";
+			string busquedaJuegos = $@"SELECT TOP (@cantidadJuegos) 
+				j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
+				j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+				j.exeEpic, j.exeUbisoft, j.freeToPlay,
+				(
+					SELECT b.id, b.bundleTipo
+					FROM bundles b
+					INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+					WHERE bj.juegoId = j.id
+						AND b.fechaEmpieza <= GETDATE()
+						AND b.fechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS BundlesActuales,
+				(
+					SELECT g.gratis
+					FROM gratis g
+					WHERE g.juegoId = j.id
+					  AND g.fechaEmpieza <= GETDATE()
+					  AND g.fechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS GratisActuales,
+				(
+					SELECT s.suscripcion
+					FROM suscripciones s
+					WHERE s.juegoId = j.id
+					  AND s.FechaEmpieza <= GETDATE()
+					  AND s.FechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS SuscripcionesActuales
+			FROM juegos j
+			WHERE 1=1";
 
 			if (reducido == true)
 			{
-				busqueda = @"SELECT TOP (@cantidad) 
+				busquedaJuegos = @"SELECT TOP (@cantidadJuegos) 
 								j.id, j.nombre, j.imagenes, j.tipo, j.nombreCodigo
 							FROM juegos j
 							WHERE 1=1";
 			}
 
+			string busquedaCurators = string.Empty;
+
+			if (añadirCurators == true)
+			{
+				busquedaCurators = $@"SELECT TOP (@cantidadCurators)
+                                    c.id, c.nombre, 
+									JSON_QUERY(CONCAT('{{""Header_460x215"":""', c.imagen, '""}}')) AS imagenes,
+                                    NULL AS {precioMinimosHistoricos}, 
+                                    NULL AS {precioActualesTiendas},
+                                    5 AS tipo, NULL AS analisis, 
+                                    NULL AS idSteam, NULL AS idGog, NULL AS idAmazon,
+                                    c.slug AS exeEpic, NULL AS exeUbisoft, NULL AS freeToPlay,
+                                    NULL AS BundlesActuales,
+                                    NULL AS GratisActuales,
+                                    NULL AS SuscripcionesActuales
+                                FROM curators c
+                                WHERE 1=1";
+			}
+
 			var parametros = new DynamicParameters();
-			parametros.Add("cantidad", cantidadResultados);
+			parametros.Add("cantidadJuegos", cantidadJuegos);
+
+			if (añadirCurators == true)
+			{
+				parametros.Add("cantidadCurators", cantidadCurators);
+			}
+
+			string condicionesJuegos = "";
+			string condicionesCurators = "";
 
 			string[] palabras = nombre.Split(" ");
 			int i = 0;
@@ -808,24 +834,55 @@ WHERE 1=1";
 					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
 
 					string paramName = $"p{i}";
-					busqueda += $" AND j.nombreCodigo LIKE '%' + @{paramName} + '%'";
+					condicionesJuegos += $" AND j.nombreCodigo LIKE '%' + @{paramName} + '%'";
+
+					if (añadirCurators == true)
+					{
+						condicionesCurators += $" AND c.nombre LIKE '%' + @{paramName} + '%'";
+					}
+
 					parametros.Add(paramName, palabraLimpia, DbType.String); 
 					i++;
 				}
 			}
 
-			if (string.IsNullOrEmpty(busqueda) == false)
+			string busquedaFinal = string.Empty;
+
+			if (añadirCurators == false || string.IsNullOrEmpty(busquedaCurators) == true)
 			{
-				busqueda = busqueda + @" ORDER BY CASE 
-WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
-END DESC";
+				busquedaFinal = $@"{busquedaJuegos}{condicionesJuegos}
+                    ORDER BY CASE 
+                        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+                        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+                    END DESC";
+			}
+			else
+			{
+				busquedaFinal = $@"
+					SELECT * FROM (
+						SELECT TOP (@cantidadJuegos) * FROM (
+							{busquedaJuegos}{condicionesJuegos}
+						) AS Juegos
+						ORDER BY CASE 
+							WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+							ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+						END DESC
+					) AS JuegosTop
+            
+					UNION ALL
+            
+					SELECT * FROM (
+						SELECT TOP (@cantidadCurators) * FROM (
+							{busquedaCurators}{condicionesCurators}
+						) AS Curators
+					) AS CuratorsTop";
 			}
 
 			try
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return (await conexion.QueryAsync<Juego>(busqueda, parametros)).ToList();
+					return (await conexion.QueryAsync<Juego>(busquedaFinal, parametros)).ToList();
 				});
 			}
 			catch (Exception ex)
@@ -833,7 +890,7 @@ END DESC";
 				BaseDatos.Errores.Insertar.Mensaje("Juego Nombre", ex);
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> NombreComparador(string nombre, int cantidadResultados = 10)

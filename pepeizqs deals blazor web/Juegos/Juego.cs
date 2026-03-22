@@ -404,7 +404,8 @@ namespace Juegos
 		DLC,
 		Bundle,
 		Music,
-		Software
+		Software,
+		Curator //para buscador
 	}
 
 	public static class JuegoTipos

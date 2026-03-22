@@ -3,6 +3,7 @@
 @attribute [StreamRendering(true)]
 
 @using BaseDatos.Usuarios
+@using Juegos
 @using Microsoft.AspNetCore.Components
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
@@ -58,20 +59,42 @@
 </script>
 
 <script>
-    function enseñarTooltip(e, id) {
-        var x = e.clientX,
-            y = e.clientY;
+    function MostrarTooltipJs(id) {
+        document.getElementById(id).style.display = 'block';
+    }
 
+    function OcultarTooltipJs(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    function ActualizarPosicionTooltip(clientX, clientY, id) {
         var tooltip = document.getElementById(id);
+        if (!tooltip) return;
 
-        if (screen.width / 2 > x) {
-            tooltip.style.top = (y + 10) + 'px';
-            tooltip.style.left = (x + 20) + 'px';
+        var tooltipRect = tooltip.getBoundingClientRect();
+        var offsetX = 15;
+        var offsetY = 15;
+
+        var left, top;
+
+        if (clientX > window.innerWidth / 2) {
+            left = clientX - tooltipRect.width - offsetX;
+        } else {
+            left = clientX + offsetX;
         }
-        else {
-            tooltip.style.top = (y - 10) + 'px';
-            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-        };
+
+        top = clientY + offsetY;
+
+        if (left < 0) left = offsetX;
+        if (left + tooltipRect.width > window.innerWidth) {
+            left = window.innerWidth - tooltipRect.width - offsetX;
+        }
+        if (top + tooltipRect.height > window.innerHeight) {
+            top = clientY - tooltipRect.height - offsetY;
+        }
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     }
 </script>
 
@@ -324,6 +347,35 @@
         background-color: var(--fondoBotonPequeñoHover);
         border: 2px solid var(--fondoBoton);
     }
+
+    .pestaña-buscador {
+        padding: 10px 20px;
+        border: 1px solid var(--fondoBotonPequeño);
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        color: var(--colorTexto);
+        background-color: transparent;
+    }
+
+        .pestaña-buscador:not(.pestaña-activa):hover {
+            background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, transparent);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pestaña-buscador.pestaña-activa {
+            background-color: var(--fondoBotonPequeño);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+            .pestaña-buscador.pestaña-activa:hover {
+                background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoSubsubcabecera));
+            }
+
+    .no-scroll {
+        overflow: hidden;
+        height: 100%;
+    }
 </style>
 
 <header class="cabecera2">
@@ -361,52 +413,12 @@
                                 <div class="cargando-busqueda" />
                             </div>
                         }
-
-                        @if (resultadosMostrar == null || resultadosMostrar?.Count == 0)
-                        {
-                            if (cargandoBusqueda == false)
-                            {
-                                <div style="width: 24px; height: 24px;">
-                                    <svg class="svg-icono" style="fill: var(--colorBuscador)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                        <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
-                                    </svg>
-                                </div>
-                            }                        
-                        }
                         else
                         {
-                            string enlaceClipboard = "https://" + dominio + "/?search=" + textoBuscador;
-
-                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-clipboard')">
-                                <button @onclick="(e => CopiarAlClipboard(e, enlaceClipboard))" style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1;">
-                                    <div style="width: 20px; height: 20px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                            <path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" />
-                                        </svg>
-                                    </div>
-                                </button>
-
-                                <div id="tooltip-header-clipboard" class="tooltip-relleno">
-                                    <div style="margin: 5px 10px; max-width: 300px; font-size: 14px;">
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Header")
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-cleansearch')">
-                                <button @onclick="(e => LimpiarBusqueda(e))" style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1;">
-                                    <div style="width: 20px; height: 20px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                            <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
-                                        </svg>
-                                    </div>
-                                </button>
-
-                                <div id="tooltip-header-cleansearch" class="tooltip-relleno">
-                                    <div style="margin: 5px 10px; max-width: 300px; font-size: 14px;">
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Header")
-                                    </div>
-                                </div>
+                            <div style="width: 24px; height: 24px;">
+                                <svg class="svg-icono" style="fill: var(--colorBuscador)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                    <path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z" />
+                                </svg>
                             </div>
                         }
                     </div>
@@ -894,69 +906,150 @@
                     </div>
                 </div>
 
-                <div class="resultados-busqueda @(resultadosMostrar?.Count > 0 ? "mostrar" : "")" style="height: calc(100% - var(--alturaCabecera)); width: 100%; top: 0; left: 0; overflow-x: auto; position: fixed; z-index: 1000; margin-top: var(--alturaCabecera); display: flex; align-items: start; flex-direction: column; background: color-mix(in srgb, var(--fondoCuerpo) 95%, transparent); scrollbar-color: var(--fondoCodigo) var(--fondoOscuro);">
-                    <div style="margin-left: auto; margin-right: auto; margin-bottom: 30px; max-width: var(--anchoCuerpo); width: 100%;">
-                        @if (resultadosMostrar?.Count > 0)
+                @if (resultadosMostrar?.Count > 0)
+                {
+                    <div id="tooltip-header-clipboard" class="tooltip-relleno" style="position: fixed; display: none; z-index: 10000; pointer-events: none;">
+                        <div style="margin: 2px 8px; max-width: 300px; font-size: 14px; background: var(--fondoBotonPequeño); padding: 5px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Header")
+                        </div>
+                    </div>
+
+                    <div id="tooltip-header-cleansearch" class="tooltip-relleno" style="position: fixed; display: none; z-index: 10000; pointer-events: none;">
+                        <div style="margin: 2px 8px; max-width: 300px; font-size: 14px; background: var(--fondoBotonPequeño); padding: 5px; border-radius: 5px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Header")
+                        </div>
+                    </div>
+                }
+
+                <div class="resultados-busqueda @(resultadosMostrar?.Count > 0 || cargandoBusqueda ? "mostrar" : "")"
+                     style="height: calc(100% - var(--alturaCabecera)); width: 100%; top: 0; left: 0; overflow-x: auto; position: fixed; z-index: 1000; margin-top: var(--alturaCabecera); display: flex; align-items: start; flex-direction: column; background: color-mix(in srgb, var(--fondoCuerpo) 80%, transparent); scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); backdrop-filter: blur(25px);">
+    
+                    <div style="margin-left: auto; margin-right: auto; max-width: var(--anchoCuerpo); width: 100%;">
+
+                        @if (resultadosMostrar?.Count > 0 && pestañasBuscador?.Values.Any(p => p.visible) == true)
                         {
-                            foreach (var juego in resultadosMostrar)
-                            {
-                                string fondoColor = string.Empty;
+                            string enlaceClipboard = "https://" + dominio + "/?search=" + textoBuscador;
 
-                                if (string.IsNullOrEmpty(usuarioId) == false)
+                            <div style="display: flex; gap: 30px; margin-top: 30px; flex-wrap: wrap;">
+                                @foreach (var (tipo, info) in ObtenerInfoPestañas())
                                 {
-                                    bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego);
-                                    bool usuarioTieneDeseado = false;
-
-                                    if (usuarioTieneJuego == true)
-                                    {
-                                        fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
-                                    }
-                                    else
-                                    {
-                                        if (usuarioTieneDeseado == false)
-                                        {
-                                            usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                        }
-
-                                        if (usuarioTieneDeseado == false)
-                                        {
-                                            usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                        }
-
-                                        if (usuarioTieneDeseado == true)
-                                        {
-                                            fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
-                                        }
-                                    }
+                                    var pestaña = pestañasBuscador[tipo];
+        
+                                    <button @onclick="@(e => CambiarPestañas(e, info.Indice))" class="pestaña-buscador @(pestaña.activa ? "pestaña-activa" : "")" style="@(pestaña.visible ? "" : "display: none;") min-width: @(info.Ancho)px;">
+                                        @info.Titulo (@pestaña.resultados.Count)
+                                    </button>
                                 }
 
-                                <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
-                                    @{
-                                        int ancho = 230;
-                                        int alto = 107;
-                                        string imagen = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
-                                        string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                <button @onclick="(e => CopiarAlClipboard(e, enlaceClipboard))"
+                                        @onmouseenter="@(() => MostrarTooltipJs("tooltip-header-clipboard"))"
+                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltip(e, "tooltip-header-clipboard"))"
+                                        @onmouseleave="@(() => OcultarTooltipJs("tooltip-header-clipboard"))"
+                                        style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
+                                    <div style="width: 24px; height: 24px;">
+                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" />
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                <button @onclick="(e => LimpiarBusqueda(e))"
+                                        @onmouseenter="@(() => MostrarTooltipJs("tooltip-header-cleansearch"))"
+                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltip(e, "tooltip-header-cleansearch"))"
+                                        @onmouseleave="@(() => OcultarTooltipJs("tooltip-header-cleansearch"))"
+                                        style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
+                                    <div style="width: 24px; height: 24px;">
+                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </div>
+                        }
+
+                        @if (cargandoBusqueda == true)
+                        {
+                            <div style="margin-top: 30px; text-align: center; padding: 20px; color: var(--colorTexto); opacity: 0.7;">
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Header")
+                            </div>
+                        }
+
+                        @if (resultadosMostrar?.Count > 0)
+                        {
+                            <div style="margin-bottom: 30px;">
+                                @foreach (var juego in resultadosMostrar)
+                                {
+                                    string fondoColor = string.Empty;
+
+                                    if (string.IsNullOrEmpty(usuarioId) == false)
+                                    {
+                                        bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego);
+                                        bool usuarioTieneDeseado = false;
+
+                                        if (usuarioTieneJuego == true)
+                                        {
+                                            fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
+                                        }
+                                        else
+                                        {
+                                            if (usuarioTieneDeseado == false)
+                                            {
+                                                usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, Juegos.JuegoDRM.NoEspecificado);
+                                            }
+
+                                            if (usuarioTieneDeseado == false)
+                                            {
+                                                usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, Juegos.JuegoDRM.NoEspecificado);
+                                            }
+
+                                            if (usuarioTieneDeseado == true)
+                                            {
+                                                fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
+                                            }
+                                        }
                                     }
 
-                                    <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
-                                        <div class="perfil-flexible-centrado">
-                                            <div>
-                                                <img src="@juego.Imagenes.Header_460x215" style="@imagen" loading="lazy" decoding="async" />
-                                            </div>
+                                    <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
+                                        @{
+                                            int ancho = 230;
+                                            int alto = 107;
 
-                                            <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
+                                            if (juego.Tipo == JuegoTipo.Curator)
+                                            {
+                                                ancho = 107;
+                                            }
+
+                                            string imagen = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
+                                            string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+
+                                            if (juego.Tipo == JuegoTipo.Curator)
+                                            {
+                                                enlace = "/curator/" + juego.ExeEpic;
+                                            }
+                                        }
+
+                                        <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
+                                            <div class="perfil-flexible-centrado">
                                                 <div>
-                                                    @juego.Nombre
+                                                    <img src="@juego.Imagenes.Header_460x215" style="@imagen" loading="lazy" decoding="async" />
                                                 </div>
 
-                                                <div style="font-size: 15px;">
-                                                    @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
+                                                <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
+                                                    <div>
+                                                        @juego.Nombre
+                                                    </div>
+
+                                                    @if (juego.Tipo != JuegoTipo.Curator)
+                                                    {
+                                                        <div style="font-size: 15px;">
+                                                            @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            }
+                                        </a>
+                                    </div>
+                                }
+                            </div>
                         }
                     </div>
                 </div>
@@ -1034,6 +1127,9 @@
         enlaceFirefox = Configuracion.GetValue<string>("Extension:Firefox");
         enlaceEdge = Configuracion.GetValue<string>("Extension:Edge");
         enlacePatreon = Configuracion.GetValue<string>("RedesSociales:Patreon");
+
+        InicializarPestañasBuscador();
+        cts = new CancellationTokenSource();
     }
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
@@ -1083,7 +1179,31 @@
             if (string.IsNullOrEmpty(Search) == false)
             {
                 textoBuscador = Search;
-                resultadosMostrar = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, 20);
+
+                buscadorActivo = true;
+                cargandoBusqueda = true;
+
+                try
+                {
+                    var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, resultadosMaximos, false, true);
+        
+                    if (resultados != null && resultados.Any())
+                    {
+                        ActualizarResultadosPorTipo(resultados);
+                        ActivarPrimeraPestañaDisponible();
+                        await ActualizarScrollBody(true);
+                    }
+                }
+                catch
+                {
+                    LimpiarTodasLasPestañas();
+                }
+                finally
+                {
+                    cargandoBusqueda = false;
+                    StateHasChanged();
+                }
+
                 await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
             }
         }
@@ -1112,8 +1232,86 @@
     private ElementReference inputBuscador;
     private DotNetObjectReference<Cabecera> cabeceraReferencia;
 
-    [PersistentState]
-    public List<Juegos.Juego> resultadosMostrar { get; set; }
+    private class PestañaBuscador
+    {
+        public JuegoTipo tipo { get; set; }
+        public bool activa { get; set; }
+        public bool visible { get; set; }
+        public List<global::Juegos.Juego> resultados { get; set; } = new();
+
+        public string ObtenerEstilo()
+        {
+            if (visible == false)
+            {
+                return "display: none;";
+            }
+
+            return activa ? "background-color: var(--fondoBotonPequeño);" : "background-color: transparent;";
+        }
+    }
+
+    private Dictionary<JuegoTipo, PestañaBuscador> pestañasBuscador;
+
+    private void InicializarPestañasBuscador()
+    {
+        pestañasBuscador = new Dictionary<JuegoTipo, PestañaBuscador>
+        {
+            [JuegoTipo.Game] = new() { tipo = JuegoTipo.Game, activa = true, visible = true },
+            [JuegoTipo.DLC] = new() { tipo = JuegoTipo.DLC },
+            [JuegoTipo.Music] = new() { tipo = JuegoTipo.Music },
+            [JuegoTipo.Software] = new() { tipo = JuegoTipo.Software },
+            [JuegoTipo.Curator] = new() { tipo = JuegoTipo.Curator }
+        };
+    }
+
+    private bool pestañaJuegos => pestañasBuscador[JuegoTipo.Game].activa;
+    private bool pestañaDLCs => pestañasBuscador[JuegoTipo.DLC].activa;
+    private bool pestañaBandasSonoras => pestañasBuscador[JuegoTipo.Music].activa;
+    private bool pestañaSoftware => pestañasBuscador[JuegoTipo.Software].activa;
+    private bool pestañaCurator => pestañasBuscador[JuegoTipo.Curator].activa;
+
+    private string estiloJuegos => pestañasBuscador[JuegoTipo.Game].ObtenerEstilo();
+    private string estiloDLCs => pestañasBuscador[JuegoTipo.DLC].ObtenerEstilo();
+    private string estiloBandasSonoras => pestañasBuscador[JuegoTipo.Music].ObtenerEstilo();
+    private string estiloSoftware => pestañasBuscador[JuegoTipo.Software].ObtenerEstilo();
+    private string estiloCurator => pestañasBuscador[JuegoTipo.Curator].ObtenerEstilo();
+
+    private List<global::Juegos.Juego> resultadosMostrar
+    {
+        get
+        {
+            var pestañaActiva = pestañasBuscador?.Values.FirstOrDefault(p => p.activa);
+            return pestañaActiva?.resultados ?? new();
+        }
+    }
+
+    private void CambiarPestañas(MouseEventArgs e, int id)
+    {
+        var tipos = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator };
+
+        foreach (var pestaña in pestañasBuscador.Values)
+        {
+            pestaña.activa = false;
+        }
+
+        if (id >= 0 && id < tipos.Length)
+        {
+            pestañasBuscador[tipos[id]].activa = true;
+            StateHasChanged();
+        }
+    }
+
+    private IEnumerable<(JuegoTipo Tipo, (int Indice, string Titulo, int Ancho) Info)> ObtenerInfoPestañas()
+    {
+        return new[]
+        {
+            (JuegoTipo.Game, (0, Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Header"), 130)),
+            (JuegoTipo.DLC, (1, Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Header"), 130)),
+            (JuegoTipo.Music, (2, Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Header"), 180)),
+            (JuegoTipo.Software, (3, Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Header"), 130)),
+            (JuegoTipo.Curator, (4, Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Header"), 130))
+        };
+    }
 
     public string textoBuscador { get; set; } = string.Empty;
 
@@ -1124,7 +1322,7 @@
     private int busquedaActualId = 0;
     private const int retraso = 150;
     private const int minimosCaracteresBusqueda = 2;
-    private const int resultadosMaximos = 20;
+    private const int resultadosMaximos = 100; 
 
     private string claseBuscador => buscadorActivo || string.IsNullOrEmpty(textoBuscador) == false ? "buscador-activo" : "buscador-inactivo";
 
@@ -1146,7 +1344,7 @@
     {
         CancelarBusquedaAnterior();
     
-        var busquedaId = ++busquedaActualId; 
+        var busquedaId = ++busquedaActualId;
         var token = cts.Token;
 
         try
@@ -1162,19 +1360,21 @@
 
             await Task.Delay(retraso, token);
 
-            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos);
-
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos, false, true);
+        
             if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
-                resultadosMostrar = resultados ?? new();
-                await ActualizarScrollBody(resultadosMostrar.Any());
+                ActualizarResultadosPorTipo(resultados);
+                ActivarPrimeraPestañaDisponible();
+            
+                await ActualizarScrollBody(resultados.Any());
             }
         }
         catch
         {
             if (busquedaId == busquedaActualId)
             {
-                resultadosMostrar?.Clear();
+                LimpiarTodasLasPestañas();
             }
         }
         finally
@@ -1183,6 +1383,51 @@
             {
                 cargandoBusqueda = false;
                 StateHasChanged();
+            }
+        }
+    }
+
+    private void ActualizarResultadosPorTipo(List<global::Juegos.Juego> resultados)
+    {
+        foreach (PestañaBuscador pestaña in pestañasBuscador?.Values)
+        {
+            pestaña.resultados.Clear();
+            pestaña.visible = false;
+        }
+
+        var resultadosPorTipo = resultados.GroupBy(j => j.Tipo).ToDictionary(g => g.Key, g => g.ToList());
+
+        foreach (var (tipo, pestaña) in pestañasBuscador)
+        {
+            if (resultadosPorTipo.TryGetValue(tipo, out var nuevosResultados))
+            {
+                var resultadosNuevos = nuevosResultados.Where(x => pestaña.resultados.Any(y => y.Id == x.Id) == false).ToList();
+
+                pestaña.resultados.AddRange(resultadosNuevos);
+                pestaña.visible = pestaña.resultados.Count > 0;
+            }
+            else
+            {
+                pestaña.visible = pestaña.resultados.Count > 0;
+            }
+        }
+    }
+
+    private void ActivarPrimeraPestañaDisponible()
+    {
+        foreach (var pestaña in pestañasBuscador.Values)
+        {
+            pestaña.activa = false;
+        }
+
+        var orden = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator };
+
+        foreach (var tipo in orden)
+        {
+            if (pestañasBuscador[tipo].visible)
+            {
+                pestañasBuscador[tipo].activa = true;
+                break;
             }
         }
     }
@@ -1200,7 +1445,6 @@
             }
             catch (ObjectDisposedException)
             {
-                
             }
             finally
             {
@@ -1210,7 +1454,6 @@
                 }
                 catch (ObjectDisposedException)
                 {
-                   
                 }
             }
         }
@@ -1218,12 +1461,11 @@
         cts = new CancellationTokenSource();
     }
 
-
     private async Task LimpiarBusqueda(MouseEventArgs e)
     {
         cts?.Cancel();
         cts?.Dispose();
-        busquedaActualId++; 
+        busquedaActualId++;
     
         textoBuscador = string.Empty;
         await LimpiarResultados();
@@ -1233,9 +1475,22 @@
     private async Task LimpiarResultados()
     {
         cargandoBusqueda = false;
-        resultadosMostrar?.Clear();
+        LimpiarTodasLasPestañas();
         await ActualizarScrollBody(false);
         StateHasChanged();
+    }
+
+    private void LimpiarTodasLasPestañas()
+    {
+        foreach (var pestaña in pestañasBuscador.Values)
+        {
+            pestaña.resultados.Clear();
+            pestaña.visible = false;
+            pestaña.activa = false;
+        }
+
+        pestañasBuscador[JuegoTipo.Game].activa = true;
+        pestañasBuscador[JuegoTipo.Game].visible = true;
     }
 
     private async Task ActualizarScrollBody(bool desactivar)
@@ -1355,5 +1610,20 @@
     }
 
     #endregion
+
+    private async Task MostrarTooltipJs(string id)
+    {
+        await JavaScript.InvokeVoidAsync("MostrarTooltipJs", id);
+    }
+
+    private async Task OcultarTooltipJs(string id)
+    {
+        await JavaScript.InvokeVoidAsync("OcultarTooltipJs", id);
+    }
+
+    private async Task ActualizarPosicionTooltip(MouseEventArgs e, string id)
+    {
+        await JavaScript.InvokeVoidAsync("ActualizarPosicionTooltip", e.ClientX, e.ClientY, id);
+    }
 }
 
