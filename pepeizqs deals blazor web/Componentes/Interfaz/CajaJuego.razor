@@ -371,21 +371,21 @@
 							@if (drmUsar != JuegoDRM.NoEspecificado)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="DRM"  />
+									<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" />
 								</div>
 							}
 
 							@if (string.IsNullOrEmpty(iconoTienda) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 20px; height: 20px;" alt="Store"  />
+									<img src="@iconoTienda" style="width: 20px; height: 20px;" alt="Store" />
 								</div>
 							}
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews"  />
+									<img src="@tooltip.ReviewsIcono" style="width: 20px; height: 20px;" alt="Reviews"  />
 								</div>
 							}
 
