@@ -738,7 +738,7 @@ END DESC";
 			return juegos;
 		}
 
-		public static async Task<List<Juego>> Nombre2(TiendaRegion region, string nombre, int cantidadJuegos = 10, bool reducido = false, bool añadirCurators = false, int cantidadCurators = 10)
+		public static async Task<List<Juego>> Nombre2(TiendaRegion region, string nombre, int cantidadJuegos = 10, bool reducido = false, bool añadirCurators = false, int cantidadCurators = 10, bool añadirBundles = false, int cantidadBundles = 10)
 		{
 			string precioMinimosHistoricos = region switch
 			{
@@ -813,6 +813,25 @@ END DESC";
                                 WHERE 1=1";
 			}
 
+			string busquedaBundles = string.Empty;
+
+			if (añadirBundles == true)
+			{
+				busquedaBundles = $@"SELECT TOP (@cantidadBundles)
+                                    b.id, b.nombre, 
+									JSON_QUERY(CONCAT('{{""Header_460x215"":""', b.imagenNoticia, '""}}')) AS imagenes,
+                                    NULL AS {precioMinimosHistoricos}, 
+                                    NULL AS {precioActualesTiendas},
+                                    2 AS tipo, NULL AS analisis, 
+                                    b.bundleTipo AS idSteam, NULL AS idGog, NULL AS idAmazon,
+                                    NULL AS exeEpic, NULL AS exeUbisoft, NULL AS freeToPlay,
+                                    NULL AS BundlesActuales,
+                                    NULL AS GratisActuales,
+                                    NULL AS SuscripcionesActuales
+                                FROM bundles b
+                                WHERE 1=1";
+			}
+
 			var parametros = new DynamicParameters();
 			parametros.Add("cantidadJuegos", cantidadJuegos);
 
@@ -821,8 +840,14 @@ END DESC";
 				parametros.Add("cantidadCurators", cantidadCurators);
 			}
 
+			if (añadirBundles == true)
+			{
+				parametros.Add("cantidadBundles", cantidadBundles);
+			}
+
 			string condicionesJuegos = "";
 			string condicionesCurators = "";
+			string condicionesBundles = "";
 
 			string[] palabras = nombre.Split(" ");
 			int i = 0;
@@ -841,6 +866,11 @@ END DESC";
 						condicionesCurators += $" AND c.nombre LIKE '%' + @{paramName} + '%'";
 					}
 
+					if (añadirBundles == true)
+					{
+						condicionesBundles += $" AND b.nombre LIKE '%' + @{paramName} + '%'";
+					}
+
 					parametros.Add(paramName, palabraLimpia, DbType.String); 
 					i++;
 				}
@@ -848,12 +878,12 @@ END DESC";
 
 			string busquedaFinal = string.Empty;
 
-			if (añadirCurators == false || string.IsNullOrEmpty(busquedaCurators) == true)
+			if (string.IsNullOrEmpty(busquedaCurators) == true && string.IsNullOrEmpty(busquedaBundles) == true)
 			{
 				busquedaFinal = $@"{busquedaJuegos}{condicionesJuegos}
                     ORDER BY CASE 
-                        WHEN analisis = 'null' OR analisis IS NULL THEN 0 
-                        ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+                        WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 
+                        ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
                     END DESC";
 			}
 			else
@@ -868,14 +898,24 @@ END DESC";
 							ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
 						END DESC
 					) AS JuegosTop
-            
+    
 					UNION ALL
-            
+    
 					SELECT * FROM (
 						SELECT TOP (@cantidadCurators) * FROM (
 							{busquedaCurators}{condicionesCurators}
 						) AS Curators
-					) AS CuratorsTop";
+						ORDER BY id DESC
+					) AS CuratorsTop
+
+					UNION ALL
+    
+					SELECT * FROM (
+						SELECT TOP (@cantidadBundles) * FROM (
+							{busquedaBundles}{condicionesBundles}
+						) AS Bundles
+						ORDER BY id DESC
+					) AS BundlesTop";
 			}
 
 			try

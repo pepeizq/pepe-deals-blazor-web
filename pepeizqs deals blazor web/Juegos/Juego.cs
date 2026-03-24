@@ -402,7 +402,7 @@ namespace Juegos
 	{
 		Game,
 		DLC,
-		Bundle,
+		Bundle, //para buscador
 		Music,
 		Software,
 		Curator //para buscador

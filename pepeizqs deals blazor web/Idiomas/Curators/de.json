@@ -1,9 +1,11 @@
 {
-  "Subtitle": "Schauen Sie sich die Spiele dieses Kurators an.",
+  "Subtitle": "Kuratierte Spielesammlungen von Top-Publishern, Entwicklern und Franchises. Entdecken Sie handverlesene Auswahlen und finden Sie Ihr nächstes Lieblingsspiel.",
   "String1": "Ausgewählte Spiele",
   "String2": "Spiele",
   "String3": "DLCs",
   "String4": "Soundtracks",
   "String5": "Software",
-  "String6": "Filter"
+  "String6": "Filter",
+  "String7": "Derzeit liegen keine Angebote vor",
+  "String8": "Kostenlos spielbar"
 }

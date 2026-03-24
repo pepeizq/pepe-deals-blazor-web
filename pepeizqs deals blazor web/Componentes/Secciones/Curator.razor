@@ -497,7 +497,7 @@
 							(JuegoTipo.Software, "String5")
 						};
 
-						<div style="display: flex; align-items: center; gap: 20px; justify-content: center;">
+						<div style="display: flex; align-items: center; gap: 30px; justify-content: center;">
 							@foreach (var (tipo, textoKey) in infoFiltros)
 							{
 								var filtro = filtrosCurator[tipo];
@@ -644,7 +644,7 @@
 						{
 							filtrosCurator[juego.Tipo].juegos.Add(juego);
 
-							if (juego.Tipo == JuegoTipo.Game && destacados.Count < 6)
+							if (juego.Tipo == JuegoTipo.Game && destacados.Count < 4)
 							{
 								destacados.Add(juego);
 							}

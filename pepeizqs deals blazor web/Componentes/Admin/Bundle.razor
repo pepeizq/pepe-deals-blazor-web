@@ -13,9 +13,15 @@
 @if (bundle != null)
 {
 	<div class="caja-admin-bundle cuerpo-ancho" style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 50px;">
-		<div style="display: flex; align-items: center;">
-			<div style="width: 100%;">
+		<div style="display: flex; align-items: center; justify-content: space-between;">
+			<div>
 				Admin Editar • @bundle.Nombre
+			</div>
+
+			<div style="display: flex; align-items: center; gap: 20px">
+				<a href="/api/bundle/@bundle.Id.ToString()" target="_blank" style="text-decoration: none;">
+					Api Web
+				</a>
 			</div>
 		</div>
 

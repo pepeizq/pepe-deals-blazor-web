@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Idiomas\Curators\tz3wz0ca.flb~" />
     <None Remove="Idiomas\Manifest\en.json~RFee1eec.TMP" />
   </ItemGroup>
 

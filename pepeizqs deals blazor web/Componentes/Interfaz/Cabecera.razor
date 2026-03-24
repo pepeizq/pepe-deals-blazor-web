@@ -1010,6 +1010,13 @@
 
                                     <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
                                         @{
+                                            string imagen = juego.Imagenes.Header_460x215;
+
+                                            if (juego.Tipo == JuegoTipo.Bundle)
+                                            {
+                                                imagen = Bundles2.BundlesCargar.DevolverBundle((Bundles2.BundleTipo)juego.IdSteam).ImagenIcono;
+                                            }
+
                                             int ancho = 230;
                                             int alto = 107;
 
@@ -1017,20 +1024,35 @@
                                             {
                                                 ancho = 107;
                                             }
+                                            else if (juego.Tipo == JuegoTipo.Bundle)
+                                            {
+                                                ancho = 51;
+                                                alto = 51;
+                                            }
 
-                                            string imagen = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
+                                            string imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
+
+                                            if (juego.Tipo == JuegoTipo.Bundle)
+                                            {
+                                                imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px; margin: 23px;";
+                                            }
+
                                             string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
 
                                             if (juego.Tipo == JuegoTipo.Curator)
                                             {
                                                 enlace = "/curator/" + juego.ExeEpic;
                                             }
+                                            else if (juego.Tipo == JuegoTipo.Bundle)
+                                            {
+                                                enlace = "/bundle/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                            }
                                         }
 
                                         <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
                                             <div class="perfil-flexible-centrado">
                                                 <div>
-                                                    <img src="@juego.Imagenes.Header_460x215" style="@imagen" loading="lazy" decoding="async" />
+                                                    <img src="@imagen" style="@imagenEstilo" loading="lazy" decoding="async" />
                                                 </div>
 
                                                 <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
@@ -1038,7 +1060,7 @@
                                                         @juego.Nombre
                                                     </div>
 
-                                                    @if (juego.Tipo != JuegoTipo.Curator)
+                                                    @if (juego.Tipo != JuegoTipo.Curator && juego.Tipo != JuegoTipo.Bundle)
                                                     {
                                                         <div style="font-size: 15px;">
                                                             @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
@@ -1185,7 +1207,7 @@
 
                 try
                 {
-                    var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, resultadosMaximos, false, true);
+                    var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, resultadosMaximos, false, true, 10, true, 10);
         
                     if (resultados != null && resultados.Any())
                     {
@@ -1260,7 +1282,8 @@
             [JuegoTipo.DLC] = new() { tipo = JuegoTipo.DLC },
             [JuegoTipo.Music] = new() { tipo = JuegoTipo.Music },
             [JuegoTipo.Software] = new() { tipo = JuegoTipo.Software },
-            [JuegoTipo.Curator] = new() { tipo = JuegoTipo.Curator }
+            [JuegoTipo.Curator] = new() { tipo = JuegoTipo.Curator },
+            [JuegoTipo.Bundle] = new () { tipo = JuegoTipo.Bundle }
         };
     }
 
@@ -1269,12 +1292,14 @@
     private bool pestañaBandasSonoras => pestañasBuscador[JuegoTipo.Music].activa;
     private bool pestañaSoftware => pestañasBuscador[JuegoTipo.Software].activa;
     private bool pestañaCurator => pestañasBuscador[JuegoTipo.Curator].activa;
+    private bool pestañaBundles => pestañasBuscador[JuegoTipo.Bundle].activa;
 
     private string estiloJuegos => pestañasBuscador[JuegoTipo.Game].ObtenerEstilo();
     private string estiloDLCs => pestañasBuscador[JuegoTipo.DLC].ObtenerEstilo();
     private string estiloBandasSonoras => pestañasBuscador[JuegoTipo.Music].ObtenerEstilo();
     private string estiloSoftware => pestañasBuscador[JuegoTipo.Software].ObtenerEstilo();
     private string estiloCurator => pestañasBuscador[JuegoTipo.Curator].ObtenerEstilo();
+    private string estiloBundles => pestañasBuscador[JuegoTipo.Bundle].ObtenerEstilo();
 
     private List<global::Juegos.Juego> resultadosMostrar
     {
@@ -1287,7 +1312,7 @@
 
     private void CambiarPestañas(MouseEventArgs e, int id)
     {
-        var tipos = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator };
+        var tipos = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator, JuegoTipo.Bundle };
 
         foreach (var pestaña in pestañasBuscador.Values)
         {
@@ -1309,7 +1334,8 @@
             (JuegoTipo.DLC, (1, Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Header"), 130)),
             (JuegoTipo.Music, (2, Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Header"), 180)),
             (JuegoTipo.Software, (3, Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Header"), 130)),
-            (JuegoTipo.Curator, (4, Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Header"), 130))
+            (JuegoTipo.Curator, (4, Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Header"), 130)),
+            (JuegoTipo.Bundle, (5, Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Header"), 130))
         };
     }
 
@@ -1360,7 +1386,7 @@
 
             await Task.Delay(retraso, token);
 
-            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos, false, true);
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos, false, true, 10, true, 10);
         
             if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
@@ -1420,7 +1446,7 @@
             pestaña.activa = false;
         }
 
-        var orden = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator };
+        var orden = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator, JuegoTipo.Bundle };
 
         foreach (var tipo in orden)
         {

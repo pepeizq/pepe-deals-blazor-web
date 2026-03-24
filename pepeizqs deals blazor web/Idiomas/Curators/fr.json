@@ -1,9 +1,11 @@
 {
-  "Subtitle": "Découvrez les jeux de ce conservateur.",
+  "Subtitle": "Collections de jeux organisées par les meilleurs éditeurs, développeurs et franchises. Découvrez des sélections triées sur le volet et trouvez votre prochain jeu préféré.",
   "String1": "Jeux en vedette",
   "String2": "Jeux",
   "String3": "DLC",
   "String4": "Bandes sonores",
   "String5": "Logiciel",
-  "String6": "Filtre"
+  "String6": "Filtre",
+  "String7": "Il n'y a actuellement aucune offre",
+  "String8": "Jouer gratuitement"
 }
