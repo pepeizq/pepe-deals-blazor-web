@@ -15,7 +15,6 @@ namespace APIs.PrimeGaming
 				ImagenFondo = "/imagenes/suscripciones/primegaming_fondo.webp",
 				Enlace = "https://gaming.amazon.com/",
 				DRMDefecto = JuegoDRM.Amazon,
-				AdminInteractuar = false,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = true,
                 Precio = 4.99,
@@ -41,7 +40,6 @@ namespace APIs.PrimeGaming
 				ImagenIcono = "/imagenes/suscripciones/twitchprime_icono.webp",
 				Enlace = "https://gaming.amazon.com/",
 				DRMDefecto = JuegoDRM.Amazon,
-				AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = true,
 				AdminAñadir = false

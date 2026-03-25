@@ -16,7 +16,6 @@ namespace APIs.Humble
 				ColorDestacado = "rgba(201, 42, 46, 0.3)",
 				Enlace = "https://www.humblebundle.com/membership/home",
 				DRMDefecto = JuegoDRM.Steam,
-				AdminInteractuar = true,
 				UsuarioEnlacesEspecificos = false,
 				ParaSiempre = true,
 				Precio = 12.99,
@@ -71,7 +70,6 @@ namespace APIs.Humble
 				ImagenIcono = "/imagenes/tiendas/humblestore_icono.webp",
 				Enlace = "https://www.humblebundle.com/membership/home",
 				DRMDefecto = JuegoDRM.Steam,
-				AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
 				ParaSiempre = true,
 				AdminAñadir = false

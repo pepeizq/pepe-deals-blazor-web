@@ -56,7 +56,12 @@
 		}
 
 		string nombreJson = nombreJuego.Replace(Strings.ChrW(34).ToString(), null);
-		string descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
+		string descripcionJson = string.Empty;
+
+		if (string.IsNullOrEmpty(descripcion) == false)
+		{
+			descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
+		}
 
 		if (string.IsNullOrEmpty(imagen) == false && estrellasJsonJuego > 0 && string.IsNullOrEmpty(cantidadJsonJuego) == false)
 		{
@@ -568,16 +573,7 @@
 		else if (tipo == Tipo.Juego)
 		{
 			titulo ??= JuegoTitulo(nombreJuego, drmsEnseñarJuego, gamePassJuego);
-
-			if (string.IsNullOrEmpty(descripcionJuego) == false)
-			{
-				descripcion ??= descripcionJuego;
-			}
-			else
-			{
-				descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String104", "Game");
-			}
-
+			descripcion ??= descripcionJuego;
 			enlace ??= "https://" + dominio + "/game/" + idJuego.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(nombreJuego) + "/";
 			imagen ??= imagenJuego;
 			keywords2 ??= JuegoKeywords(categoriasJuego);
@@ -618,7 +614,7 @@
 		else if (tipo == Tipo.Portada)
 		{
 			titulo ??= "pepe's deals • " + Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Index");
-			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Index");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Index");
 			enlace ??= "https://" + dominio + "/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywordsVacias;

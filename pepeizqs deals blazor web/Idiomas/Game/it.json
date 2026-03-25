@@ -102,7 +102,6 @@
   "String101": "Ultima patch",
   "String102": "Categorie e accessibilità",
   "String103": "Libero di giocare",
-  "String104": "Dettagli del gioco su pepeizqdeals.com",
   "String105": "Contenuti sessuali",
   "String106": "AI",
   "String107": "Numero di persone che giocano in questo momento su Steam",
@@ -118,5 +117,6 @@
   "String117": "Questo contenuto è costituito da file musicali del gioco {0}.",
   "String118": "Controlla quali lingue sono disponibili su {0}.",
   "String119": "Puoi provare una demo del gioco per vedere se funziona per te e se ti piace.",
-  "String120": "Controlla il record dei prezzi minimi storici per {0}."
+  "String120": "Controlla il record dei prezzi minimi storici per {0}.",
+  "String121": "Informazioni complete sul gioco: caratteristiche, prezzo, offerte disponibili e dove acquistare. Tutto quello che devi sapere prima di giocare. Dai un'occhiata!"
 }

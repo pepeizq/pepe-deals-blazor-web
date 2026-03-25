@@ -18,12 +18,12 @@ namespace APIs.EA
 				ColorDestacado = "rgba(13, 16, 66, 0.3)",
 				Enlace = "https://www.ea.com/ea-play",
 				DRMDefecto = JuegoDRM.EA,
-				AdminInteractuar = false,
 				UsuarioEnlacesEspecificos = false,
 				ParaSiempre = false,
 				SuscripcionesRelacionadas = new List<Suscripciones2.SuscripcionTipo>() { Suscripciones2.SuscripcionTipo.EAPlayPro },
 				Precio = 5.99,
 				AdminPendientes = true,
+				AdminAñadir = false,
 				TablaPendientes = "tiendaea",
 				UsuarioPuedeAbrir = true
 			};
@@ -43,11 +43,11 @@ namespace APIs.EA
 				ColorDestacado = "rgba(13, 16, 66, 0.3)",
 				Enlace = "https://www.ea.com/ea-play",
 				DRMDefecto = JuegoDRM.EA,
-				AdminInteractuar = false,
 				UsuarioEnlacesEspecificos = false,
 				ParaSiempre = false,
                 Precio = 16.99,
                 AdminPendientes = true,
+				AdminAñadir = false,
                 TablaPendientes = "tiendaea",
 				UsuarioPuedeAbrir = true
 			};

@@ -26,13 +26,13 @@ namespace APIs.Ubisoft
 				ColorDestacado = "rgba(0, 110, 245, 0.3)",
 				Enlace = "https://store.ubisoft.com/ubisoftplus",
                 DRMDefecto = JuegoDRM.Ubisoft,
-                AdminInteractuar = true,
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = false,
                 Precio = 7.99,
 				SuscripcionesRelacionadas = new List<Suscripciones2.SuscripcionTipo>() { Suscripciones2.SuscripcionTipo.UbisoftPlusPremium },
 				AdminPendientes = true,
                 TablaPendientes = "tiendaubisoft",
+				AdminAñadir = false,
 				UsuarioPuedeAbrir = true
 			};
 
@@ -51,11 +51,11 @@ namespace APIs.Ubisoft
 				ColorDestacado = "rgba(0, 110, 245, 0.3)",
 				Enlace = "https://store.ubisoft.com/ubisoftplus",
                 DRMDefecto = JuegoDRM.Ubisoft,
-                AdminInteractuar = false,
                 UsuarioEnlacesEspecificos = false,
                 ParaSiempre = false,
                 Precio = 17.99,
                 AdminPendientes = true,
+				AdminAñadir = false,
                 TablaPendientes = "tiendaubisoft",
 				UsuarioPuedeAbrir = true
 			};

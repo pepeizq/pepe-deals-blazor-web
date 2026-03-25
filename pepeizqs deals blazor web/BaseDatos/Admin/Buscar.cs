@@ -113,7 +113,7 @@ namespace BaseDatos.Admin
 
 					foreach (Suscripcion suscripcion2 in SuscripcionesCargar.GenerarListado())
 					{
-						if (suscripcion2.Id.ToString() == t.Id && suscripcion2.AdminInteractuar == true)
+						if (suscripcion2.Id.ToString() == t.Id && suscripcion2.AdminAñadir == true)
 						{
 							return false;
 						}
@@ -274,7 +274,7 @@ namespace BaseDatos.Admin
 
 				foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
 				{
-					if (suscripcion.AdminInteractuar == true)
+					if (suscripcion.AdminAñadir == true)
 					{
 						if (string.IsNullOrEmpty(sql) == true)
 						{

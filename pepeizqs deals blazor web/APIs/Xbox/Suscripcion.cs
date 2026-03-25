@@ -26,7 +26,6 @@ namespace APIs.Xbox
 				ColorDestacado = "rgba(46, 71, 3, 0.3)",
 				Enlace = "https://www.xbox.com/xbox-game-pass/pc-game-pass",
                 DRMDefecto = JuegoDRM.Microsoft,
-                AdminInteractuar = true,
                 UsuarioEnlacesEspecificos = true,
                 ParaSiempre = false,
                 Precio = 14.99,

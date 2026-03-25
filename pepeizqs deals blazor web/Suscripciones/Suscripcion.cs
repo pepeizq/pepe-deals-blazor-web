@@ -13,10 +13,9 @@ namespace Suscripciones2
 		public string ImagenFondo;
 		public string ColorDestacado;
 		public string Enlace;
-		public DateTime FechaSugerencia;
+		public DateTime FechaSugerencia = DateTime.Now.AddDays(7);
 		public JuegoDRM DRMDefecto;
 		public string ImagenNoticia;
-		public bool AdminInteractuar;
 		public bool UsuarioEnlacesEspecificos;
 		public bool ParaSiempre; //true si pagas los juegos son para siempre
 		public List<SuscripcionTipo> SuscripcionesRelacionadas;

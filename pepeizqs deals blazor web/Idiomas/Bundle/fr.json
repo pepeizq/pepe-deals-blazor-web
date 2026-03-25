@@ -1,6 +1,6 @@
 {
   "Title": "Forfaits",
-  "Subtitle": "Découvrez tous les forfaits de jeux PC actuellement disponibles.",
+  "Subtitle": "Découvrez les meilleurs packs de jeux PC disponibles dès maintenant. Des offres mises à jour, des remises énormes et des packs à ne pas manquer. Économisez gros sur vos jeux préférés !",
   "String2": "Archives",
   "String3": "Offre groupée ouverte",
   "String4": "Ce forfait se termine dans {0} jours",
@@ -19,8 +19,7 @@
   "String18": "Il n'y a aucun forfait disponible à l'achat",
   "String20": "par unité",
   "String21": "jeu",
-  "String22": "Bundle divisé en plusieurs niveaux et disponible à partir de",
-  "String23": "Bundle où vous pouvez choisir les jeux et disponibles",
+  "String22": "Pack de jeux PC de {0} à {1}. Découvrez cette offre mise à jour avec plusieurs jeux. Bénéficiez de la réduction maintenant !",
   "String24": "Première fois dans le bundle",
   "String25": "Historical Low:",
   "String26": "Bundle ouvert",

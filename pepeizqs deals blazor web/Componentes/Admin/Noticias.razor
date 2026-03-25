@@ -154,7 +154,7 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Suscripciones)
             <select>
                 @foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
                 {
-                    if (suscripcion.AdminInteractuar == true)
+                    if (suscripcion.AdminAñadir == true)
                     {
                         <option @onclick="@(e => CambiarSuscripcionNoticias(e, suscripcion.Id))">
                             @suscripcion.Nombre

@@ -107,7 +107,7 @@
 	string enlace = "https://" + dominio + "/curator/" + slug + "/";
 	string imagen = "https://" + dominio + "/logo/logoentrada2.webp";
 
-	if (string.IsNullOrEmpty(curator.Descripcion) == false)
+	if (string.IsNullOrEmpty(curator.Descripcion) == false && curator.Descripcion.Length > 120)
 	{
 		descripcion = curator.Descripcion;
 	}
@@ -155,10 +155,8 @@
 	{
 		if (string.IsNullOrEmpty(curator.Web.Enlace) == false)
 		{
-			contenidoJson = contenidoJson + @",
-				""sameAs"": [ ""@enlace"" ]";
-
-			contenidoJson = contenidoJson.Replace("@enlace", curator.Web.Enlace);
+			contenidoJson = contenidoJson + $@",
+				""sameAs"": [ ""{curator.Web.Enlace}"" ]";
 		}
 	}
 

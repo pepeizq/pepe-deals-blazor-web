@@ -26,6 +26,18 @@
 
 @if (juego != null)
 {
+    string descripcion = string.Empty; 
+    
+    if (juego.Caracteristicas?.Descripcion?.Length > 120)
+    {
+        descripcion = juego.Caracteristicas.Descripcion;
+    }
+
+    if (string.IsNullOrEmpty(descripcion) == true)
+    {
+        descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "String121", "Game");
+    }
+
     bool gamePass = false;
 
     if (SuscripcionesDisponibles(juego.Suscripciones).Count > 0)
@@ -112,7 +124,7 @@
         }
     }
 
-    <Titulo tipo="@Titulo.Tipo.Juego" idioma="@idioma" dominio="@dominio" nombreJuego="@juego.Nombre" drmsEnseñarJuego="@drmsEnseñar" descripcionJuego="@juego.Caracteristicas?.Descripcion"
+    <Titulo tipo="@Titulo.Tipo.Juego" idioma="@idioma" dominio="@dominio" nombreJuego="@juego.Nombre" drmsEnseñarJuego="@drmsEnseñar" descripcionJuego="@descripcion"
             idJuego="@juego.Id" gamePassJuego="@gamePass" imagenJuego="@juego.Imagenes?.Header_460x215" categoriasJuego="@juego.Categorias"
             estrellasJsonJuego="@estrellasJson" cantidadJsonJuego="@cantidadJson" precioBajoJsonJuego="@precioBajoJson"
             precioAltoJsonJuego="@precioAltoJson" fechaJsonJuego="@fechaJson" preciosCantidadJsonJuego="@preciosJson?.Count"/>

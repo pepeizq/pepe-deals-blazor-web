@@ -22,7 +22,8 @@ namespace Juegos
 		SquareEnix,
 		AmazonLuna,
 		PlayStation,
-		Stove
+		Stove,
+		Stadia
 	}
 
 	public static class JuegoDRM2
@@ -233,6 +234,18 @@ namespace Juegos
 			};
 
 			drms.Add(stove);
+
+			//----------------------------
+
+			DRM stadia = new DRM
+			{
+				Id = JuegoDRM.Stadia,
+				Nombre = "Stadia",
+				Imagen = "/imagenes/drm/stadia.webp",
+				Acepciones = new List<string> { "stadia" }
+			};
+
+			drms.Add(stadia);
 
 			//----------------------------
 

@@ -46,6 +46,11 @@
 	string descripcion = texto2;
 	string descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
 
+	if (descripcion.Length < 120)
+	{
+		descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "String13", "News");
+	}
+
 	string keywords = "news";
 
 	if (string.IsNullOrEmpty(titulo) == false)

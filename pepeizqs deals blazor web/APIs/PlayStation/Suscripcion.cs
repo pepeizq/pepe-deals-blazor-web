@@ -22,7 +22,6 @@ namespace APIs.PlayStation
 				ImagenIcono = "/imagenes/suscripciones/psplus_icono.webp",
 				Enlace = "https://www.playstation.com/ps-plus/#subscriptions",
 				DRMDefecto = JuegoDRM.PlayStation,
-				AdminInteractuar = true,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = false,
 				Precio = 16.99,

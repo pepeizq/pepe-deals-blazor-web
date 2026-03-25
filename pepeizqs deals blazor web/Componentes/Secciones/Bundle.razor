@@ -23,18 +23,9 @@
 
 		if (bundle.Tiers?.Count > 0 && string.IsNullOrEmpty(bundle.Tiers[0].Precio) == false)
 		{
-			string precio = bundle.Tiers[0].Precio.ToString();
-			precio = precio.Replace(".", ",");
-			precio = precio.Trim() + "€";
+			string precio = Herramientas.Precios.Euro(double.Parse(bundle.Tiers[0].Precio));
 
-			if (bundle.Pick == false)
-			{
-				descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Bundle") + " " + precio;
-			}
-			else
-			{
-				descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "String23", "Bundle") + " " + precio;
-			}
+			descripcion = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Bundle"), precio, bundle.Tienda);
 		}
 
 		if (string.IsNullOrEmpty(bundle.ImagenNoticia) == false)

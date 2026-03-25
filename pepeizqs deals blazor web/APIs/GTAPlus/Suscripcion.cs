@@ -18,7 +18,6 @@ namespace APIs.GTAPlus
 				ColorDestacado = "rgba(246, 135, 30, 0.2)",
 				Enlace = "https://store.steampowered.com/subscriptions/gtaplus",
 				DRMDefecto = JuegoDRM.Steam,
-				AdminInteractuar = false,
 				UsuarioEnlacesEspecificos = false,
 				ParaSiempre = false,
 				Precio = 8.99,

@@ -126,13 +126,13 @@ else
     private string imagenNoticiaSuscripciones = null;
 
     private string textoBuscador = string.Empty;
-    private CancellationTokenSource _cts;
+    private CancellationTokenSource cts;
 
     private async Task TextoCambiaBuscador()
     {
-        _cts?.Cancel();
-        _cts = new CancellationTokenSource();
-        var token = _cts.Token;
+        cts?.Cancel();
+        cts = new CancellationTokenSource();
+        var token = cts.Token;
 
         if (string.IsNullOrEmpty(textoBuscador) == false && textoBuscador.Trim().Length > 2)
         {

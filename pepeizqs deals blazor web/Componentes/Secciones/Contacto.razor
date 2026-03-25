@@ -9,71 +9,76 @@
 <Titulo tipo="@Titulo.Tipo.Contacto" idioma="@idioma" dominio="@dominio"/>
 
 <style>
+	:root {
+		--glaseadoBorde: #FFFFFF1A;
+	}
+
 	.caja-contacto-contenido {
 		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 20px;
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+		border-radius: 20px;
+		border: 2px solid var(--glaseadoBorde);
+	}
+
+	.caja-contacto-titulo {
+		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+		font-size: 18px;
+		padding: 20px 30px;
+		border-top-left-radius: inherit;
+		border-top-right-radius: inherit;
 	}
 </style>
 
-<div class="subcabecera">
-	<div class="cuerpo-ancho sub-subcabecera">
-		<h1 style="font-size: 18px; margin: 0px; width: fit-content; padding: 9px 0px;">
-			@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Contact")
-		</h1>
-	</div>
-</div>
-
-<div class="subcabecera" style="background-color: var(--fondoSubsubcabecera);">
-	<div class="cuerpo-ancho" style="padding: 20px 0px; display: flex; align-items: center; gap: 20px;">
-		<div style="max-width: 26px;">
-			<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-				<path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" />
-			</svg>
-		</div>
-		<div>
-			@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Contact") @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Contact"), "admin@pepe.deals")
-		</div>
-	</div>
-</div>
-
-<div style="max-width: 1000px; margin: 40px auto;">
+<div style="max-width: 800px; margin: 40px auto;">
 	<div class="caja-contacto-contenido" style="display: flex; flex-direction: column;">
-		<div style="margin-left: 8px; margin-bottom: 8px;">
-			@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Contact")
+		<div class="caja-contacto-titulo">
+			<h1 style="font-size: 18px; margin: 0px; width: fit-content; padding: 5px 0px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Contact")
+			</h1>
 		</div>
-		<input class="entrada-texto" value="@formularioCorreo" @oninput="TextoCambiaCorreo" />
 
-		<div style="margin-left: 8px; margin-bottom: 8px; margin-top: 20px;">
-			@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Contact")
-		</div>
-		<input class="entrada-texto" value="@formularioTitulo" @oninput="TextoCambiaTitulo" />
-
-		<div style="margin-left: 8px; margin-bottom: 8px; margin-top: 20px;">
-			@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Contact")
-		</div>
-		<textarea class="entrada-texto" value="@formularioContenido" @oninput="TextoCambiaContenido" rows="10" />
-
-		@if (correoValido == true && tituloValido == true && contenidoValido == true)
-		{
-			<button class="boton-pequeño" @onclick="EnviarmeCorreo" style="margin-top: 20px; text-align: center; padding: 15px 20px; font-size: 18px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Contact")
-			</button>
-		}
-		else
-		{
-			<div class="boton-pequeño" style="opacity: 0.5; margin-top: 20px; text-align: center; padding: 15px 20px; font-size: 18px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Contact")
+		<div style="padding: 20px 30px; display: flex; align-items: center; gap: 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 95%, var(--fondoBotonPequeño));">
+			<div style="font-size: 15px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Contact") @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Contact"), "admin@pepe.deals")
 			</div>
-		}
+		</div>
 
-		@if (formularioEnviado == true)
-		{
-			<div style="background-color: var(--fondoBien); padding: 10px 15px; margin-top: 30px;">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Contact")
+		<div style="padding: 30px;">
+			<div style="margin-left: 8px; margin-bottom: 8px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Contact")
 			</div>
-		}
+			<input class="entrada-texto" value="@formularioCorreo" @oninput="TextoCambiaCorreo" />
+
+			<div style="margin-left: 8px; margin-bottom: 8px; margin-top: 20px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Contact")
+			</div>
+			<input class="entrada-texto" value="@formularioTitulo" @oninput="TextoCambiaTitulo" />
+
+			<div style="margin-left: 8px; margin-bottom: 8px; margin-top: 20px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Contact")
+			</div>
+			<textarea class="entrada-texto" value="@formularioContenido" @oninput="TextoCambiaContenido" rows="10" />
+
+			@if (correoValido == true && tituloValido == true && contenidoValido == true)
+			{
+				<button class="boton-pequeño" @onclick="EnviarmeCorreo" style="margin-top: 20px; text-align: center; padding: 15px 20px; font-size: 18px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Contact")
+				</button>
+			}
+			else
+			{
+				<div class="boton-pequeño" style="opacity: 0.5; margin-top: 20px; text-align: center; padding: 15px 20px; font-size: 18px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Contact")
+				</div>
+			}
+
+			@if (formularioEnviado == true)
+			{
+				<div style="background-color: var(--fondoBien); padding: 10px 15px; margin-top: 30px;">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Contact")
+				</div>
+			}
+		</div>
 	</div>
 </div>
 

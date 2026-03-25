@@ -1,6 +1,6 @@
 {
   "Title": "Bundles",
-  "Subtitle": "Comprueba todos los bundles de juegos para PC que hay disponibles actualmente.",
+  "Subtitle": "Descubre los mejores bundles de juegos para PC disponibles ahora. Ofertas actualizadas, grandes descuentos y packs imperdibles. ¡Ahorra!",
   "String2": "Archivo",
   "String3": "Abrir Bundle",
   "String4": "Este bundle termina en {0} días",
@@ -19,8 +19,7 @@
   "String18": "No hay bundles disponibles para comprar",
   "String20": "cada unidad",
   "String21": "juego",
-  "String22": "Bundle dividido en varios tiers y disponible desde",
-  "String23": "Bundle donde puedes elegir los juegos y disponible desde",
+  "String22": "Bundle de juegos para PC desde {0} en {1}. Descubre esta oferta actualizada con múltiples juegos. ¡Aprovecha el descuento!",
   "String24": "Primera vez en bundle",
   "String25": "Mínimo Histórico:",
   "String26": "Abrir Bundle",
