@@ -39,7 +39,7 @@ namespace APIs.Playsum
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-			string html = await Decompiladores.Estandar("https://api.playsum.live/v1/shop/products/rss");
+			string html = await Decompiladores.Estandar("https://cdn.playsum.live/rss/shop/products.xml");
 
 			if (string.IsNullOrEmpty(html) == false)
 			{
