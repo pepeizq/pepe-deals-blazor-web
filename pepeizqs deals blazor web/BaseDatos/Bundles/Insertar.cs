@@ -9,24 +9,43 @@ namespace BaseDatos.Bundles
 	{
 		public static async Task Ejecutar(Bundles2.Bundle bundle) 
 		{
-			string sqlInsertar = "INSERT INTO bundles " +
-					"(bundleTipo, nombre, tienda, imagen, enlace, fechaEmpieza, fechaTermina, juegos, tiers, pick, imagenNoticia) VALUES " +
-					"(@bundleTipo, @nombre, @tienda, @imagen, @enlace, @fechaEmpieza, @fechaTermina, @juegos, @tiers, @pick, @imagenNoticia) ";
-
-			var parametros = new
+			List<string> campos = new List<string>
 			{
-				bundleTipo = bundle.BundleTipo,
-				nombre = bundle.Nombre,
-				tienda = bundle.Tienda,
-				imagen = bundle.Imagen,
-				enlace = bundle.Enlace,
-				fechaEmpieza = bundle.FechaEmpieza,
-				fechaTermina = bundle.FechaTermina,
-				juegos = JsonConvert.SerializeObject(bundle.Juegos),
-				tiers = JsonConvert.SerializeObject(bundle.Tiers),
-				pick = bundle.Pick.ToString(),
-				imagenNoticia = bundle.ImagenNoticia
+				"bundleTipo", "nombre", "tienda", 
+				"fechaEmpieza", "fechaTermina", "juegos", "tiers", "pick"
 			};
+
+			DynamicParameters parametros = new DynamicParameters();
+			parametros.Add("@bundleTipo", bundle.BundleTipo);
+			parametros.Add("@nombre", bundle.Nombre);
+			parametros.Add("@tienda", bundle.Tienda);
+			parametros.Add("@fechaEmpieza", bundle.FechaEmpieza);
+			parametros.Add("@fechaTermina", bundle.FechaTermina);
+			parametros.Add("@juegos", JsonConvert.SerializeObject(bundle.Juegos));
+			parametros.Add("@tiers", JsonConvert.SerializeObject(bundle.Tiers));
+			parametros.Add("@pick", bundle.Pick.ToString());
+
+			if (string.IsNullOrEmpty(bundle.Enlace) == false && bundle.Enlace.StartsWith("https://"))
+			{
+				campos.Add("enlace");
+				parametros.Add("@enlace", bundle.Enlace);
+			}
+
+			if (string.IsNullOrEmpty(bundle.Imagen) == false && bundle.Imagen.StartsWith("https://"))
+			{
+				campos.Add("imagen");
+				parametros.Add("@imagen", bundle.Imagen);
+			}
+
+			if (string.IsNullOrEmpty(bundle.ImagenNoticia) == false && bundle.ImagenNoticia.StartsWith("https://"))
+			{
+				campos.Add("imagenNoticia");
+				parametros.Add("@imagenNoticia", bundle.ImagenNoticia);
+			}
+
+			string camposStr = string.Join(", ", campos);
+			string valoresStr = string.Join(", ", campos.Select(c => "@" + c));
+			string sqlInsertar = $"INSERT INTO bundles ({camposStr}) VALUES ({valoresStr})";
 
 			try
 			{

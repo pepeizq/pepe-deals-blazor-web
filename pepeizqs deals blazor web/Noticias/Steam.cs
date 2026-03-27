@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Juegos;
+using Patreon.Net.Models;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -162,24 +163,46 @@ namespace Noticias
 					contenido = contenido + "[/list]";
 				}
 
-				foreach (var tier in bundle.Tiers.OrderBy(b => b.Posicion))
+				if (bundle.Pick == false)
 				{
-					contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][p]Tier {tier.Posicion.ToString()}[/p][/th][th colwidth=""450""][p][/p][/th][/tr]";
+					foreach (var tier in bundle.Tiers.OrderBy(b => b.Posicion))
+					{
+						contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][p]Tier {tier.Posicion.ToString()}[/p][/th][th colwidth=""450""][p][/p][/th][/tr]";
 
-					foreach (var juego in bundle.Juegos)
+						foreach (var juego in bundle.Juegos.OrderBy(b => b.Nombre))
+						{
+							if (juego.Juego == null)
+							{
+								juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+							}
+
+							if (tier.Posicion == juego.Tier.Posicion)
+							{
+								string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]" + juego.DRM.ToString() + "[/p]";
+								string imagen = $@"[img src=""{juego.Juego.Imagenes.Header_460x215}""][/img]";
+
+								contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
+							}
+						}
+
+						contenido = contenido + "[/table][/p]";
+					}
+				}
+				else
+				{
+					contenido = contenido + $@"[p][table equalcells=""1"" colwidth=""185,450""][tr][th colwidth=""185""][p]Tier 1[/p][/th][th colwidth=""450""][p][/p][/th][/tr]";
+
+					foreach (var juego in bundle.Juegos.OrderBy(b => b.Nombre))
 					{
 						if (juego.Juego == null)
 						{
 							juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
 						}
 
-						if (tier.Posicion == juego.Tier.Posicion)
-						{
-							string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]" + juego.DRM.ToString() + "[/p]";
-							string imagen = $@"[img src=""{juego.Juego.Imagenes.Header_460x215}""][/img]";
+						string nombre = "[p]" + juego.Juego.Nombre + "[/p][p]" + juego.DRM.ToString() + "[/p]";
+						string imagen = $@"[img src=""{juego.Juego.Imagenes.Header_460x215}""][/img]";
 
-							contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
-						}
+						contenido = contenido + $@"[tr][td colwidth=""185""]{imagen}[/td][td colwidth=""450""]{nombre}[/td][/tr]";
 					}
 
 					contenido = contenido + "[/table][/p]";

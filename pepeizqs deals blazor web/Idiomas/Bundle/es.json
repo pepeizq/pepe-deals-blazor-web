@@ -32,5 +32,9 @@
   "String33": "Nombre (Z-A)",
   "String34": "Genera un mensaje del bundle para compartir",
   "String35": "Valor estimado de cada juego si compras el bundle con otras personas",
-  "String36": "Generar"
+  "String36": "Generar",
+  "String37": "Precio medio",
+  "String38": "Tier {0}",
+  "String39": "Total",
+  "String40": "Archivo de bundles del año {0}"
 }

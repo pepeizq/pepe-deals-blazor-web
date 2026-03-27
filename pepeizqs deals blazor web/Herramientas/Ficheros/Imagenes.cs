@@ -76,7 +76,7 @@ namespace Herramientas.Ficheros
 		{
 			LayoutModo modo = LayoutModo.Vertical;
 
-			if (imagenesEnlaces?.Count <= 2)
+			if (imagenesEnlaces?.Count <= 3)
 			{
 				modo = LayoutModo.Horizontal;
 			}

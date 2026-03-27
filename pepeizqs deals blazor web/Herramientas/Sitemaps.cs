@@ -152,6 +152,32 @@ namespace Herramientas
 
 			sb.Append(textoBundles);
 
+			List<string> añosBundle = new List<string>();
+			DateTime arranque = new DateTime(2010, 1, 1);
+
+			int i = 0;
+			while (i < 100)
+			{
+				if (arranque.Year != DateTime.Now.Year)
+				{
+					añosBundle.Add(arranque.Year.ToString());
+					arranque = arranque.AddYears(1);
+				}
+				i += 1;
+			}
+
+			añosBundle.Add(DateTime.Now.Year.ToString());
+
+			foreach (var añoBundle in añosBundle)
+			{
+				string textoBundleAño = "<url>" + Environment.NewLine +
+					"<loc>https://" + dominio + "/bundles/archive/" + añoBundle + "/</loc>" + Environment.NewLine +
+					"<changefreq>daily</changefreq>" + Environment.NewLine +
+					"</url>";
+
+				sb.Append(textoBundleAño);
+			}
+
 			string textoGratis = "<url>" + Environment.NewLine +
 				"<loc>https://" + dominio + "/free/</loc>" + Environment.NewLine +
 				"<changefreq>daily</changefreq>" + Environment.NewLine +

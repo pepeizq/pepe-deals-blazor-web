@@ -1,5 +1,6 @@
 ﻿@page "/bundles/"
 @page "/bundles/{bundleSeleccionadoTexto}/"
+@page "/bundles/archive/{añoSeleccionado}/"
 
 @using APIs.Steam
 @using Microsoft.AspNetCore.Components.Web
@@ -18,31 +19,38 @@
 	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
 	string keywords = "bundles";
 
-	if (bundlesActuales?.Count > 0)
+	if (mostrarArchivo == false)
 	{
-		if (bundlesActuales.Count == 1)
+		if (bundlesActuales?.Count > 0)
 		{
-			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Bundle"), bundlesActuales.Count.ToString());
-		}
-		else if (bundlesActuales.Count > 1)
-		{
-			titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Bundle"), bundlesActuales.Count.ToString());
-		}
-
-		foreach (var bundleActual in bundlesActuales)
-		{
-			if (string.IsNullOrEmpty(bundleActual.Tienda) == false)
+			if (bundlesActuales.Count == 1)
 			{
-				if (keywords.Contains(bundleActual.Tienda.ToLower()) == false)
+				titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Bundle"), bundlesActuales.Count.ToString());
+			}
+			else if (bundlesActuales.Count > 1)
+			{
+				titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Bundle"), bundlesActuales.Count.ToString());
+			}
+
+			foreach (var bundleActual in bundlesActuales)
+			{
+				if (string.IsNullOrEmpty(bundleActual.Tienda) == false)
 				{
-					keywords = keywords + ", " + bundleActual.Tienda.ToLower();
+					if (keywords.Contains(bundleActual.Tienda.ToLower()) == false)
+					{
+						keywords = keywords + ", " + bundleActual.Tienda.ToLower();
+					}
 				}
 			}
+		}
+		else
+		{
+			titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Bundle");
 		}
 	}
 	else
 	{
-		titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Bundle");
+		titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String40", "Bundle"), añoSeleccionado);
 	}
 
 	string contenidoJson = @"{
@@ -380,9 +388,119 @@
 
 					if (bundlesAño.Count > 0)
 					{
+						double precioMedioTier1 = 0;
+						int bundlesValidosTier1 = 0;
+
+						double precioMedioTier2 = 0;
+						int bundlesValidosTier2 = 0;
+
+						double precioMedioTier3 = 0;
+						int bundlesValidosTier3 = 0;
+
+						double precioMedioTotal = 0;
+						int bundlesValidosTotal = 0;
+
+						foreach (var bundleAño in bundlesAño)
+						{
+							if (bundleAño.Tiers?.Count > 1 && string.IsNullOrEmpty(bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 1)?.Precio) == false)
+							{
+								string? precio = bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 1)?.Precio;
+
+								if (string.IsNullOrEmpty(precio) == false)
+								{
+									precioMedioTier1 = precioMedioTier1 + double.Parse(bundleAño.Tiers[0].Precio);
+									bundlesValidosTier1 += 1;
+								}
+							}
+
+							if (bundleAño.Tiers?.Count > 1 && string.IsNullOrEmpty(bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 2)?.Precio) == false)
+							{
+								string? precio = bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 2)?.Precio;
+
+								if (string.IsNullOrEmpty(precio) == false)
+								{
+									precioMedioTier2 = precioMedioTier2 + double.Parse(bundleAño.Tiers[1].Precio);
+									bundlesValidosTier2 += 1;
+								}
+							}
+
+							if (bundleAño.Tiers?.Count > 2 && string.IsNullOrEmpty(bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 3)?.Precio) == false)
+							{
+								string? precio = bundleAño.Tiers.FirstOrDefault(b => b.Posicion == 3)?.Precio;
+
+								if (string.IsNullOrEmpty(precio) == false)
+								{
+									precioMedioTier3 = precioMedioTier3 + double.Parse(precio);
+									bundlesValidosTier3 += 1;
+								}								
+							}
+
+							if (bundleAño.Tiers?.Count > 0)
+							{
+								precioMedioTotal = precioMedioTotal + double.Parse(bundleAño.Tiers.OrderBy(b => b.Posicion).Last().Precio);
+								bundlesValidosTotal += 1;
+							}
+						}
+
+						if (precioMedioTier1 > 0)
+						{
+							precioMedioTier1 = precioMedioTier1 / bundlesValidosTier1;
+						}
+
+						if (precioMedioTier2 > 0)
+						{
+							precioMedioTier2 = precioMedioTier2 / bundlesValidosTier2;
+						}
+
+						if (precioMedioTier3 > 0)
+						{
+							precioMedioTier3 = precioMedioTier3 / bundlesValidosTier3;
+						}
+
+						if (precioMedioTotal > 0)
+						{
+							precioMedioTotal = precioMedioTotal / bundlesValidosTotal;
+						}
+
 						<div class="caja-archivo-contenido">
 							<div id="pasado-@bundleTipo.ToString()" class="caja-archivo-titulo">
 								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Bundles2.BundlesCargar.DevolverBundle(bundleTipo).ImagenTienda)" alt="@Bundles2.BundlesCargar.DevolverBundle(bundleTipo).Tienda" style="max-width: 150px; max-height: 70px; object-fit: contain;" />
+							
+								<div style="display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+									<div>
+										@Herramientas.Idiomas.BuscarTexto(idioma, "String37", "Bundle")
+									</div>
+							
+									<div style="display: flex; align-items: center; gap: 20px;">
+										@if (precioMedioTier1 > 0)
+										{
+											<div style="background-color: rgba(255,255,255,0.1); font-size: 14px; padding: 10px 15px; border-radius: 5px;">
+												@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String38", "Bundle"), 1): @Herramientas.Precios.Euro(Math.Round(precioMedioTier1, 2)) (@bundlesValidosTier1)
+											</div>
+										}
+										
+										@if (precioMedioTier2 > 0)
+										{
+											<div style="background-color: rgba(255,255,255,0.1); font-size: 14px; padding: 10px 15px; border-radius: 5px;">
+												@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String38", "Bundle"), 2): @Herramientas.Precios.Euro(Math.Round(precioMedioTier2, 2)) (@bundlesValidosTier2)
+											</div>
+										}
+										
+										@if (precioMedioTier3 > 0)
+										{
+											<div style="background-color: rgba(255,255,255,0.1); font-size: 14px; padding: 10px 15px; border-radius: 5px;">
+												@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String38", "Bundle"), 3): @Herramientas.Precios.Euro(Math.Round(precioMedioTier3, 2)) (@bundlesValidosTier3)
+											</div>
+										}
+										
+										@if (precioMedioTotal > 0)
+										{
+											<div style="background-color: rgba(255,255,255,0.1); font-size: 14px; padding: 10px 15px; border-radius: 5px;">
+												@Herramientas.Idiomas.BuscarTexto(idioma, "String39", "Bundle"): @Herramientas.Precios.Euro(Math.Round(precioMedioTotal, 2)) (@bundlesValidosTotal)
+											</div>
+										}
+									</div>
+								</div>
 							</div>
 
 							<div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; justify-content: flex-start;">
@@ -527,6 +645,8 @@ else
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 
+	private string tituloSEO = null;
+
 	[PersistentState] public List<Bundles2.Bundle> bundlesActuales { get; set; }
 	[PersistentState] public List<Bundles2.Bundle> bundlesPasados { get; set; }
 	private Bundles2.Bundle bundleSeleccionado = new Bundles2.Bundle();
@@ -536,7 +656,10 @@ else
 	public string bundleSeleccionadoTexto { get; set; }
 
 	private List<string> años = new List<string>();
-	private string añoSeleccionado = string.Empty;
+
+	[Parameter]
+	public string añoSeleccionado { get; set; }
+
 	private bool cargadoBundles = false;
 
 	protected override async Task OnInitializedAsync()
@@ -574,17 +697,6 @@ else
 
 		//--------------------------------------------------------------------
 
-		int ordenamientoUsuario = 0;
-
-		if (string.IsNullOrEmpty(usuarioId) == false)
-		{
-			ordenamientoUsuario = await BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
-		}
-
-		await CargarBundles(ordenamientoUsuario);
-
-		//--------------------------------------------------------------------
-
 		if (string.IsNullOrEmpty(bundleSeleccionadoTexto) == false)
 		{
 			foreach (var bundleTipo in Bundles2.BundlesCargar.CargarBundles())
@@ -599,15 +711,36 @@ else
 				}
 			}
 		}
+
+		//--------------------------------------------------------------------
+
+		if (tipoSeleccionado == Bundles2.BundleTipo.Desconocido && string.IsNullOrEmpty(añoSeleccionado) == true)
+		{
+			int ordenamientoUsuario = 0;
+
+			if (string.IsNullOrEmpty(usuarioId) == false)
+			{
+				ordenamientoUsuario = await BaseDatos.Usuarios.Buscar.BundlesOrden(usuarioId);
+			}
+
+			await CargarBundles(ordenamientoUsuario);
+		}
 	}
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
 		if (primerRender == true)
 		{
-			if (tipoSeleccionado != Bundles2.BundleTipo.Desconocido)
+			if (string.IsNullOrEmpty(añoSeleccionado) == true)
 			{
-				await CambiarTipo(tipoSeleccionado, false);
+				if (tipoSeleccionado != Bundles2.BundleTipo.Desconocido)
+				{
+					await CambiarTipo(tipoSeleccionado, false);
+				}
+			}
+			else
+			{
+				await CambiarTipo(tipoSeleccionado, true);
 			}
 		}
 	}
@@ -704,6 +837,7 @@ else
 
 		if (esArchivo == false)
 		{
+			añoSeleccionado = string.Empty;
 			tipoSeleccionado = nuevoTipo;
 			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
 
@@ -718,8 +852,16 @@ else
 		}
 		else
 		{
-			añoSeleccionado = DateTime.Now.Year.ToString();
+			if (string.IsNullOrEmpty(añoSeleccionado) == true)
+			{
+				añoSeleccionado = DateTime.Now.Year.ToString();
+			}
+	
 			bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
+
+			cargadoBundles = true;
+
+			await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/archive/" + añoSeleccionado + "/");
 		}
 
 		await InvokeAsync(StateHasChanged);
@@ -758,6 +900,8 @@ else
 		añoSeleccionado = nuevoAño;
 
 		bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
+
+		await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/archive/" + añoSeleccionado + "/");
 	}
 
 	private string MostrarFecha(DateTime fechaEmpieza, DateTime fechaTermina)
