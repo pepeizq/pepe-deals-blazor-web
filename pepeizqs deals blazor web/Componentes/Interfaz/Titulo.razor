@@ -221,7 +221,7 @@
 	}
 </HeadContent>
 
-	@code {
+@code {
 
 	#nullable disable
 
@@ -244,6 +244,9 @@
 
 	[Parameter]
 	public string tituloBundles { get; set; }
+
+	[Parameter]
+	public string descripcionBundles { get; set; }
 
 	[Parameter]
 	public string contenidoJsonBundles { get; set; }
@@ -499,7 +502,7 @@
 		else if (tipo == Tipo.Bundles)
 		{
 			titulo ??= tituloBundles;
-			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Bundle");
+			descripcion ??= descripcionBundles;
 			enlace ??= "https://" + dominio + "/bundles/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= keywords;

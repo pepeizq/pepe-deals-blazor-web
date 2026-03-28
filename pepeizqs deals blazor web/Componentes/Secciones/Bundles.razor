@@ -17,6 +17,7 @@
 @if (cargadoBundles == true)
 {
 	string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Bundle");
+	string descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Bundle");
 	string keywords = "bundles";
 
 	if (mostrarArchivo == false)
@@ -51,6 +52,7 @@
 	else
 	{
 		titulo = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String40", "Bundle"), añoSeleccionado);
+		descripcion = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String41", "Bundle"), añoSeleccionado);
 	}
 
 	string contenidoJson = @"{
@@ -98,7 +100,8 @@
 	contenidoJson = contenidoJson + @"
 			}";
 
-	<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio" tituloBundles="@titulo" keywords="@keywords" contenidoJsonBundles="@contenidoJson" />
+	<Titulo tipo="@Titulo.Tipo.Bundles" idioma="@idioma" dominio="@dominio" tituloBundles="@titulo" descripcionBundles="@descripcion"
+			keywords="@keywords" contenidoJsonBundles="@contenidoJson" />
 }
 
 <script>
