@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
 @using Microsoft.JSInterop
+@using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 
@@ -1899,6 +1900,7 @@ else
 	private string idioma = "en";
 	private string usuarioId = null;
 	private string dominio = null;
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
 	[Parameter]
 	public string ids { get; set; }
