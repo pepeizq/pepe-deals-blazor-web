@@ -226,10 +226,24 @@ FROM juegos j";
 			return null;
 		}
 
-		public static async Task<Juego> UnJuegoComparador(int id)
+		public static async Task<Juego> UnJuegoComparador(TiendaRegion region, int id)
 		{
-			string busqueda = @"SELECT
-    j.id, j.nombre, j.imagenes, j.precioMinimosHistoricos, j.precioActualesTiendas,
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
+			string busqueda = $@"SELECT
+    j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
     j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
     j.exeEpic, j.exeUbisoft, j.freeToPlay,
 	(

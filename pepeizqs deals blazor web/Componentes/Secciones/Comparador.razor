@@ -1,5 +1,7 @@
 ﻿@page "/compare/{ids?}/"
 
+@using Bundles2
+@using Gratis2
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
@@ -1337,20 +1339,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego1.Gratis != null)
+										if (juego1.GratisActuales?.Count > 0)
 										{
-											foreach (var gratis2 in juego1.Gratis)
+											foreach (var gratis2 in juego1.GratisActuales)
 											{
-												if (DateTime.Now > gratis2.FechaEmpieza && DateTime.Now < gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1369,20 +1368,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego2.Gratis != null)
+										if (juego2.GratisActuales?.Count > 0)
 										{
-											foreach (var gratis2 in juego2.Gratis)
+											foreach (var gratis2 in juego2.GratisActuales)
 											{
-												if (DateTime.Now > gratis2.FechaEmpieza && DateTime.Now < gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1401,20 +1397,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego3.Gratis != null)
+										if (juego3.GratisActuales?.Count > 0)
 										{
-											foreach (var gratis2 in juego3.Gratis)
+											foreach (var gratis2 in juego3.GratisActuales)
 											{
-												if (DateTime.Now > gratis2.FechaEmpieza && DateTime.Now < gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1433,20 +1426,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego4.Gratis != null)
+										if (juego4.GratisActuales?.Count > 0)
 										{
-											foreach (var gratis2 in juego4.Gratis)
+											foreach (var gratis2 in juego4.GratisActuales)
 											{
-												if (DateTime.Now > gratis2.FechaEmpieza && DateTime.Now < gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1487,20 +1477,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego1.Gratis != null)
+										if (juego1.GratisPasados?.Count > 0)
 										{
-											foreach (var gratis2 in juego1.Gratis)
+											foreach (var gratis2 in juego1.GratisPasados)
 											{
-												if (DateTime.Now > gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1519,20 +1506,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego2.Gratis != null)
+										if (juego2.GratisPasados?.Count > 0)
 										{
-											foreach (var gratis2 in juego2.Gratis)
+											foreach (var gratis2 in juego2.GratisPasados)
 											{
-												if (DateTime.Now > gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1551,20 +1535,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego3.Gratis != null)
+										if (juego3.GratisPasados?.Count > 0)
 										{
-											foreach (var gratis2 in juego3.Gratis)
+											foreach (var gratis2 in juego3.GratisPasados)
 											{
-												if (DateTime.Now > gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1583,20 +1564,17 @@ else
 									@{
 										string mensaje = "--";
 
-										if (juego4.Gratis != null)
+										if (juego4.GratisPasados?.Count > 0)
 										{
-											foreach (var gratis2 in juego4.Gratis)
+											foreach (var gratis2 in juego4.GratisPasados)
 											{
-												if (DateTime.Now > gratis2.FechaTermina)
+												if ((GratisTipo)gratis2.gratis == gratis)
 												{
-													if (gratis2.Tipo == gratis)
-													{
-														mensaje = string.Empty;
+													mensaje = string.Empty;
 
-														<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+													<svg xmlns="http://www.w3.org/2000/svg" style="display: block; max-width: 24px; max-height: 24px; margin: auto;" fill="var(--colorTexto)" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
 
-														break;
-													}
+													break;
 												}
 											}
 										}
@@ -1937,6 +1915,7 @@ else
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -2008,11 +1987,11 @@ else
 
 			if (id1 > 0)
 			{
-				juego1 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
+				juego1 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id1);
 
 				ActualizarCantidadJugadores(juego1);
-				ActualizarPreciosHistoricos(juego1);
-				ActualizarPreciosActuales(juego1);
+				ActualizarPreciosHistoricos(juego1, usuarioRegion);
+				ActualizarPreciosActuales(juego1, usuarioRegion);
 				ActualizarBundlesActuales(juego1);
 				ActualizarBundlesAntiguos(juego1);
 				ActualizarGratisActuales(juego1);
@@ -2023,11 +2002,11 @@ else
 
 			if (id2 > 0)
 			{
-				juego2 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
+				juego2 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id2);
 
 				ActualizarCantidadJugadores(juego2);
-				ActualizarPreciosHistoricos(juego2);
-				ActualizarPreciosActuales(juego2);
+				ActualizarPreciosHistoricos(juego2, usuarioRegion);
+				ActualizarPreciosActuales(juego2, usuarioRegion);
 				ActualizarBundlesActuales(juego2);
 				ActualizarBundlesAntiguos(juego2);
 				ActualizarGratisActuales(juego2);
@@ -2038,11 +2017,11 @@ else
 
 			if (id3 > 0)
 			{
-				juego3 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
+				juego3 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id3);
 
 				ActualizarCantidadJugadores(juego3);
-				ActualizarPreciosHistoricos(juego3);
-				ActualizarPreciosActuales(juego3);
+				ActualizarPreciosHistoricos(juego3, usuarioRegion);
+				ActualizarPreciosActuales(juego3, usuarioRegion);
 				ActualizarBundlesActuales(juego3);
 				ActualizarBundlesAntiguos(juego3);
 				ActualizarGratisActuales(juego3);
@@ -2053,11 +2032,11 @@ else
 
 			if (id4 > 0)
 			{
-				juego4 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
+				juego4 ??= await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id4);
 
 				ActualizarCantidadJugadores(juego4);
-				ActualizarPreciosHistoricos(juego4);
-				ActualizarPreciosActuales(juego4);
+				ActualizarPreciosHistoricos(juego4, usuarioRegion);
+				ActualizarPreciosActuales(juego4, usuarioRegion);
 				ActualizarBundlesActuales(juego4);
 				ActualizarBundlesAntiguos(juego4);
 				ActualizarGratisActuales(juego4);
@@ -2122,13 +2101,39 @@ else
 		}
 	}
 
-	private void ActualizarPreciosHistoricos(Juegos.Juego juego)
+	private void ActualizarPreciosHistoricos(Juegos.Juego juego, TiendaRegion region)
 	{
 		if (juego != null)
 		{
-			if (juego.PrecioMinimosHistoricos != null)
+			if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
 			{
 				foreach (var precio in juego.PrecioMinimosHistoricos)
+				{
+					if (precio.DRM != Juegos.JuegoDRM.NoEspecificado && precio.DRM != Juegos.JuegoDRM.Microsoft)
+					{
+						bool añadir = true;
+
+						if (preciosHistoricos.Count > 0)
+						{
+							foreach (var drm in preciosHistoricos)
+							{
+								if (drm == precio.DRM)
+								{
+									añadir = false;
+								}
+							}
+						}
+
+						if (añadir == true)
+						{
+							preciosHistoricos.Add(precio.DRM);
+						}
+					}
+				}
+			}
+			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+			{
+				foreach (var precio in juego.PrecioMinimosHistoricosUS)
 				{
 					if (precio.DRM != Juegos.JuegoDRM.NoEspecificado && precio.DRM != Juegos.JuegoDRM.Microsoft)
 					{
@@ -2155,11 +2160,11 @@ else
 		}
 	}
 
-	private void ActualizarPreciosActuales(Juegos.Juego juego)
+	private void ActualizarPreciosActuales(Juegos.Juego juego, TiendaRegion region)
 	{
 		if (juego != null)
 		{
-			if (juego.PrecioActualesTiendas != null)
+			if (region == TiendaRegion.Europa && juego.PrecioActualesTiendas?.Count > 0)
 			{
 				foreach (var precio in juego.PrecioActualesTiendas)
 				{
@@ -2181,12 +2186,36 @@ else
 						if (añadir == true)
 						{
 							preciosActuales.Add(precio.DRM);
-
-
 						}
 					}
 				}
 			}	
+		}
+		else if (region == TiendaRegion.EstadosUnidos && juego.PrecioActualesTiendasUS?.Count > 0)
+		{
+			foreach (var precio in juego.PrecioActualesTiendasUS)
+			{
+				if (precio.DRM != Juegos.JuegoDRM.NoEspecificado && precio.DRM != Juegos.JuegoDRM.Microsoft)
+				{
+					bool añadir = true;
+
+					if (preciosActuales.Count > 0)
+					{
+						foreach (var drm in preciosActuales)
+						{
+							if (drm == precio.DRM)
+							{
+								añadir = false;
+							}
+						}
+					}
+
+					if (añadir == true)
+					{
+						preciosActuales.Add(precio.DRM);
+					}
+				}
+			}
 		}
 	}
 
@@ -2194,32 +2223,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Bundles != null)
+			if (juego.BundlesActuales?.Count > 0)
 			{
-				foreach (var bundle in juego.Bundles)
+				foreach (var bundle in juego.BundlesActuales)
 				{
-					if (DateTime.Now > bundle.FechaEmpieza && DateTime.Now < bundle.FechaTermina)
+					var tipo = (BundleTipo)int.Parse(bundle.bundleTipo);
+
+					bool añadir = true;
+
+					if (bundlesActuales.Count > 0)
 					{
-						if (bundle.DRM != Juegos.JuegoDRM.NoEspecificado && bundle.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var bundle2 in bundlesActuales)
 						{
-							bool añadir = true;
-
-							if (bundlesActuales.Count > 0)
+							if (bundle2 == tipo)
 							{
-								foreach (var bundle2 in bundlesActuales)
-								{
-									if (bundle2 == bundle.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								bundlesActuales.Add(bundle.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						bundlesActuales.Add(tipo);
 					}
 				}
 			}
@@ -2230,32 +2255,28 @@ else
 	{
 		if (juego != null)
 		{
-			if (juego.Bundles != null)
+			if (juego.BundlesPasados?.Count > 0)
 			{
-				foreach (var bundle in juego.Bundles)
+				foreach (var bundle in juego.BundlesPasados)
 				{
-					if (DateTime.Now > bundle.FechaTermina)
+					var tipo = (BundleTipo)int.Parse(bundle.bundleTipo);
+
+					bool añadir = true;
+
+					if (bundlesAntiguos.Count > 0)
 					{
-						if (bundle.DRM != Juegos.JuegoDRM.NoEspecificado && bundle.DRM != Juegos.JuegoDRM.Microsoft)
+						foreach (var bundle2 in bundlesAntiguos)
 						{
-							bool añadir = true;
-
-							if (bundlesAntiguos.Count > 0)
+							if (bundle2 == tipo)
 							{
-								foreach (var bundle2 in bundlesAntiguos)
-								{
-									if (bundle2 == bundle.Tipo)
-									{
-										añadir = false;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								bundlesAntiguos.Add(bundle.Tipo);
+								añadir = false;
 							}
 						}
+					}
+
+					if (añadir == true)
+					{
+						bundlesAntiguos.Add(tipo);
 					}
 				}
 			}
@@ -2416,11 +2437,11 @@ else
 		if (posicion == 1)
 		{
 			id1 = int.Parse(id);
-			juego1 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id1);
+			juego1 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id1);
 
 			ActualizarCantidadJugadores(juego1);
-			ActualizarPreciosHistoricos(juego1);
-			ActualizarPreciosActuales(juego1);
+			ActualizarPreciosHistoricos(juego1, usuarioRegion);
+			ActualizarPreciosActuales(juego1, usuarioRegion);
 			ActualizarBundlesActuales(juego1);
 			ActualizarBundlesAntiguos(juego1);
 			ActualizarGratisActuales(juego1);
@@ -2431,11 +2452,11 @@ else
 		else if (posicion == 2)
 		{
 			id2 = int.Parse(id);
-			juego2 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id2);
+			juego2 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id2);
 
 			ActualizarCantidadJugadores(juego2);
-			ActualizarPreciosHistoricos(juego2);
-			ActualizarPreciosActuales(juego2);
+			ActualizarPreciosHistoricos(juego2, usuarioRegion);
+			ActualizarPreciosActuales(juego2, usuarioRegion);
 			ActualizarBundlesActuales(juego2);
 			ActualizarBundlesAntiguos(juego2);
 			ActualizarGratisActuales(juego2);
@@ -2446,11 +2467,11 @@ else
 		else if (posicion == 3)
 		{
 			id3 = int.Parse(id);
-			juego3 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id3);
+			juego3 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id3);
 
 			ActualizarCantidadJugadores(juego3);
-			ActualizarPreciosHistoricos(juego3);
-			ActualizarPreciosActuales(juego3);
+			ActualizarPreciosHistoricos(juego3, usuarioRegion);
+			ActualizarPreciosActuales(juego3, usuarioRegion);
 			ActualizarBundlesActuales(juego3);
 			ActualizarBundlesAntiguos(juego3);
 			ActualizarGratisActuales(juego3);
@@ -2461,11 +2482,11 @@ else
 		else if (posicion == 4)
 		{
 			id4 = int.Parse(id);
-			juego4 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(id4);
+			juego4 = await BaseDatos.Juegos.Buscar.UnJuegoComparador(usuarioRegion, id4);
 
 			ActualizarCantidadJugadores(juego4);
-			ActualizarPreciosHistoricos(juego4);
-			ActualizarPreciosActuales(juego4);
+			ActualizarPreciosHistoricos(juego4, usuarioRegion);
+			ActualizarPreciosActuales(juego4, usuarioRegion);
 			ActualizarBundlesActuales(juego4);
 			ActualizarBundlesAntiguos(juego4);
 			ActualizarGratisActuales(juego4);
