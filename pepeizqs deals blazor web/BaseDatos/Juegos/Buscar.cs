@@ -245,7 +245,7 @@ FROM juegos j";
 			string busqueda = $@"SELECT
     j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
     j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
-    j.exeEpic, j.exeUbisoft, j.freeToPlay,
+    j.exeEpic, j.exeUbisoft, j.freeToPlay, j.deck,
 	(
 		SELECT b.id, b.bundleTipo
 		FROM bundles b
@@ -294,7 +294,7 @@ FROM juegos j";
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM juegos j
-WHERE id=@id";
+WHERE id=@id AND j.tipo=0";
 
 			try
 			{
@@ -1001,7 +1001,7 @@ END DESC";
         FOR JSON PATH
     ) AS SuscripcionesPasados
 FROM juegos j
-WHERE 1=1";
+WHERE 1=1 AND j.tipo=0";
 
 			string[] palabras = nombre.Split(" ");
 

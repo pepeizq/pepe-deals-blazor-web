@@ -1,0 +1,332 @@
+﻿@using ApexCharts
+@using Juegos
+@using Tiendas2
+
+<ApexChart TItem="PuntoGrafico" Options="@opcionesGrafico" >
+    <ApexPointTooltip>
+        <div style="background-color: var(--fondoBotonPequeño); color: var(--colorTexto); padding: 10px; border: 1px solid var(--fondoCodigo); border-radius: 5px;">
+            @{
+                var puntosDatos = context.DataPoint;
+
+                string icono = string.Empty;
+                string nombre = string.Empty;
+
+                foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+                {
+                    if (tienda.Id == puntosDatos.Items.FirstOrDefault()?.Tienda)
+                    {
+                        icono = "https://" + dominio + "/" + tienda.ImagenIcono;
+                        nombre = tienda.Nombre;
+                        break;
+                    }
+                }
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="@icono" style="width: 20px; height: 20px;"  />
+                    <label>@nombre</label>
+                </div>
+            }
+
+            <div style="margin-top: 5px;">
+                @{
+                    decimal? precio = puntosDatos.Items.FirstOrDefault()?.Precio;
+
+                    if (precio > 0)
+                    {
+                        string precioTexto = Herramientas.Precios.Euro(precio);
+                        string fechaTexto = puntosDatos.Items.FirstOrDefault()?.DiaMes.Day.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.DiaMes.Month.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.Año.ToString();
+
+                        <div>
+                            <strong>@precioTexto</strong> - @fechaTexto
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </ApexPointTooltip>
+
+    <ChildContent>
+        @foreach (var punto in puntos)
+        {
+            List<PuntoGrafico> datos = new List<PuntoGrafico>();
+
+            foreach (var subpunto in punto.Puntos)
+            {
+                datos.Add(new PuntoGrafico { 
+                    DiaMes = subpunto.Fecha, 
+                    Precio = (decimal)subpunto.Precio, 
+                    Año = punto.Año.ToString(), 
+                    Tienda = subpunto.Tienda
+                });
+            }
+
+            <ApexPointSeries TItem="PuntoGrafico"
+                Items="datos"
+                Name="@punto.Año.ToString()"
+                SeriesType="SeriesType.Line"
+                XValue="e => e.DiaMes"
+                YValue="e => e.Precio"
+                ShowDataLabels="true"/>
+        }
+    </ChildContent>
+</ApexChart>
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public string idioma { get; set; }
+
+    [Parameter]
+    public string dominio { get; set; }
+
+    [Parameter]
+    public JuegoDRM drmGrafico { get; set; } = JuegoDRM.NoEspecificado;
+
+    [Parameter]
+    public List<JuegoHistorico> historicos { get; set; }
+
+    private ApexChartOptions<PuntoGrafico> opcionesGrafico;
+    List<Punto> puntos = new List<Punto>();
+
+    private class Punto
+    {
+        public int Año { get; set; }
+        public List<PuntoDatos> Puntos { get; set; }
+    }
+
+    private class PuntoDatos
+    {
+        public DateTime Fecha { get; set; }
+        public double Precio { get; set; }
+        public string Tienda { get; set; }
+    }
+
+
+    public class PuntoGrafico
+    {
+        public DateTime DiaMes { get; set; }
+        public decimal Precio { get; set; }
+        public string Año { get; set; }
+        public string Tienda { get; set; }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        puntos.Clear();
+
+        List<JuegoHistorico> historicosMostrar = historicos;
+
+        if (historicosMostrar?.Count > 0)
+        {
+            JuegoDRM drm = drmGrafico;
+
+            #region Añadir Años
+
+            foreach (var historico in historicosMostrar)
+            {
+                if (drm == historico.DRM)
+                {
+                    if (puntos.Count == 0)
+                    {
+                        Punto año = new Punto();
+                        año.Año = historico.Fecha.Year;
+                        año.Puntos = new List<PuntoDatos>();
+
+                        puntos.Add(año);
+                    }
+                    else if (puntos.Count > 0)
+                    {
+                        bool añadirAño = true;
+
+                        foreach (var punto in puntos)
+                        {
+                            if (punto.Año == historico.Fecha.Year)
+                            {
+                                añadirAño = false;
+                            }
+                        }
+
+                        if (añadirAño == true)
+                        {
+                            Punto año = new Punto();
+                            año.Año = historico.Fecha.Year;
+                            año.Puntos = new List<PuntoDatos>();
+
+                            puntos.Add(año);
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Añadir Puntos
+
+            foreach (var historico in historicosMostrar)
+            {
+                if (drm == historico.DRM)
+                {
+                    bool añadir = true;
+
+                    var historico2 = historico;
+
+                    foreach (var historico3 in historicosMostrar)
+                    {
+                        if (drm == historico3.DRM && drm == historico2.DRM &&
+                            historico3.Fecha.Day == historico2.Fecha.Day &&
+                            historico3.Fecha.Month == historico2.Fecha.Month &&
+                            historico3.Fecha.Year == historico2.Fecha.Year &&
+                            historico3.Precio != historico2.Precio)
+                        {
+                            if (historico3.Precio < historico2.Precio)
+                            {
+                                añadir = false;
+                            }
+                        }
+                    }
+
+                    if (añadir == true)
+                    {
+                        foreach (var punto in puntos)
+                        {
+                            if (historico2.Fecha.Year == punto.Año)
+                            {
+                                bool duplicado = false;
+
+                                PuntoDatos nuevoPunto = new PuntoDatos
+                                {
+                                    Fecha = new DateTime(2000, historico2.Fecha.Month, historico2.Fecha.Day),
+                                    Precio = (double)historico2.Precio,
+                                    Tienda = historico2.Tienda
+                                };
+
+                                foreach (var puntoPuesto in punto.Puntos)
+                                {
+                                    if (puntoPuesto.Precio == nuevoPunto.Precio && puntoPuesto.Fecha.AddDays(21) > nuevoPunto.Fecha)
+                                    {
+                                        duplicado = true;
+                                    }
+                                }
+
+                                if (duplicado == false)
+                                {
+                                    punto.Puntos.Add(nuevoPunto);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        opcionesGrafico = new ApexChartOptions<PuntoGrafico>
+        {
+            Xaxis = new XAxis
+            {
+                Labels = new XAxisLabels
+                {
+                    Formatter = @"function (value) {
+                                return new Date(value).toLocaleString('" + idioma + "',{month:'short'})}",
+                    Style = new AxisLabelStyle
+                    {
+                        FontSize = "14px",
+                        FontFamily = "Motiva Sans"
+                    },
+                    ShowDuplicates = false,
+                    HideOverlappingLabels = true
+                },
+                Type = XAxisType.Datetime
+            },
+            Yaxis = new List<YAxis>() {
+                (new YAxis
+                {
+                    Labels = new YAxisLabels
+                    {
+                        Formatter = @"function (value) {
+                                        let Euro = new Intl.NumberFormat('es-ES', {
+                                            style: 'currency',
+                                            currency: 'EUR',
+                                        });
+                                    return Euro.format(value)}",
+                        Style = new AxisLabelStyle
+                        {
+                            FontSize = "14px",
+                            FontFamily = "Motiva Sans"
+                        }
+                    }
+                }
+            )},
+            Theme = new Theme
+            {
+                Mode = Mode.Dark
+            },
+            Title = new Title
+            {
+                Style = new TitleStyle
+                {
+                    FontSize = "16px",
+                    FontFamily = "Motiva Sans",
+                    FontWeight = "300"
+                },
+            },
+            Chart = new Chart
+            {
+                Toolbar = new Toolbar
+                {
+                    Show = false
+                },
+                Background = "transparent",
+                FontFamily = "Motiva Sans",
+                Zoom = new Zoom
+                {
+                    Enabled = false
+                },
+                Width = "100%",
+                Height = "100%"
+            },
+            DataLabels = new ApexCharts.DataLabels
+            {
+                OffsetY = -8d,
+                Formatter = @"function (value) {
+                                let Euro = new Intl.NumberFormat('es-ES', {
+                                    style: 'currency',
+                                    currency: 'EUR',
+                                });
+                            return Euro.format(value)}",
+                Style = new DataLabelsStyle
+                {
+                    FontSize = "14px",
+                    FontFamily = "Motiva Sans"
+                }
+            },
+            Grid = new Grid
+            {
+                Row = new GridRow
+                {
+                    Colors = new List<string> { "transparent" }
+                },
+                Padding = new Padding
+                {
+                    Right = 30,
+                    Left = 30
+                }
+            },
+            Markers = new Markers { Shape = MarkerShape.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
+            Stroke = new Stroke { Curve = Curve.Smooth },
+            Colors = new List<string> { "#132434", "#091018", "#101c2b" },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top,
+                HorizontalAlign = ApexCharts.Align.Right,
+                Floating = true,
+                OffsetX = -5,
+                OffsetY = -40,
+                FontSize = "16px"
+            }
+        };
+    }
+}
