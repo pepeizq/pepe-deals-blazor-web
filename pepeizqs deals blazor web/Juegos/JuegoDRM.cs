@@ -354,6 +354,7 @@ namespace Juegos
 					"download",
 					"download_drm",
 					"drivethrurpg",
+					"gaijin",
 					"glyph",
 					"idw",
 					"mogstation",
