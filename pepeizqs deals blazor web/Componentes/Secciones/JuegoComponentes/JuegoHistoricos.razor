@@ -87,7 +87,7 @@
     [Parameter]
     public List<JuegoHistorico> historicos { get; set; }
 
-    private ApexChartOptions<PuntoGrafico> opcionesGrafico;
+    private ApexChartOptions<PuntoGrafico> opcionesGrafico = new ApexChartOptions<PuntoGrafico>();
     private List<Punto> puntos = new List<Punto>();
 
     private class Punto
