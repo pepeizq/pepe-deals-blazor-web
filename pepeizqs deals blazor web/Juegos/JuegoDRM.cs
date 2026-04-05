@@ -372,6 +372,7 @@ namespace Juegos
 					"topware protection (psi-key.com)",
 					"unknown",
 					"video-download",
+					"voucher",
 					"website",
 					"xbox-anywhere",
 					"xbox-live-cross-gen",
