@@ -51,7 +51,7 @@ namespace Juegos
 				Id = JuegoDRM.GOG,
 				Nombre = "GOG",
 				Imagen = "/imagenes/drm/gog.webp",
-				Acepciones = new List<string> { "gog", "gog galaxy" }
+				Acepciones = new List<string> { "gog", "gog galaxy", "gog.com" }
 			};
 
 			drms.Add(gog);

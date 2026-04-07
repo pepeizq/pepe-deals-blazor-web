@@ -947,27 +947,30 @@
 
     private void ActualizarResultados(List<global::Juegos.Juego> resultados)
     {
-        string nombreLimpio = Herramientas.Buscador.LimpiarNombre(_textoBuscador);
-
-        foreach (PestañaBuscador pestaña in pestañasBuscador?.Values)
+        if (resultados?.Count > 0)
         {
-            pestaña.resultados.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != nombreLimpio);
-        }
+            string nombreLimpio = Herramientas.Buscador.LimpiarNombre(_textoBuscador);
 
-        var resultadosPorTipo = resultados.GroupBy(j => j.Tipo).ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (var (tipo, pestaña) in pestañasBuscador)
-        {
-            if (resultadosPorTipo.TryGetValue(tipo, out var nuevosResultados))
+            foreach (PestañaBuscador pestaña in pestañasBuscador?.Values)
             {
-                var resultadosNuevos = nuevosResultados.Where(x => !pestaña.resultados.Any(y => y.Nombre == x.Nombre)).ToList();
-
-                pestaña.resultados.AddRange(resultadosNuevos);
-                pestaña.visible = pestaña.resultados.Count > 0;
+                pestaña.resultados.RemoveAll(j => Herramientas.Buscador.LimpiarNombre(j.Nombre) != nombreLimpio);
             }
-            else
+
+            var resultadosPorTipo = resultados.GroupBy(j => j.Tipo).ToDictionary(g => g.Key, g => g.ToList());
+
+            foreach (var (tipo, pestaña) in pestañasBuscador)
             {
-                pestaña.visible = pestaña.resultados.Count > 0;
+                if (resultadosPorTipo.TryGetValue(tipo, out var nuevosResultados))
+                {
+                    var resultadosNuevos = nuevosResultados.Where(x => !pestaña.resultados.Any(y => y.Nombre == x.Nombre)).ToList();
+
+                    pestaña.resultados.AddRange(resultadosNuevos);
+                    pestaña.visible = pestaña.resultados.Count > 0;
+                }
+                else
+                {
+                    pestaña.visible = pestaña.resultados.Count > 0;
+                }
             }
         }
     }

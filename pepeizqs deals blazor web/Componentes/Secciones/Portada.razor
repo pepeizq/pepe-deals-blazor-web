@@ -314,16 +314,18 @@
 	
 @if (juegosDestacadosMostrar?.Count > 0)
 {
+	var destacadoActual = juegosDestacadosMostrar[posicionMostrarDestacados];
+
 	<div class="portada-espacio cuerpo-ancho">
-		@if (juegosDestacadosMostrar[posicionMostrarDestacados].Juego != null)
+		@if (destacadoActual.Juego != null)
 		{
-			<a href="/game/@juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.Nombre)/" style="cursor: pointer; border: 0px; padding: 0px; display: block; width: 100%;">
-				<div style="position: relative; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); background-color: @juegosDestacadosMostrar[posicionMostrarDestacados].Color;">
-					<div class="destacado-mostrar" @onmouseover="@(e => EnseñarDestacadoVideo(e, juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego))">
+			<a href="/game/@destacadoActual.Juego.IdMaestra.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacadoActual.Juego.Nombre)/" style="cursor: pointer; border: 0px; padding: 0px; display: block; width: 100%;">
+				<div style="position: relative; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); background-color: @destacadoActual.Color;">
+					<div class="destacado-mostrar" @onmouseover="@(e => EnseñarDestacadoVideo(e, destacadoActual?.Juego))">
 						@if (string.IsNullOrEmpty(videoDestacado) == false)
 						{
 							<div class="destacado-fondo">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Nombre">
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre">
 							</div>
 
 							<div class="destacado-video">
@@ -335,16 +337,16 @@
 						}
 						else
 						{
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Nombre">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre">
 						}
 
-						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @juegosDestacadosMostrar[posicionMostrarDestacados]?.Color);" class="destacado-hueco">
+						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @destacadoActual?.Color);" class="destacado-hueco">
 
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.Nombre">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre">
 
 							<div style="display: flex; align-items: center; margin-bottom: 30px; color: var(--colorTexto);">
-								@if (usuarioRegion == TiendaRegion.Europa && juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.PrecioMinimosHistoricos?.Count > 0 ||
-									 usuarioRegion == TiendaRegion.EstadosUnidos && juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.PrecioMinimosHistoricosUS?.Count > 0)
+								@if (usuarioRegion == TiendaRegion.Europa && destacadoActual?.Juego?.PrecioMinimosHistoricos?.Count > 0 ||
+									 usuarioRegion == TiendaRegion.EstadosUnidos && destacadoActual?.Juego?.PrecioMinimosHistoricosUS?.Count > 0)
 								{
 									JuegoDRM drmDestacado = JuegoDRM.NoEspecificado;
 									string tiendaComparar = string.Empty;
@@ -353,26 +355,33 @@
 
 									if (usuarioRegion == TiendaRegion.Europa)
 									{
-										drmDestacado = juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.PrecioMinimosHistoricos[0]?.DRM ?? JuegoDRM.NoEspecificado;
-										tiendaComparar = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos[0].Tienda;
-										descuento = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos[0].Descuento.ToString();
+										drmDestacado = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.DRM ?? JuegoDRM.NoEspecificado;
+										tiendaComparar = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.Tienda ?? "";
+										descuento = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.Descuento.ToString() ?? "";
 									
-										if (juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos?[0].PrecioCambiado > 0)
+										if (destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.PrecioCambiado > 0)
 										{
-											precioMostrar = Herramientas.Precios.Euro(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos?[0].PrecioCambiado);
+											precioMostrar = Herramientas.Precios.Euro(destacadoActual.Juego.PrecioMinimosHistoricos?[0].PrecioCambiado);
 										}
 										else
 										{
-											precioMostrar = Herramientas.Precios.Euro(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos?[0].Precio);
+											precioMostrar = Herramientas.Precios.Euro(destacadoActual?.Juego?.PrecioMinimosHistoricos?[0].Precio);
 										}
 									}
 									else if (usuarioRegion == TiendaRegion.EstadosUnidos)
 									{
-										drmDestacado = juegosDestacadosMostrar[posicionMostrarDestacados]?.Juego?.PrecioMinimosHistoricosUS[0]?.DRM ?? JuegoDRM.NoEspecificado;
-										tiendaComparar = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricosUS[0].Tienda;
-										descuento = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricosUS[0].Descuento.ToString();
+										drmDestacado = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.DRM ?? JuegoDRM.NoEspecificado;
+										tiendaComparar = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.Tienda ?? "";
+										descuento = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.Descuento.ToString() ?? "";
 									
-										precioMostrar = Herramientas.Precios.Dolar(juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricosUS[0].Precio);
+										if (destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].PrecioCambiado > 0)
+										{
+											precioMostrar = Herramientas.Precios.Euro(destacadoActual.Juego.PrecioMinimosHistoricosUS?[0].PrecioCambiado);
+										}
+										else
+										{
+											precioMostrar = Herramientas.Precios.Euro(destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].Precio);
+										}
 									}
 
 									string nombreTienda = string.Empty;
@@ -402,23 +411,23 @@
 										</div>
 									</div>
 
-									@if (string.IsNullOrEmpty(usuarioId) == false && juegosDestacadosMostrar[posicionMostrarDestacados].Color != "var(--fondoBien)" && @juegosDestacadosMostrar[posicionMostrarDestacados].DeseadoImportado == false)
+									@if (string.IsNullOrEmpty(usuarioId) == false && destacadoActual?.Color != "var(--fondoBien)" && @destacadoActual?.DeseadoImportado == false)
 									{
 										JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
 
 										if (usuarioRegion == TiendaRegion.Europa)
 										{
-											drmDeseado = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricos[0].DRM;
+											drmDeseado = destacadoActual?.Juego?.PrecioMinimosHistoricos?[0].DRM ?? JuegoDRM.NoEspecificado;
 										}
 										else if (usuarioRegion == TiendaRegion.EstadosUnidos)
 										{
-											drmDeseado = juegosDestacadosMostrar[posicionMostrarDestacados].Juego.PrecioMinimosHistoricosUS[0].DRM;
+											drmDeseado = destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].DRM ?? JuegoDRM.NoEspecificado;
 										}
 
 										<div onclick="anularEnlace(event)" class="tooltip-juego" style="margin-left: 20px;" onmousemove="enseñarTooltip(event, 'tooltip-destacados-deseados')">
-											<button @onclick="@(e => CambiarEstadoDeseado(e, usuarioId, juegosDestacadosMostrar[posicionMostrarDestacados], drmDeseado))" class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @juegosDestacadosMostrar[posicionMostrarDestacados].Color;">
+											<button @onclick="@(e => CambiarEstadoDeseado(e, usuarioId, destacadoActual, drmDeseado))" class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @destacadoActual?.Color;">
 												<div class="svg-boton" style="width: 35px; height: 35px;">
-													@if (juegosDestacadosMostrar[posicionMostrarDestacados].Color == "var(--fondoAlerta)")
+													@if (destacadoActual?.Color == "var(--fondoAlerta)")
 													{
 														<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 															<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
@@ -435,7 +444,7 @@
 
 											<div id="tooltip-destacados-deseados" class="tooltip-relleno">
 												<div style="margin: 4px; font-size: 14px;">
-													@if (juegosDestacadosMostrar[posicionMostrarDestacados].Color == "var(--fondoAlerta)")
+													@if (destacadoActual?.Color == "var(--fondoAlerta)")
 													{
 														@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
 													}
@@ -461,9 +470,9 @@
 				bool mostrarBarra = false;
 				string opacidad = string.Empty;
 
-				if (juegosDestacadosMostrar[posicionMostrarDestacados] != null)
+				if (destacadoActual != null)
 				{
-					if (destacado.Juego.IdMaestra == juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra)
+					if (destacado.Juego.IdMaestra == destacadoActual?.Juego?.IdMaestra)
 					{
 						opacidad = "opacity: 1;";
 						mostrarBarra = true;

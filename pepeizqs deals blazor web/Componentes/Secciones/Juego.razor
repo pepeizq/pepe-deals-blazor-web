@@ -4859,12 +4859,12 @@
             {
                 if (usuarioRegion == TiendaRegion.Europa)
                 {
-                    añoGrafico = juego.Historicos.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().Last();
+                    añoGrafico = juego.Historicos.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().First();
                     historicosGrafico = juego.Historicos.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
                 }
                 else if (usuarioRegion == TiendaRegion.EstadosUnidos)
                 {
-                    añoGrafico = juego.HistoricosUS.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().Last();
+                    añoGrafico = juego.HistoricosUS.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().First();
                     historicosGrafico = juego.HistoricosUS.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
                 }
             }
