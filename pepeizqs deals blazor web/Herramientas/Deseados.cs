@@ -576,18 +576,24 @@ namespace Herramientas
 
 		public static UsuarioDeseadosImportadosIndex CrearImportadosIndex(Usuario usuario)
 		{
+			if (usuario == null)
+			{
+				return null;
+			}
+
 			var index = new UsuarioDeseadosImportadosIndex();
 
-			if (!string.IsNullOrEmpty(usuario.SteamWishlist))
-				index.Steam = Listados.Generar(usuario.SteamWishlist)
-					.Select(int.Parse)
-					.ToHashSet();
+			if (string.IsNullOrEmpty(usuario.SteamWishlist) == false)
+			{
+				index.Steam = Listados.Generar(usuario.SteamWishlist).Select(int.Parse).ToHashSet();
+			}
+				
 
-			if (!string.IsNullOrEmpty(usuario.GogWishlist))
-				index.Gog = Listados.Generar(usuario.GogWishlist)
-					.Select(int.Parse)
-					.ToHashSet();
-
+			if (string.IsNullOrEmpty(usuario.GogWishlist) == false)
+			{
+				index.Gog = Listados.Generar(usuario.GogWishlist).Select(int.Parse).ToHashSet();
+			}
+				
 			return index;
 		}
 

@@ -11,7 +11,6 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.JSInterop
-@using Microsoft.VisualBasic
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_blazor_web.Componentes.Secciones.JuegoComponentes
 @using pepeizqs_deals_web.Data
@@ -133,9 +132,7 @@
     window.ChangeUrl = function (url) {
         history.pushState(null, '', url);
     }
-</script>
 
-<script>
     function enseñarTooltip(e, id) {
         var x = e.clientX,
             y = e.clientY;
@@ -151,9 +148,7 @@
             tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
         };
     }
-</script>
 
-<script>
     function moverScroll(id) {
         const yOffset = -185;
         const element = document.getElementById(id);
@@ -174,9 +169,7 @@
 		padding: 20px 30px;
 		border: 1px solid var(--fondoSubsubcabecera);
 	}
-</style>
 
-<style>
     .boton-reseñas {
         display: inline-block;
     }
@@ -287,6 +280,31 @@
 
     .boton-expandir2:hover {
         transform: scale(1.01);
+    }
+
+    .boton-historicos {
+        width: 100%;
+        padding: 10px;
+        background: transparent;
+        border: none;
+        color: var(--colorTexto);
+        text-align: left;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: background 0.15s;
+    }
+
+    .boton-historicos:hover {
+        background: color-mix(in srgb, var(--fondoCodigo) 60%, transparent);
+    }
+
+    .boton-historicos.seleccionado {
+        background: var(--fondoCodigo);
+    }
+
+    .boton-historicos.seleccionado:hover {
+        background: var(--fondoCodigo);
+        filter: brightness(1.2);
     }
 </style>
 
@@ -1662,7 +1680,7 @@
                                                 @if (HistoricoComprobar(usuarioRegion, drm.Id) == true)
                                                 {
                                                     <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-historical-@drm.Id.ToString()')" style="width: fit-content;">
-                                                        <button @onclick="(e => HistoricoAbrirCerrar(e, drm.Id))" class="boton-pequeño" style="width: auto; min-width: 200px; text-align: center; font-size: 14px; padding: 10px 12px;">
+                                                        <button @onclick="@(() => HistoricoAbrirCerrar(drm.Id))" class="boton-pequeño" style="width: auto; min-width: 200px; text-align: center; font-size: 14px; padding: 10px 12px;">
                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String64", "Game")
                                                         </button>
 
@@ -2854,85 +2872,8 @@
 
 @if (juego != null && enseñarHistorico == true)
 {
-    string nombreGrafico = juego.Nombre + " (" + JuegoDRM2.DevolverDRM(drmGrafico) + ")";
-
-    <div class="opciones-panel" style="padding: 0px;">
-        <div class="caja-juego-contenido" style="display: flex; flex-direction: column; gap: 10px; width: 100%; height: 100%; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoBotonPequeño);">
-            <div style="display: flex; align-items: center; gap: 20px; background-color: rgba(255, 255, 255, 0.1); padding: 10px;">
-                <button @onclick="@(e => HistoricoAbrirCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
-                    <div style="max-width: 24px; max-height: 24px;">
-                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                            <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-                        </svg>
-                    </div>
-                </button>
-
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <img src="@juego.Imagenes?.Capsule_231x87" style="height: 44px;"/>
-
-                    <img src="@JuegoDRM2.SacarImagen(drmGrafico)" style="width: 24px; height: 24px;"/>
-                </div>
-
-                @{
-                    List<int> años = new List<int>();
-
-                    if (usuarioRegion == TiendaRegion.Europa)
-                    {
-                        años = juego.Historicos.Select(h => h.Fecha.Year).Distinct().Reverse().ToList();
-                    }
-                    else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-                    {
-                        años = juego.HistoricosUS.Select(h => h.Fecha.Year).Distinct().Reverse().ToList();
-                    }
-
-                    if (años?.Count > 0)
-                    {
-                        <div style="position: relative; width: fit-content;">
-                            <button @onclick="@(() => dropdownAbierto = !dropdownAbierto)" 
-                                    class="boton-pequeño" style="padding: 10px 15px; display: flex; align-items: center; gap: 20px; justify-content: space-between;">
-                                <div>@añoGrafico</div>
-
-                                <svg style="width: 16px; height: 16px; transform: rotate(@(dropdownAbierto ? "180deg" : "0deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                    <path fill="var(--colorTexto)" d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
-                                </svg>
-                            </button>
-    
-                            @if (dropdownAbierto == true)
-                            {
-                                <div style="position: absolute; top: calc(100% + 5px); left: 0; 
-                                            background: var(--fondoBotonPequeño); 
-                                            border: 1px solid var(--fondoCodigo); 
-                                            border-radius: 5px; 
-                                            padding: 5px; 
-                                            z-index: 1000;
-                                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                                    @foreach (var año in años)
-                                    {
-                                        <button @onclick="@(() => { CambiarAño(año); dropdownAbierto = false; })" 
-                                                style="width: 100%; 
-                                                       padding: 10px; 
-                                                       background: @(año == añoGrafico ? "var(--fondoCodigo)" : "transparent"); 
-                                                       border: none; 
-                                                       color: var(--colorTexto); 
-                                                       text-align: left; 
-                                                       cursor: pointer;
-                                                       border-radius: 2px;
-                                                       transition: background 0.15s;" >
-                                            @año
-                                        </button>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
-                }
-            </div>
-            
-            <div style="padding: 10px; width: 100%; height: 100%;">
-                <JuegoHistoricos @key="@($"{drmGrafico}_{añoGrafico}")" dominio="@dominio" historicos="@historicosGrafico" drmGrafico="@drmGrafico" idioma="@idioma" />
-            </div>
-        </div>
-    </div>
+    <JuegoHistoricos juego="@juego" drmGrafico="@drmGrafico" usuarioRegion="@usuarioRegion" idioma="@idioma" dominio="@dominio"
+                     OnCerrar="@(() => HistoricoAbrirCerrar(drmGrafico))" />
 }
 
 @if (enseñarLogear == true)
@@ -4793,12 +4734,8 @@
 
     #region Historico
 
-    private JuegoDRM drmGrafico = JuegoDRM.NoEspecificado;
-    private List<JuegoHistorico> historicosGrafico = new List<JuegoHistorico>();
-    private int añoGrafico = DateTime.Now.Year;
-    private bool dropdownAbierto = false;
-
     private bool enseñarHistorico = false;
+    private JuegoDRM drmGrafico = JuegoDRM.NoEspecificado;
 
     private bool HistoricoComprobar(TiendaRegion region, JuegoDRM drm)
     {
@@ -4830,44 +4767,13 @@
         return tiene;
     }
 
-    private void CambiarAño(int año)
-    {
-        añoGrafico = año;
-
-        if (drmGrafico != JuegoDRM.NoEspecificado)
-        {
-            if (usuarioRegion == TiendaRegion.Europa)
-            {
-                historicosGrafico = juego.Historicos.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
-            }
-            else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-            {
-                historicosGrafico = juego.HistoricosUS.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
-            }
-        }
-    }
-
-    private void HistoricoAbrirCerrar(MouseEventArgs e, JuegoDRM drm = JuegoDRM.NoEspecificado)
+    private void HistoricoAbrirCerrar(JuegoDRM drm = JuegoDRM.NoEspecificado)
     {
         enseñarHistorico = !enseñarHistorico;
 
         if (enseñarHistorico == true)
         {
             drmGrafico = drm;
-
-            if (drmGrafico != JuegoDRM.NoEspecificado)
-            {
-                if (usuarioRegion == TiendaRegion.Europa)
-                {
-                    añoGrafico = juego.Historicos.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().First();
-                    historicosGrafico = juego.Historicos.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
-                }
-                else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-                {
-                    añoGrafico = juego.HistoricosUS.Select(h => h.Fecha.Year).Distinct().Reverse().ToList().First();
-                    historicosGrafico = juego.HistoricosUS.Where(x => x.DRM == drmGrafico && x.Fecha.Year == añoGrafico).ToList();
-                }
-            }
         }
     }
 
