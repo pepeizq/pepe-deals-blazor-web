@@ -2,6 +2,7 @@
 
 using Dapper;
 using Juegos;
+using System.Data;
 using System.Text.Json;
 using Tareas.Minimos;
 using Tiendas2;
@@ -74,7 +75,7 @@ AND (
 			return null;
 		}
 
-		public static async Task<List<Juego>> Destacados(TiendaRegion region)
+		public static async Task<List<Juego>> Destacados(TiendaRegion region, List<int> excluirSteamIds = null)
 		{
 			string tabla = "seccionMinimos";
 
@@ -90,33 +91,44 @@ AND (
 				precioMinimosHistoricos = "precioMinimosHistoricosUS";
 			}
 
-			string busqueda = @$"SELECT TOP 6 idMaestra, nombre, JSON_VALUE(imagenes, '$.Logo') as logo, JSON_VALUE(imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(imagenes, '$.Header_460x215') as header, {precioMinimosHistoricos}, JSON_VALUE(media, '$.Videos[0].Micro') as video, idSteam FROM {tabla}
-WHERE tipo = 0 AND 
-year(getdate()) < year(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
-CONVERT(float, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
-JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
-JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
-(CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
-	CONVERT(datetime2, JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
-(CONVERT(bigint, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > 1999 AND 
+			DynamicParameters parametros = new DynamicParameters();
+
+			string exclusionSteam = string.Empty;
+
+			if (excluirSteamIds?.Count > 0)
+			{
+				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
+				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionSteam = $"AND (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+			}
+
+			string busqueda = @$"SELECT TOP 6 j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
+WHERE j.tipo = 0 {exclusionSteam} AND 
+year(getdate()) < year(JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
+CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
+JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
+JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
+(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
+	CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
+(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 1999 AND 
 (NOT EXISTS (
     SELECT 1
     FROM bundles b
     INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
-    WHERE bj.JuegoId = {tabla}.idMaestra
+    WHERE bj.JuegoId = j.idMaestra
     AND b.fechaTermina > DATEADD(YEAR, -1, GETDATE())
-) OR bundles IS NULL) AND 
-NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = {tabla}.idMaestra AND gratis.DRM = 0) AND 
-NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = {tabla}.idMaestra AND suscripciones.DRM = 0) 
+) OR j.bundles IS NULL) AND 
+NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = j.idMaestra AND gratis.DRM = 0) AND 
+NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = j.idMaestra AND suscripciones.DRM = 0) 
 ) AND 
-(ocultarPortada IS NULL OR ocultarPortada = 'false') 
+(j.ocultarPortada IS NULL OR j.ocultarPortada = 'false') 
 ORDER BY NEWID()";
 
 			try
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					var filas = await conexion.QueryAsync(busqueda);
+					var filas = await conexion.QueryAsync(busqueda, parametros);
 
 					var juegos = filas.Select(fila =>
 					{
@@ -128,7 +140,7 @@ ORDER BY NEWID()";
 							IdSteam = fila.idSteam
 						};
 
-						if (!string.IsNullOrEmpty(fila.logo) || !string.IsNullOrEmpty(fila.fondo) || !string.IsNullOrEmpty(fila.header))
+						if (string.IsNullOrEmpty(fila.logo) == false || string.IsNullOrEmpty(fila.fondo) == false || string.IsNullOrEmpty(fila.header) == false)
 						{
 							juego.Imagenes = new JuegoImagenes
 							{
@@ -140,7 +152,7 @@ ORDER BY NEWID()";
 
 						if (region == TiendaRegion.Europa)
 						{
-							if (!string.IsNullOrEmpty(fila.precioMinimosHistoricos))
+							if (string.IsNullOrEmpty(fila.precioMinimosHistoricos) == false)
 							{
 								juego.PrecioMinimosHistoricos =
 									JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricos);
@@ -148,14 +160,14 @@ ORDER BY NEWID()";
 						}
 						else if (region == TiendaRegion.EstadosUnidos)
 						{
-							if (!string.IsNullOrEmpty(fila.precioMinimosHistoricosUS))
+							if (string.IsNullOrEmpty(fila.precioMinimosHistoricosUS) == false)
 							{
 								juego.PrecioMinimosHistoricosUS =
 									JsonSerializer.Deserialize<List<JuegoPrecio>>(fila.precioMinimosHistoricosUS);
 							}
 						}
 
-						if (!string.IsNullOrEmpty(fila.video))
+						if (string.IsNullOrEmpty(fila.video) == false)
 						{
 							juego.Media = new JuegoMedia
 							{
@@ -181,7 +193,7 @@ ORDER BY NEWID()";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(TiendaRegion region, int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199, List<int> excluirSteamIds = null,  List<int> excluirGogIds = null)
 		{
 			string tabla = "seccionMinimos";
 
@@ -197,7 +209,7 @@ ORDER BY NEWID()";
 				precioMinimosHistoricos = "precioMinimosHistoricosUS";
 			}
 
-			var parametros = new DynamicParameters();
+			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add("cantidadAnalisis", cantidadReseñas);
 
 			string categoria = null;
@@ -250,6 +262,23 @@ ORDER BY NEWID()";
 				}
 			}
 
+			string exclusionSteam = string.Empty;
+			string exclusionGog = string.Empty;
+
+			if (excluirSteamIds?.Count > 0)
+			{
+				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
+				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionSteam = $"AND (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+			}
+
+			if (excluirGogIds?.Count > 0)
+			{
+				DataTable tablaGog = CrearDataTable(excluirGogIds);
+				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionGog = $"AND (j.idGog IS NULL OR j.idGog NOT IN (SELECT Id FROM @excluirGog))";
+			}
+
 			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas,
 			(
 				SELECT b.id, b.bundleTipo
@@ -298,7 +327,7 @@ ORDER BY NEWID()";
 				  AND s.FechaTermina < GETDATE()
 				FOR JSON PATH
 			) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
-				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm}";
+				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm} {exclusionSteam} {exclusionGog}";
 
 			if (tipo == 0)
 			{
@@ -418,6 +447,19 @@ ORDER BY NEWID()";
 			}
 
 			return null;
+		}
+
+		private static DataTable CrearDataTable(List<int> ids)
+		{
+			DataTable tabla = new DataTable();
+			tabla.Columns.Add("Id", typeof(int));
+
+			foreach (var id in ids)
+			{
+				tabla.Rows.Add(id);
+			}
+
+			return tabla;
 		}
 
 		public static async Task<List<Juego>> Proximamente(int cantidadJuegos, List<string> categorias = null, List<string> drms = null)

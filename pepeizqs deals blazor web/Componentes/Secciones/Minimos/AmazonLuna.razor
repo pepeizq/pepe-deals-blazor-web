@@ -146,7 +146,7 @@
 			@if (juegosMostrar?.Count > 0)
 			{
 				<div style="max-width: 1000px; margin: 0px auto; display: flex; flex-direction: column; gap: 30px;">
-					<Virtualize Context="juego" Items="juegosMostrar" ItemSize="107" OverscanCount="12">
+					<Virtualize Context="juego" Items="juegosMostrar" ItemSize="107" OverscanCount="3">
 						<ItemContent>
 							<div style="display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 								<div style="width: 100%;">
@@ -380,6 +380,8 @@
 	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
 	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
+	private List<int> excluirGogIds = new List<int>();
+
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
@@ -452,6 +454,17 @@
 		await MostrarGOG();
 	}
 
+	private async Task ExcluirDRMs()
+	{
+		if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
+		{
+			if (ocultarJuegosUsuario == "checked" && excluirGogIds?.Count == 0)
+			{
+				excluirGogIds = juegosUsuario.Gog.Select(j => j.Id).ToList();
+			}
+		}
+	}
+
 	private string fondoGOG = "background: transparent;";
 
 	private async Task MostrarGOG()
@@ -487,7 +500,9 @@
 			posicionJuegos = 0;
 		}
 
-		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming(usuarioRegion, "streamingamazonluna", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador);
+        await ExcluirDRMs();
+
+		var juegos = await BaseDatos.Juegos.Buscar.MinimosStreaming(usuarioRegion, "streamingamazonluna", drmActual, posicionJuegos, descuentoMinimo, precioMaximo, minimoReseñas, textoBuscador, null, excluirGogIds);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
@@ -515,64 +530,44 @@
 
 			foreach (var juego in juegos)
 			{
-				bool ocultar = false;
-
-				if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
+				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
 				{
-					if (ocultarJuegosUsuario == "checked" && juego.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)
+					Juego = juego,
+					DeseadoImportado = false,
+					Color = "var(--fondoBotonPequeño)",
+					DeseadoMostrar = false
+				};
+
+				if (string.IsNullOrEmpty(usuarioId) == false)
+				{
+					if (juego.PrecioMinimosHistoricos?.Count > 0)
 					{
-						foreach (var juegoUsuario in juegosUsuario.Steam)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
 						{
-							if (juego.IdSteam == juegoUsuario.Id)
+							juegoMinimoMostrar.Color = "var(--fondoBien)";
+						}
+						else
+						{
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
 							{
-								ocultar = true;
-								break;
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								juegoMinimoMostrar.DeseadoImportado = true;
+							}
+
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 							}
 						}
 					}
 				}
 
-				if (ocultar == false)
+				if (juegosMostrar == null)
 				{
-					JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
-					{
-						Juego = juego,
-						DeseadoImportado = false,
-						Color = "var(--fondoBotonPequeño)",
-						DeseadoMostrar = false
-					};
-
-					if (string.IsNullOrEmpty(usuarioId) == false)
-					{
-						if (juego.PrecioMinimosHistoricos?.Count > 0)
-						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
-							{
-								juegoMinimoMostrar.Color = "var(--fondoBien)";
-							}
-							else
-							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-									juegoMinimoMostrar.DeseadoImportado = true;
-								}
-
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								}
-							}
-						}
-					}
-
-					if (juegosMostrar == null)
-					{
-						juegosMostrar = new List<JuegoMostrar>();
-					}
-
-					juegosMostrar.Add(juegoMinimoMostrar);
+					juegosMostrar = new List<JuegoMostrar>();
 				}
+
+				juegosMostrar.Add(juegoMinimoMostrar);
 			}
 		}
 	}

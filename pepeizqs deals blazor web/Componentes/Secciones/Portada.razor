@@ -81,6 +81,12 @@
 		height: 100%;
 		object-fit: cover;
 		z-index: 0; 
+		animation: fadeInDestacado 0.6s ease;
+	}
+
+	@@keyframes fadeInDestacado {
+		from { opacity: 0; transform: scale(1.02); }
+		to   { opacity: 1; transform: scale(1); }
 	}
 
 	.destacado-video video {
@@ -98,10 +104,6 @@
 
 	.destacado-mostrar:hover .destacado-video video {
 		opacity: 1;
-	}
-
-	.destacados-galeria-cursor {
-		cursor: pointer;
 	}
 
 	.destacados-galeria-fila {
@@ -124,6 +126,13 @@
 		flex: 0 0 auto;
 		aspect-ratio: 92/43;
 		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		cursor: pointer;
+	}
+
+	.destacados-galeria-columna:hover {
+		transform: translateY(-1px);
+		box-shadow: 0px 8px 20px rgba(0,0,0,0.5);
 	}
 
 	.destacados-galeria-captura {
@@ -133,11 +142,14 @@
 		transition: transform .2s;
 		min-height: 50px;
 		max-width: 100%;
+		filter: grayscale(20%);
 	}
 
-	.destacados-galeria-captura:hover {
+	.destacados-galeria-captura:hover,
+	.destacados-galeria-captura.activo {
 		opacity: 1;
 		transform: scale(1.01);
+		filter: grayscale(0%);
 	}
 
 	.destacado-hueco {
@@ -151,12 +163,21 @@
 		align-items: flex-end;
 		padding: 0px 80px 30px 80px;
 		z-index: 2; 
+		background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.2) 40%, rgba(0,0,0,0.75) 100%);
+		padding-top: 120px;
 	}
 
 	.destacado-logo-medidas {
 		width: 16vw;
 		height: 8vw;
 		object-fit: contain;
+		animation: slideUpLogo 0.5s ease;
+		filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+	}
+
+	@@keyframes slideUpLogo {
+		from { opacity: 0; transform: translateY(15px); }
+		to   { opacity: 1; transform: translateY(0); }
 	}
 
 	.destacado-logo-alto {
@@ -212,16 +233,21 @@
 	}
 
 	.destacado-progreso {
-		animation: barraProgreso 30s ease-in-out;
+		animation: barraProgreso 30s linear;
+		height: 3px;
 	}
 
 	@@keyframes barraProgreso {
-	0% { width: 0; }
-	100% { width: 100%; }
+		0% { width: 0; }
+		100% { width: 100%; }
 	}
-</style>
 
-<style>
+	.destacado-barra-contenedor {
+		height: 3px;
+		width: 100%;
+		background: rgba(255,255,255,0.15); 
+	}
+
 	:root {
 		--glaseadoBorde: #FFFFFF1A;
 		--glaseadoFondo: rgba(41, 55, 81, 0.6);
@@ -376,11 +402,11 @@
 									
 										if (destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].PrecioCambiado > 0)
 										{
-											precioMostrar = Herramientas.Precios.Euro(destacadoActual.Juego.PrecioMinimosHistoricosUS?[0].PrecioCambiado);
+											precioMostrar = Herramientas.Precios.Dolar(destacadoActual.Juego.PrecioMinimosHistoricosUS?[0].PrecioCambiado);
 										}
 										else
 										{
-											precioMostrar = Herramientas.Precios.Euro(destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].Precio);
+											precioMostrar = Herramientas.Precios.Dolar(destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].Precio);
 										}
 									}
 
@@ -480,12 +506,12 @@
 				}
 
 				<div class="destacados-galeria-columna" @onclick="@(e => CambiarJuegoDestacado(e, destacado))" style="background-color: @destacado.Color;">
-					<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura destacados-galeria-cursor" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
+					<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura @(mostrarBarra ? "activo" : "")" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
 
 					@if (mostrarBarra == true)
 					{
-						<div style="height: 3px; width: 100%;">
-							<div class="destacado-progreso" style="height: 3px; filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
+						<div class="destacado-barra-contenedor">
+							<div class="destacado-progreso" style="filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
 						</div>
 					}
 				</div>
@@ -886,6 +912,9 @@ else
 	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
 	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
+	private List<int> excluirSteamIds = new List<int>();
+	private List<int> excluirGogIds = new List<int>();
+
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
@@ -991,7 +1020,15 @@ else
 
 		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
-			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion);
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+			{
+				if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+				{
+					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+				}
+			}
+
+			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, excluirSteamIds);
 
 			if (juegosDestacadosMostrar2?.Count > 0)
 			{
@@ -1218,7 +1255,15 @@ else
 					{
 						juegosDestacadosMostrar.Clear();
 
-						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion);
+						if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+						{
+							if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+							{
+								excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+							}
+						}
+
+						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, excluirSteamIds);
 
 						if (juegosDestacadosMostrar2?.Count > 0)
 						{
@@ -1313,37 +1358,53 @@ else
 				}
 			}
 
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+			{
+				if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+				{
+					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+				}
+			}
+
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioGog) == false)
+			{
+				if (ocultarJuegosUsuarioGog == "checked" && excluirGogIds?.Count == 0)
+				{
+					excluirGogIds = juegosUsuario.Gog.Select(j => j.Id).ToList();	
+				}
+			}
+
 			if (tipoSeleccionadoMinimos == MinimosTipo.Nuevos)
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199, excluirSteamIds, excluirGogIds));
 				}				
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Populares)
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 199, excluirSteamIds, excluirGogIds));
 				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Lanzamientos)
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29, excluirSteamIds, excluirGogIds));
 				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
@@ -1464,80 +1525,45 @@ else
 					}
 				}
 
-				bool ocultar = false;
-
-				if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+				if (juegosMinimosMostrar == null)
 				{
-					if (ocultarJuegosUsuarioSteam == "checked" && drmGestor == JuegoDRM.Steam)
+					juegosMinimosMostrar = new List<JuegoMostrar>();
+				}
+
+				JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
+				{
+					Juego = juego,
+					DeseadoImportado = false,
+					Color = "var(--fondoBotonPequeño)",
+					DeseadoMostrar = false
+				};
+
+				if (string.IsNullOrEmpty(usuarioId) == false)
+				{
+					if (usuarioRegion == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0 ||
+						usuarioRegion == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
 					{
-						foreach (var juegoUsuario in juegosUsuario.Steam)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, drmGestor) == true)
 						{
-							if (juego.IdSteam == juegoUsuario.Id)
+							juegoMinimoMostrar.Color = "var(--fondoBien)";
+						}
+						else
+						{
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, drmGestor, true) == true)
 							{
-								ocultar = true;
-								break;
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								juegoMinimoMostrar.DeseadoImportado = true;
+							}
+
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, drmGestor, true) == true)
+							{
+								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 							}
 						}
 					}
 				}
 
-				if (string.IsNullOrEmpty(ocultarJuegosUsuarioGog) == false)
-				{
-					if (ocultarJuegosUsuarioGog == "checked" && drmGestor == JuegoDRM.GOG)
-					{
-						foreach (var juegoUsuario in juegosUsuario.Gog)
-						{
-							if (juego.IdGog == juegoUsuario.Id)
-							{
-								ocultar = true;
-								break;
-							}
-						}
-					}
-				}
-
-				if (ocultar == false)
-				{
-					if (juegosMinimosMostrar == null)
-					{
-						juegosMinimosMostrar = new List<JuegoMostrar>();
-					}
-
-					JuegoMostrar juegoMinimoMostrar = new JuegoMostrar
-					{
-						Juego = juego,
-						DeseadoImportado = false,
-						Color = "var(--fondoBotonPequeño)",
-						DeseadoMostrar = false
-					};
-
-					if (string.IsNullOrEmpty(usuarioId) == false)
-					{
-						if (usuarioRegion == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0 ||
-							usuarioRegion == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
-						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, drmGestor) == true)
-							{
-								juegoMinimoMostrar.Color = "var(--fondoBien)";
-							}
-							else
-							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, drmGestor, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-									juegoMinimoMostrar.DeseadoImportado = true;
-								}
-
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, drmGestor, true) == true)
-								{
-									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								}
-							}
-						}
-					}
-
-					juegosMinimosMostrar.Add(juegoMinimoMostrar);
-				}
+				juegosMinimosMostrar.Add(juegoMinimoMostrar);
 			}
 		}
 

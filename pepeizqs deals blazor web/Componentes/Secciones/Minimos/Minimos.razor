@@ -998,6 +998,9 @@ else
 	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
 	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
+	private List<int> excluirSteamIds = new List<int>();
+	private List<int> excluirGogIds = new List<int>();
+
 	private bool usuarioPatreon = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
@@ -1516,13 +1519,34 @@ else
 		mostrarOrdenar = !mostrarOrdenar;
 	}
 
+	private async Task ExcluirDRMs()
+	{
+		if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+		{
+			if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+			{
+				excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+			}
+		}
+
+		if (string.IsNullOrEmpty(ocultarJuegosUsuarioGog) == false)
+		{
+			if (ocultarJuegosUsuarioGog == "checked" && excluirGogIds?.Count == 0)
+			{
+				excluirGogIds = juegosUsuario.Gog.Select(j => j.Id).ToList();
+			}
+		}		
+	}
+
 	private async Task OrdenarReseñasPorcentaje(bool buscar = true, bool fusionar = false)
 	{
 		ordenamientoElegido = Herramientas.Idiomas.BuscarTexto(idioma, "String3", "HistoricalLows");
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1575,7 +1599,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1629,7 +1655,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1683,7 +1711,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1737,7 +1767,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1791,7 +1823,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1845,7 +1879,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1899,7 +1935,9 @@ else
 
 		if (buscar == true)
 		{
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador);
+			await ExcluirDRMs();
+
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1971,36 +2009,6 @@ else
 		cargado = false;
 
 		List<JuegoMostrar> listaMostrar = new List<JuegoMostrar>();
-
-		if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
-		{
-			if (ocultarJuegosUsuarioSteam == "checked")
-			{
-				if (usuarioRegion == TiendaRegion.Europa)
-				{
-					lista = lista.Where(j => !juegosUsuario.Steam.Any(jU => jU.Id == j.IdSteam && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.Steam)).ToList();
-				}
-				else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-				{
-					lista = lista.Where(j => !juegosUsuario.Steam.Any(jU => jU.Id == j.IdSteam && j.PrecioMinimosHistoricosUS[0].DRM == JuegoDRM.Steam)).ToList();
-				}
-			}
-		}
-
-		if (string.IsNullOrEmpty(ocultarJuegosUsuarioGog) == false)
-		{
-			if (ocultarJuegosUsuarioGog == "checked")
-			{
-				if (usuarioRegion == TiendaRegion.Europa)
-				{
-					lista = lista.Where(j => !juegosUsuario.Gog.Any(jU => jU.Id == j.IdGog && j.PrecioMinimosHistoricos[0].DRM == JuegoDRM.GOG)).ToList();
-				}
-				else
-				{
-					lista = lista.Where(j => !juegosUsuario.Gog.Any(jU => jU.Id == j.IdGog && j.PrecioMinimosHistoricosUS[0].DRM == JuegoDRM.GOG)).ToList();
-				}
-			}
-		}
 
 		lista.ForEach(j =>
 		{

@@ -1141,6 +1141,7 @@
                                                         if (drmG == drm.Id)
                                                         {
                                                             añadirDiv = true;
+                                                            break;
                                                         }
                                                     }
                                                 }
@@ -1152,6 +1153,7 @@
                                                         if (drmB == drm.Id)
                                                         {
                                                             añadirDiv = true;
+                                                            break;
                                                         }
                                                     }
                                                 }
@@ -1433,6 +1435,8 @@
                                                                             </div>
                                                                         </div>
                                                                     </div> 
+
+                                                                    break;
                                                                 }
                                                             }
                                                         }
@@ -1456,6 +1460,8 @@
                                                                             </div>
                                                                         </div>
                                                                     </div> 
+
+                                                                    break;
                                                                 }
                                                             }
                                                         }
@@ -1469,165 +1475,164 @@
                                                                         <img src="@APIs.GOG.Streaming.Generar().ImagenIcono" style="max-width: 22px; max-height: 22px;" alt="Amazon Luna"/>
                                                                     </div>
                                                                 </a>
+
+                                                                break;
                                                             }
                                                         }
 
-                                                        @if (juego.Idiomas != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+                                                        @if (juego.Idiomas?.Count > 0 && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                                         {
-                                                            if (juego.Idiomas?.Count > 0)
+                                                            bool tieneIdiomasSteam = false;
+                                                            bool tieneIdiomasGog = false;
+                                                            bool tieneIdiomasEpic = false;
+                                                            bool tieneIdiomasXbox = false;
+
+                                                            bool idiomaEncontrado = false;
+
+                                                            string idiomaUsuario = idiomaJuego;
+
+                                                            foreach (var idiomaJuego in juego.Idiomas)
                                                             {
-                                                                bool tieneIdiomasSteam = false;
-                                                                bool tieneIdiomasGog = false;
-                                                                bool tieneIdiomasEpic = false;
-                                                                bool tieneIdiomasXbox = false;
-
-                                                                bool idiomaEncontrado = false;
-
-                                                                string idiomaUsuario = idiomaJuego;
-
-                                                                foreach (var idiomaJuego in juego.Idiomas)
+                                                                if (idiomaJuego.DRM == JuegoDRM.Steam)
                                                                 {
-                                                                    if (idiomaJuego.DRM == JuegoDRM.Steam)
+                                                                    tieneIdiomasSteam = true;
+                                                                }
+
+                                                                if (idiomaJuego.DRM == JuegoDRM.GOG)
+                                                                {
+                                                                    tieneIdiomasGog = true;
+                                                                }
+
+                                                                if (idiomaJuego.DRM == JuegoDRM.Epic)
+                                                                {
+                                                                    tieneIdiomasEpic = true;
+                                                                }
+
+                                                                if (idiomaJuego.DRM == JuegoDRM.Microsoft)
+                                                                {
+                                                                    tieneIdiomasXbox = true;
+                                                                }
+
+                                                                if (idiomaJuego.DRM == drm.Id)
+                                                                {
+                                                                    string idiomaEncontradoTexto = Herramientas.Idiomas.EncontrarIdiomaJuego(idiomaUsuario, idiomaJuego.Idioma);
+
+                                                                    if (string.IsNullOrEmpty(idiomaEncontradoTexto) == false)
                                                                     {
-                                                                        tieneIdiomasSteam = true;
-                                                                    }
+                                                                        idiomaEncontrado = true;
 
-                                                                    if (idiomaJuego.DRM == JuegoDRM.GOG)
-                                                                    {
-                                                                        tieneIdiomasGog = true;
-                                                                    }
+                                                                        string imagenBandera = "/imagenes/banderas/" + idiomaEncontradoTexto + ".svg";
 
-                                                                    if (idiomaJuego.DRM == JuegoDRM.Epic)
-                                                                    {
-                                                                        tieneIdiomasEpic = true;
-                                                                    }
+                                                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-languages-@drm.Id')" style="width: fit-content;">
+                                                                            <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                                <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
+                                                                                    <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language"  />
 
-                                                                    if (idiomaJuego.DRM == JuegoDRM.Microsoft)
-                                                                    {
-                                                                        tieneIdiomasXbox = true;
-                                                                    }
-
-                                                                    if (idiomaJuego.DRM == drm.Id)
-                                                                    {
-                                                                        string idiomaEncontradoTexto = Herramientas.Idiomas.EncontrarIdiomaJuego(idiomaUsuario, idiomaJuego.Idioma);
-
-                                                                        if (string.IsNullOrEmpty(idiomaEncontradoTexto) == false)
-                                                                        {
-                                                                            idiomaEncontrado = true;
-
-                                                                            string imagenBandera = "/imagenes/banderas/" + idiomaEncontradoTexto + ".svg";
-
-                                                                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-languages-@drm.Id')" style="width: fit-content;">
-                                                                                <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                                    <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
-                                                                                        <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language"  />
-
-                                                                                        <div style="font-size: 14px;">
-                                                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
-                                                                                        </div>
-
-                                                                                        @if (idiomaJuego.Audio == true)
-                                                                                        {
-                                                                                            <div style="min-width: 14px; max-width: 16px;">
-                                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                                                                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            <div style="min-width: 14px; max-width: 16px;">
-                                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                                                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        }
-
-                                                                                        <div style="font-size: 14px;">
-                                                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String92", "Game")
-                                                                                        </div>
-
-                                                                                        @if (idiomaJuego.Texto == true)
-                                                                                        {
-                                                                                            <div style="min-width: 14px; max-width: 16px;">
-                                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                                                                                    <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        }
-                                                                                        else
-                                                                                        {
-                                                                                            <div style="min-width: 14px; max-width: 16px;">
-                                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                                                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        }
+                                                                                    <div style="font-size: 14px;">
+                                                                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
                                                                                     </div>
-                                                                                </button>
 
-                                                                                <div id="tooltip-languages-@drm.Id" class="tooltip-relleno">
-                                                                                    <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                                                                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String118", "Game"), drm.Nombre)
+                                                                                    @if (idiomaJuego.Audio == true)
+                                                                                    {
+                                                                                        <div style="min-width: 14px; max-width: 16px;">
+                                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                                                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <div style="min-width: 14px; max-width: 16px;">
+                                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                                                                                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    }
+
+                                                                                    <div style="font-size: 14px;">
+                                                                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String92", "Game")
                                                                                     </div>
+
+                                                                                    @if (idiomaJuego.Texto == true)
+                                                                                    {
+                                                                                        <div style="min-width: 14px; max-width: 16px;">
+                                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                                                                <path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <div style="min-width: 14px; max-width: 16px;">
+                                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                                                                                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    }
                                                                                 </div>
-                                                                            </div>          
-                                                                        }
+                                                                            </button>
+
+                                                                            <div id="tooltip-languages-@drm.Id" class="tooltip-relleno">
+                                                                                <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                                                    @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String118", "Game"), drm.Nombre)
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>          
                                                                     }
                                                                 }
+                                                            }
 
-                                                                bool ponerNoTieneIdioma = false;
+                                                            bool ponerNoTieneIdioma = false;
 
-                                                                if (drm.Id == JuegoDRM.Steam && tieneIdiomasSteam == true && idiomaEncontrado == false)
-                                                                {
-                                                                    ponerNoTieneIdioma = true;
-                                                                }
+                                                            if (drm.Id == JuegoDRM.Steam && tieneIdiomasSteam == true && idiomaEncontrado == false)
+                                                            {
+                                                                ponerNoTieneIdioma = true;
+                                                            }
 
-                                                                if (drm.Id == JuegoDRM.GOG && tieneIdiomasGog == true && idiomaEncontrado == false)
-                                                                {
-                                                                    ponerNoTieneIdioma = true;
-                                                                }
+                                                            if (drm.Id == JuegoDRM.GOG && tieneIdiomasGog == true && idiomaEncontrado == false)
+                                                            {
+                                                                ponerNoTieneIdioma = true;
+                                                            }
 
-                                                                if (drm.Id == JuegoDRM.Epic && tieneIdiomasEpic == true && idiomaEncontrado == false)
-                                                                {
-                                                                    ponerNoTieneIdioma = true;
-                                                                }
+                                                            if (drm.Id == JuegoDRM.Epic && tieneIdiomasEpic == true && idiomaEncontrado == false)
+                                                            {
+                                                                ponerNoTieneIdioma = true;
+                                                            }
 
-                                                                if (drm.Id == JuegoDRM.Microsoft && tieneIdiomasXbox == true && idiomaEncontrado == false)
-                                                                {
-                                                                    ponerNoTieneIdioma = true;
-                                                                }
+                                                            if (drm.Id == JuegoDRM.Microsoft && tieneIdiomasXbox == true && idiomaEncontrado == false)
+                                                            {
+                                                                ponerNoTieneIdioma = true;
+                                                            }
 
-                                                                if (ponerNoTieneIdioma == true)
-                                                                {
-                                                                    string imagenBandera = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(idiomaUsuario) + ".svg";
+                                                            if (ponerNoTieneIdioma == true)
+                                                            {
+                                                                string imagenBandera = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(idiomaUsuario) + ".svg";
 
-                                                                    <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                        <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
-                                                                            <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language" />
+                                                                <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                    <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
+                                                                        <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language" />
 
-                                                                            <div style="font-size: 14px;">
-                                                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
-                                                                            </div>
-
-                                                                            <div style="min-width: 14px; max-width: 16px;min-width: 14px;width: 16px;">
-                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
-                                                                                </svg>
-                                                                            </div>
-
-                                                                            <div style="font-size: 14px;">
-                                                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String92", "Game")
-                                                                            </div>
-
-                                                                            <div style="min-width: 14px; max-width: 16px;">
-                                                                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                                                                                    <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-                                                                                </svg>
-                                                                            </div>
+                                                                        <div style="font-size: 14px;">
+                                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
                                                                         </div>
-                                                                    </button>
-                                                                }
+
+                                                                        <div style="min-width: 14px; max-width: 16px;min-width: 14px;width: 16px;">
+                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                                                                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                                                                            </svg>
+                                                                        </div>
+
+                                                                        <div style="font-size: 14px;">
+                                                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String92", "Game")
+                                                                        </div>
+
+                                                                        <div style="min-width: 14px; max-width: 16px;">
+                                                                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                                                                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
+                                                                            </svg>
+                                                                        </div>
+                                                                    </div>
+                                                                </button>
                                                             }
                                                         }
 
