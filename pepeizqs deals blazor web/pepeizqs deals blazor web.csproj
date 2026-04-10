@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Componentes\Secciones\Portada.razor~RFf8ce65.TMP" />
     <None Remove="Idiomas\Curators\tz3wz0ca.flb~" />
     <None Remove="Idiomas\Manifest\en.json~RFee1eec.TMP" />
   </ItemGroup>

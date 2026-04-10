@@ -112,6 +112,7 @@ namespace BaseDatos.Usuarios
 
 			string busqueda = @"
 				SELECT 
+					GamesExcluded,
 					SteamGames, 
 					GogGames, 
 					AmazonGames, 
@@ -1411,6 +1412,30 @@ SELECT id FROM AspNetUsers WHERE CHARINDEX(@idEA, Wishlist) > 0";
 			}
 
 			return 0;
+		}
+
+		public static async Task<string> JuegosExcluidos(string id)
+		{
+			if (string.IsNullOrEmpty(id) == true)
+			{
+				return null;
+			}
+
+			try
+			{
+				string busqueda = "SELECT GamesExcluded FROM AspNetUsers WHERE Id=@Id";
+
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { Id = id });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Juegos Excluidos", ex);
+			}
+
+			return null;
 		}
 	}
 }

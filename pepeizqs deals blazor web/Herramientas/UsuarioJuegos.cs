@@ -4,7 +4,9 @@ using APIs.GOG;
 using APIs.Steam;
 using Juegos;
 using pepeizqs_deals_web.Data;
+using System.Collections;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Herramientas
 {
@@ -21,6 +23,27 @@ namespace Herramientas
 
 			UsuarioListadosJuegos listados = new UsuarioListadosJuegos();
 
+			if (string.IsNullOrEmpty(usuario.GamesExcluded) == false)
+			{
+				try
+				{
+					string[] datosPartidos = usuario.GamesExcluded.Split(',');
+					foreach (var dato in datosPartidos)
+					{
+						if (int.TryParse(dato.Trim(), out int numero))
+						{
+							if (listados.Excluidos == null)
+							{
+								listados.Excluidos = new List<int>();
+							}
+
+							listados.Excluidos.Add(numero);
+						}
+					}
+				}
+				catch { }
+			}
+
 			if (string.IsNullOrEmpty(usuario.SteamGames) == false)
 			{
 				try
@@ -35,51 +58,6 @@ namespace Herramientas
 				{
 					listados.Gog = JsonSerializer.Deserialize<List<GOGUsuarioJuego>>(usuario.GogGames);
 				} catch { }				
-			}
-
-			if (string.IsNullOrEmpty(usuario.AmazonGames) == false)
-			{
-				listados.Amazon = Herramientas.Listados.Generar(usuario.AmazonGames);
-			}
-
-			if (string.IsNullOrEmpty(usuario.EpicGames) == false)
-			{
-				listados.Epic = Herramientas.Listados.Generar(usuario.EpicGames);
-			}
-
-			if (string.IsNullOrEmpty(usuario.UbisoftGames) == false)
-			{
-				listados.Ubisoft = Herramientas.Listados.Generar(usuario.UbisoftGames);
-			}
-
-			if (string.IsNullOrEmpty(usuario.EaGames) == false)
-			{
-				listados.Ea = Herramientas.Listados.Generar(usuario.EaGames);
-			}
-
-			return listados;
-		}
-
-		public static UsuarioListadosJuegos Cargar(Usuario usuario)
-		{
-			UsuarioListadosJuegos listados = new UsuarioListadosJuegos();
-
-			if (string.IsNullOrEmpty(usuario.SteamGames) == false)
-			{
-				try
-				{
-					listados.Steam = JsonSerializer.Deserialize<List<SteamUsuarioJuego>>(usuario.SteamGames);
-				}
-				catch { }
-			}
-
-			if (string.IsNullOrEmpty(usuario.GogGames) == false)
-			{
-				try
-				{
-					listados.Gog = JsonSerializer.Deserialize<List<GOGUsuarioJuego>>(usuario.GogGames);
-				}
-				catch { }
 			}
 
 			if (string.IsNullOrEmpty(usuario.AmazonGames) == false)
@@ -279,23 +257,40 @@ namespace Herramientas
 		{
 			var index = new UsuarioJuegosIndex();
 
+			if (listados.Excluidos != null)
+			{
+				index.Excluidos = listados.Excluidos.ToHashSet();
+			}
+
 			if (listados.Steam != null)
+			{
 				index.Steam = listados.Steam.Select(x => x.Id).ToHashSet();
+			}
 
 			if (listados.Gog != null)
+			{
 				index.Gog = listados.Gog.Select(x => x.Id).ToHashSet();
+			}
 
 			if (listados.Amazon != null)
+			{
 				index.Amazon = listados.Amazon.ToHashSet();
+			}
 
 			if (listados.Epic != null)
+			{
 				index.Epic = listados.Epic.ToHashSet();
+			}
 
 			if (listados.Ubisoft != null)
+			{
 				index.Ubisoft = listados.Ubisoft.ToHashSet();
+			}
 
 			if (listados.Ea != null)
+			{	
 				index.Ea = listados.Ea.ToHashSet();
+			}
 
 			return index;
 		}
@@ -337,6 +332,7 @@ namespace Herramientas
 
 	public class UsuarioJuegosIndex
 	{
+		public HashSet<int> Excluidos = new();
 		public HashSet<int> Steam = new();
 		public HashSet<int> Gog = new();
 		public HashSet<string> Amazon = new();
@@ -355,6 +351,7 @@ namespace Herramientas
 
 	public class UsuarioListadosJuegos
 	{
+		public List<int> Excluidos { get; set; }
 		public List<SteamUsuarioJuego> Steam { get; set; }
 		public List<GOGUsuarioJuego> Gog { get; set; }
 		public List<string> Amazon { get; set; }

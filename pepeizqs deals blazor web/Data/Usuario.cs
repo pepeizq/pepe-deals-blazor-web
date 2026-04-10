@@ -445,4 +445,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "int(4)")]
 	public int? Currency { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "nvarchar(max)")]
+	public string? GamesExcluded { get; set; }
 }

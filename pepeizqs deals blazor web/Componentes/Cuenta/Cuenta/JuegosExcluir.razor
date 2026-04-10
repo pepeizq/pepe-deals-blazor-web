@@ -1,0 +1,68 @@
+﻿@if (juegosExcluidos == null || juegosExcluidos?.Count == 0)
+{
+    <div style="padding: 20px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountGamesExcluded")</div>
+}
+else if (juegosExcluidos?.Count > 0)
+{
+    <div style="display: flex; flex-direction: column; gap: 20px; padding: 0px 20px;">
+        <Virtualize Context="juego" Items="juegosExcluidos" ItemSize="87" OverscanCount="3">
+            <ItemContent>
+                <div style="display: flex; align-items: center; gap: 20px; background-color: rgba(0,0,0,0.15); justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <img src="@juego.Imagenes.Capsule_231x87" alt="@juego.Nombre" class="juego-imagen" />
+                        <span class="juego-nombre">@juego.Nombre</span>
+                    </div>
+
+                    <button @onclick="@(e => QuitarExclusion(e, juego.Id))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px; margin: 20px;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountGamesExcluded")
+                    </button>
+                </div>
+            </ItemContent>
+        </Virtualize>
+    </div>
+}
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public string idioma { get; set; }
+
+    [Parameter]
+    public string usuarioId { get; set; }
+
+    private List<global::Juegos.Juego> juegosExcluidos = new List<global::Juegos.Juego>();  
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ActualizarJuegosExcluidos();
+    }
+
+    private async Task ActualizarJuegosExcluidos()
+    {
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            string juegosExcluidosTexto = await global::BaseDatos.Usuarios.Buscar.JuegosExcluidos(usuarioId);
+
+            List<string> juegosExcluidosLista = new List<string>();
+
+            if (string.IsNullOrEmpty(juegosExcluidosTexto) == false)
+            {
+                juegosExcluidosLista = juegosExcluidosTexto.Split(',').ToList();
+            }
+
+            if (juegosExcluidosLista?.Count > 0)
+            {
+                juegosExcluidos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(juegosExcluidosLista);
+            } 
+        }
+    }
+
+    private async Task QuitarExclusion(MouseEventArgs e, int juegoId)
+    {
+        await Herramientas.ExcluirJuegos.Quitar(usuarioId, juegoId);
+
+        await ActualizarJuegosExcluidos();
+    }
+}

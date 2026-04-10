@@ -193,7 +193,7 @@ ORDER BY NEWID()";
 			return null;
 		}
 
-		public static async Task<List<Juego>> Minimos(TiendaRegion region, int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199, List<int> excluirSteamIds = null,  List<int> excluirGogIds = null)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int tipo, int posicion = 0, List<string> categorias = null, List<string> drms = null, int cantidadReseñas = 199, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
 		{
 			string tabla = "seccionMinimos";
 
@@ -261,9 +261,17 @@ ORDER BY NEWID()";
 					drm = drm + ")";
 				}
 			}
-
+			
+			string exclusionJuegos = string.Empty;
 			string exclusionSteam = string.Empty;
 			string exclusionGog = string.Empty;
+
+			if (excluirJuegosIds?.Count > 0)
+			{
+				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
+				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionJuegos = $"AND (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
@@ -327,7 +335,7 @@ ORDER BY NEWID()";
 				  AND s.FechaTermina < GETDATE()
 				FOR JSON PATH
 			) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
-				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm} {exclusionSteam} {exclusionGog}";
+				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm} {exclusionJuegos} {exclusionSteam} {exclusionGog}";
 
 			if (tipo == 0)
 			{

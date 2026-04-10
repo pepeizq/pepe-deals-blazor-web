@@ -846,7 +846,7 @@ END DESC";
                                 WHERE 1=1";
 			}
 
-			var parametros = new DynamicParameters();
+			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add("cantidadJuegos", cantidadJuegos);
 
 			if (añadirCurators == true)
