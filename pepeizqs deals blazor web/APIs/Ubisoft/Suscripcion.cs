@@ -175,8 +175,6 @@ namespace APIs.Ubisoft
 						{
 							await BaseDatos.Suscripciones.Insertar.Temporal(Generar().Id.ToString().ToLower(), enlace, juego.Nombre, juego.Imagen);
 						}
-
-						await GestionarLuna(juego);
 					}
 				}
             }
@@ -283,117 +281,6 @@ namespace APIs.Ubisoft
 						{
                             await BaseDatos.Suscripciones.Insertar.Temporal(GenerarPremium().Id.ToString(), enlace, juego.Nombre, juego.Imagen);
                         }
-
-						await GestionarLuna(juego);
-					}
-				}
-			}
-		}
-
-		public static async Task GestionarLuna(UbisoftSuscripcionJuego juego)
-		{
-			if (juego.Luna?.Count > 0)
-			{
-				bool gestionar = false;
-
-				foreach (var plataforma in juego.Luna)
-				{
-					if (plataforma.ToLower().Contains("luna") == true)
-					{
-						gestionar = true;
-					}
-				}
-
-				if (gestionar == true)
-				{
-					DateTime fecha = DateTime.Now;
-					fecha = fecha + TimeSpan.FromDays(1);
-
-					bool? encontrado = false;
-
-					string sqlBuscar = "SELECT 1 FROM streamingamazonluna WHERE nombreCodigo=@nombreCodigo";
-
-					try
-					{
-						encontrado = await Herramientas.BaseDatos.Select(async conexion =>
-						{
-							var resultado = await conexion.QueryFirstOrDefaultAsync<bool?>(
-								sqlBuscar,
-								new { nombreCodigo = juego.Id }
-							);
-
-							return resultado ?? false;
-						});
-					}
-					catch (Exception ex)
-					{
-						BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 1", ex);
-					}
-
-					List<string> drms = new List<string>();
-					drms.Add("ubisoft");
-
-					List<int> drms2 = new List<int>();
-
-					if (drms?.Count > 0)
-					{
-						foreach (var drm in drms)
-						{
-							var drmTraducido = Juegos.JuegoDRM2.Traducir(drm);
-
-							if (drmTraducido != Juegos.JuegoDRM.NoEspecificado)
-							{
-								drms2.Add((int)drmTraducido);
-							}
-						}
-					}
-
-					if (encontrado == true)
-					{
-						string sqlActualizar = @"UPDATE streamingamazonluna 
-													SET fecha=@fecha, drms=@drms, drms2=@drms2 WHERE nombreCodigo=@nombreCodigo";
-
-						try
-						{
-							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-							{
-								return await conexion.ExecuteAsync(sqlActualizar, new { 
-									nombreCodigo = juego.Id, 
-									fecha,
-									drms = JsonSerializer.Serialize(drms),
-									drms2 = JsonSerializer.Serialize(drms2)
-								}, transaction: sentencia);
-							});
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 2", ex);
-						}
-					}
-					else
-					{
-						string sqlInsertar = "INSERT INTO streamingamazonluna " +
-														"(nombreCodigo, nombre, drms, fecha, drms2) VALUES " +
-														"(@nombreCodigo, @nombre, @drms, @fecha, @drms2) ";
-
-						try
-						{
-							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-							{
-								return await conexion.ExecuteAsync(sqlInsertar, new
-								{
-									nombreCodigo = juego.Id,
-									nombre = juego.Nombre,
-									drms = JsonSerializer.Serialize(drms),
-									fecha,
-									drms2 = JsonSerializer.Serialize(drms2)
-								}, transaction: sentencia);
-							});
-						}
-						catch (Exception ex)
-						{
-							BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Ubisoft 3", ex);
-						}
 					}
 				}
 			}

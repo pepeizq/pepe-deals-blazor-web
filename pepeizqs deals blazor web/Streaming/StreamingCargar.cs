@@ -17,7 +17,6 @@ namespace Streaming2
             List<Streaming> streaming = new List<Streaming>
             {
                 APIs.GeforceNOW.Streaming.Generar(),
-                APIs.GOG.Streaming.Generar(),
                 APIs.Boosteroid.Streaming.Generar()
             };
 

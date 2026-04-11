@@ -44,32 +44,6 @@ namespace BaseDatos.Streaming
 			return null;
         }
 
-        public static async Task<bool> AmazonLuna(int idJuego, string drm)
-        {
-			if (idJuego > 0)
-			{
-				string busqueda = "SELECT 1 FROM streamingamazonluna WHERE idJuego = " + idJuego.ToString() + " AND drms = '" + drm + "'";
-
-				try
-				{
-					var existe = await Herramientas.BaseDatos.Select(async conexion =>
-					{
-						var resultado = await conexion.ExecuteScalarAsync<int?>(busqueda);
-
-						return resultado.HasValue;
-					});
-
-					return existe;
-				}
-				catch (Exception ex)
-				{
-					BaseDatos.Errores.Insertar.Mensaje("Amazon Luna Existe", ex);
-				}
-			}
-
-			return false;
-		}
-
 		public static async Task<List<JuegoStreaming>> BuscarJuegos(string tabla, int orden, string nombreBusqueda = null)
 		{
 			if (string.IsNullOrEmpty(tabla) == false)
