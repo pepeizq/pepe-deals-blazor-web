@@ -337,7 +337,7 @@
 	var destacadoActual = juegosDestacadosMostrar[posicionMostrarDestacados];
 
 	<div class="portada-espacio cuerpo-ancho">
-		@if (destacadoActual.Juego != null)
+		@if (destacadoActual.Juego != null && destacadoActual.Excluido == false)
 		{
 			<a href="/game/@destacadoActual.Juego.IdMaestra.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacadoActual.Juego.Nombre)/" style="cursor: pointer; border: 0px; padding: 0px; display: block; width: 100%;">
 				<div style="position: relative; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); background-color: @destacadoActual.Color;">
@@ -364,7 +364,7 @@
 
 							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre">
 
-							<div style="display: flex; align-items: center; margin-bottom: 30px; color: var(--colorTexto);">
+							<div style="display: flex; align-items: center; margin-bottom: 30px; color: var(--colorTexto); position: relative;">
 								@if (usuarioRegion == TiendaRegion.Europa && destacadoActual?.Juego?.PrecioMinimosHistoricos?.Count > 0 ||
 									 usuarioRegion == TiendaRegion.EstadosUnidos && destacadoActual?.Juego?.PrecioMinimosHistoricosUS?.Count > 0)
 								{
@@ -431,7 +431,7 @@
 										</div>
 									</div>
 
-									@if (string.IsNullOrEmpty(usuarioId) == false && destacadoActual?.Color != "var(--fondoBien)" && @destacadoActual?.DeseadoImportado == false)
+									@if (string.IsNullOrEmpty(usuarioId) == false && destacadoActual?.Color != "var(--fondoBien)" && destacadoActual?.DesplegableMostrar == true)
 									{
 										JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
 
@@ -444,37 +444,74 @@
 											drmDeseado = destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].DRM ?? JuegoDRM.NoEspecificado;
 										}
 
-										<div onclick="anularEnlace(event)" class="tooltip-juego" style="margin-left: 20px;" onmousemove="enseñarTooltip(event, 'tooltip-destacados-deseados')">
-											<button @onclick="@(e => CambiarEstadoDeseado(e, usuarioId, destacadoActual, drmDeseado))" class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @destacadoActual?.Color;">
-												<div class="svg-boton" style="width: 35px; height: 35px;">
-													@if (destacadoActual?.Color == "var(--fondoAlerta)")
-													{
-														<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-															<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
-														</svg>
-													}
-													else
-													{
-														<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-															<path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z" />
-														</svg>
-													}
+										<div onclick="anularEnlace(event)" style="margin-left: 30px;">
+											<button @onclick="@(e => DesplegarDropdown("destacado", destacadoActual?.Juego?.Id ?? 0, drmDeseado))" 
+													class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @destacadoActual?.Color;">
+												<div class="svg-boton" style="display: flex;">
+													<svg style="width: 35px; height: 35px; transform: rotate(@(dropdownAbierto == "destacado" + destacadoActual?.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString() ? "0deg" : "180deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+														<path d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z"/>
+													</svg>
 												</div>
 											</button>
-
-											<div id="tooltip-destacados-deseados" class="tooltip-relleno">
-												<div style="margin: 4px; font-size: 14px;">
-													@if (destacadoActual?.Color == "var(--fondoAlerta)")
-													{
-														@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
-													}
-													else
-													{
-														@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Index")
-													}
-												</div>
-											</div>
 										</div>
+
+										@if (dropdownAbierto == "destacado" + destacadoActual?.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString())
+										{
+											<div onclick="anularEnlace(event)" style="position: absolute; bottom: 55px; right: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; overflow: hidden; display: flex; flex-direction: column;" >
+												@if (destacadoActual?.DeseadoImportado == false)
+												{
+													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, destacadoActual, drmDeseado); })" 
+														style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
+														onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
+														onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
+														<div style="display: flex; align-items: center; gap: 10px;">
+															<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
+																@if (destacadoActual.Color == "var(--fondoAlerta)")
+																{
+																	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+																		<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+																	</svg>
+																}
+																else
+																{
+																	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+																		<path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z" />
+																	</svg>
+																}
+															</div>
+
+															<span style="color: var(--colorTexto);">
+																@if (destacadoActual.Color == "var(--fondoAlerta)")
+																{
+																	@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
+																}
+																else
+																{
+																	@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Index")
+																}
+															</span>
+														</div>
+													</button>
+												}
+
+												<button @onclick="@(async e => { await ExcluirJuego(e, "destacado", usuarioId, destacadoActual); })" 
+													style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
+													onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
+													onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
+													<div style="display: flex; align-items: center; gap: 10px;">
+														<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
+															<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+																<path d="M431.2 476.5L163.5 208.8C141.1 240.2 128 278.6 128 320C128 426 214 512 320 512C361.5 512 399.9 498.9 431.2 476.5zM476.5 431.2C498.9 399.8 512 361.4 512 320C512 214 426 128 320 128C278.5 128 240.1 141.1 208.8 163.5L476.5 431.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320z"/>
+															</svg>
+														</div>
+
+														<span style="color: var(--colorTexto);">
+															@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Index")
+														</span>
+													</div>
+												</button>
+											</div>
+										}
 									}
 								}
 							</div>
@@ -487,28 +524,31 @@
 		<div class="destacados-galeria-fila">
 			@foreach (var destacado in juegosDestacadosMostrar)
 			{
-				bool mostrarBarra = false;
-				string opacidad = string.Empty;
-
-				if (destacadoActual != null)
+				if (destacado.Excluido == false)
 				{
-					if (destacado.Juego.IdMaestra == destacadoActual?.Juego?.IdMaestra)
+					bool mostrarBarra = false;
+					string opacidad = string.Empty;
+
+					if (destacadoActual != null)
 					{
-						opacidad = "opacity: 1;";
-						mostrarBarra = true;
+						if (destacado.Juego.IdMaestra == destacadoActual?.Juego?.IdMaestra)
+						{
+							opacidad = "opacity: 1;";
+							mostrarBarra = true;
+						}
 					}
+
+					<div class="destacados-galeria-columna" @onclick="@(e => CambiarJuegoDestacado(e, destacado))" style="background-color: @destacado.Color;">
+						<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura @(mostrarBarra ? "activo" : "")" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
+
+						@if (mostrarBarra == true)
+						{
+							<div class="destacado-barra-contenedor">
+								<div class="destacado-progreso" style="filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
+							</div>
+						}
+					</div>
 				}
-
-				<div class="destacados-galeria-columna" @onclick="@(e => CambiarJuegoDestacado(e, destacado))" style="background-color: @destacado.Color;">
-					<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura @(mostrarBarra ? "activo" : "")" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
-
-					@if (mostrarBarra == true)
-					{
-						<div class="destacado-barra-contenedor">
-							<div class="destacado-progreso" style="filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
-						</div>
-					}
-				</div>
 			}
 		</div>
 	</div>
@@ -669,17 +709,17 @@ else
 								}
 
 								<div style="position: absolute; top: 0; left: 0;">
-									<button @onclick="@(e => DesplegarDropdown(juego.Juego.Id, drmDeseado))" 
+									<button @onclick="@(e => DesplegarDropdown("minimos", juego.Juego.Id, drmDeseado))" 
 											class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @juego.Color;">
 										<div class="svg-boton" style="display: flex;">
-											<svg style="width: 20px; height: 20px; transform: rotate(@(dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString() ? "180deg" : "0deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+											<svg style="width: 20px; height: 20px; transform: rotate(@(dropdownAbierto == "minimos" + juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString() ? "180deg" : "0deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 												<path d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z"/>
 											</svg>
 										</div>
 									</button>
 								</div>
 
-								@if (dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString())
+								@if (dropdownAbierto == "minimos" + juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString())
 								{
 									<div style="position: absolute; top: 40px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; min-width: 200px; overflow: hidden;" >
 										@if (juego.DeseadoImportado == false)
@@ -718,7 +758,7 @@ else
 											</button>
 										}
 
-										<button @onclick="@(async e => { await ExcluirJuego(e, usuarioId, juego); })" 
+										<button @onclick="@(async e => { await ExcluirJuego(e, "minimos", usuarioId, juego); })" 
 											style="width: 100%; padding: 10px 12px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
 											onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
 											onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
@@ -1064,7 +1104,7 @@ else
 				}
 			}
 
-			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, excluirSteamIds);
+			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, excluirJuegosIds, excluirSteamIds);
 
 			if (juegosDestacadosMostrar2?.Count > 0)
 			{
@@ -1074,7 +1114,8 @@ else
 					{
 						Juego = juego,
 						DeseadoImportado = false,
-						Color = "var(--fondoBotonPequeño)"
+						Color = "var(--fondoBotonPequeño)",
+						DesplegableMostrar = true
 					};
 
 					JuegoDRM drmDestacados = JuegoDRM.NoEspecificado;
@@ -1300,7 +1341,7 @@ else
 							}
 						}
 
-						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, excluirSteamIds);
+						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, excluirJuegosIds, excluirSteamIds);
 
 						if (juegosDestacadosMostrar2?.Count > 0)
 						{
@@ -1325,7 +1366,8 @@ else
 							{
 								Juego = juego,
 								DeseadoImportado = false,
-								Color = "var(--fondoBotonPequeño)"
+								Color = "var(--fondoBotonPequeño)",
+								DesplegableMostrar = true
 							};
 
 							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, drmDestacados) == true)
@@ -1849,14 +1891,17 @@ else
 	#endregion
 
 	#region Desplegable Minimos
-	
+
 	private string dropdownAbierto = string.Empty;
 
-	private void DesplegarDropdown(int juegoId, JuegoDRM drm)
+	private void DesplegarDropdown(string seccion, int juegoId, JuegoDRM drm)
 	{
-		string key = juegoId.ToString() + "-" + ((int)drm).ToString();
+		if (juegoId > 0)
+		{
+			string key = seccion + juegoId.ToString() + "-" + ((int)drm).ToString();
 
-		dropdownAbierto = dropdownAbierto == key ? string.Empty : key;
+			dropdownAbierto = dropdownAbierto == key ? string.Empty : key;
+		}
 	}
 
 	private async Task CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, JuegoMostrar juego, JuegoDRM drm)
@@ -1913,8 +1958,81 @@ else
 		juego.DesplegableMostrar = false;
 	}
 
-	private async Task ExcluirJuego(MouseEventArgs e, string usuarioId, JuegoMostrar juego)
+	private async Task ExcluirJuego(MouseEventArgs e, string seccion, string usuarioId, JuegoMostrar juego)
 	{
+		if (seccion == "destacado")
+		{
+			cronometroContador = 0;
+
+			if (posicionMostrarDestacados > 4)
+			{
+				posicionMostrarDestacados -= 1;
+			}
+
+			int juegoBorrar = juegosDestacadosMostrar.FindIndex(j => j.Juego.Id == juego.Juego.Id);
+
+			if (juegoBorrar >= 0)
+			{
+				juegosDestacadosMostrar.RemoveAt(juegoBorrar);
+			}
+
+			videoDestacado = null;
+
+			excluirJuegosIds.Add(juego.Juego.Id);
+
+			List<int> excluirJuegosIds2 = excluirJuegosIds;
+
+			foreach (var juego2 in juegosDestacadosMostrar)
+			{
+				excluirJuegosIds2.Add(juego2.Juego.Id);
+			}
+
+			var nuevoJuego = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 1, excluirJuegosIds2, excluirSteamIds);
+
+			var nuevoJuego2 = new JuegoMostrar
+			{
+				Juego = nuevoJuego[0],
+				DeseadoImportado = false,
+				Color = "var(--fondoBotonPequeño)",
+				DesplegableMostrar = true
+			};
+
+			JuegoDRM drmDestacados = JuegoDRM.NoEspecificado;
+
+			if (usuarioRegion == TiendaRegion.Europa)
+			{
+				drmDestacados = nuevoJuego2.Juego.PrecioMinimosHistoricos[0].DRM;
+			}
+			else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+			{
+				drmDestacados = nuevoJuego2.Juego.PrecioMinimosHistoricosUS[0].DRM;
+			}
+
+			if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego2.Juego, drmDestacados) == true)
+			{
+				nuevoJuego2.Color = "var(--fondoBien)";
+			}
+			else
+			{
+				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, nuevoJuego2.Juego, drmDestacados, true) == true)
+				{
+					nuevoJuego2.Color = "var(--fondoAlerta)";
+					nuevoJuego2.DeseadoImportado = true;
+				}
+
+				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, nuevoJuego2.Juego, drmDestacados, true) == true)
+				{
+					nuevoJuego2.Color = "var(--fondoAlerta)";
+				}
+			}
+
+			juegosDestacadosMostrar.AddRange(new List<JuegoMostrar> { nuevoJuego2 });
+		}
+		else if (seccion == "minimos")
+		{
+			juegosMinimosMostrar.RemoveAll(j => j.Juego.Id == juego.Juego.Id);
+		}
+
 		await Herramientas.ExcluirJuegos.Añadir(usuarioId, juego.Juego.Id);
 
 		juego.Excluido = true;
