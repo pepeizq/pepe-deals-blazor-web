@@ -4,7 +4,8 @@ using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
 using System.Data;
-using System.Drawing;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Tiendas2;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
@@ -369,7 +370,36 @@ WHERE id=@id AND j.tipo=0";
 			}
         }
 
-        public static async Task<List<Juego>> MultiplesJuegos(TiendaRegion region, List<JuegoDeseado> ids)
+		public static async Task<List<Juego>> MultiplesJuegosReducido(List<string> ids)
+		{
+			if (ids?.Count == 0)
+			{
+				return null;
+			}
+
+			var idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
+
+			string sqlBuscar = @"SELECT 
+					j.id, j.nombre, j.imagenes, 
+					j.tipo, j.analisis, j.idSteam
+				FROM juegos j
+				WHERE id IN @Ids
+				ORDER BY j.nombre";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = idsBaseDatos })).ToList()
+				);
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Reducido", ex);
+				return null;
+			}
+		}
+
+		public static async Task<List<Juego>> MultiplesJuegos(TiendaRegion region, List<JuegoDeseado> ids)
         {
 			if (ids?.Count == 0)
 			{
@@ -947,6 +977,94 @@ END DESC";
 			return null;
 		}
 
+		public static async Task<(List<Juego> juegos, int excluidos)> Nombre3(TiendaRegion region, string nombre, int cantidadJuegos = 10,
+			int cantidadCurators = 10, int cantidadBundles = 10, List<int> excluirJuegosIds = null)
+		{
+			string precioMinimosHistoricos = region switch
+			{
+				TiendaRegion.Europa => "precioMinimosHistoricos",
+				TiendaRegion.EstadosUnidos => "precioMinimosHistoricosUS",
+				_ => string.Empty
+			};
+
+			string precioActualesTiendas = region switch
+			{
+				TiendaRegion.Europa => "precioActualesTiendas",
+				TiendaRegion.EstadosUnidos => "precioActualesTiendasUS",
+				_ => string.Empty
+			};
+
+			string busquedaJuegos = $@"SELECT TOP (@cantidadJuegos) 
+				j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
+				j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
+				j.exeEpic, j.exeUbisoft, j.freeToPlay
+			FROM juegos j
+			WHERE 1=1";
+
+			DynamicParameters parametros = new DynamicParameters();
+			parametros.Add("cantidadJuegos", cantidadJuegos);
+
+			string exclusionJuegos = string.Empty;
+
+			if (excluirJuegosIds?.Count > 0)
+			{
+				DataTable tabla = CrearDataTable(excluirJuegosIds);
+				parametros.Add("excluirJuegos", tabla.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+
+				exclusionJuegos = " AND j.id NOT IN (SELECT Id FROM @excluirJuegos)";
+			}
+
+			string condiciones = "";
+			string[] palabras = nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+			int i = 0;
+
+			foreach (var palabra in palabras)
+			{
+				string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
+				string parametro = $"p{i}";
+
+				condiciones += $" AND j.nombreCodigo LIKE '%' + @{parametro} + '%'";
+				parametros.Add(parametro, palabraLimpia);
+
+				i += 1;
+			}
+
+			string busqueda = $@"{busquedaJuegos} {condiciones} {exclusionJuegos}
+				ORDER BY CASE 
+					WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 
+					ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
+				END DESC;
+
+				SELECT COUNT(*) 
+				FROM juegos j
+				WHERE 1=1 {condiciones}
+			";
+
+			if (excluirJuegosIds?.Count > 0)
+			{
+				busqueda = busqueda + " AND j.id IN (SELECT Id FROM @excluirJuegos)";
+			}
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					using var multi = await conexion.QueryMultipleAsync(busqueda, parametros);
+
+					List<Juego> juegos = (await multi.ReadAsync<Juego>()).ToList();
+					int excluidos = excluirJuegosIds?.Count > 0 ? await multi.ReadFirstAsync<int>() : 0;
+
+					return (juegos, excluidos);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Juego Nombre3", ex);
+			}
+
+			return (null, 0);
+		}
+
 		public static async Task<List<Juego>> NombreComparador(string nombre, int cantidadResultados = 10)
 		{
 			string busqueda = @"SELECT TOP (@cantidad) 
@@ -1153,7 +1271,7 @@ END DESC";
 			return tabla;
 		}
 
-		public static async Task<List<Juego>> Minimos(TiendaRegion region, int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
 		{
 			string tabla = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
@@ -1162,8 +1280,16 @@ END DESC";
 			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add("etiquetas2", etiquetas?.Count > 0 ? string.Join(",", etiquetas) : "");
 
+			string exclusionJuegos = string.Empty;
 			string exclusionSteam = string.Empty;
 			string exclusionGog = string.Empty;
+
+			if (excluirJuegosIds?.Count > 0)
+			{
+				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
+				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionJuegos = $" (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
@@ -1407,7 +1533,7 @@ END DESC";
 				dondeSteamOS = " (" + dondeSteamOS + ")";
 			}
 
-			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeTipos, dondeCategorias, dondeEtiquetas, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS, exclusionSteam, exclusionGog }.Where(x => string.IsNullOrEmpty(x) == false));
+			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeTipos, dondeCategorias, dondeEtiquetas, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS, exclusionJuegos, exclusionSteam, exclusionGog }.Where(x => string.IsNullOrEmpty(x) == false));
 
 			if (lanzamiento == 1)
 			{
@@ -1508,7 +1634,7 @@ END DESC";
 			return null;
 		}
 
-		public static async Task<List<Juego>> MinimosStreaming(TiendaRegion region, string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
+		public static async Task<List<Juego>> MinimosStreaming(TiendaRegion region, string tabla, JuegoDRM drm, int posicion = 0, int? minimoDescuento = null, decimal? maximoPrecio = null, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
 		{
 			string tablaMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
@@ -1516,8 +1642,16 @@ END DESC";
 
 			DynamicParameters parametros = new DynamicParameters();
 
+			string exclusionJuegos = string.Empty;
 			string exclusionSteam = string.Empty;
 			string exclusionGog = string.Empty;
+
+			if (excluirJuegosIds?.Count > 0)
+			{
+				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
+				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
+				exclusionJuegos = $" AND (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
@@ -1583,7 +1717,7 @@ END DESC";
 					FOR JSON PATH
 				) AS SuscripcionesPasados
 			FROM {tablaMinimos} j
-			WHERE j.Tipo = 0 {exclusionSteam} {exclusionGog}
+			WHERE j.Tipo = 0 {exclusionJuegos} {exclusionSteam} {exclusionGog}
 			AND EXISTS (
 				SELECT 1
 				FROM {tabla} sgn

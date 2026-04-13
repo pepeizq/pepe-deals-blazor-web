@@ -54,7 +54,7 @@ else if (juegosExcluidos?.Count > 0)
 
             if (juegosExcluidosLista?.Count > 0)
             {
-                juegosExcluidos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegos(juegosExcluidosLista);
+                juegosExcluidos = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosReducido(juegosExcluidosLista);
             } 
         }
     }

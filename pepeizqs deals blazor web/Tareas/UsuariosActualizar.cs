@@ -47,7 +47,7 @@ namespace Tareas
 							{
 								foreach (var usuario2 in usuarios)
 								{
-									if (usuario2.Metodo == "Steam")
+									if (usuario2.Metodo == "Steam" && string.IsNullOrEmpty(usuario2.IdUsuario) == false)
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuario2.IdUsuario);
 										usuario.Id = usuario2.IdUsuario;

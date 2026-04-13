@@ -954,6 +954,20 @@
                                         </svg>
                                     </div>
                                 </button>
+
+                                @if (cantidadExcluidos > 0)
+                                {
+                                    <div style="font-size: 14px; display: flex; align-items: center;">
+                                        @if (cantidadExcluidos == 1)
+                                        {
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Header")
+                                        }
+                                        else if (cantidadExcluidos > 1)
+                                        {
+                                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Header"), cantidadExcluidos)
+                                        }
+                                    </div>
+                                }
                             </div>
                         }
 
@@ -1087,6 +1101,8 @@
     [PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
     [PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
+    private List<int> excluirJuegosIds = new List<int>();
+
     private bool usuarioPatreon = false;
     private bool usuarioAdmin = false;
     private TiendaRegion usuarioRegion = TiendaRegion.Europa;
@@ -1122,6 +1138,7 @@
 
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
             juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
 
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
@@ -1198,13 +1215,17 @@
 
                 try
                 {
-                    var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, textoBuscador, resultadosMaximos, false, true, 10, true, 10);
-        
-                    if (resultados != null && resultados.Any())
+                    var resultados = await BaseDatos.Juegos.Buscar.Nombre3(usuarioRegion, textoBuscador, resultadosMaximos, 10, 10, excluirJuegosIds);
+
+                    if (resultados.juegos?.Count > 0)
                     {
-                        ActualizarResultadosPorTipo(resultados);
+                        List<Juego> resultados2 = resultados.juegos;
+                        cantidadExcluidos = resultados.excluidos;
+
+                        ActualizarResultadosPorTipo(resultados2);
                         ActivarPrimeraPestañaDisponible();
-                        await ActualizarScrollBody(true);
+
+                        await ActualizarScrollBody(resultados2.Any());
                     }
                 }
                 catch
@@ -1331,6 +1352,7 @@
     }
 
     public string textoBuscador { get; set; } = string.Empty;
+    private int cantidadExcluidos = 0;
 
     private bool buscadorActivo = false;
     private bool cargandoBusqueda = false;
@@ -1361,8 +1383,8 @@
     {
         CancelarBusquedaAnterior();
     
-        var busquedaId = ++busquedaActualId;
-        var token = cts.Token;
+        int busquedaId = ++busquedaActualId;
+        CancellationToken token = cts.Token;
 
         try
         {
@@ -1377,14 +1399,17 @@
 
             await Task.Delay(retraso, token);
 
-            var resultados = await BaseDatos.Juegos.Buscar.Nombre2(usuarioRegion, texto, resultadosMaximos, false, true, 10, true, 10);
+            var resultados = await BaseDatos.Juegos.Buscar.Nombre3(usuarioRegion, texto, resultadosMaximos, 10, 10, excluirJuegosIds);
         
             if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
-                ActualizarResultadosPorTipo(resultados);
+                List<Juego> resultados2 = resultados.juegos;
+                cantidadExcluidos = resultados.excluidos;
+   
+                ActualizarResultadosPorTipo(resultados2);
                 ActivarPrimeraPestañaDisponible();
             
-                await ActualizarScrollBody(resultados.Any());
+                await ActualizarScrollBody(resultados2.Any());
             }
         }
         catch
