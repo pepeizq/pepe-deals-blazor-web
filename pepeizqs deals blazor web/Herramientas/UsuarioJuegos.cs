@@ -253,6 +253,25 @@ namespace Herramientas
 			return false;
 		}
 
+		public static bool ComprobarSiEstaExcluido(UsuarioListadosJuegos listados, Juegos.Juego juego)
+		{
+			if (juego != null && listados != null)
+			{
+				if (listados.Excluidos?.Count > 0)
+				{
+					foreach (var idExcluido in listados.Excluidos)
+					{
+						if (idExcluido == juego.Id)
+						{
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
 		public static UsuarioJuegosIndex CrearIndex(UsuarioListadosJuegos listados)
 		{
 			var index = new UsuarioJuegosIndex();

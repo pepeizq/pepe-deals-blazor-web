@@ -902,20 +902,20 @@ END DESC";
 				{
 					string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
 
-					string paramName = $"p{i}";
-					condicionesJuegos += $" AND j.nombreCodigo LIKE '%' + @{paramName} + '%'";
+					string parametro = $"p{i}";
+					condicionesJuegos += $" AND j.nombreCodigo LIKE '%' + @{parametro} + '%'";
 
 					if (añadirCurators == true)
 					{
-						condicionesCurators += $" AND c.nombre LIKE '%' + @{paramName} + '%'";
+						condicionesCurators += $" AND c.nombre LIKE '%' + @{parametro} + '%'";
 					}
 
 					if (añadirBundles == true)
 					{
-						condicionesBundles += $" AND b.nombre LIKE '%' + @{paramName} + '%'";
+						condicionesBundles += $" AND b.nombre LIKE '%' + @{parametro} + '%'";
 					}
 
-					parametros.Add(paramName, palabraLimpia, DbType.String); 
+					parametros.Add(parametro, palabraLimpia, DbType.String); 
 					i++;
 				}
 			}
@@ -997,12 +997,67 @@ END DESC";
 			string busquedaJuegos = $@"SELECT TOP (@cantidadJuegos) 
 				j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas},
 				j.tipo, j.analisis, j.idSteam, j.idGog, j.idAmazon,
-				j.exeEpic, j.exeUbisoft, j.freeToPlay
+				j.exeEpic, j.exeUbisoft, j.freeToPlay,
+				(
+					SELECT b.id, b.bundleTipo
+					FROM bundles b
+					INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
+					WHERE bj.juegoId = j.id
+						AND b.fechaEmpieza <= GETDATE()
+						AND b.fechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS BundlesActuales,
+				(
+					SELECT g.gratis
+					FROM gratis g
+					WHERE g.juegoId = j.id
+					  AND g.fechaEmpieza <= GETDATE()
+					  AND g.fechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS GratisActuales,
+				(
+					SELECT s.suscripcion
+					FROM suscripciones s
+					WHERE s.juegoId = j.id
+					  AND s.FechaEmpieza <= GETDATE()
+					  AND s.FechaTermina >= GETDATE()
+					FOR JSON PATH
+				) AS SuscripcionesActuales
 			FROM juegos j
 			WHERE 1=1";
 
+			string busquedaCurators = $@"SELECT TOP (@cantidadCurators)
+                                    c.id, c.nombre, 
+									JSON_QUERY(CONCAT('{{""Header_460x215"":""', c.imagen, '""}}')) AS imagenes,
+                                    NULL AS {precioMinimosHistoricos}, 
+                                    NULL AS {precioActualesTiendas},
+                                    5 AS tipo, NULL AS analisis, 
+                                    NULL AS idSteam, NULL AS idGog, NULL AS idAmazon,
+                                    c.slug AS exeEpic, NULL AS exeUbisoft, NULL AS freeToPlay,
+                                    NULL AS BundlesActuales,
+                                    NULL AS GratisActuales,
+                                    NULL AS SuscripcionesActuales
+                                FROM curators c
+                                WHERE 1=1";
+
+			string busquedaBundles = $@"SELECT TOP (@cantidadBundles)
+                                    b.id, b.nombre, 
+									JSON_QUERY(CONCAT('{{""Header_460x215"":""', b.imagenNoticia, '""}}')) AS imagenes,
+                                    NULL AS {precioMinimosHistoricos}, 
+                                    NULL AS {precioActualesTiendas},
+                                    2 AS tipo, NULL AS analisis, 
+                                    b.bundleTipo AS idSteam, NULL AS idGog, NULL AS idAmazon,
+                                    NULL AS exeEpic, NULL AS exeUbisoft, NULL AS freeToPlay,
+                                    NULL AS BundlesActuales,
+                                    NULL AS GratisActuales,
+                                    NULL AS SuscripcionesActuales
+                                FROM bundles b
+                                WHERE 1=1";
+
 			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add("cantidadJuegos", cantidadJuegos);
+			parametros.Add("cantidadCurators", cantidadCurators);
+			parametros.Add("cantidadBundles", cantidadBundles);
 
 			string exclusionJuegos = string.Empty;
 
@@ -1014,7 +1069,9 @@ END DESC";
 				exclusionJuegos = " AND j.id NOT IN (SELECT Id FROM @excluirJuegos)";
 			}
 
-			string condiciones = "";
+			string condicionesJuegos = "";
+			string condicionesCurators = "";
+			string condicionesBundles = "";
 			string[] palabras = nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 			int i = 0;
 
@@ -1023,26 +1080,50 @@ END DESC";
 				string palabraLimpia = Herramientas.Buscador.LimpiarNombre(palabra, true);
 				string parametro = $"p{i}";
 
-				condiciones += $" AND j.nombreCodigo LIKE '%' + @{parametro} + '%'";
+				condicionesJuegos += $" AND j.nombreCodigo LIKE '%' + @{parametro} + '%'";
+				condicionesCurators += $" AND c.nombre LIKE '%' + @{parametro} + '%'";
+				condicionesBundles += $" AND b.nombre LIKE '%' + @{parametro} + '%'";
+
 				parametros.Add(parametro, palabraLimpia);
 
 				i += 1;
 			}
 
-			string busqueda = $@"{busquedaJuegos} {condiciones} {exclusionJuegos}
-				ORDER BY CASE 
-					WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 
-					ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
-				END DESC;
-
-				SELECT COUNT(*) 
-				FROM juegos j
-				WHERE 1=1 {condiciones}
+			string busqueda = $@"
+				SELECT * FROM (
+					SELECT TOP (@cantidadJuegos) * FROM (
+						{busquedaJuegos}{exclusionJuegos}{condicionesJuegos}
+					) AS Juegos
+					ORDER BY CASE 
+						WHEN analisis = 'null' OR analisis IS NULL THEN 0 
+						ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+					END DESC
+				) AS JuegosTop
+ 
+				UNION ALL
+ 
+				SELECT * FROM (
+					SELECT TOP (@cantidadCurators) * FROM (
+						{busquedaCurators}{condicionesCurators}
+					) AS Curators
+					ORDER BY id DESC
+				) AS CuratorsTop
+ 
+				UNION ALL
+ 
+				SELECT * FROM (
+					SELECT TOP (@cantidadBundles) * FROM (
+						{busquedaBundles}{condicionesBundles}
+					) AS Bundles
+					ORDER BY id DESC
+				) AS BundlesTop;
 			";
 
 			if (excluirJuegosIds?.Count > 0)
 			{
-				busqueda = busqueda + " AND j.id IN (SELECT Id FROM @excluirJuegos)";
+				busqueda = busqueda + $@" SELECT COUNT(*) 
+					FROM juegos j
+					WHERE 1=1 {condicionesJuegos} AND j.id IN (SELECT Id FROM @excluirJuegos)";
 			}
 
 			try

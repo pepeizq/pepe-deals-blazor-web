@@ -43,5 +43,8 @@ namespace Bundles2
 		public JuegoDRM DRM;
 		public Juego Juego;
 		public List<string> DLCs;
+		public bool DesplegableMostrar;
+		public string Color;
+		public bool DeseadoImportado;
 	}
 }

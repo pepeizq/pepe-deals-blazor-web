@@ -50,46 +50,50 @@ namespace Tareas
 									if (usuario2.Metodo == "Steam" && string.IsNullOrEmpty(usuario2.IdUsuario) == false)
 									{
 										Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesSteam(usuario2.IdUsuario);
-										usuario.Id = usuario2.IdUsuario;
 
-										if (string.IsNullOrEmpty(usuario?.SteamAccount) == false)
+										if (usuario != null)
 										{
-											SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
-											
-											if (datos != null)
+											usuario.Id = usuario2.IdUsuario;
+
+											if (string.IsNullOrEmpty(usuario?.SteamAccount) == false)
 											{
-												bool actualizarJuegos = true;
+												SteamUsuario datos = await APIs.Steam.Cuenta.CargarDatos(usuario.SteamAccount);
 
-												if (usuario.SteamGamesAllow != null && usuario.SteamGamesAllow == false)
+												if (datos != null)
 												{
-													actualizarJuegos = false;
+													bool actualizarJuegos = true;
+
+													if (usuario.SteamGamesAllow != null && usuario.SteamGamesAllow == false)
+													{
+														actualizarJuegos = false;
+													}
+
+													if (actualizarJuegos == true)
+													{
+														usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
+													}
+
+													bool actualizarDeseados = true;
+
+													if (usuario.SteamWishlistAllow != null && usuario.SteamWishlistAllow == false)
+													{
+														actualizarDeseados = false;
+													}
+
+													if (actualizarDeseados == true)
+													{
+														usuario.SteamWishlist = datos.Deseados;
+													}
+
+													usuario.Avatar = datos.Avatar;
+													usuario.Nickname = datos.Nombre;
+													usuario.SteamAccountLastCheck = DateTime.Now.ToString();
+													usuario.OfficialGroup = datos.GrupoPremium;
+													usuario.OfficialGroup2 = datos.GrupoNormal;
+
+													await BaseDatos.Usuarios.Actualizar.Steam(usuario);
+													await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 												}
-
-												if (actualizarJuegos == true)
-												{
-													usuario.SteamGames = JsonSerializer.Serialize(datos.Juegos);
-												}
-
-												bool actualizarDeseados = true;
-
-												if (usuario.SteamWishlistAllow != null && usuario.SteamWishlistAllow == false)
-												{
-													actualizarDeseados = false;
-												}
-
-												if (actualizarDeseados == true)
-												{
-													usuario.SteamWishlist = datos.Deseados;
-												}
-
-												usuario.Avatar = datos.Avatar;
-												usuario.Nickname = datos.Nombre;
-												usuario.SteamAccountLastCheck = DateTime.Now.ToString();
-												usuario.OfficialGroup = datos.GrupoPremium;
-												usuario.OfficialGroup2 = datos.GrupoNormal;
-
-												await BaseDatos.Usuarios.Actualizar.Steam(usuario);
-												await BaseDatos.UsuariosActualizar.Limpiar.Una(usuario2);
 											}
 										}
 									}

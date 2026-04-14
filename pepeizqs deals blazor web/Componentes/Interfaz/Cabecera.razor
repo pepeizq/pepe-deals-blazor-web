@@ -957,15 +957,17 @@
 
                                 @if (cantidadExcluidos > 0)
                                 {
-                                    <div style="font-size: 14px; display: flex; align-items: center;">
-                                        @if (cantidadExcluidos == 1)
-                                        {
-                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Header")
-                                        }
-                                        else if (cantidadExcluidos > 1)
-                                        {
-                                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Header"), cantidadExcluidos)
-                                        }
+                                    <div style="display: flex; align-items: center;">
+                                        <a href="/account/excluded-games/" target="_blank" style="font-size: 14px; text-decoration: none">
+                                            @if (cantidadExcluidos == 1)
+                                            {
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Header")
+                                            }
+                                            else if (cantidadExcluidos > 1)
+                                            {
+                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Header"), cantidadExcluidos)
+                                            }
+                                        </a>
                                     </div>
                                 }
                             </div>
@@ -981,101 +983,104 @@
                         @if (resultadosMostrar?.Count > 0)
                         {
                             <div style="margin-bottom: 30px;">
-                                @foreach (var juego in resultadosMostrar)
-                                {
-                                    string fondoColor = string.Empty;
-
-                                    if (string.IsNullOrEmpty(usuarioId) == false)
-                                    {
-                                        bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego);
-                                        bool usuarioTieneDeseado = false;
-
-                                        if (usuarioTieneJuego == true)
-                                        {
-                                            fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
-                                        }
-                                        else
-                                        {
-                                            if (usuarioTieneDeseado == false)
-                                            {
-                                                usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                            }
-
-                                            if (usuarioTieneDeseado == false)
-                                            {
-                                                usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                            }
-
-                                            if (usuarioTieneDeseado == true)
-                                            {
-                                                fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
-                                            }
-                                        }
-                                    }
-
-                                    <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
+                                <Virtualize Context="juego" Items="@resultadosMostrar" OverscanCount="3">
+                                    <ItemContent>
                                         @{
-                                            string imagen = juego.Imagenes.Header_460x215;
-
-                                            if (juego.Tipo == JuegoTipo.Bundle)
+                                            string fondoColor = string.Empty;
+                                        
+                                            if (string.IsNullOrEmpty(usuarioId) == false)
                                             {
-                                                imagen = Bundles2.BundlesCargar.DevolverBundle((Bundles2.BundleTipo)juego.IdSteam).ImagenIcono;
-                                            }
+                                                bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego);
+                                                bool usuarioTieneDeseado = false;
 
-                                            int ancho = 230;
-                                            int alto = 107;
+                                                if (usuarioTieneJuego == true)
+                                                {
+                                                    fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
+                                                }
+                                                else
+                                                {
+                                                    if (usuarioTieneDeseado == false)
+                                                    {
+                                                        usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, Juegos.JuegoDRM.NoEspecificado);
+                                                    }
 
-                                            if (juego.Tipo == JuegoTipo.Curator)
-                                            {
-                                                ancho = 107;
-                                            }
-                                            else if (juego.Tipo == JuegoTipo.Bundle)
-                                            {
-                                                ancho = 51;
-                                                alto = 51;
-                                            }
+                                                    if (usuarioTieneDeseado == false)
+                                                    {
+                                                        usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, Juegos.JuegoDRM.NoEspecificado);
+                                                    }
 
-                                            string imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
-
-                                            if (juego.Tipo == JuegoTipo.Bundle)
-                                            {
-                                                imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px; margin: 23px;";
-                                            }
-
-                                            string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
-
-                                            if (juego.Tipo == JuegoTipo.Curator)
-                                            {
-                                                enlace = "/curator/" + juego.ExeEpic;
-                                            }
-                                            else if (juego.Tipo == JuegoTipo.Bundle)
-                                            {
-                                                enlace = "/bundle/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                                    if (usuarioTieneDeseado == true)
+                                                    {
+                                                        fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
+                                                    }
+                                                }
                                             }
                                         }
 
-                                        <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
-                                            <div class="perfil-flexible-centrado">
-                                                <div>
-                                                    <img src="@imagen" style="@imagenEstilo" loading="lazy" decoding="async" />
-                                                </div>
+                                        <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
+                                            @{
+                                                string imagen = juego.Imagenes.Header_460x215;
 
-                                                <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
+                                                if (juego.Tipo == JuegoTipo.Bundle)
+                                                {
+                                                    imagen = Bundles2.BundlesCargar.DevolverBundle((Bundles2.BundleTipo)juego.IdSteam).ImagenIcono;
+                                                }
+
+                                                int ancho = 230;
+                                                int alto = 107;
+
+                                                if (juego.Tipo == JuegoTipo.Curator)
+                                                {
+                                                    ancho = 107;
+                                                }
+                                                else if (juego.Tipo == JuegoTipo.Bundle)
+                                                {
+                                                    ancho = 51;
+                                                    alto = 51;
+                                                }
+
+                                                string imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px;";
+
+                                                if (juego.Tipo == JuegoTipo.Bundle)
+                                                {
+                                                    imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px; margin: 23px;";
+                                                }
+
+                                                string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+
+                                                if (juego.Tipo == JuegoTipo.Curator)
+                                                {
+                                                    enlace = "/curator/" + juego.ExeEpic;
+                                                }
+                                                else if (juego.Tipo == JuegoTipo.Bundle)
+                                                {
+                                                    enlace = "/bundle/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                                }
+                                            }
+
+                                            <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
+                                                <div class="perfil-flexible-centrado">
                                                     <div>
-                                                        @juego.Nombre
+                                                        <img src="@imagen" style="@imagenEstilo" loading="lazy" decoding="async" />
                                                     </div>
 
-                                                    @if (juego.Tipo != JuegoTipo.Curator && juego.Tipo != JuegoTipo.Bundle)
-                                                    {
-                                                        <div style="font-size: 15px;">
-                                                            @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
+                                                    <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
+                                                        <div>
+                                                            @juego.Nombre
                                                         </div>
-                                                    }
+
+                                                        @if (juego.Tipo != JuegoTipo.Curator && juego.Tipo != JuegoTipo.Bundle)
+                                                        {
+                                                            <div style="font-size: 15px;">
+                                                                @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
+                                                            </div>
+                                                        }
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                }
+                                            </a>
+                                        </div>
+                                    </ItemContent>
+                                </Virtualize>
                             </div>
                         }
                     </div>
@@ -1361,7 +1366,7 @@
     private int busquedaActualId = 0;
     private const int retraso = 150;
     private const int minimosCaracteresBusqueda = 2;
-    private const int resultadosMaximos = 100; 
+    private const int resultadosMaximos = 30; 
 
     private string claseBuscador => buscadorActivo || string.IsNullOrEmpty(textoBuscador) == false ? "buscador-activo" : "buscador-inactivo";
 
