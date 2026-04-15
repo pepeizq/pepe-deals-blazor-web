@@ -383,6 +383,8 @@ else
     private string dominio = null;
 
     [PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
+
     [PersistentState] public Usuario deseadosUsuario { get; set; }
 
     [Parameter] public string streamingSeleccionadoTexto { get; set; }
@@ -404,6 +406,8 @@ else
         {
             idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
             juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+
             deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
         }
 
@@ -488,7 +492,7 @@ else
                                     nuevoJuego.IdSteam = juego.IdSteam;
                                     nuevoJuego.IdGog = juego.IdGog;
 
-                                    bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+                                    bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, nuevoJuego, nuevoDRM.DRM);
 
                                     nuevoDRM.UsuarioTiene = usuarioTieneJuego;
                                 }
@@ -516,7 +520,7 @@ else
                             nuevoJuego.IdSteam = juego.IdSteam;
                             nuevoJuego.IdGog = juego.IdGog;
 
-                            bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, nuevoJuego, nuevoDRM.DRM);
+                            bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, nuevoJuego, nuevoDRM.DRM);
 
                             nuevoDRM.UsuarioTiene = usuarioTieneJuego;
                         }

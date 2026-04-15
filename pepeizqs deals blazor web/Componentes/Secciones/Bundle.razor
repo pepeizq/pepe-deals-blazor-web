@@ -777,13 +777,13 @@
 							juego.Imagen = juego.Juego.Imagenes.Header_460x215;
 						}
 
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego.Juego) == true)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego.Juego) == true)
 						{
 							juego.Color = "var(--fondoBien)";
 						}
 						else
 						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuario, juego.Juego) == true)
+							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex.Excluidos, juego.Juego.Id) == true)
 							{
 								juego.Color = "var(--fondoPeligro)";
 							}

@@ -8,10 +8,12 @@ else if (juegosExcluidos?.Count > 0)
         <Virtualize Context="juego" Items="juegosExcluidos" ItemSize="87" OverscanCount="3">
             <ItemContent>
                 <div style="display: flex; align-items: center; gap: 20px; background-color: rgba(0,0,0,0.15); justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <img src="@juego.Imagenes.Capsule_231x87" alt="@juego.Nombre" class="juego-imagen" />
-                        <span class="juego-nombre">@juego.Nombre</span>
-                    </div>
+                    <a href="/game/@juego.Id.ToString()" target="_blank" style="text-decoration: none; color: var(--colorTexto);">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <img src="@juego.Imagenes.Capsule_231x87" alt="@juego.Nombre" class="juego-imagen" />
+                            <span class="juego-nombre">@juego.Nombre</span>
+                        </div>
+                    </a>
 
                     <button @onclick="@(e => QuitarExclusion(e, juego.Id))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px; margin: 20px;">
                         @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountGamesExcluded")

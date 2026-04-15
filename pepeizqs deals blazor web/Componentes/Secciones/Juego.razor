@@ -159,6 +159,11 @@
 </script>
 
 <style>
+    :root {
+        --colorExcluido: rgba(132, 32, 41, 0.5);
+        --glaseadoFondo: rgba(45, 47, 54, 0.70);
+    }
+
 	.caja-juego-contenido {
 		background-color: var(--fondoSubsubcabecera);
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
@@ -305,6 +310,14 @@
     .boton-historicos.seleccionado:hover {
         background: var(--fondoCodigo);
         filter: brightness(1.2);
+    }
+
+    .caja-juego-excluido {
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+        background-blend-mode: overlay;
+        border: 2px solid var(--glaseadoBorde);
+        width: fit-content;
+        backdrop-filter: blur(25px);
     }
 </style>
 
@@ -726,6 +739,25 @@
                     }
                 </div>
             </div>
+
+            @if (estaExcluido == true)
+            {
+                <div class="caja-juego-excluido" style="background-color: var(--colorExcluido); display: flex; align-items: center; gap: 30px; justify-content: center; padding: 20px;">
+                    <div style="width: 30px; height: 30px; flex-shrink: 0;">
+                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path d="M431.2 476.5L163.5 208.8C141.1 240.2 128 278.6 128 320C128 426 214 512 320 512C361.5 512 399.9 498.9 431.2 476.5zM476.5 431.2C498.9 399.8 512 361.4 512 320C512 214 426 128 320 128C278.5 128 240.1 141.1 208.8 163.5L476.5 431.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320z"/>
+                        </svg>
+                    </div>
+
+                    <div>
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String122", "Game")
+                    </div>
+
+                    <button @onclick="@(e => QuitarExclusion(e, juego.Id))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px; flex-shrink: 0;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountGamesExcluded")
+                    </button>
+                </div>
+            }
 
             @foreach (DRM drm in JuegoDRM2.GenerarListado())
             {
@@ -3130,6 +3162,8 @@
 
     private bool cargarComponentes = false;
 
+    private bool estaExcluido = false;
+
     protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -3279,6 +3313,8 @@
             if (string.IsNullOrEmpty(usuarioId) == false && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
                 usuarioTieneDesea ??= await GenerarTieneDesea();
+
+                estaExcluido = Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.Id);
             }
         }
     }
@@ -4825,4 +4861,14 @@
 
     #endregion
 
+    #region Excluido 
+
+    private async Task QuitarExclusion(MouseEventArgs e, int juegoId)
+    {
+        await Herramientas.ExcluirJuegos.Quitar(usuarioId, juegoId);
+
+        estaExcluido = false;
+    }
+
+    #endregion
 }

@@ -608,7 +608,7 @@
 				{
 					if (juego.PrecioMinimosHistoricos?.Count > 0)
 					{
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
 						{
 							juegoMinimoMostrar.Color = "var(--fondoBien)";
 						}
@@ -703,7 +703,7 @@
 				{
 					if (juego.PrecioMinimosHistoricos?.Count > 0)
 					{
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
 						{
 							juegoMinimoMostrar.Color = "var(--fondoBien)";
 						}

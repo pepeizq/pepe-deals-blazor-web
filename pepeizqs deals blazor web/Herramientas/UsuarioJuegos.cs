@@ -4,9 +4,7 @@ using APIs.GOG;
 using APIs.Steam;
 using Juegos;
 using pepeizqs_deals_web.Data;
-using System.Collections;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Herramientas
 {
@@ -83,189 +81,13 @@ namespace Herramientas
 			return listados;
 		}
 
-		public static bool ComprobarSiTiene(UsuarioListadosJuegos listados, Juegos.Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
+		public static bool ComprobarSiEstaExcluido(HashSet<int> excluidos, int juegoId)
 		{
-			if (juego != null && listados != null)
+			if (juegoId > 0 && excluidos?.Count > 0)
 			{
-				if (juego.IdSteam > 0)
+				if (excluidos.Contains(juegoId) == true)
 				{
-					bool drmValidoSteam = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam)
-					{
-						drmValidoSteam = true;
-					}
-
-					if (drmValidoSteam == true)
-					{
-						if (listados.Steam?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Steam)
-								{
-									if (juegoUsuario.Id == juego.IdSteam)
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				if (juego.IdGog > 0)
-				{
-					bool drmValidoGog = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG)
-					{
-						drmValidoGog = true;
-					}
-
-					if (drmValidoGog == true)
-					{
-						if (listados.Gog?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Gog)
-								{
-									if (juegoUsuario.Id == juego.IdGog)
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-				
-				if (string.IsNullOrEmpty(juego.IdAmazon) == false)
-				{
-					bool drmValidoAmazon = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Amazon)
-					{
-						drmValidoAmazon = true;
-					}
-
-					if (drmValidoAmazon == true)
-					{
-						if (listados.Amazon?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Amazon)
-								{
-									if (juegoUsuario == juego.IdAmazon.ToString())
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (string.IsNullOrEmpty(juego.ExeEpic) == false)
-				{
-					bool drmValidoEpic = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Epic)
-					{
-						drmValidoEpic = true;
-					}
-
-					if (drmValidoEpic == true)
-					{
-						if (listados.Epic?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Epic)
-								{
-									if (juegoUsuario == juego.ExeEpic)
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (string.IsNullOrEmpty(juego.ExeUbisoft) == false)
-				{
-					bool drmValidoUbisoft = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Ubisoft)
-					{
-						drmValidoUbisoft = true;
-					}
-
-					if (drmValidoUbisoft == true)
-					{
-						if (listados.Ubisoft?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Ubisoft)
-								{
-									if (juegoUsuario == juego.ExeUbisoft)
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-
-				if (string.IsNullOrEmpty(juego.ExeEA) == false)
-				{
-					bool drmValidoEa = false;
-
-					if (drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.EA)
-					{
-						drmValidoEa = true;
-					}
-
-					if (drmValidoEa == true)
-					{
-						if (listados.Ea?.Count > 0)
-						{
-							if (juego.Tipo == JuegoTipo.Game)
-							{
-								foreach (var juegoUsuario in listados.Ea)
-								{
-									if (juegoUsuario == juego.ExeEA)
-									{
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return false;
-		}
-
-		public static bool ComprobarSiEstaExcluido(UsuarioListadosJuegos listados, Juegos.Juego juego)
-		{
-			if (juego != null && listados != null)
-			{
-				if (listados.Excluidos?.Count > 0)
-				{
-					foreach (var idExcluido in listados.Excluidos)
-					{
-						if (idExcluido == juego.Id)
-						{
-							return true;
-						}
-					}
+					return true;
 				}
 			}
 
@@ -274,7 +96,7 @@ namespace Herramientas
 
 		public static UsuarioJuegosIndex CrearIndex(UsuarioListadosJuegos listados)
 		{
-			var index = new UsuarioJuegosIndex();
+			UsuarioJuegosIndex index = new UsuarioJuegosIndex();
 
 			if (listados.Excluidos != null)
 			{
@@ -317,33 +139,39 @@ namespace Herramientas
 		public static bool ComprobarSiTiene(UsuarioJuegosIndex index, Juegos.Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
 		{
 			if (juego == null || juego.Tipo != JuegoTipo.Game)
+			{
 				return false;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam) && juego.IdSteam > 0 && index.Steam.Contains(juego.IdSteam))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Steam) && juego.IdSteam > 0 && index.Steam.Contains(juego.IdSteam) == true)
+			{
 				return true;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG) && juego.IdGog > 0 && index.Gog.Contains(juego.IdGog))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.GOG) && juego.IdGog > 0 && index.Gog.Contains(juego.IdGog) == true)
+			{
 				return true;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Amazon) &&
-				!string.IsNullOrEmpty(juego.IdAmazon) &&
-				index.Amazon.Contains(juego.IdAmazon))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Amazon) && string.IsNullOrEmpty(juego.IdAmazon) == false && index.Amazon.Contains(juego.IdAmazon) == true)
+			{
 				return true;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Epic) &&
-				!string.IsNullOrEmpty(juego.ExeEpic) &&
-				index.Epic.Contains(juego.ExeEpic))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Epic) && string.IsNullOrEmpty(juego.ExeEpic) == false && index.Epic.Contains(juego.ExeEpic) == true)
+			{
 				return true;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Ubisoft) &&
-				!string.IsNullOrEmpty(juego.ExeUbisoft) &&
-				index.Ubisoft.Contains(juego.ExeUbisoft))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.Ubisoft) && string.IsNullOrEmpty(juego.ExeUbisoft) == false && index.Ubisoft.Contains(juego.ExeUbisoft) == true)
+			{
 				return true;
+			}
 
-			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.EA) &&
-				!string.IsNullOrEmpty(juego.ExeEA) &&
-				index.Ea.Contains(juego.ExeEA))
+			if ((drm == JuegoDRM.NoEspecificado || drm == JuegoDRM.EA) && string.IsNullOrEmpty(juego.ExeEA) == false && index.Ea.Contains(juego.ExeEA) == true)
+			{
 				return true;
+			}
 
 			return false;
 		}
