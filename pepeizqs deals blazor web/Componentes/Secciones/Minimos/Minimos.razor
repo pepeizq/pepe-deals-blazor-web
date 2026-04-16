@@ -2081,13 +2081,13 @@ else
 			}
 			else
 			{
-				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, j, drmUsar, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, j, drmUsar, true) == true)
 				{
 					juegoMostrar.Color = "var(--fondoAlerta)";
 					juegoMostrar.DeseadoImportado = true;
 				}
 
-				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, j, drmUsar, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, j, drmUsar, true) == true)
 				{
 					juegoMostrar.Color = "var(--fondoAlerta)";
 				}

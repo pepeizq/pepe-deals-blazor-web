@@ -29,6 +29,7 @@ builder.Services.AddResponseCompression(opciones =>
 	opciones.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
 				new[] { "application/octet-stream", "application/rss+xml", "text/html", "text/css", "image/png", "image/x-icon", "text/javascript" });
 });
+builder.Services.AddRequestDecompression();
 
 builder.Services.Configure<GzipCompressionProviderOptions>(opciones =>
 {
@@ -344,6 +345,7 @@ app.UseWebOptimizer();
 
 #region Compresion
 
+app.UseRequestDecompression();
 app.UseResponseCompression();
 
 #endregion

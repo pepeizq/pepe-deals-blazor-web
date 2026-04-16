@@ -570,21 +570,32 @@
 
 				if (string.IsNullOrEmpty(usuarioId) == false)
 				{
-					if (juego.PrecioMinimosHistoricos?.Count > 0)
+					JuegoDRM drmUsar = JuegoDRM.NoEspecificado;
+
+					if (usuarioRegion == TiendaRegion.Europa)
 					{
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, juego.PrecioMinimosHistoricos[0].DRM) == true)
+						drmUsar = juego.PrecioMinimosHistoricos[0].DRM;
+					}
+					else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+					{
+						drmUsar = juego.PrecioMinimosHistoricosUS[0].DRM;
+					}
+
+					if (drmUsar != JuegoDRM.NoEspecificado)
+					{
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar) == true)
 						{
 							juegoMinimoMostrar.Color = "var(--fondoBien)";
 						}
 						else
 						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar, true) == true)
 							{
 								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 								juegoMinimoMostrar.DeseadoImportado = true;
 							}
 
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, juego.PrecioMinimosHistoricos[0].DRM, true) == true)
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmUsar, true) == true)
 							{
 								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 							}

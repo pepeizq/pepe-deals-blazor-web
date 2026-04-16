@@ -8,15 +8,12 @@
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.JSInterop
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_blazor_web.Componentes.Secciones.JuegoComponentes
 @using pepeizqs_deals_web.Data
 @using Suscripciones2
 @using System.Net
-@using System.Text.Json
 @using Tiendas2
 
 @inject IHttpContextAccessor Contexto
@@ -3177,26 +3174,33 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+            Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+            Task<string> tareaIdiomaJuego = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
 
-            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego);
 
-            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+            idioma = tareaIdioma.Result;
+            juegosUsuario = tareaJuegos.Result;
+            deseadosUsuario = tareaDeseados.Result;
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+            usuarioAdmin = tareaAdmin.Result;
+            usuarioRegion = (TiendaRegion)tareaRegion.Result;
 
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-            usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
-
-            string idiomaJuegoTemp = await BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
-
+            string idiomaJuegoTemp = tareaIdiomaJuego.Result;
             if (string.IsNullOrEmpty(idiomaJuegoTemp) == false)
             {
                 idiomaJuego = idiomaJuegoTemp;
             }
-        } 
+
+            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+        }
 
         juego ??= await BaseDatos.Juegos.Buscar.UnJuego(juegoId);
 
@@ -4073,49 +4077,24 @@
                     {
                         bool usuarioDeseaDRM = false;
 
-                        if (drm.Id == JuegoDRM.Steam)
+                        if (drm.Id == JuegoDRM.Steam || drm.Id == JuegoDRM.GOG)
                         {
-                            if (string.IsNullOrEmpty(deseadosUsuario.SteamWishlist) == false)
+                            bool estaDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drm.Id);
+
+                            if (estaDeseado == true)
                             {
-                                List<string> deseadosSteam = Herramientas.Listados.Generar(deseadosUsuario.SteamWishlist);
-
-                                if (deseadosSteam?.Count > 0)
-                                {
-                                    deseadosSteam.ForEach(x => {if (juego.IdSteam > 0 && juego.IdSteam == int.Parse(x) && drm.Id == Juegos.JuegoDRM.Steam) {
-                                            JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
-                                            nuevoDeseadoUsuario.DRM = JuegoDRM.Steam;
-                                            nuevoDeseadoUsuario.Desea = true;
-                                            nuevoDeseadoUsuario.ImportadoDesea = true;
-
-                                            usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
-                                        }});
-                                }
-                            }
-                        }
-
-                        if (drm.Id == JuegoDRM.GOG)
-                        {
-                            if (string.IsNullOrEmpty(deseadosUsuario.GogWishlist) == false)
-                            {
-                                List<string> deseadosGog = Herramientas.Listados.Generar(deseadosUsuario.GogWishlist);
-
-                                if (deseadosGog?.Count > 0)
-                                {
-                                    deseadosGog.ForEach(x => {if (juego.IdGog > 0 && juego.IdGog == int.Parse(x) && drm.Id == Juegos.JuegoDRM.GOG) {
-                                            JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
-                                            nuevoDeseadoUsuario.DRM = JuegoDRM.GOG;
-                                            nuevoDeseadoUsuario.Desea = true;
-                                            nuevoDeseadoUsuario.ImportadoDesea = true;
-
-                                            usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
-                                        }});
-                                }
+                                JuegoTieneDesea nuevoDeseadoUsuario = new JuegoTieneDesea();
+                                nuevoDeseadoUsuario.DRM = drm.Id;
+                                nuevoDeseadoUsuario.Desea = true;
+                                nuevoDeseadoUsuario.ImportadoDesea = true;
+                                usuarioTieneDesea2.Add(nuevoDeseadoUsuario);
+                                usuarioDeseaDRM = true;
                             }
                         }
 
                         if (usuarioDeseaDRM == false)
                         {
-                            bool deseadoWeb = Herramientas.Deseados.ComprobarSiEsta(deseadosUsuario?.Wishlist, juego, drm.Id);
+                            bool deseadoWeb = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drm.Id);
 
                             if (deseadoWeb == true)
                             {

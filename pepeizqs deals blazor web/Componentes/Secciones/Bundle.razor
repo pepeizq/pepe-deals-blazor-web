@@ -789,13 +789,13 @@
 							}
 							else
 							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego.Juego, juego.DRM, true) == true)
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego.Juego, juego.DRM, true) == true)
 								{
 									juego.Color = "var(--fondoAlerta)";
 									juego.DeseadoImportado = true;
 								}
 
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego.Juego, juego.DRM, true) == true)
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego.Juego, juego.DRM, true) == true)
 								{
 									juego.Color = "var(--fondoAlerta)";
 								}

@@ -247,13 +247,20 @@ namespace Juegos
 		public int Id { get; set; }
 	}
 
-	public class JuegoBundlesActuales
+	public interface IJuegoBundle
+	{
+		int id { get; }
+		string bundleTipo { get; }
+	}
+
+
+	public class JuegoBundlesActuales : IJuegoBundle
 	{
 		public int id { get; set; }
 		public string bundleTipo { get; set; }
 	}
 
-	public class JuegoBundlesPasados
+	public class JuegoBundlesPasados : IJuegoBundle
 	{
 		public int id { get; set; }
 		public string bundleTipo { get; set; }

@@ -214,17 +214,26 @@ else
 
 								string fondoColor = "background-color: var(--fondoBotonPequeño);";
 
-								if (usuarioTieneJuego)
+								if (usuarioTieneJuego == true)
 								{
 									fondoColor = "background-color: var(--fondoBien);";
 								}
 								else
 								{
-									usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEsta(deseadosUsuario?.SteamWishlist, deseadosUsuario?.Wishlist, deseadosUsuario?.GogWishlist, juego, recompensaJuego.DRM);
+									usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, recompensaJuego.DRM);
 
-									if (usuarioTieneDeseado)
+									if (usuarioTieneDeseado == true)
 									{
 										fondoColor = "background-color: var(--fondoAlerta);";
+									}
+									else
+{
+										usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, recompensaJuego.DRM);
+										
+										if (usuarioTieneDeseado == true)
+										{
+											fondoColor = "background-color: var(--fondoAlerta);";
+										}
 									}
 								}
 
@@ -475,6 +484,9 @@ else
 	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
 
 	[PersistentState] public Usuario deseadosUsuario { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+	[PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
+
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 	[PersistentState] public Usuario opciones { get; set; }
@@ -501,6 +513,9 @@ else
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 
 			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 

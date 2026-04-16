@@ -1007,18 +1007,27 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+            Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+            Task<string> tareaIdiomaJuego = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
 
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego);
+
+            idioma = tareaIdioma.Result;
+            juegosUsuario = tareaJuegos.Result;
+            deseadosUsuario = tareaDeseados.Result;
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+            usuarioAdmin = tareaAdmin.Result;
+            usuarioRegion = (TiendaRegion)tareaRegion.Result;
+
+            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 
 			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesPortada(usuarioId);
 
@@ -1135,12 +1144,12 @@ else
 					}
 					else
 					{
-						if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, drmDestacados, true) == true)
+						if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmDestacados, true) == true)
 						{
 							juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
 							juegoDestacadoMostrar.DeseadoImportado = true;
 						}
-						if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, drmDestacados, true) == true)
+						if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmDestacados, true) == true)
 						{
 							juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
 						}
@@ -1376,13 +1385,13 @@ else
 							}
 							else
 							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, drmDestacados, true) == true)
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmDestacados, true) == true)
 								{
 									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
 									juegoDestacadoMostrar.DeseadoImportado = true;
 								}
 
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, drmDestacados, true) == true)
+								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmDestacados, true) == true)
 								{
 									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
 								}
@@ -1628,13 +1637,13 @@ else
 						}
 						else
 						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, juego, drmGestor, true) == true)
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmGestor, true) == true)
 							{
 								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 								juegoMinimoMostrar.DeseadoImportado = true;
 							}
 
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, juego, drmGestor, true) == true)
+							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmGestor, true) == true)
 							{
 								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 							}
@@ -2014,13 +2023,13 @@ else
 			}
 			else
 			{
-				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosUsuario, nuevoJuego2.Juego, drmDestacados, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, nuevoJuego2.Juego, drmDestacados, true) == true)
 				{
 					nuevoJuego2.Color = "var(--fondoAlerta)";
 					nuevoJuego2.DeseadoImportado = true;
 				}
 
-				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosUsuario, nuevoJuego2.Juego, drmDestacados, true) == true)
+				if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, nuevoJuego2.Juego, drmDestacados, true) == true)
 				{
 					nuevoJuego2.Color = "var(--fondoAlerta)";
 				}

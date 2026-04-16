@@ -560,7 +560,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
 					<div style="max-width: 230px;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 100%; height: 100%;" alt="@juego.Nombre"  />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" loading="eager" decoding="async" style="width: 100%; height: 100%;" alt="@juego.Nombre" />
 					</div>
 
 					<div class="cjuego-titulo" style="width: 100%; display: flex; flex-flow: column wrap;">
@@ -569,8 +569,8 @@
 						<div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
 							{
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 18px; height: 18px;" alt="DRM"  />
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 18px; height: 18px;" alt="Store"  />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" loading="eager" decoding="async" style="width: 18px; height: 18px;" alt="DRM" />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" loading="eager" decoding="async" style="width: 18px; height: 18px;" alt="Store"  />
 							}
 
 							@if (tipo == Tipo.PortadaNuevos)
