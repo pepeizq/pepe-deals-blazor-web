@@ -1008,26 +1008,26 @@ else
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-            Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
-            Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-            Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
-            Task<string> tareaIdiomaJuego = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+			Task<string> tareaIdiomaJuego = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
 
-            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego);
 
-            idioma = tareaIdioma.Result;
-            juegosUsuario = tareaJuegos.Result;
-            deseadosUsuario = tareaDeseados.Result;
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
-            usuarioAdmin = tareaAdmin.Result;
-            usuarioRegion = (TiendaRegion)tareaRegion.Result;
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioAdmin = tareaAdmin.Result;
+			usuarioRegion = (TiendaRegion)tareaRegion.Result;
 
-            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 
 			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesPortada(usuarioId);
 
@@ -1101,8 +1101,25 @@ else
 
 		//------------------------------------------------
 
-		#region Destacados
+		Task tareaDestacados = CargarDestacados();
+		Task tareaNoticias = CargarNoticias();
+		Task tareaMinimos = CargarMinimos();
 
+		await Task.WhenAll(tareaDestacados, tareaNoticias, tareaMinimos);
+	}
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+
+		}
+	}
+
+	#region Inicio 
+
+	private async Task CargarDestacados()
+	{
 		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
 			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
@@ -1172,11 +1189,10 @@ else
 		}
 
 		CronometroDestacados();
+	}
 
-		#endregion
-
-		#region Noticias
-
+	private async Task CargarNoticias()
+	{
 		try
 		{
 			noticias ??= await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
@@ -1226,11 +1242,10 @@ else
 		{
 			BaseDatos.Errores.Insertar.Mensaje("Portada Noticias", ex);
 		}
+	}
 
-		#endregion
-
-		#region Minimos
-
+	private async Task CargarMinimos()
+	{
 		await Filtros();
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1244,17 +1259,9 @@ else
 
 			CronometroMinimos(limiteTiempoMinimos);
 		}
-
-		#endregion
 	}
 
-	protected override async Task OnAfterRenderAsync(bool primerRender)
-	{
-		if (primerRender == true)
-		{
-
-		}
-	}
+	#endregion
 
 	private void EnseñarDestacadoVideo(EventArgs args, Juegos.Juego juegoDestacado)
 	{

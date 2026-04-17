@@ -1,6 +1,4 @@
-﻿@using APIs.Steam
-@using Microsoft.AspNetCore.Identity
-@using System.Security.Claims
+﻿@using System.Security.Claims
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
 
@@ -15,7 +13,8 @@
     <base href="/" />
 
     <ResourcePreloader />
-    <link rel="stylesheet" href="@Assets["/css/bundle.css"]" type="text/css" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="@Assets["/css/bundle.css"]" />
+    <link rel="stylesheet" href="@Assets["/css/bundle.css"]" />
 
     <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-icon-180x180.png" />

@@ -138,7 +138,7 @@ namespace Herramientas
 
 		public static bool ComprobarSiTiene(UsuarioJuegosIndex index, Juegos.Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
 		{
-			if (juego == null || juego.Tipo != JuegoTipo.Game)
+			if (index == null || juego == null || juego.Tipo != JuegoTipo.Game)
 			{
 				return false;
 			}

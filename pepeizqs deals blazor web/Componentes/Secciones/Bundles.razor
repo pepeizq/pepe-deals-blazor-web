@@ -148,9 +148,7 @@
 			gap: 20px;
 		}
 	}
-</style>
 
-<style>
 	:root {
 		--glaseadoBorde: #FFFFFF1A;
 		--glaseadoFondo: rgba(45, 47, 54, 0.70);
@@ -195,9 +193,7 @@
 		.boton-bundles:hover {
 			backdrop-filter: brightness(50%);
 		}
-</style>
 
-<style>
 	.caja-archivo-contenido {
 		background-color: var(--fondoSubsubcabecera);
 		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
@@ -648,8 +644,6 @@ else
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 
-	private string tituloSEO = null;
-
 	[PersistentState] public List<Bundles2.Bundle> bundlesActuales { get; set; }
 	[PersistentState] public List<Bundles2.Bundle> bundlesPasados { get; set; }
 	private Bundles2.Bundle bundleSeleccionado = new Bundles2.Bundle();
@@ -678,6 +672,16 @@ else
 			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+
+			await Task.WhenAll(tareaIdioma, tareaPatreon, tareaAdmin);
+
+			idioma = tareaIdioma.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioAdmin = tareaAdmin.Result;
 		}
 
 		//--------------------------------------------------------------------

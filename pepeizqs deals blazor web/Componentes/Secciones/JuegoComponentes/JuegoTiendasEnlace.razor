@@ -1,5 +1,4 @@
-﻿@using APIs.Steam
-@using Juegos
+﻿@using Juegos
 @using Tiendas2
 
 @inject IJSRuntime JavaScript
@@ -46,7 +45,7 @@
 
     <a class="boton-pequeño" title="@Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda).Nombre" href="@enlace" target="_blank" style="width: 100%;">
         <div class="caja-drm-tienda" style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-            <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda" />
+            <img src="@SacarImagenTienda(precio.Tienda)" class="juego-imagen-boton" alt="@precio.Tienda" style="contain: layout; aspect-ratio: 300/80;" />
 
             <div style="font-size: 14px; flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0;">
                 @if (juegosBundle == null || juegosBundle?.Count == 0)

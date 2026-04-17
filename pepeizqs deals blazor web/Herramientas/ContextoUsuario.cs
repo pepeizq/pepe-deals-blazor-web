@@ -9,13 +9,14 @@ namespace Herramientas
 	{
 		public static ContextoUsuarioDatos Leer(IHttpContextAccessor contexto)
 		{
-			ContextoUsuarioDatos datos = new ContextoUsuarioDatos();
-
-            datos.Idioma = contexto?.HttpContext?.Request?.Headers["Accept-Language"].ToString().Split(";")?.FirstOrDefault()?.Split(",").FirstOrDefault() ?? "en";
-            datos.UsuarioId = contexto?.HttpContext?.User?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-            datos.UserAgent = contexto?.HttpContext?.Request?.Headers?.UserAgent.ToString();
-			datos.Dominio = contexto?.HttpContext?.Request?.Host.Value;
-			datos.Region = contexto?.HttpContext?.Request?.Cookies.TryGetValue("user_currency", out string valorRegion) == true && int.TryParse(valorRegion, out int valorRegionInt) && Enum.IsDefined(typeof(TiendaRegion), valorRegionInt) ? (TiendaRegion)valorRegionInt : TiendaRegion.Europa;
+			ContextoUsuarioDatos datos = new ContextoUsuarioDatos
+			{
+				Idioma = contexto?.HttpContext?.Request?.Headers["Accept-Language"].ToString().Split(";")?.FirstOrDefault()?.Split(",").FirstOrDefault() ?? "en",
+				UsuarioId = contexto?.HttpContext?.User?.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value,
+				UserAgent = contexto?.HttpContext?.Request?.Headers?.UserAgent.ToString(),
+				Dominio = contexto?.HttpContext?.Request?.Host.Value,
+				Region = contexto?.HttpContext?.Request?.Cookies.TryGetValue("user_currency", out string valorRegion) == true && int.TryParse(valorRegion, out int valorRegionInt) && Enum.IsDefined(typeof(TiendaRegion), valorRegionInt) ? (TiendaRegion)valorRegionInt : TiendaRegion.Europa
+			};
 
 			return datos;
         }

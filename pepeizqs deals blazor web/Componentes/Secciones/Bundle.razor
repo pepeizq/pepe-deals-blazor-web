@@ -247,8 +247,11 @@
 			<pepeizqs_deals_blazor_web.Componentes.Admin.Bundle idioma="@idioma" bundleId="@bundle.Id" />
 		}
 
-		<img class="juego-fondo" src="@fondo" alt="Background" />
-
+		@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+		{
+			<img class="juego-fondo" src="@fondo" alt="Background" />
+		}
+		
 		<div class="cuerpo-ancho" style="background-color: var(--fondoSubcabecera); border: 2px solid var(--glaseadoBorde); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: 40px; @(DateTime.Now > bundle.FechaTermina ? "border-bottom: 0px;" : "")">
 			<div style="display: flex; align-items: center; flex-wrap: nowrap; border-top-left-radius: inherit;">
 				@if (DateTime.Now < bundle.FechaTermina)
@@ -689,17 +692,23 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin);
+
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioAdmin = tareaAdmin.Result;
+
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 		}
 
 		bundle ??= await BaseDatos.Bundles.Buscar.UnBundle(bundleId);
@@ -783,7 +792,7 @@
 						}
 						else
 						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex.Excluidos, juego.Juego.Id) == true)
+							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.Juego.Id) == true)
 							{
 								juego.Color = "var(--fondoPeligro)";
 							}

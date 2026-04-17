@@ -298,6 +298,40 @@ ServiciosGlobales.ServiceProvider = app.Services;
 
 #endregion
 
+#region Compresion
+
+app.UseRequestDecompression();
+app.UseResponseCompression();
+
+#endregion
+
+#region Cache 
+
+app.UseResponseCaching();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+	OnPrepareResponse = contexto =>
+	{
+		string? ruta = contexto.File.Name.ToLowerInvariant();
+
+		if (ruta.EndsWith(".js") || ruta.EndsWith(".css"))
+		{
+			contexto.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+		}
+		else if (ruta.EndsWith(".png") || ruta.EndsWith(".jpg") || ruta.EndsWith(".webp"))
+		{
+			contexto.Context.Response.Headers.CacheControl = "public, max-age=2592000";
+		}
+		else
+		{
+			contexto.Context.Response.Headers.CacheControl = "public, max-age=86400";
+		}
+	}
+});
+
+#endregion
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -340,13 +374,6 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 #region Optimizador
 
 app.UseWebOptimizer();
-
-#endregion
-
-#region Compresion
-
-app.UseRequestDecompression();
-app.UseResponseCompression();
 
 #endregion
 
@@ -669,5 +696,7 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 app.MapHealthChecks("/vida");
 
 app.UseStatusCodePagesWithReExecute("/");
+
+Herramientas.ImagenesOptimizador.GenerarImagenesResponsive(builder.Environment.WebRootPath);
 
 app.Run();
