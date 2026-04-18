@@ -468,20 +468,23 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesSteamDeck(usuarioId);
 
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaUsuario);
 
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-
-			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesSteamDeck(usuarioId);
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioAdmin = tareaAdmin.Result;
+			usuarioRegion = (TiendaRegion)tareaRegion.Result;
+			Usuario opciones = tareaUsuario.Result;
 
 			if (opciones != null)
 			{

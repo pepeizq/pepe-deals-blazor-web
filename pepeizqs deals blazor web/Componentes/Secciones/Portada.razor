@@ -3,10 +3,6 @@
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Data.SqlClient
-@using Microsoft.JSInterop
-@using Microsoft.VisualBasic
 @using Noticias
 @using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -418,9 +414,26 @@
 										}
 									}
 
-									<img class="destacado-icono" src="@JuegoDRM2.SacarImagen(drmDestacado)" style="margin-right: 20px;" alt="@JuegoDRM2.DevolverDRM(drmDestacado)" />
+									string iconoDRM = JuegoDRM2.SacarImagen(drmDestacado);
+									string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+									string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
 
-									<img class="destacado-icono" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda, 40, 40)" style="margin-right: 40px;" alt="@nombreTienda" />
+									<div style="display: flex; margin-right: 20px;">
+										<picture>
+											<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+											<img class="destacado-icono" src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmDestacado)" />
+										</picture>
+									</div>
+
+									string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
+									string iconoTienda2 = iconoTienda.Replace(".webp", "-md.webp");
+
+									<div style="display: flex; margin-right: 40px;">
+										<picture>
+											<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
+											<img class="destacado-icono" src="@iconoTienda" alt="@nombreTienda" />
+										</picture>
+									</div>
 
 									<div class="destacado-sombra" style="display: flex; align-items: center;">
 										<div class="destacado-precio-descuento" style="background-color: darkgreen;">

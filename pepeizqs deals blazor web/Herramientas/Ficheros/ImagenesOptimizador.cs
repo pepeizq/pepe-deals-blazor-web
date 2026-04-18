@@ -16,10 +16,13 @@ namespace Herramientas
 			{
 				var carpetas = new[]
 				{
+					Path.Combine(rutaBaseDatos, "favicons"),
+					Path.Combine(rutaBaseDatos, "imagenes", "bundles"),
 					Path.Combine(rutaBaseDatos, "imagenes", "drm"),
 					Path.Combine(rutaBaseDatos, "imagenes", "streaming"),
+					Path.Combine(rutaBaseDatos, "imagenes", "suscripciones"),
+					Path.Combine(rutaBaseDatos, "imagenes", "tiendas"),
 					Path.Combine(rutaBaseDatos, "imagenes", "webs")
-                    // Añadir más carpetas
 				};
 
 				int imagenesProcesadas = 0;

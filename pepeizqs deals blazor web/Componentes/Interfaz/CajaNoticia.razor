@@ -74,14 +74,20 @@
 					}
 					else if (noticia.NoticiaTipo == NoticiaTipo.Web)
 					{
-						icono = "/favicons/favicon-96x96.png";
+						icono = "/favicons/favicon-96x96.webp";
 						etiqueta = Herramientas.Idiomas.BuscarTexto(idioma, "Type9", "News");
 					}
 
 					if (string.IsNullOrEmpty(icono) == false)
 					{
+						string icono1 = icono.Replace(".webp", "-sm.webp");
+						string icono2 = icono.Replace(".webp", "-md.webp");
+
 						<div style="display: flex;">
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(icono, 18, 18)" style="width: 18px; height: 18px;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)" />
+							<picture>
+								<source srcset="@icono1 1x, @icono2 2x" type="image/webp">
+								<img src="@icono" style="width: 18px; height: 18px; aspect-ratio: 1/1;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)" />
+							</picture>
 						</div>
 					}
 
