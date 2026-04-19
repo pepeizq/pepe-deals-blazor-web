@@ -469,7 +469,16 @@
                                 <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
                                 <a class="texto-cabecera boton-superior" href="/steamdeck" style="font-size: 15px;">
                                     <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                        <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px;" alt="Steam Deck" />
+                                        @{
+                                            string iconoSteamDeck = "/imagenes/otros/steamdeck_cabecera.webp";
+                                            string iconoSteamDeck1 = iconoSteamDeck.Replace(".webp", "-sm.webp");
+                                            string iconoSteamDeck2 = iconoSteamDeck.Replace(".webp", "-md.webp");
+                                        }
+
+                                        <picture style="width: 20px; height: 20px; display: flex;">
+                                            <source srcset="@iconoSteamDeck1 1x, @iconoSteamDeck2 2x" type="image/webp">
+                                            <img src="@iconoSteamDeck" alt="Steam Deck" loading="eager" decoding="async" />
+                                        </picture>
 
                                         <div>
                                             Steam Deck
@@ -478,7 +487,16 @@
                                 </a>
                                 <a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
                                     <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                        <img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" alt="SteamOS" />
+                                        @{
+                                            string iconoSteamOS = Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam);
+                                            string iconoSteamOS1 = iconoSteamOS.Replace(".webp", "-sm.webp");
+                                            string iconoSteamOS2 = iconoSteamOS.Replace(".webp", "-md.webp");
+                                        }
+
+                                        <picture style="width: 20px; height: 20px; display: flex;">
+                                            <source srcset="@iconoSteamOS1 1x, @iconoSteamOS2 2x" type="image/webp">
+                                            <img src="@iconoSteamOS" alt="SteamOS" loading="eager" decoding="async" />
+                                        </picture>
 
                                         <div>
                                             SteamOS
@@ -488,7 +506,16 @@
                                 <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
                                 <a class="texto-cabecera boton-superior" href="/geforcenow" style="font-size: 15px;">
                                     <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                        <img src="/imagenes/streaming/geforcenow_icono.webp" style="max-width: 20px; max-height: 20px;" alt="Geforce NOW" />
+                                        @{
+                                            string iconoGeforceNow = "/imagenes/streaming/geforcenow_icono.webp";
+                                            string iconoGeforceNow1 = iconoGeforceNow.Replace(".webp", "-sm.webp");
+                                            string iconoGeforceNow2 = iconoGeforceNow.Replace(".webp", "-md.webp");
+                                        }
+
+                                        <picture style="width: 20px; height: 20px; display: flex;">
+                                            <source srcset="@iconoGeforceNow1 1x, @iconoGeforceNow2 2x" type="image/webp">
+                                            <img src="@iconoGeforceNow" alt="Geforce NOW" loading="eager" decoding="async" />
+                                        </picture>
 
                                         <div>
                                             Geforce NOW
@@ -497,7 +524,16 @@
                                 </a>
                                 <a class="texto-cabecera boton-superior" href="/boosteroid" style="font-size: 15px;">
                                     <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-                                        <img src="/imagenes/streaming/boosteroid_icono.webp" style="max-width: 20px; max-height: 20px;" alt="Boosteroid" />
+                                        @{
+                                            string iconoBoosteroid = "/imagenes/streaming/boosteroid_icono.webp";
+                                            string iconoBoosteroid1 = iconoBoosteroid.Replace(".webp", "-sm.webp");
+                                            string iconoBoosteroid2 = iconoBoosteroid.Replace(".webp", "-md.webp");
+                                        }
+                                        
+                                        <picture style="width: 20px; height: 20px; display: flex;">
+                                            <source srcset="@iconoBoosteroid1 1x, @iconoBoosteroid2 2x" type="image/webp">
+                                            <img src="@iconoBoosteroid" alt="Boosteroid" loading="eager" decoding="async" />
+                                        </picture>
 
                                         <div>
                                             Boosteroid
@@ -723,8 +759,6 @@
                                         <button class="texto-cabecera boton-superior" @onclick="(e => AbrirEnlace(e, enlaceDesconectar, false))" style="font-size: 15px; width: 100%; text-align: right;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Logout", "Header")
                                         </button>
-
-                                       
                                     </div>
                                 </div>
                             </div>
@@ -1138,19 +1172,26 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+            Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesCabecera(usuarioId);
 
-            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaUsuario);
+
+            idioma = tareaIdioma.Result;
+            juegosUsuario = tareaJuegos.Result;
+            deseadosUsuario = tareaDeseados.Result;
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+            usuarioAdmin = tareaAdmin.Result;
+            opcionesCabecera = tareaUsuario.Result;
+
             juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
             excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-
-            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
             deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            opcionesCabecera ??= await BaseDatos.Usuarios.Buscar.OpcionesCabecera(usuarioId);
 
             if (opcionesCabecera != null)
             {

@@ -569,8 +569,26 @@
 						<div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
 							{
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" loading="eager" decoding="async" style="width: 18px; height: 18px;" alt="DRM" />
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" loading="eager" decoding="async" style="width: 18px; height: 18px;" alt="Store"  />
+								string iconoDRM = JuegoDRM2.SacarImagen(drmUsar);
+								string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+								string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
+
+								<div style="display: flex;">
+									<picture>
+										<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+										<img src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="eager" decoding="async" style="width: 18px; height: 18px;" />
+									</picture>
+								</div>
+
+								string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
+								string iconoTienda2 = iconoTienda.Replace(".webp", "-md.webp");
+
+								<div style="display: flex;">
+									<picture>
+										<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
+										<img src="@iconoTienda" alt="Store" loading="eager" decoding="async" style="width: 18px; height: 18px;" />
+									</picture>
+								</div>
 							}
 
 							@if (tipo == Tipo.PortadaNuevos)
@@ -866,11 +884,11 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceSuscripcion" target="@enlaceNuevaPestaña">
 				<div class="boton-expandir" style="@fondoColor display: flex; flex-direction: column;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-width: 100%; max-height: 100%;" loading="lazy" alt="@juego.Nombre" />
 					</div>
 
 					<div style="width: 100%; text-align: right; padding: 10px;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" />
+						<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" />
 					</div>
 				</div>
 			</a>

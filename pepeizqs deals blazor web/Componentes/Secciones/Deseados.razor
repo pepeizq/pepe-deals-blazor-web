@@ -298,6 +298,10 @@
 								<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
 									@{
 										string enlaceDeseado = Herramientas.EnlaceAcortador.Generar(juego.Precio.Enlace, juego.Precio.Tienda, usuarioPatreon, false);
+									
+										string iconoDRM = Juegos.JuegoDRM2.SacarImagen(juego.DRM);
+										string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+										string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
 									}
 								
 									<a href="@enlaceDeseado" target="_blank" class="boton-pequeño" style="padding: 0px; border: 2px solid var(--glaseadoBorde);">
@@ -320,9 +324,10 @@
 												<div>@juego.Nombre</div>
 
 												<div style="display: flex; align-items: center; gap: 10px;">
-													<div style="width: 20px; height: 20px; display: flex;">
-														<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
-													</div>
+													<picture style="width: 20px; height: 20px; display: flex;">
+														<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+														<img src="@iconoDRM" alt="@Juegos.JuegoDRM2.DevolverDRM(juego.DRM)" loading="eager" decoding="async" style="width: 100%; height: 100%;" />
+													</picture>
 
 													@if (juego.Precio.Precio > 0)
 													{
@@ -332,9 +337,14 @@
 														{
 															if (tienda.Id == juego.Precio.Tienda)
 															{
-																<div style="width: 20px; height: 20px; display: flex;">
-																	<img src="@tienda.ImagenIcono" style="width: 100%; height: 100%;" />
-																</div>
+																string iconoTienda = tienda.ImagenIcono;
+																string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
+																string iconoTienda2 = iconoTienda.Replace(".webp", "-md.webp");
+
+																<picture style="width: 20px; height: 20px; display: flex;">
+																	<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
+																	<img src="@iconoTienda" alt="@tienda.Nombre" loading="eager" decoding="async" style="width: 100%; height: 100%;" />
+																</picture>
 
 																break;
 															}
@@ -408,6 +418,14 @@
 									{
 										string enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle.Enlace, bundle.BundleTipo, usuarioPatreon, false);
 
+										string iconoDRM = Juegos.JuegoDRM2.SacarImagen(juego.DRM);
+										string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+										string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
+
+										string iconoBundle = Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenIcono;
+										string iconoBundle1 = iconoBundle.Replace(".webp", "-sm.webp");
+                                        string iconoBundle2 = iconoBundle.Replace(".webp", "-md.webp");
+
 										<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
 											<a href="@enlaceBundle" target="_blank" class="boton-pequeño" style="padding: 0px; border: 2px solid var(--glaseadoBorde);">
 												<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
@@ -428,14 +446,16 @@
 													<div style="width: 100%; padding: 5px 20px; display: flex; flex-direction: column; justify-content: center; gap: 10px;">
 														<div>@juego.Nombre</div>
 
-														<div style="display: flex; align-items: center;">
-															<div style="width: 20px; height: 20px;">
-																<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
-															</div>
+														<div style="display: flex; align-items: center; gap: 10px;">
+															<picture style="width: 20px; height: 20px; display: flex;">
+																<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+																<img src="@iconoDRM" alt="@Juegos.JuegoDRM2.DevolverDRM(juego.DRM)" loading="eager" decoding="async"/>
+															</picture>
 
-															<div style="width: 20px; height: 20px; margin-left: 10px;">
-																<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle.BundleTipo).ImagenIcono" style="width: 100%; height: 100%;" />
-															</div>
+															<picture style="width: 20px; height: 20px; display: flex;">
+																<source srcset="@iconoBundle1 1x, @iconoBundle2 2x" type="image/webp">
+																<img src="@iconoBundle" alt="Store" loading="eager" decoding="async" style="width: 20px; height: 20px;" />
+															</picture>
 														</div>
 													</div>
 
@@ -517,6 +537,14 @@
 									{
 										string enlaceSuscripcion = Herramientas.EnlaceAcortador.Generar(suscripcion.Enlace, suscripcion.Tipo, usuarioPatreon, false);
 
+										string iconoDRM = Juegos.JuegoDRM2.SacarImagen(juego.DRM);
+										string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+										string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
+
+										string iconoSuscripcion = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono;
+										string iconoSuscripcion1 = iconoSuscripcion.Replace(".webp", "-sm.webp");
+										string iconoSuscripcion2 = iconoSuscripcion.Replace(".webp", "-md.webp");
+
 										<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
 											<a href="@enlaceSuscripcion" target="_blank" class="boton-pequeño" style="padding: 0px; border: 2px solid var(--glaseadoBorde);">
 												<div style="display: flex; align-items: stretch; justify-content: center; flex-direction: row;">
@@ -537,14 +565,16 @@
 													<div style="width: 100%; padding: 5px 20px;">
 														<div style="margin-top: 5px;">@juego.Nombre</div>
 
-														<div style="display: flex; align-items: center; margin-top: 5px;">
-															<div style="width: 20px; height: 20px;">
-																<img src="@Juegos.JuegoDRM2.SacarImagen(juego.DRM)" style="width: 100%; height: 100%;" />
-															</div>
+														<div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+															<picture style="width: 20px; height: 20px; display: flex;">
+																<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+																<img src="@iconoDRM" alt="@Juegos.JuegoDRM2.DevolverDRM(juego.DRM)" loading="eager" decoding="async" style="width: 20px; height: 20px;" />
+															</picture>
 
-															<div style="width: 20px; height: 20px; margin-left: 10px;">
-																<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.Tipo).ImagenIcono" style="width: 100%; height: 100%;" />
-															</div>
+															<picture style="width: 20px; height: 20px; display: flex;">
+																<source srcset="@iconoSuscripcion1 1x, @iconoSuscripcion2 2x" type="image/webp">
+																<img src="@iconoSuscripcion" alt="Store" loading="eager" decoding="async" style="width: 20px; height: 20px;" />
+															</picture>
 														</div>
 													</div>
 
@@ -775,72 +805,32 @@
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		dominio = datos.Dominio;
-        usuarioRegion = datos.Region;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+			Task<List<Bundles2.Bundle>> tareaBundles = BaseDatos.Bundles.Buscar.Actuales();
+			Task<List<JuegoSuscripcion>> tareaSuscripciones = BaseDatos.Suscripciones.Buscar.Actuales();
 
-			opciones ??= await BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+			await Task.WhenAll(tareaIdioma, tareaPatreon, tareaUsuario, tareaBundles, tareaSuscripciones);
+
+			idioma = tareaIdioma.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			opciones = tareaUsuario.Result;
+			bundlesActuales ??= tareaBundles.Result;
+			suscripcionesActuales ??= tareaSuscripciones.Result;
 
 			if (string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
-				if (string.IsNullOrEmpty(opciones?.WishlistData) == false)
-				{
-					DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(opciones?.WishlistData);
-
-					if (datos2 != null)
-					{
-						if (datos2.UltimaVisita != null)
-						{
-							ultimaVisita = (DateTime)datos2.UltimaVisita;
-						}
-						else
-						{
-							ultimaVisita = DateTime.Now;
-						}
-
-						datos2.Cantidad = 0;
-						datos2.UltimaVisita = DateTime.Now;
-
-						await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
-					}
-				}
+				await CargarWishlistData(opciones);
 			}
 
-			if (opciones.Currency.HasValue == true)
-			{
-				usuarioRegion = (TiendaRegion)opciones.Currency.Value;
-			}
-
-			if (opciones.WishlistPosition.HasValue == true)
-			{
-				pestañaMostrar = (int)opciones.WishlistPosition;
-			}
-
-			await CambiarPestañaFondo(pestañaMostrar);
-
-			if (deseadosGestor == null)
-			{
-				deseadosGestor = new List<JuegoDeseadoMostrar>();
-			}
+			CargarOpciones(opciones);
 
 			deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
-
-			#region Filtrado
-
-			if (opciones.WishlistOption3.HasValue == true)
-			{
-				descuentoMinimo = opciones.WishlistOption3.Value;
-			}
-
-			if (opciones.WishlistOption4.HasValue == true)
-			{
-				precioMaximo = opciones.WishlistOption4.Value;
-			}
-
-			#endregion
 
 			if (deseadosGestor?.Count > 0)
 			{
@@ -850,133 +840,13 @@
 				}
 
 				await ElegirOrdenamiento();
+
+				Task tareaBundle = CargarBundles(bundlesActuales, deseadosGestor);
+				Task tareaSuscripcion = CargarSuscripciones(suscripcionesActuales, deseadosGestor);
+
+				await Task.WhenAll(tareaBundle, tareaSuscripcion);
 			}
 
-			#region Bundles
-
-			bundlesActuales ??= await BaseDatos.Bundles.Buscar.Actuales();
-
-			if (bundlesActuales.Count > 0)
-			{
-				foreach (var bundle in bundlesActuales)
-				{
-					foreach (var bundleJuego in bundle.Juegos)
-					{
-						foreach (var deseado in deseadosGestor)
-						{
-							if (bundleJuego.JuegoId == deseado.Id.ToString() && bundleJuego.DRM == deseado.DRM)
-							{
-								JuegoDeseadoMostrar nuevoDeseadoBundle = new JuegoDeseadoMostrar();
-								nuevoDeseadoBundle.Id = deseado.Id;
-								nuevoDeseadoBundle.Nombre = deseado.Nombre;
-								nuevoDeseadoBundle.IdBundle = bundle.Id;
-								nuevoDeseadoBundle.DRM = deseado.DRM;
-								nuevoDeseadoBundle.Imagen = deseado.Imagen;
-								nuevoDeseadoBundle.Importado = deseado.Importado;
-
-								if (deseadosBundles == null)
-								{
-									deseadosBundles = new List<JuegoDeseadoMostrar>();
-								}
-
-								bool añadir = true;
-
-								if (deseadosBundles.Count > 0)
-								{
-									foreach (var yaEnLista in deseadosBundles)
-									{
-										if (yaEnLista.Id == nuevoDeseadoBundle.Id && yaEnLista.DRM == nuevoDeseadoBundle.DRM && yaEnLista.IdBundle == nuevoDeseadoBundle.IdBundle)
-										{
-											añadir = false;
-											break;
-										}
-									}
-								}
-
-								if (añadir == true)
-								{
-									deseadosBundles.Add(nuevoDeseadoBundle);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			if (deseadosBundles?.Count > 0)
-			{
-				foreach (var juego in deseadosBundles)
-				{
-					if (juego.IdBundle > 0 && bundlesCache.ContainsKey(juego.IdBundle) == false)
-					{
-						bundlesCache[juego.IdBundle] = await BaseDatos.Bundles.Buscar.UnBundle(juego.IdBundle);
-					}
-				}
-			}
-
-			#endregion
-
-			#region Suscripciones
-
-			suscripcionesActuales ??= await BaseDatos.Suscripciones.Buscar.Actuales();
-
-			if (suscripcionesActuales?.Count > 0)
-			{
-				foreach (var juegoSuscripcion in suscripcionesActuales)
-				{
-					foreach (var deseado in deseadosGestor)
-					{
-						if (juegoSuscripcion.JuegoId == deseado.Id && juegoSuscripcion.DRM == deseado.DRM &&
-							Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juegoSuscripcion.Tipo).ParaSiempre == true)
-						{
-							JuegoDeseadoMostrar nuevoDeseadoSuscripcion = new JuegoDeseadoMostrar();
-							nuevoDeseadoSuscripcion.Id = deseado.Id;
-							nuevoDeseadoSuscripcion.Nombre = deseado.Nombre;
-							nuevoDeseadoSuscripcion.IdSuscripcion = juegoSuscripcion.Id;
-							nuevoDeseadoSuscripcion.DRM = deseado.DRM;
-							nuevoDeseadoSuscripcion.Imagen = deseado.Imagen;
-							nuevoDeseadoSuscripcion.Importado = deseado.Importado;
-
-							if (deseadosSuscripciones == null)
-							{
-								deseadosSuscripciones = new List<JuegoDeseadoMostrar>();
-							}
-
-							bool añadir = true;
-
-							if (deseadosSuscripciones.Count > 0)
-							{
-								foreach (var yaEnLista in deseadosSuscripciones)
-								{
-									if (yaEnLista.Id == nuevoDeseadoSuscripcion.Id && yaEnLista.DRM == nuevoDeseadoSuscripcion.DRM && yaEnLista.IdSuscripcion == nuevoDeseadoSuscripcion.IdSuscripcion)
-									{
-										añadir = false;
-										break;
-									}
-								}
-							}
-
-							if (añadir == true)
-							{
-								deseadosSuscripciones.Add(nuevoDeseadoSuscripcion);
-							}
-						}
-					}
-				}
-			}
-
-			if (deseadosSuscripciones?.Count > 0)
-			{
-				foreach (var juego in deseadosSuscripciones)
-				{
-					if (juego.IdSuscripcion > 0 && suscripcionesCache.ContainsKey(juego.Id) == false)
-					{
-						suscripcionesCache[juego.IdSuscripcion] = await BaseDatos.Suscripciones.Buscar.Id(juego.IdSuscripcion);
-					}
-				}
-			}
-
-			#endregion
 			cargado = true;
 		}
 
@@ -985,6 +855,126 @@
 			usuarioId = perfilUsuarioId;
 		}
 	}
+
+	#region Inicio
+
+	private async Task CargarBundles(List<Bundles2.Bundle> bundles, List<JuegoDeseadoMostrar> deseados)
+	{
+		if (bundles?.Count == 0) 
+		{
+			return;
+		}
+
+		deseadosBundles = new List<JuegoDeseadoMostrar>();
+		HashSet<int> bundlesCargar = new HashSet<int>();
+
+		foreach (var bundle in bundles)
+		{
+			foreach (var bundleJuego in bundle.Juegos)
+			{
+				JuegoDeseadoMostrar deseado = deseados.FirstOrDefault(d => d.Id.ToString() == bundleJuego.JuegoId && d.DRM == bundleJuego.DRM);
+
+				if (deseado != null)
+				{
+					JuegoDeseadoMostrar nuevoDeseado = new JuegoDeseadoMostrar
+					{
+						Id = deseado.Id,
+						Nombre = deseado.Nombre,
+						IdBundle = bundle.Id,
+						DRM = deseado.DRM,
+						Imagen = deseado.Imagen,
+						Importado = deseado.Importado
+					};
+
+					if (deseadosBundles.Any(x => x.Id == nuevoDeseado.Id && x.DRM == nuevoDeseado.DRM && x.IdBundle == nuevoDeseado.IdBundle) == false)
+					{
+						deseadosBundles.Add(nuevoDeseado);
+						bundlesCargar.Add(bundle.Id);
+					}
+				}
+			}
+		}
+
+		if (bundlesCargar.Count > 0)
+		{
+			List<Task<Bundles2.Bundle>> tareasBundle = bundlesCargar.Select(bundleId => BaseDatos.Bundles.Buscar.UnBundle(bundleId).ContinueWith(t => bundlesCache[bundleId] = t.Result)).ToList();
+
+			await Task.WhenAll(tareasBundle);
+		}
+	}
+
+	private async Task CargarSuscripciones(List<JuegoSuscripcion> suscripciones, List<JuegoDeseadoMostrar> deseados)
+	{
+		if (suscripciones?.Count == 0) 
+		{
+			return;
+		}
+
+		deseadosSuscripciones = new List<JuegoDeseadoMostrar>();
+		HashSet<int> suscripcionesCargar = new HashSet<int>();
+
+		foreach (var juegoSuscripcion in suscripciones)
+		{
+			JuegoDeseadoMostrar deseado = deseados.FirstOrDefault(d => d.Id == juegoSuscripcion.JuegoId && d.DRM == juegoSuscripcion.DRM);
+
+			if (deseado != null && Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(juegoSuscripcion.Tipo).ParaSiempre == true)
+			{
+				JuegoDeseadoMostrar nuevoDeseado = new JuegoDeseadoMostrar
+				{
+					Id = deseado.Id,
+					Nombre = deseado.Nombre,
+					IdSuscripcion = juegoSuscripcion.Id,
+					DRM = deseado.DRM,
+					Imagen = deseado.Imagen,
+					Importado = deseado.Importado
+				};
+
+				if (deseadosSuscripciones.Any(x => x.Id == nuevoDeseado.Id && x.DRM == nuevoDeseado.DRM && x.IdSuscripcion == nuevoDeseado.IdSuscripcion) == false)
+				{
+					deseadosSuscripciones.Add(nuevoDeseado);
+					suscripcionesCargar.Add(juegoSuscripcion.Id);
+				}
+			}
+		}
+
+		if (suscripcionesCargar.Count > 0)
+		{
+			List<Task<JuegoSuscripcion>> tareasSuscripcion = suscripcionesCargar.Select(suscripcionId => BaseDatos.Suscripciones.Buscar.Id(suscripcionId).ContinueWith(t => suscripcionesCache[suscripcionId] = t.Result)).ToList();
+
+			await Task.WhenAll(tareasSuscripcion);
+		}
+	}
+
+	private async Task CargarWishlistData(Usuario opciones)
+	{
+		if (string.IsNullOrEmpty(opciones?.WishlistData) == false)
+		{
+			DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(opciones?.WishlistData);
+
+			if (datos2 != null)
+			{
+				ultimaVisita = datos2.UltimaVisita ?? DateTime.Now;
+				datos2.Cantidad = 0;
+				datos2.UltimaVisita = DateTime.Now;
+				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
+			}
+		}
+	}
+
+	private void CargarOpciones(Usuario opciones)
+	{
+		if (opciones.Currency.HasValue == true)
+		{
+			usuarioRegion = (TiendaRegion)opciones.Currency.Value;
+		}
+
+		if (opciones.WishlistPosition.HasValue == true)
+		{
+			pestañaMostrar = (int)opciones.WishlistPosition.Value;
+		}
+	}
+
+	#endregion
 
 	private async Task CambiarPestaña(MouseEventArgs e, int nuevaPestaña)
 	{

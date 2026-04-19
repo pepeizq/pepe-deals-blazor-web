@@ -1,12 +1,8 @@
 ﻿@page "/historical-lows/"
 
-@using APIs.Steam
-@using BaseDatos.Juegos
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Data.SqlClient
 @using Microsoft.JSInterop
 @using pepeizqs_deals_web.Data
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -1088,7 +1084,7 @@ else
 			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
-			var tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
+			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
 
 			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaRegion, tareaUsuario);
 
@@ -1097,7 +1093,7 @@ else
 			deseadosUsuario = tareaDeseados.Result;
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
 			usuarioRegion = (TiendaRegion)tareaRegion.Result;
-			opcionesMinimos= tareaUsuario.Result;
+			opcionesMinimos = tareaUsuario.Result;
 
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();

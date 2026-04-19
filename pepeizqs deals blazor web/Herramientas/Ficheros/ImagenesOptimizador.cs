@@ -19,6 +19,7 @@ namespace Herramientas
 					Path.Combine(rutaBaseDatos, "favicons"),
 					Path.Combine(rutaBaseDatos, "imagenes", "bundles"),
 					Path.Combine(rutaBaseDatos, "imagenes", "drm"),
+					Path.Combine(rutaBaseDatos, "imagenes", "otros"),
 					Path.Combine(rutaBaseDatos, "imagenes", "streaming"),
 					Path.Combine(rutaBaseDatos, "imagenes", "suscripciones"),
 					Path.Combine(rutaBaseDatos, "imagenes", "tiendas"),

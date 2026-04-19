@@ -13,8 +13,24 @@
     <base href="/" />
 
     <ResourcePreloader />
+
+    @{
+        string[] dominiosExternos = new[]
+        {
+            "https://shared.steamstatic.com",
+            "https://shared.cloudflare.steamstatic.com"
+        };
+    }
+
+    @foreach (var dominio in dominiosExternos)
+    {
+        <link rel="preconnect" href="@dominio" crossorigin>
+        <link rel="dns-prefetch" href="@dominio">
+    }
+
     <link rel="preload" as="style" href="@Assets["/css/bundle.css"]" />
-    <link rel="stylesheet" href="@Assets["/css/bundle.css"]" />
+    <link rel="stylesheet" href="@Assets["/css/bundle.css"]" media="screen" />
+    <link rel="stylesheet" href="@Assets["/css/bundle.css"]" media="print" onload="this.media='all'" />
 
     <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-icon-180x180.png" />

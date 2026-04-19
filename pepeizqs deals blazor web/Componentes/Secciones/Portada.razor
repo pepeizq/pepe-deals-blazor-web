@@ -341,7 +341,7 @@
 						@if (string.IsNullOrEmpty(videoDestacado) == false)
 						{
 							<div class="destacado-fondo">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre">
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="eager">
 							</div>
 
 							<div class="destacado-video">
@@ -353,7 +353,7 @@
 						}
 						else
 						{
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="eager">
 						}
 
 						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @destacadoActual?.Color);" class="destacado-hueco">
@@ -1328,104 +1328,117 @@ else
 
 	private async void CronometroDestacados()
 	{
+		if (cronometro != null)
+		{
+			cronometro.Dispose();
+			cronometro = null;
+		}
+
 		cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
-		while (await cronometro.WaitForNextTickAsync())
+		try
 		{
-			cronometroContador += 1;
-
-			if (cronometroContador == cronometroLimite || juegosDestacadosMostrar?.Count == 0)
+			while (cronometro != null && await cronometro.WaitForNextTickAsync())
 			{
-				bool tomarSiguiente = false;
+				cronometroContador += 1;
 
-				if (juegosDestacadosMostrar?.Count > 0)
+				if (cronometroContador == cronometroLimite || juegosDestacadosMostrar?.Count == 0)
 				{
-					int i = 0;
-					foreach (var destacado in juegosDestacadosMostrar)
+					bool tomarSiguiente = false;
+
+					if (juegosDestacadosMostrar?.Count > 0)
 					{
-						if (tomarSiguiente == true)
+						int i = 0;
+						foreach (var destacado in juegosDestacadosMostrar)
 						{
-							posicionMostrarDestacados = posicionMostrarDestacados + 1;
-							videoDestacado = null;
-							break;
-						}
-
-						if (destacado.Juego.IdMaestra == juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra)
-						{
-							tomarSiguiente = true;
-						}
-
-						i += 1;
-					}
-
-					if (i == juegosDestacadosMostrar.Count)
-					{
-						juegosDestacadosMostrar.Clear();
-
-						if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
-						{
-							if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+							if (tomarSiguiente == true)
 							{
-								excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
-							}
-						}
-
-						List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, excluirJuegosIds, excluirSteamIds);
-
-						if (juegosDestacadosMostrar2?.Count > 0)
-						{
-							posicionMostrarDestacados = 0;
-							videoDestacado = null;
-						}
-
-						foreach (var juego in juegosDestacadosMostrar2)
-						{
-							JuegoDRM drmDestacados = JuegoDRM.NoEspecificado;
-
-							if (usuarioRegion == TiendaRegion.Europa)
-							{
-								drmDestacados = juego.PrecioMinimosHistoricos[0].DRM;
-							}
-							else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-							{
-								drmDestacados = juego.PrecioMinimosHistoricosUS[0].DRM;
+								posicionMostrarDestacados = posicionMostrarDestacados + 1;
+								videoDestacado = null;
+								break;
 							}
 
-							JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
+							if (destacado.Juego.IdMaestra == juegosDestacadosMostrar[posicionMostrarDestacados].Juego.IdMaestra)
 							{
-								Juego = juego,
-								DeseadoImportado = false,
-								Color = "var(--fondoBotonPequeño)",
-								DesplegableMostrar = true
-							};
-
-							if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmDestacados) == true)
-							{
-								juegoDestacadoMostrar.Color = "var(--fondoBien)";
+								tomarSiguiente = true;
 							}
-							else
+
+							i += 1;
+						}
+
+						if (i == juegosDestacadosMostrar.Count)
+						{
+							juegosDestacadosMostrar.Clear();
+
+							if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
 							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmDestacados, true) == true)
+								if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
 								{
-									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
-									juegoDestacadoMostrar.DeseadoImportado = true;
-								}
-
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmDestacados, true) == true)
-								{
-									juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+									excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
 								}
 							}
 
-							juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
+							List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, excluirJuegosIds, excluirSteamIds);
+
+							if (juegosDestacadosMostrar2?.Count > 0)
+							{
+								posicionMostrarDestacados = 0;
+								videoDestacado = null;
+							}
+
+							foreach (var juego in juegosDestacadosMostrar2)
+							{
+								JuegoDRM drmDestacados = JuegoDRM.NoEspecificado;
+
+								if (usuarioRegion == TiendaRegion.Europa)
+								{
+									drmDestacados = juego.PrecioMinimosHistoricos[0].DRM;
+								}
+								else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+								{
+									drmDestacados = juego.PrecioMinimosHistoricosUS[0].DRM;
+								}
+
+								JuegoMostrar juegoDestacadoMostrar = new JuegoMostrar
+								{
+									Juego = juego,
+									DeseadoImportado = false,
+									Color = "var(--fondoBotonPequeño)",
+									DesplegableMostrar = true
+								};
+
+								if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmDestacados) == true)
+								{
+									juegoDestacadoMostrar.Color = "var(--fondoBien)";
+								}
+								else
+								{
+									if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmDestacados, true) == true)
+									{
+										juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+										juegoDestacadoMostrar.DeseadoImportado = true;
+									}
+
+									if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmDestacados, true) == true)
+									{
+										juegoDestacadoMostrar.Color = "var(--fondoAlerta)";
+									}
+								}
+
+								juegosDestacadosMostrar.Add(juegoDestacadoMostrar);
+							}
 						}
 					}
+
+					cronometroContador = 0;
 				}
 
-				cronometroContador = 0;
+				await InvokeAsync(StateHasChanged);
 			}
-
-			await InvokeAsync(StateHasChanged);
+		}
+		catch (Exception ex)
+		{
+			BaseDatos.Errores.Insertar.Mensaje("Portada Cronometro Destacados", ex);
 		}
 	}
 
