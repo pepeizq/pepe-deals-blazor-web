@@ -143,7 +143,13 @@
 
 @if (cargado == false)
 {
-	<div style="min-height: 200px; display: flex; align-items: center; justify-content: space-around;">
+	<div style="min-height: 200px; display: flex; align-items: center; gap: 30px; justify-content: center;">
+		<div>
+			<h1 style="font-size: 16px; margin: 0px;">
+				@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "HistoricalLows")
+			</h1>
+		</div>
+
 		<div class="cargando" />
 	</div>
 }

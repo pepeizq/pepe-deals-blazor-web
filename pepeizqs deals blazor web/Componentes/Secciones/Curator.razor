@@ -4,8 +4,6 @@
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.VisualBasic
 @using Tiendas2
 @using pepeizqs_deals_web.Data
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -211,275 +209,578 @@
 	</div>
 
 	<div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 80px; margin: 40px auto;">
-		<div id="destacados">
-			@if (juegosDestacados.Count > 0)
+		@if (juegosDestacados.Count > 0)
+		{
+			if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 			{
-				<div style="display: flex; flex-direction: column; gap: 40px;">
-					@foreach (var destacado in juegosDestacados)
-					{
-						<div>
-							<div style="font-size: 18px; padding: 20px 25px;">
-								@destacado.Nombre
-							</div>
-
-							<div class="caja-curator-contenido">
-								<video class="video-autoplay" data-video-id="@destacado.Id"
-									   style="width: 100%; max-height: 500px;"
-									   autoplay muted loop playsinline preload="metadata">
-									<source src="@destacado.Media.Videos[0].Micro" type="video/mp4" />
-								</video>
-
+				<div id="destacados">
+					<div style="display: flex; flex-direction: column; gap: 40px;">
+						<Virtualize Context="destacado" Items="juegosDestacados" OverscanCount="1">
+							<ItemContent>
 								<div>
-									<a href="/game/@destacado.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacado.Nombre)/" style="text-align: center;">
-										<img src="@destacado.Imagenes.Header_460x215" />
-									</a>
-									
-									<div>
-										<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
-											@if (destacado.Etiquetas?.Count > 3)
-											{
-												<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
-													@{
-														int i = 0;
-														while (i < 5)
-														{
-															string enlaceEtiqueta = "t" + destacado.Etiquetas[i];
+									<div style="font-size: 18px; padding: 20px 25px;">
+										@destacado.Nombre
+									</div>
 
-															<a href="/filter/@enlaceEtiqueta/" target="_blank" style="text-decoration: none;">
-																<div class="etiqueta-curator" style="padding: 3px 8px; font-size: 14px; border-radius: 5px; color: var(--colorTexto);">
-																	@Herramientas.Idiomas.BuscarTexto(idioma, destacado.Etiquetas[i], "Tags")
-																</div>
-															</a>
+									<div class="caja-curator-contenido">
+										<div style="width: 66%; aspect-ratio: 16 / 9;">
+											<video class="video-autoplay" data-video-id="@destacado.Id"
+												   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+												   autoplay muted loop playsinline preload="metadata"
+												   src="@destacado.Media.Videos[0].Micro"
+												   typeof="video/mp4" />
+										</div>
 
-															i += 1;
-														}
-													}
-												</div>
-											}
+										<div style="width: 33%;">
+											<a href="/game/@destacado.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacado.Nombre)/" style="text-align: center;">
+												<img src="@destacado.Imagenes.Header_460x215" alt="@destacado.Nombre" />
+											</a>
 
-											@if (string.IsNullOrEmpty(destacado.Analisis?.Porcentaje) == false)
-											{
-												<div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
-													@if (int.Parse(destacado.Analisis.Porcentaje) > 74)
+											<div>
+												<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+													@if (destacado.Etiquetas?.Count > 3)
 													{
-														<img src="/imagenes/analisis/positivo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Good" />
-													}
+														<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
+															@{
+																int i = 0;
+																while (i < 5)
+																{
+																	string enlaceEtiqueta = "t" + destacado.Etiquetas[i];
 
-													@if (int.Parse(destacado.Analisis.Porcentaje) > 49 && int.Parse(destacado.Analisis.Porcentaje) < 75)
-													{
-														<img src="/imagenes/analisis/meh3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Meh" />
-													}
+																	<a href="/filter/@enlaceEtiqueta/" target="_blank" style="text-decoration: none;">
+																		<div class="etiqueta-curator" style="padding: 3px 8px; font-size: 14px; border-radius: 5px; color: var(--colorTexto);">
+																			@Herramientas.Idiomas.BuscarTexto(idioma, destacado.Etiquetas[i], "Tags")
+																		</div>
+																	</a>
 
-													@if (int.Parse(destacado.Analisis.Porcentaje) < 50)
-													{
-														<img src="/imagenes/analisis/negativo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Bad" />
+																	i += 1;
+																}
+															}
+														</div>
 													}
 
-													<div style="font-size: 14px;">
-														@Herramientas.Calculadora.RedondearAnalisis(idioma, destacado.Analisis.Cantidad)
-													</div>
-												</div>
-											}
-
-											<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
-												@{
-													List<Juegos.JuegoPrecio> minimosMostrar = new List<JuegoPrecio>();
-
-													@foreach (var drm in JuegoDRM2.GenerarListado())
+													@if (string.IsNullOrEmpty(destacado.Analisis?.Porcentaje) == false)
 													{
-														decimal minimoCantidad = 10000000;
-														Juegos.JuegoPrecio? minimoFinal = null;
-
-														if (usuarioRegion == TiendaRegion.Europa && destacado.PrecioActualesTiendas?.Count > 0)
-														{
-															foreach (var oferta in destacado.PrecioActualesTiendas)
+														<div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
+															@if (int.Parse(destacado.Analisis.Porcentaje) > 74)
 															{
-																bool drmAdecuado = true;
+																<img src="/imagenes/analisis/positivo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Good" />
+															}
 
-																if (oferta.DRM != drm.Id)
-																{
-																	drmAdecuado = false;
-																}
-																else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
-																{
-																	drmAdecuado = false;
-																}
-																else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
-																{
-																	drmAdecuado = false;
-																}
+															@if (int.Parse(destacado.Analisis.Porcentaje) > 49 && int.Parse(destacado.Analisis.Porcentaje) < 75)
+															{
+																<img src="/imagenes/analisis/meh3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Meh" />
+															}
 
-																if (drmAdecuado == true)
+															@if (int.Parse(destacado.Analisis.Porcentaje) < 50)
+															{
+																<img src="/imagenes/analisis/negativo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Bad" />
+															}
+
+															<div style="font-size: 14px;">
+																@Herramientas.Calculadora.RedondearAnalisis(idioma, destacado.Analisis.Cantidad)
+															</div>
+														</div>
+													}
+
+													<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+														@{
+															List<Juegos.JuegoPrecio> minimosMostrar = new List<JuegoPrecio>();
+
+															@foreach (var drm in JuegoDRM2.GenerarListado())
+															{
+																decimal minimoCantidad = 10000000;
+																Juegos.JuegoPrecio? minimoFinal = null;
+
+																if (usuarioRegion == TiendaRegion.Europa && destacado.PrecioActualesTiendas?.Count > 0)
 																{
-																	if (Herramientas.OfertaActiva.Verificar(oferta) == true)
+																	foreach (var oferta in destacado.PrecioActualesTiendas)
 																	{
-																		if (oferta.Descuento > 0)
+																		bool drmAdecuado = true;
+
+																		if (oferta.DRM != drm.Id)
 																		{
-																			decimal tempPrecio = oferta.Precio;
-
-																			if (oferta.PrecioCambiado > 0)
-																			{
-																				tempPrecio = oferta.PrecioCambiado;
-																			}
-
-																			if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
-																			{
-																				tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
-																			}
-
-																			if (tempPrecio < minimoCantidad)
-																			{
-																				minimoCantidad = tempPrecio;
-																				minimoFinal = oferta;
-																			}
+																			drmAdecuado = false;
 																		}
-																	}
-																}
-															}
-														}
-														else if (usuarioRegion == TiendaRegion.EstadosUnidos && destacado.PrecioActualesTiendasUS?.Count > 0)
-														{
-															foreach (var oferta in destacado.PrecioActualesTiendasUS)
-															{
-																bool drmAdecuado = true;
-
-																if (oferta.DRM != drm.Id)
-																{
-																	drmAdecuado = false;
-																}
-																else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
-																{
-																	drmAdecuado = false;
-																}
-																else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
-																{
-																	drmAdecuado = false;
-																}
-
-																if (drmAdecuado == true)
-																{
-																	if (Herramientas.OfertaActiva.Verificar(oferta) == true)
-																	{
-																		if (oferta.Descuento > 0)
+																		else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
 																		{
-																			decimal tempPrecio = oferta.Precio;
-
-																			if (oferta.PrecioCambiado > 0)
-																			{
-																				tempPrecio = oferta.PrecioCambiado;
-																			}
-
-																			if (oferta.Moneda != Herramientas.JuegoMoneda.Dolar && oferta.PrecioCambiado == 0)
-																			{
-																				tempPrecio = Herramientas.Divisas.CambioDolar(tempPrecio, oferta.Moneda);
-																			}
-
-																			if (tempPrecio < minimoCantidad)
-																			{
-																				minimoCantidad = tempPrecio;
-																				minimoFinal = oferta;
-																			}
+																			drmAdecuado = false;
 																		}
-																	}
-																}
-															}
-														}
+																		else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
+																		{
+																			drmAdecuado = false;
+																		}
 
-														if (minimoFinal != null)
-														{
-															minimosMostrar.Add(minimoFinal);
-														}
-													}
-
-													if (minimosMostrar.Count > 0)
-													{
-														foreach (var minimoMostrar in minimosMostrar)
-														{
-															decimal minimoFinal2 = minimoMostrar.Precio;
-
-															if (minimoMostrar.PrecioCambiado > 0)
-															{
-																minimoFinal2 = minimoMostrar.PrecioCambiado;
-															}
-
-															string enlaceFinal = Herramientas.EnlaceAcortador.Generar(minimoMostrar.Enlace, minimoMostrar.Tienda, usuarioPatreon, false);
-
-															<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
-																<div style="display: flex; align-items: center; gap: 15px;">
-																	<div style="display: flex;">
-																		<img src="@JuegoDRM2.SacarImagen(minimoMostrar.DRM)" style="max-width: 22px; max-height: 22px;" alt="@JuegoDRM2.DevolverDRM(minimoMostrar.DRM)" />
-																	</div>
-
-																	<div style="display: flex;">
-																		@{
-																			string iconoTienda = string.Empty;
-																			List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
-
-																			foreach (var tienda in tiendas)
+																		if (drmAdecuado == true)
+																		{
+																			if (Herramientas.OfertaActiva.Verificar(oferta) == true)
 																			{
-																				if (tienda.Id == minimoMostrar.Tienda)
+																				if (oferta.Descuento > 0)
 																				{
-																					iconoTienda = tienda.ImagenIcono;
-																					break;
+																					decimal tempPrecio = oferta.Precio;
+
+																					if (oferta.PrecioCambiado > 0)
+																					{
+																						tempPrecio = oferta.PrecioCambiado;
+																					}
+
+																					if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
+																					{
+																						tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
+																					}
+
+																					if (tempPrecio < minimoCantidad)
+																					{
+																						minimoCantidad = tempPrecio;
+																						minimoFinal = oferta;
+																					}
 																				}
 																			}
-
-																			<img src="@iconoTienda" style="max-width: 22px; max-height: 22px;" alt="Store" />
 																		}
-																	</div>
-
-																	@if (usuarioRegion == TiendaRegion.Europa)
-																	{
-																		<div>
-																			@Herramientas.Precios.Euro(minimoFinal2)
-																		</div>
 																	}
-																	else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+																}
+																else if (usuarioRegion == TiendaRegion.EstadosUnidos && destacado.PrecioActualesTiendasUS?.Count > 0)
+																{
+																	foreach (var oferta in destacado.PrecioActualesTiendasUS)
 																	{
-																		<div>
-																			@Herramientas.Precios.Dolar(minimoFinal2)
-																		</div>
+																		bool drmAdecuado = true;
+
+																		if (oferta.DRM != drm.Id)
+																		{
+																			drmAdecuado = false;
+																		}
+																		else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
+																		{
+																			drmAdecuado = false;
+																		}
+																		else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
+																		{
+																			drmAdecuado = false;
+																		}
+
+																		if (drmAdecuado == true)
+																		{
+																			if (Herramientas.OfertaActiva.Verificar(oferta) == true)
+																			{
+																				if (oferta.Descuento > 0)
+																				{
+																					decimal tempPrecio = oferta.Precio;
+
+																					if (oferta.PrecioCambiado > 0)
+																					{
+																						tempPrecio = oferta.PrecioCambiado;
+																					}
+
+																					if (oferta.Moneda != Herramientas.JuegoMoneda.Dolar && oferta.PrecioCambiado == 0)
+																					{
+																						tempPrecio = Herramientas.Divisas.CambioDolar(tempPrecio, oferta.Moneda);
+																					}
+
+																					if (tempPrecio < minimoCantidad)
+																					{
+																						minimoCantidad = tempPrecio;
+																						minimoFinal = oferta;
+																					}
+																				}
+																			}
+																		}
 																	}
-																</div>
-															</a>															
-														}
-													}
-													else if (minimosMostrar.Count == 0)
-													{
-														if (destacado.FreeToPlay?.ToLower() == "true" && destacado.IdSteam > 0)
-														{
-															string enlaceFinal = Herramientas.EnlaceAcortador.Generar("https://store.steampowered.com/app/" + destacado.IdSteam, "steam", usuarioPatreon, false);
+																}
 
-															<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
-																<div style="display: flex; align-items: center; gap: 15px;">
-																	<div style="display: flex;">
-																		<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 22px; max-height: 22px;" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)" />
-																	</div>
+																if (minimoFinal != null)
+																{
+																	minimosMostrar.Add(minimoFinal);
+																}
+															}
 
+															if (minimosMostrar.Count > 0)
+															{
+																foreach (var minimoMostrar in minimosMostrar)
+																{
+																	decimal minimoFinal2 = minimoMostrar.Precio;
+
+																	if (minimoMostrar.PrecioCambiado > 0)
+																	{
+																		minimoFinal2 = minimoMostrar.PrecioCambiado;
+																	}
+
+																	string enlaceFinal = Herramientas.EnlaceAcortador.Generar(minimoMostrar.Enlace, minimoMostrar.Tienda, usuarioPatreon, false);
+
+																	string iconoDRM = JuegoDRM2.SacarImagen(minimoMostrar.DRM);
+																	string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+																	string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
+
+																	<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
+																		<div style="display: flex; align-items: center; gap: 15px;">
+																			<div style="display: flex;">
+																				<picture>
+																					<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+																					<img class="destacado-icono" src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(minimoMostrar.DRM)" style="max-width: 22px; max-height: 22px;" />
+																				</picture>
+																			</div>
+
+																			<div style="display: flex;">
+																				@{
+																					string nombreTienda = string.Empty;
+																					string iconoTienda = string.Empty;
+																					List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
+
+																					foreach (var tienda in tiendas)
+																					{
+																						if (tienda.Id == minimoMostrar.Tienda)
+																						{
+																							nombreTienda = tienda.Nombre;
+																							iconoTienda = tienda.ImagenIcono;
+																							break;
+																						}
+																					}
+
+																					string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
+																					string iconoTienda2 = iconoTienda.Replace(".webp", "-md.webp");
+
+																					<picture>
+																						<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
+																						<img class="destacado-icono" src="@iconoTienda" alt="@nombreTienda" style="max-width: 22px; max-height: 22px;" />
+																					</picture>
+																				}
+																			</div>
+
+																			@if (usuarioRegion == TiendaRegion.Europa)
+																			{
+																				<div>
+																					@Herramientas.Precios.Euro(minimoFinal2)
+																				</div>
+																			}
+																			else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+																			{
+																				<div>
+																					@Herramientas.Precios.Dolar(minimoFinal2)
+																				</div>
+																			}
+																		</div>
+																	</a>
+																}
+															}
+															else if (minimosMostrar.Count == 0)
+															{
+																if (destacado.FreeToPlay?.ToLower() == "true" && destacado.IdSteam > 0)
+																{
+																	string enlaceFinal = Herramientas.EnlaceAcortador.Generar("https://store.steampowered.com/app/" + destacado.IdSteam, "steam", usuarioPatreon, false);
+
+																	<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
+																		<div style="display: flex; align-items: center; gap: 15px;">
+																			<div style="display: flex;">
+																				<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 22px; max-height: 22px;" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)" />
+																			</div>
+
+																			<div>
+																				@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Curators")
+																			</div>
+																		</div>
+																	</a>
+																}
+																else
+																{
 																	<div>
-																		@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Curators")
+																		@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Curators")
 																	</div>
-																</div>
-															</a>
+																}
+															}
 														}
-														else
-														{
-															<div>
-																@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Curators")
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</ItemContent>
+						</Virtualize>
+					</div>
+				</div>
+			}
+			else
+			{
+				foreach (var destacado in juegosDestacados.Take(1))
+				{
+					<div>
+						<div style="font-size: 18px; padding: 20px 25px;">
+							@destacado.Nombre
+						</div>
+
+						<div class="caja-curator-contenido">
+							<div style="width: 66%; aspect-ratio: 16 / 9;">
+								<video class="video-autoplay" data-video-id="@destacado.Id"
+									   style="width: 100%; height: 100%; object-fit: cover; display: block;"
+									   autoplay muted loop playsinline preload="metadata"
+									   src="@destacado.Media.Videos[0].Micro"
+									   typeof="video/mp4" />
+							</div>
+
+							<div style="width: 33%;">
+								<a href="/game/@destacado.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacado.Nombre)/" style="text-align: center;">
+									<img src="@destacado.Imagenes.Header_460x215" alt="@destacado.Nombre" />
+								</a>
+
+								<div>
+									<div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+										@if (destacado.Etiquetas?.Count > 3)
+										{
+											<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
+												@{
+													int i = 0;
+													while (i < 5)
+													{
+														string enlaceEtiqueta = "t" + destacado.Etiquetas[i];
+
+														<a href="/filter/@enlaceEtiqueta/" target="_blank" style="text-decoration: none;">
+															<div class="etiqueta-curator" style="padding: 3px 8px; font-size: 14px; border-radius: 5px; color: var(--colorTexto);">
+																@Herramientas.Idiomas.BuscarTexto(idioma, destacado.Etiquetas[i], "Tags")
 															</div>
-														}													
+														</a>
+
+														i += 1;
 													}
 												}
 											</div>
+										}
+
+										@if (string.IsNullOrEmpty(destacado.Analisis?.Porcentaje) == false)
+										{
+											<div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
+												@if (int.Parse(destacado.Analisis.Porcentaje) > 74)
+												{
+													<img src="/imagenes/analisis/positivo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Good" />
+												}
+
+												@if (int.Parse(destacado.Analisis.Porcentaje) > 49 && int.Parse(destacado.Analisis.Porcentaje) < 75)
+												{
+													<img src="/imagenes/analisis/meh3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Meh" />
+												}
+
+												@if (int.Parse(destacado.Analisis.Porcentaje) < 50)
+												{
+													<img src="/imagenes/analisis/negativo3.svg" style="max-width: 28px; max-height: 28px;" alt="Reviews Bad" />
+												}
+
+												<div style="font-size: 14px;">
+													@Herramientas.Calculadora.RedondearAnalisis(idioma, destacado.Analisis.Cantidad)
+												</div>
+											</div>
+										}
+
+										<div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+											@{
+												List<Juegos.JuegoPrecio> minimosMostrar = new List<JuegoPrecio>();
+
+												@foreach (var drm in JuegoDRM2.GenerarListado())
+												{
+													decimal minimoCantidad = 10000000;
+													Juegos.JuegoPrecio? minimoFinal = null;
+
+													if (usuarioRegion == TiendaRegion.Europa && destacado.PrecioActualesTiendas?.Count > 0)
+													{
+														foreach (var oferta in destacado.PrecioActualesTiendas)
+														{
+															bool drmAdecuado = true;
+
+															if (oferta.DRM != drm.Id)
+															{
+																drmAdecuado = false;
+															}
+															else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
+															{
+																drmAdecuado = false;
+															}
+															else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
+															{
+																drmAdecuado = false;
+															}
+
+															if (drmAdecuado == true)
+															{
+																if (Herramientas.OfertaActiva.Verificar(oferta) == true)
+																{
+																	if (oferta.Descuento > 0)
+																	{
+																		decimal tempPrecio = oferta.Precio;
+
+																		if (oferta.PrecioCambiado > 0)
+																		{
+																			tempPrecio = oferta.PrecioCambiado;
+																		}
+
+																		if (oferta.Moneda != Herramientas.JuegoMoneda.Euro && oferta.PrecioCambiado == 0)
+																		{
+																			tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
+																		}
+
+																		if (tempPrecio < minimoCantidad)
+																		{
+																			minimoCantidad = tempPrecio;
+																			minimoFinal = oferta;
+																		}
+																	}
+																}
+															}
+														}
+													}
+													else if (usuarioRegion == TiendaRegion.EstadosUnidos && destacado.PrecioActualesTiendasUS?.Count > 0)
+													{
+														foreach (var oferta in destacado.PrecioActualesTiendasUS)
+														{
+															bool drmAdecuado = true;
+
+															if (oferta.DRM != drm.Id)
+															{
+																drmAdecuado = false;
+															}
+															else if (oferta.DRM == Juegos.JuegoDRM.NoEspecificado)
+															{
+																drmAdecuado = false;
+															}
+															else if (oferta.DRM == Juegos.JuegoDRM.Microsoft)
+															{
+																drmAdecuado = false;
+															}
+
+															if (drmAdecuado == true)
+															{
+																if (Herramientas.OfertaActiva.Verificar(oferta) == true)
+																{
+																	if (oferta.Descuento > 0)
+																	{
+																		decimal tempPrecio = oferta.Precio;
+
+																		if (oferta.PrecioCambiado > 0)
+																		{
+																			tempPrecio = oferta.PrecioCambiado;
+																		}
+
+																		if (oferta.Moneda != Herramientas.JuegoMoneda.Dolar && oferta.PrecioCambiado == 0)
+																		{
+																			tempPrecio = Herramientas.Divisas.CambioDolar(tempPrecio, oferta.Moneda);
+																		}
+
+																		if (tempPrecio < minimoCantidad)
+																		{
+																			minimoCantidad = tempPrecio;
+																			minimoFinal = oferta;
+																		}
+																	}
+																}
+															}
+														}
+													}
+
+													if (minimoFinal != null)
+													{
+														minimosMostrar.Add(minimoFinal);
+													}
+												}
+
+												if (minimosMostrar.Count > 0)
+												{
+													foreach (var minimoMostrar in minimosMostrar)
+													{
+														decimal minimoFinal2 = minimoMostrar.Precio;
+
+														if (minimoMostrar.PrecioCambiado > 0)
+														{
+															minimoFinal2 = minimoMostrar.PrecioCambiado;
+														}
+
+														string enlaceFinal = Herramientas.EnlaceAcortador.Generar(minimoMostrar.Enlace, minimoMostrar.Tienda, usuarioPatreon, false);
+
+														string iconoDRM = JuegoDRM2.SacarImagen(minimoMostrar.DRM);
+														string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+														string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
+
+														<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
+															<div style="display: flex; align-items: center; gap: 15px;">
+																<div style="display: flex;">
+																	<picture>
+																		<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
+																		<img class="destacado-icono" src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(minimoMostrar.DRM)" style="max-width: 22px; max-height: 22px;" />
+																	</picture>
+																</div>
+
+																<div style="display: flex;">
+																	@{
+																		string nombreTienda = string.Empty;
+																		string iconoTienda = string.Empty;
+																		List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
+
+																		foreach (var tienda in tiendas)
+																		{
+																			if (tienda.Id == minimoMostrar.Tienda)
+																			{
+																				nombreTienda = tienda.Nombre;
+																				iconoTienda = tienda.ImagenIcono;
+																				break;
+																			}
+																		}
+
+																		string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
+																		string iconoTienda2 = iconoTienda.Replace(".webp", "-md.webp");
+
+																		<picture>
+																			<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
+																			<img class="destacado-icono" src="@iconoTienda" alt="@nombreTienda" style="max-width: 22px; max-height: 22px;" />
+																		</picture>
+																	}
+																</div>
+
+																@if (usuarioRegion == TiendaRegion.Europa)
+																{
+																	<div>
+																		@Herramientas.Precios.Euro(minimoFinal2)
+																	</div>
+																}
+																else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+																{
+																	<div>
+																		@Herramientas.Precios.Dolar(minimoFinal2)
+																	</div>
+																}
+															</div>
+														</a>
+													}
+												}
+												else if (minimosMostrar.Count == 0)
+												{
+													if (destacado.FreeToPlay?.ToLower() == "true" && destacado.IdSteam > 0)
+													{
+														string enlaceFinal = Herramientas.EnlaceAcortador.Generar("https://store.steampowered.com/app/" + destacado.IdSteam, "steam", usuarioPatreon, false);
+
+														<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
+															<div style="display: flex; align-items: center; gap: 15px;">
+																<div style="display: flex;">
+																	<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 22px; max-height: 22px;" alt="@JuegoDRM2.DevolverDRM(JuegoDRM.Steam)" />
+																</div>
+
+																<div>
+																	@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Curators")
+																</div>
+															</div>
+														</a>
+													}
+													else
+													{
+														<div>
+															@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Curators")
+														</div>
+													}
+												}
+											}
 										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					}
-				</div>
+					</div>
+				}
 			}
-		</div>
+		}
 		
 		<div id="filtro">
 			@if (juegosCurator?.Count > 0)
@@ -562,17 +863,23 @@
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
 
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaRegion);
+
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioRegion = (TiendaRegion)tareaRegion.Result;
+
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioRegion = (TiendaRegion)await BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
 		}
 
 		if (string.IsNullOrEmpty(slug) == false)

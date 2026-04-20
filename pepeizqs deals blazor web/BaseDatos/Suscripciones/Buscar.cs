@@ -8,49 +8,56 @@ namespace BaseDatos.Suscripciones
 {
     public static class Buscar
     {
-		public static async Task<List<JuegoSuscripcion>> Actuales(SuscripcionTipo tipo = SuscripcionTipo.Desconocido, int orden = 0, string nombreBusqueda = null)
+		public static async Task<List<JuegoSuscripcion>> Actuales(SuscripcionTipo tipo = SuscripcionTipo.Desconocido, int orden = 0, string nombreBusqueda = null, int cantidad = 0)
         {
-			string busqueda = @"
-SELECT 
-    sub.*,
-    j.*,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaEmpieza <= GETDATE()
-          AND g.fechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS GratisActuales,
-	(
-        SELECT g.gratis
-        FROM gratis g
-        WHERE g.juegoId = j.id
-          AND g.fechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS GratisPasados,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaEmpieza <= GETDATE()
-          AND s.FechaTermina >= GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesActuales,
-    (
-        SELECT s.suscripcion
-        FROM suscripciones s
-        WHERE s.juegoId = j.id
-          AND s.FechaTermina < GETDATE()
-        FOR JSON PATH
-    ) AS SuscripcionesPasados
-FROM (
-    SELECT *, suscripcion AS Tipo
-    FROM suscripciones
-    WHERE GETDATE() BETWEEN fechaEmpieza AND fechaTermina
-) AS sub
-INNER JOIN juegos j ON j.id = sub.juegoid
-WHERE 1=1";
+			string cantidadTexto = string.Empty;
+
+			if (cantidad > 0)
+			{
+				cantidadTexto = $"TOP {cantidad}";
+			}
+
+			string busqueda = $@"
+				SELECT {cantidadTexto}
+					sub.*,
+					j.*,
+					(
+						SELECT g.gratis
+						FROM gratis g
+						WHERE g.juegoId = j.id
+						  AND g.fechaEmpieza <= GETDATE()
+						  AND g.fechaTermina >= GETDATE()
+						FOR JSON PATH
+					) AS GratisActuales,
+					(
+						SELECT g.gratis
+						FROM gratis g
+						WHERE g.juegoId = j.id
+						  AND g.fechaTermina < GETDATE()
+						FOR JSON PATH
+					) AS GratisPasados,
+					(
+						SELECT s.suscripcion
+						FROM suscripciones s
+						WHERE s.juegoId = j.id
+						  AND s.FechaEmpieza <= GETDATE()
+						  AND s.FechaTermina >= GETDATE()
+						FOR JSON PATH
+					) AS SuscripcionesActuales,
+					(
+						SELECT s.suscripcion
+						FROM suscripciones s
+						WHERE s.juegoId = j.id
+						  AND s.FechaTermina < GETDATE()
+						FOR JSON PATH
+					) AS SuscripcionesPasados
+				FROM (
+					SELECT *, suscripcion AS Tipo
+					FROM suscripciones
+					WHERE GETDATE() BETWEEN fechaEmpieza AND fechaTermina
+				) AS sub
+				INNER JOIN juegos j ON j.id = sub.juegoid
+				WHERE 1=1";
 
 			if (tipo != SuscripcionTipo.Desconocido)
 			{
@@ -254,13 +261,13 @@ ORDER BY fechaEmpieza DESC";
 
 		public static async Task<List<JuegoSuscripcion>> Ultimos(string cantidad)
 		{
-			string busqueda = @"
-SELECT TOP {cantidad} sub.*
-FROM (
-    SELECT *, suscripcion AS Tipo
-    FROM suscripciones
-) AS sub
-ORDER BY id DESC";
+			string busqueda = $@"
+				SELECT TOP {cantidad} sub.*
+				FROM (
+					SELECT *, suscripcion AS Tipo
+					FROM suscripciones
+				) AS sub
+				ORDER BY id DESC";
 
 			try
 			{
@@ -280,8 +287,8 @@ ORDER BY id DESC";
 		public static async Task<List<int>> Steam(int idPaquete)
 		{
 			string busqueda = @"
-SELECT idJuego FROM tiendasteamsuscripciones
-WHERE idPaquete=@idPaquete";
+				SELECT idJuego FROM tiendasteamsuscripciones
+				WHERE idPaquete=@idPaquete";
 
 			try
 			{

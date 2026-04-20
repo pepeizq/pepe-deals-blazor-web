@@ -386,6 +386,8 @@ else
     [PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
 
     [PersistentState] public Usuario deseadosUsuario { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosImportadosIndex deseadosImportadosIndex { get; set; }
+    [PersistentState] public Herramientas.UsuarioDeseadosWebIndex deseadosWebIndex { get; set; }
 
     [Parameter] public string streamingSeleccionadoTexto { get; set; }
     public Streaming2.StreamingTipo streamingSeleccionado { get; set; } = Streaming2.StreamingTipo.Desconocido;
@@ -404,11 +406,19 @@ else
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
-            deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados);
+
+            idioma = tareaIdioma.Result;
+            juegosUsuario = tareaJuegos.Result;
+            deseadosUsuario = tareaDeseados.Result;
+
+            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
         }
 
         if (string.IsNullOrEmpty(streamingSeleccionadoTexto) == false)

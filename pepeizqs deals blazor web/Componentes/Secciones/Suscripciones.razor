@@ -157,7 +157,10 @@ else
 </style>
 
 <div>
-	<img class="juego-fondo" src="@imagenFondo" alt="Background Subscriptions" fetchpriority="high" />
+    @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+    {
+        <img class="juego-fondo" src="@imagenFondo" alt="Background Subscriptions" fetchpriority="high" />
+    }
 
     <div>
         <div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
@@ -378,7 +381,7 @@ else
                                 {
                                     <button @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" class="boton-pequeño suscripcion-grid" style="display: flex; align-items: center; gap: 20px; justify-content: space-evenly;">
                                         <div style="width: 200px; height: 70px; display: flex; justify-content: center;">
-                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(suscripcion.ImagenLogo, 200, 70)" alt="@suscripcion.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                            <img src="@suscripcion.ImagenLogo" alt="@suscripcion.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                                         </div>
 
                                         @if (suscripcion.Precio > 0)
@@ -740,12 +743,13 @@ else
             Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
             Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
-            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon);
+            await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin);
 
             idioma = tareaIdioma.Result;
             juegosUsuario = tareaJuegos.Result;
             deseadosUsuario = tareaDeseados.Result;
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+            usuarioAdmin = tareaAdmin.Result;
 
             juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
             deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
@@ -851,7 +855,14 @@ else
         imagenFondo = suscripcionSeleccionada2.ImagenFondo;
         colorSuscripcion = suscripcionSeleccionada2.ColorDestacado;
 
-        juegosActuales = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionada, ordenarPor, textoBuscador);
+        if (Herramientas.Bots.UserAgentEsBot(userAgent) == true)
+        {
+            juegosActuales = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionada, ordenarPor, textoBuscador, 10);
+        }
+        else
+        {
+            juegosActuales = await BaseDatos.Suscripciones.Buscar.Actuales(suscripcionSeleccionada, ordenarPor, textoBuscador);
+        }
     }
 
     private async Task CambiarEnlace(Suscripciones2.SuscripcionTipo suscripcion)
