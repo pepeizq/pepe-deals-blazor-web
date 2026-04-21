@@ -472,10 +472,17 @@ else
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            opcionesCuenta = await BaseDatos.Usuarios.Buscar.OpcionesCuenta(usuarioId);
-            usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-            usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesCuenta(usuarioId);
+            Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+            Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+
+            await Task.WhenAll(tareaIdioma, tareaUsuario, tareaPatreon, tareaAdmin);
+
+            idioma = tareaIdioma.Result;
+            opcionesCuenta = tareaUsuario.Result;
+            usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+            usuarioAdmin = tareaAdmin.Result;
 
             if (string.IsNullOrEmpty(seccion) == false)
             {

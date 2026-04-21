@@ -221,37 +221,43 @@
 
         if (usuarioAdmin == true)
         {
-            nuevosErroresCantidad = await BaseDatos.Admin.Buscar.CantidadErrores();
+            Task<int> erroresTarea = BaseDatos.Admin.Buscar.CantidadErrores();
+            Task<int> duplicadosTarea = BaseDatos.Admin.Buscar.Dato("duplicados");
+            Task<int> pendientesTarea = BaseDatos.Pendientes.Buscar.Cantidad();
+            Task<int> dlcsTarea = BaseDatos.Juegos.Buscar.DLCsCantidad();
+            Task<int> correosTarea = BaseDatos.CorreosEnviar.Buscar.Cantidad();
+
+            await Task.WhenAll(erroresTarea, duplicadosTarea, pendientesTarea, dlcsTarea, correosTarea);
+
+            nuevosErroresCantidad = erroresTarea.Result;
+            nuevosDuplicadosCantidad = duplicadosTarea.Result;
+            nuevosPendientesCantidad = pendientesTarea.Result;
+            nuevosDLCsCantidad = dlcsTarea.Result;
+            correosEnCola = correosTarea.Result;
 
             if (nuevosErroresCantidad > 0)
             {
                 subpagina = subpaginaErrores;
             }
-
-            nuevosDuplicadosCantidad = await BaseDatos.Admin.Buscar.Dato("duplicados");
-
+            
             if (nuevosDuplicadosCantidad > 0)
             {
                 subpagina = subpaginaDuplicados;
             }
-
-            nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.Cantidad();
-
+            
             if (nuevosPendientesCantidad > 0)
             {
                 subpagina = subpaginaPendientes;
             }
-
-            nuevosDLCsCantidad = await BaseDatos.Juegos.Buscar.DLCsCantidad();
-
+            
             if (nuevosDLCsCantidad > 0)
             {
                 subpagina = subpaginaDLCs;
             }
 
-            var process = Process.GetCurrentProcess();
-            var workingSetMB = process.WorkingSet64 / 1024 / 1024;
-            var privateMemoryMB = process.PrivateMemorySize64 / 1024 / 1024;
+            var proceso = Process.GetCurrentProcess();
+            var workingSetMB = proceso.WorkingSet64 / 1024 / 1024;
+            var privateMemoryMB = proceso.PrivateMemorySize64 / 1024 / 1024;
 
             long limiteMB = 1024; //limite de mi pool
 

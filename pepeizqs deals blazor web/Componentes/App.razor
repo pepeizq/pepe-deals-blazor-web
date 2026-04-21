@@ -168,102 +168,91 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<string> obtenerIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            Task<Usuario> obtenerOpciones = BaseDatos.Usuarios.Buscar.OpcionesApp(usuarioId);
 
-            Usuario usuario = await BaseDatos.Usuarios.Buscar.OpcionesApp(usuarioId);
+            await Task.WhenAll(obtenerIdioma, obtenerOpciones);
 
-            if (usuario != null)
+            idioma = obtenerIdioma.Result;
+            Usuario usuario = obtenerOpciones.Result;
+
+            if (usuario != null && usuario.EmailConfirmed == true)
             {
-                if (usuario?.EmailConfirmed == true)
-                {
-                    bool patreonActivo = Herramientas.Patreon.VerificarActivo(usuario.PatreonLastCheck);
+                bool patreonActivo = Herramientas.Patreon.VerificarActivo(usuario.PatreonLastCheck);
+                TimeSpan tiempoActualizar = patreonActivo ? TimeSpan.FromDays(1) : TimeSpan.FromDays(7);
 
-                    TimeSpan tiempoActualizar = TimeSpan.FromDays(7);
+                await Task.WhenAll(
+                    ProcesarSteamCuenta(usuario, tiempoActualizar, usuarioId), 
+                    ProcesarGogCuenta(usuario, tiempoActualizar, usuarioId), 
+                    ProcesarPatreon(usuario, patreonActivo, usuarioId)
+                );
+            }
 
-                    if (patreonActivo == true)
-                    {
-                        tiempoActualizar = TimeSpan.FromDays(1);
-                    }
+            if (string.IsNullOrEmpty(idioma) == false)
+            {
+                await BaseDatos.Usuarios.Actualizar.Opcion("Language", idioma, usuarioId);
+            }
+        }
+    }
 
-                    if (string.IsNullOrEmpty(usuario.SteamAccount) == false && string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == false)
-                    {
-                        bool tiempo = true;
+    private async Task ProcesarSteamCuenta(Usuario usuario, TimeSpan tiempoActualizar, string usuarioId)
+    {
+        if (string.IsNullOrEmpty(usuario.SteamAccount) == true || string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == true)
+        {   
+            return;
+        }
 
-                        if (string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == false)
-                        {
-                            if (Convert.ToDateTime(usuario.SteamAccountLastCheck) + tiempoActualizar > DateTime.Now)
-                            {
-                                tiempo = false;
-                            }
-                        }
+        bool tiempoExcedido = string.IsNullOrEmpty(usuario.SteamAccountLastCheck) || Convert.ToDateTime(usuario.SteamAccountLastCheck) + tiempoActualizar > DateTime.Now;
 
-                        if (tiempo == true)
-                        {
-                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "Steam");
-                        }
-                    }
+        if (tiempoExcedido == true)
+        {
+            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "Steam");
+        }
+    }
 
-                    if (string.IsNullOrEmpty(usuario.GogAccount) == false && usuario.GogAccountLastCheck != null)
-                    {
-                        bool tiempo = true;
+    private async Task ProcesarGogCuenta(Usuario usuario, TimeSpan tiempoActualizar, string usuarioId)
+    {
+        if (string.IsNullOrEmpty(usuario.GogAccount) == true || usuario.GogAccountLastCheck == null)
+        {
+            return;
+        }
 
-                        if (usuario.GogAccountLastCheck + tiempoActualizar > DateTime.Now)
-                        {
-                            tiempo = false;
-                        }
+        bool tiempoExcedido = usuario.GogAccountLastCheck + tiempoActualizar > DateTime.Now;
 
-                        if (tiempo == true)
-                        {
-                            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "GOG");
-                        }
-                    }
+        if (tiempoExcedido == true)
+        {
+            await BaseDatos.UsuariosActualizar.Insertar.Ejecutar(usuarioId, "GOG");
+        }
+    }
 
-                    if (patreonActivo == true)
-                    {
-                        if (usuario.PatreonLastLogin == null)
-                        {
-                            await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
-                            await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", 2, usuarioId);
+    private async Task ProcesarPatreon(Usuario usuario, bool patreonActivo, string usuarioId)
+    {
+        if (patreonActivo == false)
+        {
+            return;
+        }
 
-                            await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
-                        }
-                        else
-                        {
-                            if (usuario.PatreonContribution > 0)
-                            {
-                                if (usuario.PatreonCoins < 120)
-                                {
-                                    if (usuario.PatreonLastLogin?.DayOfYear != DateTime.Now.DayOfYear)
-                                    {
-                                        await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
-                                        await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", (int)usuario.PatreonCoins + 2, usuarioId);
+        if (usuario.PatreonLastLogin == null)
+        {
+            await Task.WhenAll(
+                BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId),
+                BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", 2, usuarioId),
+                BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now)
+            );
+        }
+        else
+        {
+            int monedasGanadas = usuario.PatreonContribution > 0 ? 2 : 2;
+            int monedasLimite = usuario.PatreonContribution > 0 ? 120 : 20;
 
-                                        await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (usuario.PatreonCoins < 20)
-                                {
-                                    if (usuario.PatreonLastLogin?.DayOfYear != DateTime.Now.DayOfYear)
-                                    {
-                                        await BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId);
-                                        await BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", (int)usuario.PatreonCoins + 2, usuarioId);
-
-                                        await BaseDatos.Recompensas.Historial.Insertar(usuarioId, 2, "Daily", DateTime.Now);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (string.IsNullOrEmpty(idioma) == false)
-                {
-                    await BaseDatos.Usuarios.Actualizar.Opcion("Language", idioma, usuarioId);
-                }
-            } 
+            if (usuario.PatreonCoins < monedasLimite && usuario.PatreonLastLogin?.DayOfYear != DateTime.Now.DayOfYear)
+            {
+                await Task.WhenAll(
+                    BaseDatos.Usuarios.Actualizar.Opcion("PatreonLastLogin", DateTime.Now, usuarioId),
+                    BaseDatos.Usuarios.Actualizar.Opcion("PatreonCoins", (int)usuario.PatreonCoins + monedasGanadas, usuarioId),
+                    BaseDatos.Recompensas.Historial.Insertar(usuarioId, monedasGanadas, "Daily", DateTime.Now)
+                );
+            }
         }
     }
 }
