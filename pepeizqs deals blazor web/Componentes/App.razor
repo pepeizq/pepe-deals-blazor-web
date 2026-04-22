@@ -147,12 +147,12 @@
             dominio = contexto?.Request?.Host.Value;
             usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
 
-            var path = contexto?.Request?.Path.ToString();
-            enlace = "https://" + dominio + path;
+            string ruta = contexto?.Request?.Path.ToString();
+            enlace = "https://" + dominio + ruta;
 
-            if (path.Contains("/news/") == true)
+            if (ruta.Contains("/news/") == true)
             {
-                string temp1 = path.Replace("/news/", null);
+                string temp1 = ruta.Replace("/news/", null);
                 int int1 = temp1.IndexOf("/");
                 string temp2 = temp1.Remove(int1, temp1.Length - int1);
 

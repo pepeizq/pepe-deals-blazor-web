@@ -508,18 +508,25 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
+			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
+            Task<Usuario> tareaOpciones = BaseDatos.Usuarios.Buscar.OpcionesPatreon(usuarioId);
 
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaOpciones);
+
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
+			usuarioAdmin = tareaAdmin.Result;
+			opciones = tareaOpciones.Result;
+
+			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
-
-			usuarioPatreon = Herramientas.Patreon.VerificarActivo(await BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId));
-			usuarioAdmin = await BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-
-			opciones = await BaseDatos.Usuarios.Buscar.OpcionesPatreon(usuarioId);
 
 			if (opciones != null)
 			{

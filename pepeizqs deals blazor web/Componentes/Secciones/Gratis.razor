@@ -542,35 +542,17 @@ else
 
         if (juegosActuales?.Count > 0)
         {
-            foreach (var juegoActual in juegosActuales)
-            {
-                Juegos.Juego juego2 = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juegoActual.JuegoId);
-                juegoActual.Imagen = juego2.Imagenes.Header_460x215;
-                juegoActual.Juego = juego2;
+            List<Task> tareasJuegos = juegosActuales
+               .Select(async ja =>
+               {
+                   var juego = await BaseDatos.Juegos.Buscar.UnJuegoReducido(ja.JuegoId);
+                   ja.Imagen = juego.Imagenes.Header_460x215;
+                   ja.Juego = juego;
+               }).ToList();
 
-                bool añadirTipo = true;
+            await Task.WhenAll(tareasJuegos);
 
-                if (tiposActuales.Count > 0)
-                {
-                    foreach (var tipoActual in tiposActuales)
-                    {
-                        if (tipoActual == juegoActual.Tipo)
-                        {
-                            añadirTipo = false;
-                        }
-                    }
-                }
-
-                if (añadirTipo == true)
-                {
-                    tiposActuales.Add(juegoActual.Tipo);
-                }
-            }
-        }
-
-        if (tiposActuales.Count > 0)
-        {
-            tiposActuales = tiposActuales.OrderBy(x => (int)x).ToList();
+            tiposActuales = juegosActuales.Select(j => j.Tipo).Distinct().OrderBy(x => (int)x).ToList();
         }
 
         cargado = true;

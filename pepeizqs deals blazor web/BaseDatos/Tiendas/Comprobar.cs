@@ -647,7 +647,7 @@ END;
 
 								if (id > 0)
 								{
-									var resultado = await Juegos.Precios.Comprobacion(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
+									var resultado = await Juegos.Precios.ComprobacionUS(id, idSteam, ofertasActualesUS, ofertasHistoricasUS, historicosUS, oferta, null, null, null, reseñas, indice);
 
 									if (resultado.Item1 != null && resultado.Item2 != null)
 									{

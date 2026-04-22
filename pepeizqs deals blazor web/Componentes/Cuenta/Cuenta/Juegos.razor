@@ -44,7 +44,7 @@ else
 		else
 		{
 			<div class="subcabecera" style="@fondoCabecera">
-				<div style="display: flex; align-items: center; gap: 15px; flex-flow: wrap; padding: 10px 20px;">
+				<div style="display: flex; align-items: center; gap: 15px; flex-flow: wrap; padding: 10px 20px; background-color: rgba(0,0,0,0.15);">
 					<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.NoEspecificado) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.NoEspecificado))">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String27", "AccountGames")
 					</button>
@@ -214,118 +214,142 @@ else
 
 @code {
 
-	#nullable disable
+    #nullable disable
 
-	[Parameter]
-	public string idioma { get; set; }
+    [Parameter]
+    public string idioma { get; set; }
 
-	[Parameter]
-	public string usuarioId { get; set; }
+    [Parameter]
+    public string usuarioId { get; set; }
 
-	[Parameter]
-	public string fondoCabecera { get; set; }
+    [Parameter]
+    public string fondoCabecera { get; set; }
 
-	private UsuarioListadosJuegos juegos = null;
-	private JuegoDRM drmSeleccionado = JuegoDRM.NoEspecificado;
+    private UsuarioListadosJuegos juegos = null;
+    private JuegoDRM drmSeleccionado = JuegoDRM.NoEspecificado;
 
-	private List<JuegoUsuario> listaGestor = new List<JuegoUsuario>();
+    private List<JuegoUsuario> listaGestor = new List<JuegoUsuario>();
 
-	private bool cargado = false;
+    private bool cargado = false;
 
-	protected override async Task OnInitializedAsync()
-	{
-		if (string.IsNullOrEmpty(usuarioId) == false)
-		{
-			juegos = await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+    protected override async Task OnInitializedAsync()
+    {
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            juegos = await Herramientas.UsuarioJuegos.Cargar(usuarioId);
 
-			if (juegos != null)
-			{
-				if (juegos.Steam != null && juegos.Steam.Count > 0)
+            if (juegos != null)
+            {
+				List<Task> tareasBusqueda = new List<Task>();
+
+				if (juegos.Steam?.Count > 0)
 				{
-					List<string> idsSteam = juegos.Steam.Select(juego => juego.Id.ToString()).ToList();
-
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Steam, idsSteam);
-
-					foreach (var juegoSteam in juegos.Steam)
-					{
-						foreach (var juegoMostrar in listaGestor)
-						{
-							if (juegoMostrar.DRMs.Count > 0)
-							{
-								foreach (var drm in juegoMostrar.DRMs)
-								{
-									if (drm.DRM == JuegoDRM.Steam && juegoSteam.Id.ToString() == drm.Id)
-									{
-										drm.JugadoTiempo = juegoSteam.TiempoJugadoEnMinutos;
-										drm.JugadoUltimaVez = juegoSteam.TiempoJugadoUltimaVez;
-									}
-								}
-							}
-						}
-					}
+					tareasBusqueda.Add(ProcesarPlataformaSteam(juegos.Steam));
 				}
 
-				if (juegos.Gog != null && juegos.Gog.Count > 0)
+				if (juegos.Gog?.Count > 0)
 				{
-					List<string> idsGog = juegos.Gog.Select(juego => juego.Id.ToString()).ToList();
-
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.GOG, idsGog);
-
-					foreach (var juegoGog in juegos.Gog)
-					{
-						foreach (var juegoMostrar in listaGestor)
-						{
-							if (juegoMostrar.DRMs.Count > 0)
-							{
-								foreach (var drm in juegoMostrar.DRMs)
-								{
-									if (drm.DRM == JuegoDRM.GOG && juegoGog.Id.ToString() == drm.Id)
-									{
-										drm.JugadoTiempo = juegoGog.TiempoJugadoEnMinutos;
-										drm.JugadoUltimaVez = juegoGog.TiempoJugadoUltimaVez;
-									}
-								}
-							}
-						}
-					}
+					tareasBusqueda.Add(ProcesarPlataformaGog(juegos.Gog));
 				}
 
-				if (juegos.Amazon != null && juegos.Amazon.Count > 0)
+				if (juegos.Amazon?.Count > 0)
 				{
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Amazon, juegos.Amazon);
+					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Amazon, juegos.Amazon));
 				}
 
-				if (juegos.Epic != null && juegos.Epic.Count > 0)
+				if (juegos.Epic?.Count > 0)
 				{
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Epic, juegos.Epic);
+					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Epic, juegos.Epic));
 				}
 
-				if (juegos.Ubisoft != null && juegos.Ubisoft.Count > 0)
+				if (juegos.Ubisoft?.Count > 0)
 				{
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Ubisoft, juegos.Ubisoft);
+					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Ubisoft, juegos.Ubisoft));
 				}
 
-				if (juegos.Ea != null && juegos.Ea.Count > 0)
+				if (juegos.Ea?.Count > 0)
 				{
-					listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.EA, juegos.Ea);
+					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.EA, juegos.Ea));
 				}
 
-				if (listaGestor.Count > 0)
+				if (tareasBusqueda.Count > 0)
 				{
-					if (drmSeleccionado == JuegoDRM.NoEspecificado)
-					{
-						listaGestor = listaGestor.OrderByDescending(juego => juego.DRMs.Count > 0 ? juego.DRMs.Sum(x => Convert.ToInt32(x.JugadoTiempo)) : 0).ThenBy(juego => juego.Nombre).ToList();
-					}
-					else
-					{
-						listaGestor = listaGestor.OrderByDescending(juego => juego.DRMs.Count > 0 ? juego.DRMs.Find(p => p.DRM == drmSeleccionado).JugadoTiempo : 0).ThenBy(juego => juego.Nombre).ToList();
-					}
+					await Task.WhenAll(tareasBusqueda);
 				}
+
+				OrdenarResultados();
 
 				cargado = true;
+            }
+        }
+    }
+
+    #region Inicio
+
+    private async Task ProcesarPlataformaSteam(List<APIs.Steam.SteamUsuarioJuego> juegosSteam)
+    {
+        List<string> idsSteam = juegosSteam.Select(juego => juego.Id.ToString()).ToList();
+        listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Steam, idsSteam);
+
+        var diccSteam = juegosSteam.ToDictionary(j => j.Id.ToString());
+
+        foreach (var juegoMostrar in listaGestor)
+        {
+            foreach (var drm in juegoMostrar.DRMs.Where(d => d.DRM == JuegoDRM.Steam))
+            {
+                if (diccSteam.TryGetValue(drm.Id, out var juegoSteam))
+                {
+                    drm.JugadoTiempo = juegoSteam.TiempoJugadoEnMinutos;
+                    drm.JugadoUltimaVez = juegoSteam.TiempoJugadoUltimaVez;
+                }
+            }
+        }
+    }
+
+    private async Task ProcesarPlataformaGog(List<APIs.GOG.GOGUsuarioJuego> juegosGog)
+    {
+		List<string> idsGog = juegosGog.Select(juego => juego.Id.ToString()).ToList();
+		listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.GOG, idsGog);
+
+		var diccGog = juegosGog.ToDictionary(j => j.Id.ToString());
+
+		foreach (var juegoMostrar in listaGestor)
+		{
+			foreach (var drm in juegoMostrar.DRMs.Where(d => d.DRM == JuegoDRM.GOG))
+			{
+				if (diccGog.TryGetValue(drm.Id, out var juegoGog))
+				{
+					drm.JugadoTiempo = juegoGog.TiempoJugadoEnMinutos;
+					drm.JugadoUltimaVez = juegoGog.TiempoJugadoUltimaVez;
+				}
 			}
 		}
 	}
+
+	private void OrdenarResultados()
+	{
+		if (listaGestor.Count == 0) 
+		{
+			return;
+		}
+
+		if (drmSeleccionado == JuegoDRM.NoEspecificado)
+		{
+			listaGestor = listaGestor
+				.OrderByDescending(j => j.DRMs.Count > 0 ? j.DRMs.Sum(x => Convert.ToInt32(x.JugadoTiempo)) : 0)
+				.ThenBy(j => j.Nombre)
+				.ToList();
+		}
+		else
+		{
+			listaGestor = listaGestor
+				.OrderByDescending(j => j.DRMs.FirstOrDefault(p => p.DRM == drmSeleccionado)?.JugadoTiempo ?? 0)
+				.ThenBy(j => j.Nombre)
+				.ToList();
+		}
+	}
+
+	#endregion
 
 	private string CambiarEstilo(JuegoDRM nuevoDrm)
 	{

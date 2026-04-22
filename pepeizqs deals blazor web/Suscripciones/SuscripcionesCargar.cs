@@ -19,6 +19,7 @@ namespace Suscripciones2
 		PlayStationPlus,
 		GTAPlus,
 		StadiaPro,
+		IndiePass,
 		Desconocido
 	}
 
@@ -42,7 +43,8 @@ namespace Suscripciones2
 				APIs.AmazonLuna.Suscripcion.GenerarClaims(),
 				APIs.PlayStation.Suscripcion.Generar(),
 				APIs.GTAPlus.Suscripcion.Generar(),
-				APIs.Stadia.Suscripcion.Generar()
+				APIs.Stadia.Suscripcion.Generar(),
+				APIs.IndiePass.Suscripcion.Generar()
 			};
 
 			return suscripciones;

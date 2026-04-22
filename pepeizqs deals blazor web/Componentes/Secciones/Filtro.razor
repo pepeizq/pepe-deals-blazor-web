@@ -486,7 +486,7 @@ else
 													string imagenCategoria = "/imagenes/categorias/" + categoria.Id + ".webp";
 												}
 
-												<img src="@imagenCategoria" style="width: 100%; height: 100%;" />
+												<img src="@imagenCategoria" style="width: 100%; height: 100%;" alt="@categoria.Contenido"/>
 											</div>
 										}
 
@@ -633,21 +633,28 @@ else
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
-			juegosUsuario ??= await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados);
+
+			idioma = tareaIdioma.Result;
+			juegosUsuario = tareaJuegos.Result;
+			deseadosUsuario = tareaDeseados.Result;
+
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-
-			deseadosUsuario ??= await BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 		}
 
-		CargarDeck();
-		CargarTipos();
-		CargarSistemas();
-		CargarEtiquetas();
-		CargarCategoriasyAccesibilidad();
+		Task tareaDeck = CargarDeck();
+		Task tareaTipos = CargarTipos();
+		Task tareaSistemas = CargarSistemas();
+		Task tareaEtiquetas = CargarEtiquetas();
+		Task tareaCategoriasyAccesibilidad = CargarCategoriasyAccesibilidad();
+
+		await Task.WhenAll(tareaDeck, tareaTipos, tareaSistemas, tareaEtiquetas, tareaCategoriasyAccesibilidad);
 
 		idsLista = Herramientas.Listados.Generar(ids);
 
@@ -784,7 +791,7 @@ else
 
 	private List<FiltroItem> decks = new List<FiltroItem>();
 
-	private void CargarDeck()
+	private async Task CargarDeck()
 	{
 		List<string> cadenas = new List<string>();
 		cadenas.Add("2");
@@ -820,7 +827,7 @@ else
 
 	private List<FiltroItem> tipos = new List<FiltroItem>();
 
-	private void CargarTipos()
+	private async Task CargarTipos()
 	{
 		List<string> cadenas = new List<string>();
 		cadenas.Add("0");
@@ -858,7 +865,7 @@ else
 
 	private List<FiltroItem> sistemas = new List<FiltroItem>();
 
-	private void CargarSistemas()
+	private async Task CargarSistemas()
 	{
 		List<string> cadenas = new List<string>();
 		cadenas.Add("1");
@@ -895,7 +902,7 @@ else
 
 	private List<FiltroItem> etiquetas = new List<FiltroItem>();
 
-	private void CargarEtiquetas()
+	private async Task CargarEtiquetas()
 	{
 		string json = Herramientas.Idiomas.CogerTodo(idioma, "Tags");
 
@@ -935,7 +942,7 @@ else
 	private List<FiltroItem> categorias = new List<FiltroItem>();
 	private List<FiltroItem> accesibilidad = new List<FiltroItem>();
 
-	private void CargarCategoriasyAccesibilidad()
+	private async Task CargarCategoriasyAccesibilidad()
 	{
 		string json = Herramientas.Idiomas.CogerTodo(idioma, "Categories");
 

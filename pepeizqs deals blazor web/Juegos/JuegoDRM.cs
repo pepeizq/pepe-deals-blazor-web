@@ -23,7 +23,8 @@ namespace Juegos
 		AmazonLuna,
 		PlayStation,
 		Stove,
-		Stadia
+		Stadia,
+		IndiePass
 	}
 
 	public static class JuegoDRM2
@@ -246,6 +247,18 @@ namespace Juegos
 			};
 
 			drms.Add(stadia);
+
+			//----------------------------
+
+			DRM indiepass = new DRM
+			{
+				Id = JuegoDRM.IndiePass,
+				Nombre = "Indie Pass",
+				Imagen = "/imagenes/drm/indiepass.webp",
+				Acepciones = new List<string> { "indie pass" }
+			};
+
+			drms.Add(indiepass);
 
 			//----------------------------
 

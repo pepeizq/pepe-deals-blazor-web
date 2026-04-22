@@ -365,30 +365,7 @@
         {
             cargado = false;
 
-            string idiomaSteam = "english";
-
-            if (string.IsNullOrEmpty(idioma) == false)
-            {
-                foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
-                {
-                    if (idioma2.SteamReseñas == true)
-                    {
-                        if (idioma2.Id.ToLower() == idioma.ToLower())
-                        {
-                            idiomaSteam = idioma2.SteamAPI;
-                        }
-
-                        foreach (var codigo in idioma2.Codigos)
-                        {
-                            if (codigo.ToLower() == idioma.ToLower())
-                            {
-                                idiomaSteam = idioma2.SteamAPI;
-                            }
-                        }
-                    }
-                }
-            }
-
+            string idiomaSteam = ObtenerIdiomaSteam(idioma);
             idiomaReseñas = idiomaSteam;
 
             if (await BaseDatos.Reseñas.Buscar.DebeModificarse(juego.Id, idiomaSteam) == true)
@@ -397,7 +374,12 @@
 
                 if (reseñas?.Reseñas?.Count > 0)
                 {
-                    await BaseDatos.Reseñas.Insertar.Ejecutar(juego.Id, reseñas.Sumario.TotalPositivos, reseñas.Sumario.TotalNegativos, idiomaSteam, JsonSerializer.Serialize(reseñas.Reseñas));
+                    await BaseDatos.Reseñas.Insertar.Ejecutar(
+                        juego.Id,
+                        reseñas.Sumario.TotalPositivos,
+                        reseñas.Sumario.TotalNegativos,
+                        idiomaSteam,
+                        JsonSerializer.Serialize(reseñas.Reseñas));
 
                     reseñasAmpliadas = await BaseDatos.Reseñas.Buscar.Cargar(juego.Id, idiomaSteam);
                 }
@@ -408,10 +390,30 @@
             }
 
             cargado = true;
-
             await InvokeAsync(StateHasChanged);
         }              
     }
+
+    #region Inicio
+
+    private string ObtenerIdiomaSteam(string idioma)
+    {
+        const string idiomaPorDefecto = "english";
+
+        if (string.IsNullOrEmpty(idioma))
+        {
+            return idiomaPorDefecto;
+        }
+
+        string idiomaLower = idioma.ToLower();
+
+        Herramientas.IdiomaClase idioma2 = Herramientas.Idiomas.ListadoIdiomasGenerar().FirstOrDefault(i => i.SteamReseñas == true &&
+                (i.Id.ToLower() == idiomaLower || i.Codigos.Any(c => c.ToLower() == idiomaLower)));
+
+        return idioma2?.SteamAPI ?? idiomaPorDefecto;
+    }
+
+    #endregion
 
     private async Task ReseñasIdioma(MouseEventArgs e, string idiomaSteam)
     {
