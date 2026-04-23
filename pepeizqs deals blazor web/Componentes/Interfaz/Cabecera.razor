@@ -1427,6 +1427,12 @@
     [JSInvokable]
     public async Task EventoTecleoBuscador(string texto)
     {
+        if (texto.Length < minimosCaracteresBusqueda)
+        {
+            await LimpiarResultados();
+            return;
+        }
+
         CancelarBusquedaAnterior();
     
         int busquedaId = ++busquedaActualId;
@@ -1434,14 +1440,11 @@
 
         try
         {
-            if (texto.Length < minimosCaracteresBusqueda)
+            await InvokeAsync(() =>
             {
-                await LimpiarResultados();
-                return;
-            }
-
-            cargandoBusqueda = true;
-            StateHasChanged();
+                cargandoBusqueda = true;
+                StateHasChanged();
+            });
 
             await Task.Delay(retraso, token);
 
@@ -1449,13 +1452,16 @@
         
             if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
-                List<Juego> resultados2 = resultados.juegos;
-                cantidadExcluidos = resultados.excluidos;
-   
-                ActualizarResultadosPorTipo(resultados2);
-                ActivarPrimeraPestañaDisponible();
-            
-                await ActualizarScrollBody(resultados2.Any());
+                await InvokeAsync(async () =>
+                {
+                    List<Juego> resultados2 = resultados.juegos;
+                    cantidadExcluidos = resultados.excluidos;
+
+                    ActualizarResultadosPorTipo(resultados2);
+                    ActivarPrimeraPestañaDisponible();
+
+                    await ActualizarScrollBody(resultados2.Any());
+                });
             }
         }
         catch
@@ -1477,40 +1483,36 @@
 
     private void ActualizarResultadosPorTipo(List<global::Juegos.Juego> resultados)
     {
-        foreach (PestañaBuscador pestaña in pestañasBuscador?.Values)
+        foreach (PestañaBuscador pestaña in pestañasBuscador.Values)
         {
             pestaña.resultados.Clear();
             pestaña.visible = false;
         }
 
-        var resultadosPorTipo = resultados.GroupBy(j => j.Tipo).ToDictionary(g => g.Key, g => g.ToList());
-
-        foreach (var (tipo, pestaña) in pestañasBuscador)
+        foreach (Juego juego in resultados)
         {
-            if (resultadosPorTipo.TryGetValue(tipo, out var nuevosResultados))
+            if (pestañasBuscador.TryGetValue(juego.Tipo, out var pestaña))
             {
-                var resultadosNuevos = nuevosResultados.Where(x => pestaña.resultados.Any(y => y.Id == x.Id) == false).ToList();
+                pestaña.resultados.Add(juego);
+            }
+        }
 
-                pestaña.resultados.AddRange(resultadosNuevos);
-                pestaña.visible = pestaña.resultados.Count > 0;
-            }
-            else
-            {
-                pestaña.visible = pestaña.resultados.Count > 0;
-            }
+        foreach (PestañaBuscador pestaña in pestañasBuscador.Values)
+        {
+            pestaña.visible = pestaña.resultados.Count > 0;
         }
     }
 
     private void ActivarPrimeraPestañaDisponible()
     {
-        foreach (var pestaña in pestañasBuscador.Values)
+        foreach (PestañaBuscador pestaña in pestañasBuscador.Values)
         {
             pestaña.activa = false;
         }
 
         var orden = new[] { JuegoTipo.Game, JuegoTipo.DLC, JuegoTipo.Music, JuegoTipo.Software, JuegoTipo.Curator, JuegoTipo.Bundle };
 
-        foreach (var tipo in orden)
+        foreach (JuegoTipo tipo in orden)
         {
             if (pestañasBuscador[tipo].visible)
             {

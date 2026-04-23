@@ -778,17 +778,7 @@ else
 
         if (string.IsNullOrEmpty(suscripcionSeleccionadaTexto) == false)
         {
-            foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
-            {
-                if (suscripcion.Id != Suscripciones2.SuscripcionTipo.Desconocido)
-                {
-                    if (Herramientas.EnlaceAdaptador.Nombre(suscripcion.Id.ToString().ToLower()) == suscripcionSeleccionadaTexto)
-                    {
-                        suscripcionSeleccionada = suscripcion.Id;
-                        break;
-                    }
-                }
-            }
+            suscripcionSeleccionada = Suscripciones2.SuscripcionesCargar.GenerarListado().FirstOrDefault(s => s.Id != Suscripciones2.SuscripcionTipo.Desconocido && Herramientas.EnlaceAdaptador.Nombre(s.Id.ToString().ToLower()) == suscripcionSeleccionadaTexto) ?.Id ?? Suscripciones2.SuscripcionTipo.Desconocido;
 
             if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
             {

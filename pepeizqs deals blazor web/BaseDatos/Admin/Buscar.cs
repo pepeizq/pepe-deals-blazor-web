@@ -274,7 +274,7 @@ namespace BaseDatos.Admin
 
 				foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
 				{
-					if (suscripcion.AdminAñadir == true)
+					if (suscripcion.AdminAñadir == false)
 					{
 						if (string.IsNullOrEmpty(sql) == true)
 						{
@@ -283,7 +283,7 @@ namespace BaseDatos.Admin
 						}
 						else
 						{
-							sql = sql + Environment.NewLine + $"UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
+							sql = sql + Environment.NewLine + $" UNION ALL SELECT id, fecha, mensaje AS Cantidad, valorAdicional as Valor1, valorAdicional2 as Valor2 FROM adminTiendas WHERE id='{suscripcion.Id}'";
 						}
 					}
 				}
@@ -301,7 +301,7 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Suscripciones", ex);
 			}
 
-			return new List<AdminTarea>();
+			return null;
 		}
 
 		public static async Task<List<AdminTarea>> TareasStreaming()
@@ -336,7 +336,7 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Admin Tareas Streaming", ex);
 			}
 
-			return new List<AdminTarea>();
+			return null;
 		}
 
 		public static async Task<List<AdminTarea>> TareasUltimos60Segundos(List<AdminTarea> tareas)

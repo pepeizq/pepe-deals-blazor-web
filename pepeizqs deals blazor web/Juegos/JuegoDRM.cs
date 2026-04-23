@@ -99,7 +99,7 @@ namespace Juegos
 				Id = JuegoDRM.Rockstar,
 				Nombre = "Rockstar Games Launcher",
 				Imagen = "/imagenes/drm/rockstar.webp",
-				Acepciones = new List<string> { "rockstar social club", "rockstar", "rockstar launcher", "rockstarsocialclub" }
+				Acepciones = new List<string> { "rockstar social club", "rockstar", "rockstar launcher", "rockstarsocialclub", "rockstarsocial" }
 			};
 
 			drms.Add(rockstar);

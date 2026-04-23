@@ -207,10 +207,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        tareasTiendas ??= await BaseDatos.Admin.Buscar.TareasTiendas();
-        tareasSuscripciones ??= await BaseDatos.Admin.Buscar.TareasSuscripciones();
-        tareasStreaming ??= await BaseDatos.Admin.Buscar.TareasStreaming();
-        tareasTiendasUS ??= await BaseDatos.Admin.Buscar.TareasTiendasUS();
+        Task<List<AdminTarea>> tareaTiendas = BaseDatos.Admin.Buscar.TareasTiendas();
+        Task<List<AdminTarea>> tareaSuscripciones = BaseDatos.Admin.Buscar.TareasSuscripciones();
+        Task<List<AdminTarea>> tareaStreaming = BaseDatos.Admin.Buscar.TareasStreaming();
+        Task<List<AdminTarea>> tareaTiendasUS = BaseDatos.Admin.Buscar.TareasTiendasUS();
+
+        await Task.WhenAll(tareaTiendas, tareaSuscripciones, tareaStreaming, tareaTiendasUS);
+
+        tareasTiendas = tareaTiendas.Result;
+        tareasSuscripciones = tareaSuscripciones.Result;
+        tareasStreaming = tareaStreaming.Result;
+        tareasTiendasUS = tareaTiendasUS.Result;
 
         Actualizar();
     }

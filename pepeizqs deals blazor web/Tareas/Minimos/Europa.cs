@@ -51,7 +51,7 @@ namespace Tareas.Minimos
 					{
 						await BaseDatos.Portada.Limpiar.Total(TiendaRegion.Europa);
 
-						foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
+						foreach (var tienda in TiendasCargar.GenerarListado())
 						{
 							List<Juego> juegosParaInsertar = new List<Juego>();
 

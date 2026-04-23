@@ -395,6 +395,10 @@ namespace Tareas
 						{
 							siguienteComprobacion = TimeSpan.FromHours(4);
 						}
+						else if (suscripcion.Id == APIs.IndiePass.Suscripcion.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(4);
+						}
 						else if (suscripcion.Id == APIs.PlayStation.Suscripcion.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(4);
@@ -427,6 +431,10 @@ namespace Tareas
 									else if (suscripcion.Id == APIs.GTAPlus.Suscripcion.Generar().Id)
 									{
 										await APIs.GTAPlus.Suscripcion.Buscar();
+									}
+									else if (suscripcion.Id == APIs.IndiePass.Suscripcion.Generar().Id)
+									{
+										await APIs.IndiePass.Suscripcion.Buscar();
 									}
 									else if (suscripcion.Id == APIs.PlayStation.Suscripcion.Generar().Id)
 									{
