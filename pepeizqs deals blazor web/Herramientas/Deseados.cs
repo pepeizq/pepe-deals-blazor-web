@@ -120,14 +120,14 @@ namespace Herramientas
 
 			if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
 			{
-				historico = juego.PrecioMinimosHistoricos.FirstOrDefault(h => h.DRM == drm);			
+				historico = juego.PrecioMinimosHistoricos.FirstOrDefault(h => h.DRM == drm);
 			}
-			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count	> 0)
+			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
 			{
 				historico = juego.PrecioMinimosHistoricosUS.FirstOrDefault(h => h.DRM == drm);
 			}
 
-			if (historico != null && Herramientas.OfertaActiva.Verificar(historico))
+			if (historico != null && Herramientas.OfertaActiva.Verificar(historico) && ExisteEnActuales(historico, juego, drm, region))
 			{
 				nuevoDeseado = new JuegoDeseadoMostrar
 				{
@@ -222,6 +222,29 @@ namespace Herramientas
 			AsignarReseñas(nuevoDeseado, juego.Analisis);
 
 			deseadosGestor.Add(nuevoDeseado);
+		}
+
+		private static bool ExisteEnActuales(JuegoPrecio historico, Juego juego, JuegoDRM drm, TiendaRegion region)
+		{
+			List<JuegoPrecio> preciosActuales = null;
+
+			if (region == TiendaRegion.Europa)
+			{
+				preciosActuales = juego.PrecioActualesTiendas;
+			}
+			else if (region == TiendaRegion.EstadosUnidos)
+			{
+				preciosActuales = juego.PrecioActualesTiendasUS;
+			}
+
+			if (preciosActuales?.Count == 0)
+			{
+				return false;
+			}
+
+			return preciosActuales.Any(a =>
+				a.Tienda == historico.Tienda && a.DRM == drm &&
+				(a.Precio == historico.Precio || (historico.PrecioCambiado > 0 && a.PrecioCambiado == historico.PrecioCambiado)));
 		}
 
 		private static void AsignarReseñas(JuegoDeseadoMostrar deseado, JuegoAnalisis analisis)

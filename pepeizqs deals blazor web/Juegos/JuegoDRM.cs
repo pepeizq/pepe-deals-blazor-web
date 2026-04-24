@@ -24,7 +24,8 @@ namespace Juegos
 		PlayStation,
 		Stove,
 		Stadia,
-		IndiePass
+		IndiePass,
+		ArenaNet
 	}
 
 	public static class JuegoDRM2
@@ -262,6 +263,18 @@ namespace Juegos
 
 			//----------------------------
 
+			DRM arenanet = new DRM
+			{
+				Id = JuegoDRM.ArenaNet,
+				Nombre = "Arena Net",
+				Imagen = "/imagenes/drm/arenanet.webp",
+				Acepciones = new List<string> { "arenanet", "arena net" }
+			};
+
+			drms.Add(arenanet);
+
+			//----------------------------
+
 			return drms;
 		}
 
@@ -276,6 +289,7 @@ namespace Juegos
 				if (drm.Id == drmBuscar)
 				{
 					texto = drm.Nombre;
+					break;
 				}
 			}
 
@@ -360,7 +374,6 @@ namespace Juegos
 					"all",
 					"android",
 					"antstream arcade",
-					"arenanet",
 					"asmjs",
 					"audio-download",
 					"desura",

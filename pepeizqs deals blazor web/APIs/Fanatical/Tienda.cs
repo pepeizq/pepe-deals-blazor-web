@@ -37,7 +37,8 @@ namespace APIs.Fanatical
 
 		public static string Referido(string enlace)
 		{
-			return enlace + "?ref=pepeizq";
+			string enlaceEncoded = Uri.EscapeDataString(enlace);
+			return "https://www.awin1.com/cread.php?awinmid=118821&awinaffid=2693824&ued=" + enlaceEncoded;
 		}
 
 		public static async Task BuscarOfertas(TiendaRegion region)

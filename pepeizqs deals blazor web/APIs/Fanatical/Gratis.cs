@@ -22,12 +22,13 @@
             return fanatical;
         }
 
-        public static string Referido(string enlace)
-        {
-            return enlace + "?ref=pepeizq";
-        }
+		public static string Referido(string enlace)
+		{
+			string enlaceEncoded = Uri.EscapeDataString(enlace);
+			return "https://www.awin1.com/cread.php?awinmid=118821&awinaffid=2693824&ued=" + enlaceEncoded;
+		}
 
-        public static Gratis2.Gratis GenerarAntiguo()
+		public static Gratis2.Gratis GenerarAntiguo()
         {
             Gratis2.Gratis fanatical = new Gratis2.Gratis
             {
