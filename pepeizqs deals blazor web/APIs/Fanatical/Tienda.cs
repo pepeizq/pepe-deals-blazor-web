@@ -7,7 +7,6 @@
 
 using Herramientas;
 using Juegos;
-using Microsoft.VisualBasic;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -41,189 +40,234 @@ namespace APIs.Fanatical
 			return "https://www.awin1.com/cread.php?awinmid=118821&awinaffid=2693824&ued=" + enlaceEncoded;
 		}
 
+		public static string ApiKey { get; set; }
+
 		public static async Task BuscarOfertas(TiendaRegion region)
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
-			string html = await Decompiladores.Estandar("https://feed.fanatical.com/feed");
+			int juegos2 = 0;
 
-			if (html != null)
+			string html = await Decompiladores.Estandar("https://www.fanatical.com/feeds/minimal-feed.jsonl?apikey=" + ApiKey);
+
+			if (string.IsNullOrEmpty(html) == false)
 			{
-				html = html.Replace("{" + Strings.ChrW(34) + "title" + Strings.ChrW(34), ",{" + Strings.ChrW(34) + "title" + Strings.ChrW(34));
-
-				html = html.Remove(0, 1);
-				html = "[" + html + "]";
-
-				List<FanaticalJuego> juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(html);
-
-				if (juegos?.Count > 0)
+				try
 				{
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (FanaticalJuego juego in juegos)
+					var lineas = html.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+					var opciones = new JsonSerializerOptions
 					{
-						bool autorizar = true;
+						PropertyNameCaseInsensitive = true,
+						UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+					};
 
-						if (juego.Regiones?.Count > 0)
-						{
-							autorizar = false;
+					int tamanioTanda = 500;
+					int totalLineas = lineas.Length;
+					int totalProcesado = 0;
 
-							foreach (string region2 in juego.Regiones)
-							{
-								if (region == TiendaRegion.Europa && region2 == "ES")
-								{
-									autorizar = true;
-								}
-								else if (region == TiendaRegion.EstadosUnidos && region2 == "US")
-								{
-									autorizar = true;
-								}
-							}
-						}
+					int arranque = await BaseDatos.Admin.Buscar.TiendasValorAdicional(region, Generar().Id, "valorAdicional");
 
-						if (juego.Disponible == false)
-						{
-							autorizar = false;
-						}
-
-						//if (juego.Tipo == "bundle")
-						//{
-						//	autorizar = false;
-						//}
-
-						if (autorizar == true)
-						{
-							string descuentoTexto = juego.Descuento?.ToString();
-
-							if (descuentoTexto != null)
-							{
-								if (descuentoTexto.Contains(".") == true)
-								{
-									int int1 = descuentoTexto.IndexOf(".");
-									descuentoTexto = descuentoTexto.Remove(int1, descuentoTexto.Length - int1);
-								}
-
-								int descuento = 0;
-
-								try
-								{
-									descuento = int.Parse(descuentoTexto);
-								}
-								catch { }
-
-								if (descuento > 0)
-								{
-									string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-									string imagen = juego.Imagen;
-
-									string enlace = juego.Enlace;
-
-									decimal precioRebajado = 0;
-
-									if (region == TiendaRegion.Europa)
-									{
-										precioRebajado = juego.PrecioRebajado?.EUR ?? 0;
-									}
-									else if (region == TiendaRegion.EstadosUnidos)
-									{
-										precioRebajado = juego.PrecioRebajado?.USD ?? 0;
-									}
-
-									if (juego.DRMs?.Count > 0 && precioRebajado > 0)
-									{
-										string drmTexto = juego.DRMs[0];
-										JuegoDRM drm = JuegoDRM2.Traducir(drmTexto, Generar().Id);
-
-										JuegoPrecio oferta = new JuegoPrecio
-										{
-											Nombre = nombre,
-											Enlace = enlace,
-											Imagen = imagen,
-											Moneda = JuegoMoneda.Euro,
-											Precio = precioRebajado,
-											Descuento = descuento,
-											Tienda = Generar().Id,
-											DRM = drm,
-											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now
-										};
-
-										if (region == TiendaRegion.EstadosUnidos)
-										{
-											oferta.Moneda = JuegoMoneda.Dolar;
-										}
-
-										if (juego.FechaTermina != null)
-										{
-											if (Convert.ToDouble(juego.FechaTermina) > 0)
-											{
-												DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-												fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
-												fechaTermina = fechaTermina.ToLocalTime();
-
-												oferta.FechaTermina = fechaTermina;
-											}
-										}
-
-										ofertas.Add(oferta);
-									}
-								}
-							}
-						}
+					if (arranque < 0)
+					{
+						arranque = 0;
 					}
 
-					if (ofertas?.Count > 0)
+					for (int i = arranque; i < lineas.Length; i += tamanioTanda)
 					{
-						int juegos2 = 0;
+						var tanda = lineas.Skip(i).Take(tamanioTanda);
+						string tandaJson = "[" + string.Join(",", tanda.Where(l => !string.IsNullOrWhiteSpace(l))) + "]";
 
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
+						List<FanaticalJuego> juegos = null;
 
-						foreach (var lote in lotes)
+						try
 						{
-							try
+							juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(tandaJson, opciones);
+						}
+						catch (JsonException ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, false);
+						}
+
+						if (juegos?.Count > 0)
+						{
+							int ofertasEnEstaTanda = await ProcesarTanda(juegos, region);
+							juegos2 += ofertasEnEstaTanda;
+
+							await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+						}
+
+						totalProcesado += tamanioTanda;
+
+						int proximaTanda = i + tamanioTanda;
+
+						if (proximaTanda >= totalLineas)
+						{
+							await BaseDatos.Admin.Actualizar.TiendasValorAdicional(region, Generar().Id, "valorAdicional", 0);
+						}
+						else
+						{
+							await BaseDatos.Admin.Actualizar.TiendasValorAdicional(region, Generar().Id, "valorAdicional", proximaTanda);
+						}
+
+						juegos.Clear();
+						juegos = null;
+						GC.Collect();
+					}
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex, false);
+				}
+			}
+		}
+
+		private static async Task<int> ProcesarTanda(List<FanaticalJuego> juegos, TiendaRegion region)
+		{
+			List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+
+			foreach (FanaticalJuego juego in juegos)
+			{
+				bool autorizar = true;
+
+				if (juego.Regiones?.Count > 0)
+				{
+					autorizar = false;
+					foreach (string region2 in juego.Regiones)
+					{
+						if (region == TiendaRegion.Europa && region2 == "ES")
+						{
+							autorizar = true;
+						}
+						else if (region == TiendaRegion.EstadosUnidos && region2 == "US")
+						{
+							autorizar = true;
+						}
+					}
+				}
+
+				if (juego.Disponible == false)
+				{
+					autorizar = false;
+				}
+
+				if (autorizar == true)
+				{
+					string descuentoTexto = juego.Descuento?.ToString();
+
+					if (descuentoTexto != null)
+					{
+						if (descuentoTexto.Contains("."))
+						{
+							int int1 = descuentoTexto.IndexOf(".");
+							descuentoTexto = descuentoTexto.Remove(int1, descuentoTexto.Length - int1);
+						}
+
+						int descuento = 0;
+
+						try
+						{
+							descuento = int.Parse(descuentoTexto);
+						}
+						catch { }
+
+						if (descuento > 0)
+						{
+							string nombre = WebUtility.HtmlDecode(juego.Nombre);
+							string imagen = juego.Imagen;
+							string enlace = juego.Enlace;
+							enlace = enlace.Replace("/en/", "/");
+
+							decimal precioRebajado = 0;
+
+							if (region == TiendaRegion.Europa)
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+								precioRebajado = juego.PrecioRebajado?.GetValueOrDefault("EUR") ?? 0;
 							}
-							catch (Exception ex)
+							else if (region == TiendaRegion.EstadosUnidos)
 							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								precioRebajado = juego.PrecioRebajado?.GetValueOrDefault("USD") ?? 0;
 							}
 
-							juegos2 += lote.Count;
+							if (string.IsNullOrEmpty(juego.DRM) == false && precioRebajado > 0)
+							{
+								string drmTexto = juego.DRM;
+								JuegoDRM drm = JuegoDRM2.Traducir(drmTexto, Generar().Id);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								JuegoPrecio oferta = new JuegoPrecio
+								{
+									Nombre = nombre,
+									Enlace = enlace,
+									Imagen = imagen,
+									Moneda = JuegoMoneda.Euro,
+									Precio = precioRebajado,
+									Descuento = descuento,
+									Tienda = Generar().Id,
+									DRM = drm,
+									FechaDetectado = DateTime.Now,
+									FechaActualizacion = DateTime.Now
+								};
+
+								if (region == TiendaRegion.EstadosUnidos)
+								{
+									oferta.Moneda = JuegoMoneda.Dolar;
+								}
+
+								if (juego.FechaTermina != null)
+								{
+									if (Convert.ToDouble(juego.FechaTermina) > 0)
+									{
+										DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+										fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
+										fechaTermina = fechaTermina.ToLocalTime();
+
+										oferta.FechaTermina = fechaTermina;
+									}
+								}
+
+								ofertas.Add(oferta);
 							}
 						}
 					}
 				}
 			}
+
+			if (ofertas?.Count > 0)
+			{
+				try
+				{
+					await BaseDatos.Tiendas.Comprobar.Resto(region, ofertas);
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+				}
+			}
+
+			// ✅ DEVOLVER EL NÚMERO DE OFERTAS PROCESADAS
+			int ofertasProcessadas = ofertas.Count;
+
+			ofertas.Clear();
+			ofertas = null;
+
+			return ofertasProcessadas;
 		}
 	}
 
-    #region Clases
+	#region Clases
 
-    public class FanaticalJuego
+	public class FanaticalJuego
 	{
-		[JsonPropertyName("title")]
+		[JsonPropertyName("product_id")]
+		public string ProductId { get; set; }
+
+		[JsonPropertyName("name")]
 		public string Nombre { get; set; }
 
 		[JsonPropertyName("sku")]
-		public string Id { get; set; }
+		public string SKU { get; set; }
 
 		[JsonPropertyName("drm")]
-		public List<string> DRMs { get; set; }
+		public string DRM { get; set; }  
 
 		[JsonPropertyName("image")]
 		public string Imagen { get; set; }
@@ -234,82 +278,62 @@ namespace APIs.Fanatical
 		[JsonPropertyName("discount_percent")]
 		public decimal? Descuento { get; set; }
 
-		[JsonPropertyName("expiry")]
-		public string FechaTermina { get; set; }
+		[JsonPropertyName("valid_until")]
+		public long? FechaTermina { get; set; }
 
-		[JsonPropertyName("current_price")]
-		public FanaticalJuegoPrecio PrecioRebajado { get; set; }
+		[JsonPropertyName("price")]
+		public Dictionary<string, decimal?> PrecioRebajado { get; set; }
 
-		[JsonPropertyName("regular_price")]
-		public FanaticalJuegoPrecio PrecioBase { get; set; }
+		[JsonPropertyName("full_price")]
+		public Dictionary<string, decimal?> PrecioBase { get; set; }
 
-		[JsonPropertyName("regions")]
+		[JsonPropertyName("included_regions")]
 		public List<string> Regiones { get; set; }
 
-		[JsonPropertyName("bundle_games")]
-		public FanaticalJuegoBundle Bundle { get; set; }
+		[JsonPropertyName("in_stock")]
+		public bool Disponible { get; set; }
 
 		[JsonPropertyName("type")]
 		public string Tipo { get; set; }
 
-		[JsonPropertyName("in_stock")]
-		public bool Disponible { get; set; }
+		[JsonPropertyName("bundle_tiers")]
+		public List<FanaticalBundleTier> BundleTiers { get; set; }
 	}
 
-	public class FanaticalJuegoPrecio
+	public class FanaticalBundleTier
 	{
-		[JsonPropertyName("USD")]
-		public decimal? USD { get; set; }
+		[JsonPropertyName("tier_product_count")]
+		public int ProductosPorTier { get; set; }
 
-		[JsonPropertyName("GBP")]
-		public decimal? GBP { get; set; }
+		[JsonPropertyName("products")]
+		public List<FanaticalBundleProducto> Productos { get; set; } = new List<FanaticalBundleProducto>();
 
-		[JsonPropertyName("EUR")]
-		public decimal? EUR { get; set; }
+		[JsonPropertyName("price")]
+		public Dictionary<string, decimal> Precio { get; set; }
 	}
 
-	public class FanaticalJuegoBundle
+	public class FanaticalBundleProducto
 	{
-		[JsonPropertyName("1")]
-		public FanaticalJuegoBundleTier Tier1 { get; set; }
+		[JsonPropertyName("product_id")]
+		public string ProductId { get; set; }
 
-		[JsonPropertyName("2")]
-		public FanaticalJuegoBundleTier Tier2 { get; set; }
-
-		[JsonPropertyName("3")]
-		public FanaticalJuegoBundleTier Tier3 { get; set; }
-	}
-
-	public class FanaticalJuegoBundleTier
-	{
-		[JsonPropertyName("items")]
-		public List<FanaticalJuegoBundleJuego> Juegos { get; set; }
-	}
-
-	public class FanaticalJuegoBundleJuego
-	{
-		[JsonPropertyName("steam_id")]
-		public int? SteamId { get; set; }
-	}
-
-	//--------------------------------------------------------------
-
-	public class FanaticalBundle
-	{
 		[JsonPropertyName("name")]
 		public string Nombre { get; set; }
 
 		[JsonPropertyName("slug")]
 		public string Slug { get; set; }
 
-		[JsonPropertyName("cover")]
+		[JsonPropertyName("type")]
+		public string Tipo { get; set; }
+
+		[JsonPropertyName("drm")]
+		public string DRM { get; set; }
+
+		[JsonPropertyName("steam_id")]
+		public int? SteamId { get; set; }
+
+		[JsonPropertyName("image")]
 		public string Imagen { get; set; }
-
-		[JsonPropertyName("price")]
-		public FanaticalJuegoPrecio Precio { get; set; }
-
-		[JsonPropertyName("available_valid_until")]
-		public string FechaTermina { get; set; }
 	}
 
     #endregion

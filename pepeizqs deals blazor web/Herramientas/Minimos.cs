@@ -242,25 +242,25 @@ namespace Herramientas
 						}
 
 						drmPreparado = drmPreparado + mensaje;
+					}
 
-						if (listaHistoricos?.Count > 0)
+					if (listaHistoricos?.Count > 0)
+					{
+						int veces = ContarVecesHistorico(historicosDRM[0], listaHistoricos, drm, region);
+
+						if (veces > 0)
 						{
-							int veces = ContarVecesHistorico(historicosDRM[0], listaHistoricos, drm, region);
-
-							if (veces > 0)
+							if (veces == 1)
 							{
-								if (veces == 1)
-								{
-									drmPreparado = drmPreparado + " (" +
-										string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String85", "Game"),
-										veces.ToString()) + ")";
-								}
-								else
-								{
-									drmPreparado = drmPreparado + " (" +
-										string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String86", "Game"),
-										veces.ToString()) + ")";
-								}
+								drmPreparado = drmPreparado + " (" +
+									string.Format(Idiomas.BuscarTexto(idioma, "String85", "Game"),
+									veces.ToString()) + ")";
+							}
+							else
+							{
+								drmPreparado = drmPreparado + " (" +
+									string.Format(Idiomas.BuscarTexto(idioma, "String86", "Game"),
+									veces.ToString()) + ")";
 							}
 						}
 					}
@@ -270,54 +270,47 @@ namespace Herramientas
 			return drmPreparado;
 		}
 
-		// Método para verificar si un histórico existe en actuales
 		private static bool ExisteEnActuales(JuegoPrecio historico, List<JuegoPrecio> actuales, JuegoDRM drm)
 		{
 			if (actuales?.Count == 0)
+			{
 				return false;
+			}
 
 			return actuales.Any(a =>
-				a.Tienda == historico.Tienda &&
-				a.DRM == drm &&
-				(a.Precio == historico.Precio ||
-				 (historico.PrecioCambiado > 0 && a.PrecioCambiado == historico.PrecioCambiado)));
+				a.Tienda == historico.Tienda && a.DRM == drm &&
+				(a.Precio == historico.Precio || (historico.PrecioCambiado > 0 && a.PrecioCambiado == historico.PrecioCambiado)));
 		}
 
-		// Método para contar cuántas veces ha tenido ese precio histórico
-		private static int ContarVecesHistorico(JuegoPrecio historico, List<JuegoHistorico> listaHistoricos,
-			JuegoDRM drm, TiendaRegion region)
+		private static int ContarVecesHistorico(JuegoPrecio historico, List<JuegoHistorico> listaHistoricos, JuegoDRM drm, TiendaRegion region)
 		{
 			if (listaHistoricos?.Count == 0)
+			{ 
 				return 0;
+			}
 
 			int contador = 0;
 
-			foreach (var juegoHist in listaHistoricos)
+			foreach (var historico2 in listaHistoricos)
 			{
-				if (juegoHist.DRM == drm)
+				if (historico2.DRM == drm)
 				{
 					bool precioCoincide = false;
 
 					if (region == TiendaRegion.Europa)
 					{
-						precioCoincide = (juegoHist.Precio == historico.Precio &&
-										  historico.Moneda == Herramientas.JuegoMoneda.Euro) ||
-										 (juegoHist.Precio == historico.PrecioCambiado &&
-										  historico.PrecioCambiado > 0 &&
-										  historico.Moneda != Herramientas.JuegoMoneda.Euro);
+						precioCoincide = (historico2.Precio == historico.Precio && historico.Moneda == JuegoMoneda.Euro) ||
+										 (historico2.Precio == historico.PrecioCambiado && historico.PrecioCambiado > 0 && historico.Moneda != JuegoMoneda.Euro);
 					}
 					else if (region == TiendaRegion.EstadosUnidos)
 					{
-						precioCoincide = (juegoHist.Precio == historico.Precio &&
-										  historico.Moneda == Herramientas.JuegoMoneda.Dolar) ||
-										 (juegoHist.Precio == historico.PrecioCambiado &&
-										  historico.PrecioCambiado > 0 &&
-										  historico.Moneda != Herramientas.JuegoMoneda.Dolar);
+						precioCoincide = (historico2.Precio == historico.Precio && historico.Moneda == JuegoMoneda.Dolar) ||
+										 (historico2.Precio == historico.PrecioCambiado && historico.PrecioCambiado > 0 && historico.Moneda != JuegoMoneda.Dolar);
 					}
 
-					if (precioCoincide)
+					if (precioCoincide == true)
 					{
-						contador++;
+						contador += 1;
 					}
 				}
 			}

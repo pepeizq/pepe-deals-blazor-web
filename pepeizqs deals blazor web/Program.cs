@@ -112,6 +112,8 @@ builder.Services.AddAuthentication(opciones =>
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 Herramientas.BaseDatos.cadenaConexion = conexionTexto;
 
+APIs.Fanatical.Tienda.ApiKey = builder.Configuration.GetValue<string>("FanaticalAPI:Key");
+
 builder.Services.AddDbContextPool<pepeizqs_deals_webContext>(opciones => {
 	opciones.UseSqlServer(conexionTexto, opciones2 =>
 	{

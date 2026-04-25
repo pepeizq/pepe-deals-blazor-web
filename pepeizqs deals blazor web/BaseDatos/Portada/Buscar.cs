@@ -118,16 +118,22 @@ AND (
 				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
 				(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 
 					CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE()) AND 
-				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 1999 AND 
+				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 999 AND 
 				(NOT EXISTS (
 					SELECT 1
 					FROM bundles b
 					INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id
 					WHERE bj.JuegoId = j.idMaestra
-					AND b.fechaTermina > DATEADD(YEAR, -1, GETDATE())
+					AND b.fechaTermina > DATEADD(MONTH, -6, GETDATE())
 				) OR j.bundles IS NULL) AND 
 				NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = j.idMaestra AND gratis.DRM = 0) AND 
-				NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = j.idMaestra AND suscripciones.DRM = 0) 
+				NOT EXISTS (
+					SELECT 1 
+					FROM suscripciones 
+					WHERE suscripciones.juegoId = j.idMaestra 
+					AND suscripciones.DRM = 0
+					AND suscripciones.fechaTermina > DATEADD(MONTH, -6, GETDATE())
+				) 
 				) AND 
 				(j.ocultarPortada IS NULL OR j.ocultarPortada = 'false') 
 				ORDER BY NEWID()";

@@ -87,116 +87,116 @@ namespace APIs.Fanatical
 			}
             else
             {
-				string html = await Decompiladores.Estandar("https://feed.fanatical.com/feed");
+				//string html = await Decompiladores.Estandar("https://feed.fanatical.com/feed");
 
-				if (html != null)
-				{
-					html = html.Replace("{" + Strings.ChrW(34) + "title" + Strings.ChrW(34), ",{" + Strings.ChrW(34) + "title" + Strings.ChrW(34));
+				//if (html != null)
+				//{
+				//	html = html.Replace("{" + Strings.ChrW(34) + "title" + Strings.ChrW(34), ",{" + Strings.ChrW(34) + "title" + Strings.ChrW(34));
 
-					html = html.Remove(0, 1);
-					html = "[" + html + "]";
+				//	html = html.Remove(0, 1);
+				//	html = "[" + html + "]";
 
-					List<FanaticalJuego> juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(html);
+				//	List<FanaticalJuego> juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(html);
 
-					if (juegos != null)
-					{
-						if (juegos.Count > 0)
-						{
-							foreach (var juego in juegos)
-							{
-								if (juego.Enlace == bundle.Enlace)
-								{
-									bundle.Nombre = WebUtility.HtmlDecode(juego.Nombre);
+				//	if (juegos != null)
+				//	{
+				//		if (juegos.Count > 0)
+				//		{
+				//			foreach (var juego in juegos)
+				//			{
+				//				if (juego.Enlace == bundle.Enlace)
+				//				{
+				//					bundle.Nombre = WebUtility.HtmlDecode(juego.Nombre);
 
-									string imagen = juego.Imagen;
-									imagen = imagen.Replace("/400x225/", "/1280x720/");
-									bundle.Imagen = imagen;
-									bundle.ImagenNoticia = imagen;
+				//					string imagen = juego.Imagen;
+				//					imagen = imagen.Replace("/400x225/", "/1280x720/");
+				//					bundle.Imagen = imagen;
+				//					bundle.ImagenNoticia = imagen;
 
-									DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-									fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
-									fechaTermina = fechaTermina.ToLocalTime();
+				//					DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+				//					fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
+				//					fechaTermina = fechaTermina.ToLocalTime();
 
-									bundle.FechaTermina = Convert.ToDateTime(fechaTermina);
+				//					bundle.FechaTermina = Convert.ToDateTime(fechaTermina);
 
-									if (bundle.Tiers == null)
-									{
-										bundle.Tiers = new List<Bundles2.BundleTier>();
+				//					if (bundle.Tiers == null)
+				//					{
+				//						bundle.Tiers = new List<Bundles2.BundleTier>();
 
-										Bundles2.BundleTier tier1 = new Bundles2.BundleTier
-										{
-											Posicion = 1,
-											Precio = juego.PrecioRebajado.EUR?.ToString()
-										};
+				//						Bundles2.BundleTier tier1 = new Bundles2.BundleTier
+				//						{
+				//							Posicion = 1,
+				//							Precio = juego.PrecioRebajado.EUR?.ToString()
+				//						};
 
-										bundle.Tiers.Add(tier1);
-									}
+				//						bundle.Tiers.Add(tier1);
+				//					}
 
-									ComprobarTierBundle(bundle, juego.Bundle.Tier1);
-									ComprobarTierBundle(bundle, juego.Bundle.Tier2);
-									ComprobarTierBundle(bundle, juego.Bundle.Tier3);
-								}
-							}
-						}
-					}
-				}
+				//					ComprobarTierBundle(bundle, juego.Bundle.Tier1);
+				//					ComprobarTierBundle(bundle, juego.Bundle.Tier2);
+				//					ComprobarTierBundle(bundle, juego.Bundle.Tier3);
+				//				}
+				//			}
+				//		}
+				//	}
+				//}
 			}
 
             return bundle;
 		}
 	
-		private static async void ComprobarTierBundle(Bundles2.Bundle bundle, FanaticalJuegoBundleTier tier)
-		{
-			if (tier != null)
-			{
-				if (tier.Juegos?.Count > 0)
-				{
-					foreach (var juegob in tier.Juegos)
-					{
-						if (juegob.SteamId != null)
-						{
-							if (juegob.SteamId > 0)
-							{
-								Juegos.Juego juegoc = await BaseDatos.Juegos.Buscar.UnJuego(null, juegob.SteamId?.ToString());
+		//private static async void ComprobarTierBundle(Bundles2.Bundle bundle, FanaticalJuegoBundleTier tier)
+		//{
+		//	if (tier != null)
+		//	{
+		//		if (tier.Juegos?.Count > 0)
+		//		{
+		//			foreach (var juegob in tier.Juegos)
+		//			{
+		//				if (juegob.SteamId != null)
+		//				{
+		//					if (juegob.SteamId > 0)
+		//					{
+		//						Juegos.Juego juegoc = await BaseDatos.Juegos.Buscar.UnJuego(null, juegob.SteamId?.ToString());
 
-								if (juegoc != null)
-								{
-									if (bundle.Juegos == null)
-									{
-										bundle.Juegos = new List<Bundles2.BundleJuego>();
-									}
+		//						if (juegoc != null)
+		//						{
+		//							if (bundle.Juegos == null)
+		//							{
+		//								bundle.Juegos = new List<Bundles2.BundleJuego>();
+		//							}
 
-									Bundles2.BundleJuego juegod = new Bundles2.BundleJuego();
+		//							Bundles2.BundleJuego juegod = new Bundles2.BundleJuego();
 
-									juegod.JuegoId = juegoc.Id.ToString();
-									juegod.Nombre = juegoc.Nombre;
-									juegod.Imagen = juegoc.Imagenes.Capsule_231x87;
-									juegod.DRM = Juegos.JuegoDRM.Steam;
-									juegod.Tier = bundle.Tiers[0];
+		//							juegod.JuegoId = juegoc.Id.ToString();
+		//							juegod.Nombre = juegoc.Nombre;
+		//							juegod.Imagen = juegoc.Imagenes.Capsule_231x87;
+		//							juegod.DRM = Juegos.JuegoDRM.Steam;
+		//							juegod.Tier = bundle.Tiers[0];
 
-									bool añadir = true;
+		//							bool añadir = true;
 
-									if (bundle.Juegos.Count > 0)
-									{
-										foreach (var juegoe in bundle.Juegos)
-										{
-											if (juegoe.JuegoId == juegod.JuegoId)
-											{
-												añadir = false;
-											}
-										}
-									}
+		//							if (bundle.Juegos.Count > 0)
+		//							{
+		//								foreach (var juegoe in bundle.Juegos)
+		//								{
+		//									if (juegoe.JuegoId == juegod.JuegoId)
+		//									{
+		//										añadir = false;
+		//									}
+		//								}
+		//							}
 
-									if (añadir == true)
-									{
-										bundle.Juegos.Add(juegod);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		//							if (añadir == true)
+		//							{
+		//								bundle.Juegos.Add(juegod);
+		//							}
+		//						}
+		//					}
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 	}
 }
