@@ -54,8 +54,8 @@ namespace APIs.Fanatical
 			{
 				try
 				{
-					var lineas = html.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-					var opciones = new JsonSerializerOptions
+					string[] lineas = html.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+					JsonSerializerOptions opciones = new JsonSerializerOptions
 					{
 						PropertyNameCaseInsensitive = true,
 						UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement

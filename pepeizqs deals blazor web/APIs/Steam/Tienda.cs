@@ -66,6 +66,11 @@ namespace APIs.Steam
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, Generar().Id, DateTime.Now, 0);
 
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
 			int juegos = 0;
 
 			bool rapido = false;
@@ -98,7 +103,7 @@ namespace APIs.Steam
 
 					try
 					{
-						SteamQueryAPI datos = JsonSerializer.Deserialize<SteamQueryAPI>(html2);
+						SteamQueryAPI datos = JsonSerializer.Deserialize<SteamQueryAPI>(html2, opciones);
 
 						if (datos != null)
 						{
@@ -148,7 +153,7 @@ namespace APIs.Steam
 
 					try
 					{
-						SteamQueryAPI datos = JsonSerializer.Deserialize<SteamQueryAPI>(html2);
+						SteamQueryAPI datos = JsonSerializer.Deserialize<SteamQueryAPI>(html2, opciones);
 
 						if (datos != null)
 						{
@@ -422,6 +427,11 @@ namespace APIs.Steam
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
 			int arranque = 0;
 			int tope = 1000;
 
@@ -472,8 +482,8 @@ namespace APIs.Steam
 
 					if (string.IsNullOrEmpty(html) == false)
 					{
-						var resultado = JsonSerializer.Deserialize<SteamStoreQueryRoot>(html);
-						var juegos = resultado?.Respuesta?.TiendaResultados;
+						SteamStoreQueryRoot resultado = JsonSerializer.Deserialize<SteamStoreQueryRoot>(html, opciones);
+						List<SteamStoreItem> juegos = resultado?.Respuesta?.TiendaResultados;
 
 						tope = (int)resultado?.Respuesta?.Metadata?.CantidadTotal;
 

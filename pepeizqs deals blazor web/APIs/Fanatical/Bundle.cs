@@ -1,9 +1,10 @@
 ﻿#nullable disable
 
 using Herramientas;
-using Microsoft.VisualBasic;
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using Tiendas2;
 
 namespace APIs.Fanatical
 {
@@ -44,18 +45,156 @@ namespace APIs.Fanatical
 
 		public static async Task<Bundles2.Bundle> ExtraerDatos(Bundles2.Bundle bundle)
 		{
+			string html = await Decompiladores.Estandar("https://www.fanatical.com/feeds/minimal-feed.jsonl?apikey=" + Tienda.ApiKey);
+
+			if (string.IsNullOrEmpty(html) == false)
+			{
+				string[] lineas = html.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+				JsonSerializerOptions opciones = new JsonSerializerOptions
+				{
+					PropertyNameCaseInsensitive = true,
+					UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+				};
+
+				string enlaceBuscar = bundle.Enlace;
+
+				if (enlaceBuscar.Contains("https://www.fanatical.com/en/") == false)
+				{
+					enlaceBuscar = enlaceBuscar.Replace("https://www.fanatical.com/", "https://www.fanatical.com/en/");
+				}
+
+				for (int i = 0; i < lineas.Length; i += 50)
+				{
+					var tanda = lineas.Skip(i).Take(50);
+					string tandaJson = "[" + string.Join(",", tanda.Where(l => !string.IsNullOrWhiteSpace(l))) + "]";
+
+					List<FanaticalJuego> juegos = null;
+
+					try
+					{
+						juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(tandaJson, opciones);
+					}
+					catch (JsonException ex)
+					{
+						BaseDatos.Errores.Insertar.Mensaje(Tienda.Generar().Id, ex, false);
+					}
+
+					if (juegos?.Count > 0)
+					{
+						foreach (var juego in juegos)
+						{
+							if (juego.Enlace.Contains(enlaceBuscar) == true)
+							{
+								bundle.Nombre = WebUtility.HtmlDecode(juego.Nombre);
+
+								string imagen = juego.Imagen;
+								bundle.Imagen = imagen;
+								bundle.ImagenNoticia = imagen;
+
+								DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+								fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
+								fechaTermina = fechaTermina.ToLocalTime();
+								bundle.FechaTermina = Convert.ToDateTime(fechaTermina);
+
+								if (bundle.Enlace.Contains("/pick-and-mix/") == true)
+								{
+									bundle.Pick = true;
+								}
+
+								int j = 0;
+								foreach (var tier in juego.BundleTiers)
+								{
+									j += 1;
+
+									if (bundle.Tiers == null)
+									{
+										bundle.Tiers = new List<Bundles2.BundleTier>();
+									}
+
+									Bundles2.BundleTier tierNuevo = new Bundles2.BundleTier
+									{
+										Posicion = j,
+										Precio = tier.Precio?.GetValueOrDefault("EUR").ToString() ?? "0"
+									};
+
+									if (tierNuevo.Precio.Contains(".") == false)
+									{
+										tierNuevo.Precio = tierNuevo.Precio + ".00";
+									}
+
+									if (bundle.Pick == true)
+									{
+										tierNuevo.CantidadJuegos = tier.ProductosPorTier;
+									}
+
+									bundle.Tiers.Add(tierNuevo);
+
+									var juegosBundle = tier.Productos.Where(p => p.SteamId != null && p.SteamId > 0).ToList();
+									List<int> juegosBundleSteam = juegosBundle.Select(j => j.SteamId ?? 0).ToList();
+									List<Juegos.Juego> juegosBundleWeb = await BaseDatos.Juegos.Buscar.MultiplesJuegosSteam2(TiendaRegion.Europa, juegosBundleSteam);
+
+									if (juegosBundleWeb?.Count > 0)
+									{
+										foreach (var juegob in juegosBundleWeb)
+										{
+											if (bundle.Juegos == null)
+											{
+												bundle.Juegos = new List<Bundles2.BundleJuego>();
+											}
+
+											Bundles2.BundleJuego juegod = new Bundles2.BundleJuego
+											{
+												JuegoId = juegob.Id.ToString(),
+												Nombre = juegob.Nombre,
+												Imagen = juegob.Imagenes.Capsule_231x87,
+												DRM = Juegos.JuegoDRM.Steam,
+												Tier = tierNuevo
+											};
+
+											bool añadir = true;
+
+											if (bundle.Juegos.Count > 0)
+											{
+												foreach (var juegoe in bundle.Juegos)
+												{
+													if (juegoe.JuegoId == juegod.JuegoId)
+													{
+														añadir = false;
+														break;
+													}
+												}
+											}
+
+											if (añadir == true)
+											{
+												bundle.Juegos.Add(juegod);
+											}
+										}
+									}
+								}
+
+								return bundle;
+							}
+						}
+					}
+
+					juegos.Clear();
+					juegos = null;
+				}
+			}
+
 			if (bundle.Enlace.Contains("/pick-and-mix/") == true)
 			{
 				bundle.Pick = true;
 
-				string html = await Decompiladores.Estandar(bundle.Enlace);
+				string html2 = await Decompiladores.Estandar(bundle.Enlace);
 
-				if (html != null)
+				if (string.IsNullOrEmpty(html2) == false)
 				{
-					if (html.Contains("<title>") == true)
+					if (html2.Contains("<title>") == true)
 					{
-						int int1 = html.IndexOf("<title>");
-						string temp1 = html.Remove(0, int1 + 7);
+						int int1 = html2.IndexOf("<title>");
+						string temp1 = html2.Remove(0, int1 + 7);
 
 						int int2 = temp1.IndexOf("</title>");
 						string temp2 = temp1.Remove(int2, temp1.Length - int2);
@@ -69,9 +208,9 @@ namespace APIs.Fanatical
 						bundle.Nombre = temp2.Trim();
 					}
 
-					if (html.Contains("<img srcset=") == true)
+					if (html2.Contains("<img srcset=") == true)
 					{
-						int int1 = html.LastIndexOf("<img srcset=");
+						int int1 = html2.LastIndexOf("<img srcset=");
 						string temp1 = html.Remove(0, int1 + 7);
 
 						int int2 = temp1.IndexOf("https://fanatical");
@@ -85,118 +224,8 @@ namespace APIs.Fanatical
 					}
 				}
 			}
-            else
-            {
-				//string html = await Decompiladores.Estandar("https://feed.fanatical.com/feed");
 
-				//if (html != null)
-				//{
-				//	html = html.Replace("{" + Strings.ChrW(34) + "title" + Strings.ChrW(34), ",{" + Strings.ChrW(34) + "title" + Strings.ChrW(34));
-
-				//	html = html.Remove(0, 1);
-				//	html = "[" + html + "]";
-
-				//	List<FanaticalJuego> juegos = JsonSerializer.Deserialize<List<FanaticalJuego>>(html);
-
-				//	if (juegos != null)
-				//	{
-				//		if (juegos.Count > 0)
-				//		{
-				//			foreach (var juego in juegos)
-				//			{
-				//				if (juego.Enlace == bundle.Enlace)
-				//				{
-				//					bundle.Nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-				//					string imagen = juego.Imagen;
-				//					imagen = imagen.Replace("/400x225/", "/1280x720/");
-				//					bundle.Imagen = imagen;
-				//					bundle.ImagenNoticia = imagen;
-
-				//					DateTime fechaTermina = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-				//					fechaTermina = fechaTermina.AddSeconds(Convert.ToDouble(juego.FechaTermina));
-				//					fechaTermina = fechaTermina.ToLocalTime();
-
-				//					bundle.FechaTermina = Convert.ToDateTime(fechaTermina);
-
-				//					if (bundle.Tiers == null)
-				//					{
-				//						bundle.Tiers = new List<Bundles2.BundleTier>();
-
-				//						Bundles2.BundleTier tier1 = new Bundles2.BundleTier
-				//						{
-				//							Posicion = 1,
-				//							Precio = juego.PrecioRebajado.EUR?.ToString()
-				//						};
-
-				//						bundle.Tiers.Add(tier1);
-				//					}
-
-				//					ComprobarTierBundle(bundle, juego.Bundle.Tier1);
-				//					ComprobarTierBundle(bundle, juego.Bundle.Tier2);
-				//					ComprobarTierBundle(bundle, juego.Bundle.Tier3);
-				//				}
-				//			}
-				//		}
-				//	}
-				//}
-			}
-
-            return bundle;
+			return bundle;
 		}
-	
-		//private static async void ComprobarTierBundle(Bundles2.Bundle bundle, FanaticalJuegoBundleTier tier)
-		//{
-		//	if (tier != null)
-		//	{
-		//		if (tier.Juegos?.Count > 0)
-		//		{
-		//			foreach (var juegob in tier.Juegos)
-		//			{
-		//				if (juegob.SteamId != null)
-		//				{
-		//					if (juegob.SteamId > 0)
-		//					{
-		//						Juegos.Juego juegoc = await BaseDatos.Juegos.Buscar.UnJuego(null, juegob.SteamId?.ToString());
-
-		//						if (juegoc != null)
-		//						{
-		//							if (bundle.Juegos == null)
-		//							{
-		//								bundle.Juegos = new List<Bundles2.BundleJuego>();
-		//							}
-
-		//							Bundles2.BundleJuego juegod = new Bundles2.BundleJuego();
-
-		//							juegod.JuegoId = juegoc.Id.ToString();
-		//							juegod.Nombre = juegoc.Nombre;
-		//							juegod.Imagen = juegoc.Imagenes.Capsule_231x87;
-		//							juegod.DRM = Juegos.JuegoDRM.Steam;
-		//							juegod.Tier = bundle.Tiers[0];
-
-		//							bool añadir = true;
-
-		//							if (bundle.Juegos.Count > 0)
-		//							{
-		//								foreach (var juegoe in bundle.Juegos)
-		//								{
-		//									if (juegoe.JuegoId == juegod.JuegoId)
-		//									{
-		//										añadir = false;
-		//									}
-		//								}
-		//							}
-
-		//							if (añadir == true)
-		//							{
-		//								bundle.Juegos.Add(juegod);
-		//							}
-		//						}
-		//					}
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
 	}
 }
