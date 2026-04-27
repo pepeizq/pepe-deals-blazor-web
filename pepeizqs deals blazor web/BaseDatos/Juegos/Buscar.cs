@@ -577,10 +577,29 @@ END DESC";
 
 			try
 			{
-				return await Herramientas.BaseDatos.Select(async conexion =>
+				const int tamañoLote = 2000;
+				List<int> resultados = new List<int>();
+
+				var lotes = ids
+					.Select((id, index) => new { id, index })
+					.GroupBy(x => x.index / tamañoLote)
+					.Select(g => g.Select(x => x.id).ToList())
+					.ToList();
+
+				foreach (var lote in lotes)
 				{
-					return (await conexion.QueryAsync<int>(sqlBuscar, new { Ids = ids })).ToList();
-				});
+					var loteResultados = await Herramientas.BaseDatos.Select(async conexion =>
+					{
+						return (await conexion.QueryAsync<int>(sqlBuscar, new { Ids = lote })).ToList();
+					});
+
+					if (loteResultados != null)
+					{
+						resultados.AddRange(loteResultados);
+					}
+				}
+
+				return resultados;
 			}
 			catch (Exception ex)
 			{

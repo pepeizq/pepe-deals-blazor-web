@@ -154,15 +154,22 @@
             {
                 string temp1 = ruta.Replace("/news/", null);
                 int int1 = temp1.IndexOf("/");
-                string temp2 = temp1.Remove(int1, temp1.Length - int1);
 
-                Noticias.Noticia noticia = await BaseDatos.Noticias.Buscar.UnaNoticiaTitulos(int.Parse(temp2));
-
-                if (noticia != null)
+                if (int1 > 0)
                 {
-                    enlaceEsNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEs)}/";
-                    enlaceEnNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEn)}/";
-                } 
+                    string temp2 = temp1.Substring(0, int1);  
+
+                    if (int.TryParse(temp2, out int noticiaId))
+                    {
+                        Noticias.Noticia noticia = await BaseDatos.Noticias.Buscar.UnaNoticiaTitulos(noticiaId);
+
+                        if (noticia != null)
+                        {
+                            enlaceEsNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEs)}/";
+                            enlaceEnNoticia = $"https://{dominio}/news/{noticia.Id}/{Herramientas.EnlaceAdaptador.Nombre(noticia.TituloEn)}/";
+                        }
+                    }
+                }
             }
         }
 

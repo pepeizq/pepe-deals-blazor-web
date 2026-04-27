@@ -321,7 +321,7 @@
 
         if (mediaMostrarPosicion < 99999)
         {
-            if (capturas[mediaMostrarPosicion]?.MayorEdad == true)
+            if (mediaMostrarPosicion >= 0 && mediaMostrarPosicion < capturas?.Count)
             {
                 difuminar = true;
             }

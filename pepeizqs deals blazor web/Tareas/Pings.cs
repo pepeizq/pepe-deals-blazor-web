@@ -60,7 +60,7 @@ namespace Tareas
 					}
                     catch (Exception ex)
                     {
-						BaseDatos.Errores.Insertar.Mensaje("Ping Tiendas", ex, false);
+						BaseDatos.Errores.Insertar.Mensaje("Ping Tiendas", ex.Message);
 					}
 				}
 			}

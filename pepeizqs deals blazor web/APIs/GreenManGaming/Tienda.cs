@@ -233,24 +233,48 @@ namespace APIs.GreenManGaming
 					{
 						GreenManGamingGold datos = JsonSerializer.Deserialize<GreenManGamingGold>(html);
 
-						if (datos != null)
+						if (datos?.Resultados != null && datos.Resultados.Count > 0 && datos.Resultados[0]?.Juegos?.Count > 0)
 						{
-							if (datos.Resultados[0].Juegos.Count == 0)
-							{
-								break;
-							}
-							else
-							{
-								List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-								foreach (var juego in datos.Resultados[0]?.Juegos)
+							foreach (var juego in datos.Resultados[0]?.Juegos)
+							{
+								foreach (var regionJuego in juego.Regiones)
 								{
-									foreach (var regionJuego in juego.Regiones)
+									if (regionJuego.Key == "ES" && region == TiendaRegion.Europa && juego.RegionesNoStock.TryGetValue("ES", out bool noStock) && noStock == false)
 									{
-										if (regionJuego.Key == "ES" && region == TiendaRegion.Europa && juego.RegionesNoStock.TryGetValue("ES", out bool noStock) && noStock == false)
+										decimal precioBase = juego.Regiones["ES"].Rrp;
+										decimal precioRebajado = juego.Regiones["ES"].Mrp;
+
+										int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+										if (descuento > 0)
 										{
-											decimal precioBase = juego.Regiones["ES"].Rrp;
-											decimal precioRebajado = juego.Regiones["ES"].Mrp;
+											JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
+
+											JuegoPrecio oferta = new JuegoPrecio
+											{
+												Nombre = WebUtility.HtmlDecode(juego.Nombre),
+												Enlace = "https://www.greenmangaming.com" + juego.Enlace,
+												Imagen = "https://images.greenmangaming.com" + juego.Imagen,
+												Moneda = JuegoMoneda.Euro,
+												Precio = precioRebajado,
+												Descuento = descuento,
+												Tienda = GenerarGold().Id,
+												DRM = drm,
+												FechaDetectado = DateTime.Now,
+												FechaActualizacion = DateTime.Now
+											};
+
+											ofertas.Add(oferta);
+										}
+									}
+									else if (regionJuego.Key == "US" && region == TiendaRegion.EstadosUnidos && juego.RegionesNoStock.TryGetValue("US", out bool noStockUS) && noStockUS == false)
+									{
+										if (juego.Regiones["US"].CurrencyCode == "USD" && juego.Regiones["US"].CountryCode == "US")
+										{
+											decimal precioBase = juego.Regiones["US"].Rrp;
+											decimal precioRebajado = juego.Regiones["US"].Mrp;
 
 											int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
@@ -263,7 +287,7 @@ namespace APIs.GreenManGaming
 													Nombre = WebUtility.HtmlDecode(juego.Nombre),
 													Enlace = "https://www.greenmangaming.com" + juego.Enlace,
 													Imagen = "https://images.greenmangaming.com" + juego.Imagen,
-													Moneda = JuegoMoneda.Euro,
+													Moneda = JuegoMoneda.Dolar,
 													Precio = precioRebajado,
 													Descuento = descuento,
 													Tienda = GenerarGold().Id,
@@ -275,73 +299,46 @@ namespace APIs.GreenManGaming
 												ofertas.Add(oferta);
 											}
 										}
-										else if (regionJuego.Key == "US" && region == TiendaRegion.EstadosUnidos && juego.RegionesNoStock.TryGetValue("US", out bool noStockUS) && noStockUS == false)
-										{
-											if (juego.Regiones["US"].CurrencyCode == "USD" && juego.Regiones["US"].CountryCode == "US")
-											{
-												decimal precioBase = juego.Regiones["US"].Rrp;
-												decimal precioRebajado = juego.Regiones["US"].Mrp;
-
-												int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-												if (descuento > 0)
-												{
-													JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-													JuegoPrecio oferta = new JuegoPrecio
-													{
-														Nombre = WebUtility.HtmlDecode(juego.Nombre),
-														Enlace = "https://www.greenmangaming.com" + juego.Enlace,
-														Imagen = "https://images.greenmangaming.com" + juego.Imagen,
-														Moneda = JuegoMoneda.Dolar,
-														Precio = precioRebajado,
-														Descuento = descuento,
-														Tienda = GenerarGold().Id,
-														DRM = drm,
-														FechaDetectado = DateTime.Now,
-														FechaActualizacion = DateTime.Now
-													};
-
-													ofertas.Add(oferta);
-												}
-											}
-										}
-									}
-								}
-
-								if (ofertas?.Count > 0)
-								{
-									int tamaño = 500;
-									var lotes = ofertas
-										.Select((oferta, indice) => new { oferta, indice })
-										.GroupBy(x => x.indice / tamaño)
-										.Select(g => g.Select(x => x.oferta).ToList())
-										.ToList();
-
-									foreach (var lote in lotes)
-									{
-										try
-										{
-											await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
-										}
-
-										juegos2 += lote.Count;
-
-										try
-										{
-											await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, juegos2);
-										}
-										catch (Exception ex)
-										{
-											BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
-										}
 									}
 								}
 							}
+
+							if (ofertas?.Count > 0)
+							{
+								int tamaño = 500;
+								var lotes = ofertas
+									.Select((oferta, indice) => new { oferta, indice })
+									.GroupBy(x => x.indice / tamaño)
+									.Select(g => g.Select(x => x.oferta).ToList())
+									.ToList();
+
+								foreach (var lote in lotes)
+								{
+									try
+									{
+										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+									}
+
+									juegos2 += lote.Count;
+
+									try
+									{
+										await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarGold().Id, DateTime.Now, juegos2);
+									}
+									catch (Exception ex)
+									{
+										BaseDatos.Errores.Insertar.Mensaje(GenerarGold().Id, ex);
+									}
+								}
+							}
+						}
+						else
+						{
+							break;
 						}
 					}
 					else

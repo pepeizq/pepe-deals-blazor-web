@@ -209,7 +209,7 @@
 	</div>
 
 	<div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 80px; margin: 40px auto;">
-		@if (juegosDestacados.Count > 0)
+		@if (juegosDestacados?.Count > 0)
 		{
 			if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 			{

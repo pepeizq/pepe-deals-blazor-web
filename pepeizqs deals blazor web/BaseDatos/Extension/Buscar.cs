@@ -3,6 +3,7 @@
 using Dapper;
 using Juegos;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BaseDatos.Extension
 {
@@ -99,7 +100,7 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE idSteam='" + id + "'";
 
-			return await GenerarDatos(buscar, "Steam " + id);
+			return await GenerarDatos(region, buscar, "Steam " + id);
 		}
 
 		public static async Task<Extension> Gog3(string region, string slug)
@@ -141,7 +142,7 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugGOG='" + slug + "'";
 
-			return await GenerarDatos(buscar, "GOG " + slug);
+			return await GenerarDatos(region, buscar, "GOG " + slug);
 		}
 
 		public static async Task<Extension> EpicGames3(string region, string slug)
@@ -183,10 +184,10 @@ namespace BaseDatos.Extension
     FOR JSON PATH
 ) as suscripciones2, j.idSteam, j.idGOG, j.slugGOG, j.slugEpic FROM juegos j WHERE slugEpic='" + slug + "'";
 
-			return await GenerarDatos(buscar, "Epic " + slug);
+			return await GenerarDatos(region, buscar, "Epic " + slug);
 		}
 
-		private static async Task<Extension> GenerarDatos(string buscar, string id)
+		private static async Task<Extension> GenerarDatos(string region, string buscar, string id)
 		{
 			if (buscar == null)
 			{
@@ -233,22 +234,35 @@ namespace BaseDatos.Extension
 				extension.SlugGOG = CogerString("slugGOG");
 				extension.SlugEpic = CogerString("slugEpic");
 
-				CargarPrecios(
-					CogerString("precioMinimosHistoricos"),
-					extension.MinimosHistoricos
-				);
 
-				CargarPrecios(
-					CogerString("precioActualesTiendas"),
-					extension.PreciosActuales
-				);
+				if (region == "eu")
+				{
+					CargarPrecios(
+						CogerString("precioMinimosHistoricos"), extension.MinimosHistoricos
+					);
 
-				var jsonBundles = CogerString("bundles2");
+					CargarPrecios(
+						CogerString("precioActualesTiendas"), extension.PreciosActuales
+					);
+				}
+				else if (region == "us")
+				{
+					CargarPrecios(
+						CogerString("precioMinimosHistoricosUS"), extension.MinimosHistoricos
+					);
+
+					CargarPrecios(
+						CogerString("precioActualesTiendasUS"), extension.PreciosActuales
+					);
+				}
+				
+				string jsonBundles = CogerString("bundles2");
 				if (string.IsNullOrEmpty(jsonBundles) == false)
 				{
-					var opciones = new JsonSerializerOptions
+					JsonSerializerOptions opciones = new JsonSerializerOptions
 					{
-						PropertyNameCaseInsensitive = true
+						PropertyNameCaseInsensitive = true,
+						UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
 					};
 
 					extension.Bundles = JsonSerializer.Deserialize<List<ExtensionBundle>>(jsonBundles, opciones);
@@ -256,10 +270,10 @@ namespace BaseDatos.Extension
 
 				extension.BundlesPasados = CogerInt("bundlesPasados");
 
-				var jsonGratis = CogerString("gratis2");
+				string jsonGratis = CogerString("gratis2");
 				if (string.IsNullOrEmpty(jsonGratis) == false)
 				{
-					var lista = JsonSerializer.Deserialize<List<JuegoGratisJson>>(jsonGratis);
+					List<JuegoGratisJson> lista = JsonSerializer.Deserialize<List<JuegoGratisJson>>(jsonGratis);
 
 					if (lista?.Count > 0)
 					{
@@ -319,13 +333,13 @@ namespace BaseDatos.Extension
 				return;
 			}
 
-			var lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(json);
+			List<JuegoPrecio> lista = JsonSerializer.Deserialize<List<JuegoPrecio>>(json);
 			if (lista == null)
 			{ 
 				return;
 			}
 
-			foreach (var precio in lista)
+			foreach (JuegoPrecio precio in lista)
 			{
 				if (precio?.Tienda == null)
 				{
@@ -334,20 +348,20 @@ namespace BaseDatos.Extension
 				else if (precio.Tienda == APIs.Steam.Tienda.GenerarBundles().Id)
 				{
 					continue;
-				}	
+				}
 
-				var tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda);
+				if (precio.Precio == 0)
+				{
+					continue;
+				}
+
+				Tiendas2.Tienda tienda = Tiendas2.TiendasCargar.DevolverTienda(precio.Tienda);
 				if (tienda == null)
 				{
 					continue;
 				}
 
-				precio.Enlace = Herramientas.EnlaceAcortador.Generar(
-					precio.Enlace,
-					precio.Tienda,
-					false,
-					false
-				);
+				precio.Enlace = Herramientas.EnlaceAcortador.Generar(precio.Enlace, precio.Tienda, false, false);
 
 				destino.Add(new ExtensionPrecio
 				{

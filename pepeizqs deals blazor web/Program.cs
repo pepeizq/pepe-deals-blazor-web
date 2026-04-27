@@ -14,6 +14,7 @@ using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Telegram.Bot.Types;
 
 ClasesDapper.Registrar();
 
@@ -294,6 +295,52 @@ builder.Services.AddScoped<NotificacionesPush>();
 
 var app = builder.Build();
 
+#region Rechazar peticiones malformadas
+
+app.Use(async (contexto, siguiente) =>
+{
+	var ruta = contexto.Request.Path.Value?.ToLowerInvariant() ?? "";
+
+	if (ruta.EndsWith("/.svg") ||
+		ruta.EndsWith("/.png") ||
+		ruta.EndsWith("/.jpg") ||
+		ruta.EndsWith("/.webp") ||
+		ruta.EndsWith("/.gif") ||
+		ruta.Contains("/./"))
+	{
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = "/";
+
+		return;
+	}
+
+	try
+	{
+		await siguiente();
+
+		if (contexto.Response.StatusCode == 404 &&
+			(ruta.Contains("/imagenes/") ||
+			 ruta.StartsWith("/lib/") ||
+			 ruta.StartsWith("/css/") ||
+			 ruta.StartsWith("/js/")))
+		{
+			contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+			contexto.Response.Headers.Location = "/";
+		}
+	}
+	catch (Exception ex)
+	{
+		if (contexto.Response.HasStarted == false)
+		{
+			contexto.Response.StatusCode = StatusCodes.Status500InternalServerError;
+		}
+
+		BaseDatos.Errores.Insertar.Mensaje($"Error 500: {contexto.Request.Path}", ex, false);
+	}
+});
+
+#endregion
+
 #region Guardo Service Provider para notificaciones push
 
 ServiciosGlobales.ServiceProvider = app.Services;
@@ -349,6 +396,8 @@ else
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -563,7 +612,7 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 {
 	string idioma = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
 
-	var manifest = new
+	var manifiesto = new
 	{
 		name = "pepe's deals",
 		short_name = "pepe's deals",
@@ -684,7 +733,7 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 		}
 	};
 
-	var json = JsonSerializer.Serialize(manifest, new JsonSerializerOptions
+	var json = JsonSerializer.Serialize(manifiesto, new JsonSerializerOptions
 	{
 		WriteIndented = true,
 		PropertyNamingPolicy = JsonNamingPolicy.CamelCase
