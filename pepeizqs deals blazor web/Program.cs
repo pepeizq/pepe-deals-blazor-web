@@ -52,7 +52,7 @@ builder.Services.AddWebOptimizer(
 		acciones.AddCssBundle("/css/bundle.css", new NUglify.Css.CssSettings
 		{
 			CommentMode = NUglify.Css.CssComment.None,
-			OutputMode =  NUglify.OutputMode.SingleLine,
+			OutputMode = NUglify.OutputMode.SingleLine,
 			IgnoreAllErrors = true,
 			TermSemicolons = true,
 			ColorNames = NUglify.Css.CssColor.Hex
@@ -62,8 +62,7 @@ builder.Services.AddWebOptimizer(
 			"lib/bootstrap/dist/css/bootstrap-utilities.css",
 			"css/maestro.css",
 			"css/cabecera_cuerpo_pie.css",
-			"css/resto.css",
-			"css/site.css"
+			"css/resto.css"
 		);
 
 		acciones.AddJavaScriptBundle("/superjs.js",
@@ -295,38 +294,60 @@ builder.Services.AddScoped<NotificacionesPush>();
 
 var app = builder.Build();
 
-#region Rechazar peticiones malformadas
+#region Control inicial de peticiones
 
 app.Use(async (contexto, siguiente) =>
 {
-	var ruta = contexto.Request.Path.Value?.ToLowerInvariant() ?? "";
+	string? ruta = contexto.Request.Path.Value?.ToLowerInvariant() ?? "";
 
-	if (ruta.EndsWith("/.svg") ||
-		ruta.EndsWith("/.png") ||
-		ruta.EndsWith("/.jpg") ||
-		ruta.EndsWith("/.webp") ||
-		ruta.EndsWith("/.gif") ||
-		ruta.Contains("/./"))
+	// Evitar peticiones a rutas vacías
+	if (ruta.EndsWith("/.svg") == true ||
+		ruta.EndsWith("/.png") == true ||
+		ruta.EndsWith("/.jpg") == true ||
+		ruta.EndsWith("/.webp") == true ||
+		ruta.EndsWith("/.gif") == true ||
+		ruta.Contains("/./") == true)
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
-
 		return;
+	}
+
+	// Evitar peticiones a ruta php
+	if (ruta.EndsWith(".php") == true)
+	{
+		contexto.Response.StatusCode = StatusCodes.Status403Forbidden;
+		return;
+	}
+
+	// Antiguo formato de noticias
+	string[] segmentos = ruta.Split('/', StringSplitOptions.RemoveEmptyEntries);
+	if (segmentos.Length > 0 && int.TryParse(segmentos[0], out _))
+	{
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = "/";
+		return;
+	}
+
+	// Links muertos para Google Search Console (13/01/2026)
+	if (ruta.StartsWith("/link/", StringComparison.OrdinalIgnoreCase) && ruta.Contains("/news/") == false)
+	{
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = "/";
+		return;
+	}
+
+	// Evitar peticiones a recursos que no existen
+	if (contexto.Response.StatusCode == 404 && (ruta.Contains("/imagenes/") == true ||  ruta.StartsWith("/lib/") == true ||
+												ruta.StartsWith("/css/") == true || ruta.StartsWith("/js/") == true))
+	{
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = "/";
 	}
 
 	try
 	{
 		await siguiente();
-
-		if (contexto.Response.StatusCode == 404 &&
-			(ruta.Contains("/imagenes/") ||
-			 ruta.StartsWith("/lib/") ||
-			 ruta.StartsWith("/css/") ||
-			 ruta.StartsWith("/js/")))
-		{
-			contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
-			contexto.Response.Headers.Location = "/";
-		}
 	}
 	catch (Exception ex)
 	{
@@ -455,12 +476,9 @@ app.MapGet("extension/steam3/{id}/{region}/{clave}/", async (int id, string regi
 	{
 		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Steam3(region, id.ToString());
 
-		if (juego != null)
+		if (juego?.Id > 0)
 		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
+			return Results.Json(juego);
 		}
 	}
 
@@ -477,12 +495,9 @@ app.MapGet("extension/gog3/{slug}/{region}/{clave}/", async (string slug, string
 	{
 		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.Gog3(region, slug);
 
-		if (juego != null)
+		if (juego?.Id > 0)
 		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
+			return Results.Json(juego);
 		}
 	}
 
@@ -499,12 +514,9 @@ app.MapGet("extension/epic3/{slug}/{region}/{clave}/", async (string slug, strin
 	{
 		BaseDatos.Extension.Extension juego = await BaseDatos.Extension.Buscar.EpicGames3(region, slug);
 
-		if (juego != null)
+		if (juego?.Id > 0)
 		{
-			if (juego.Id > 0)
-			{
-				return Results.Json(juego);
-			}
+			return Results.Json(juego);
 		}
 	}
 
@@ -584,24 +596,6 @@ Disallow: /_blazor/
 ";
 
 	return Results.Text(texto, "text/plain; charset=utf-8");
-});
-
-#endregion
-
-#region Links muertos para Google Search Console (13/01/2026)
-
-app.Use(async (context, next) =>
-{
-	var path = context.Request.Path.Value;
-
-	if (path != null && path.StartsWith("/link/", StringComparison.OrdinalIgnoreCase) && path.Contains("/news/") == false)
-	{
-		context.Response.StatusCode = StatusCodes.Status301MovedPermanently;
-		context.Response.Headers.Location = "/";
-		return;
-	}
-
-	await next();
 });
 
 #endregion

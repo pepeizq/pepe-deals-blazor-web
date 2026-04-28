@@ -313,6 +313,11 @@
 
     private static string ComprobarEdicion(string juego, string oferta)
     {
+        if (string.IsNullOrEmpty(juego) == true)
+        {
+            return juego;
+        }
+
         if (string.IsNullOrEmpty(oferta) == false)
         {
             if (Herramientas.Buscador.LimpiarNombre(juego) != Herramientas.Buscador.LimpiarNombre(oferta))

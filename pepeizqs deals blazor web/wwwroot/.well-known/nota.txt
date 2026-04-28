@@ -1,0 +1,6 @@
+﻿apple-app-site-association
+.well-known/
+├── assetlinks.json
+└── apple-app-site-association
+
+"Archivos vacíos para verificación de apps móviles - no eliminar"

@@ -182,8 +182,11 @@ namespace APIs.GreenManGaming
 			for (decimal precioMin = 0; precioMin < 80; precioMin += 1)
 			{
 				HttpClient cliente = new HttpClient();
-				cliente.BaseAddress = new Uri("https://www.greenmangaming.com/");
 				cliente.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+				cliente.DefaultRequestHeaders.Add("Referer", "https://www.greenmangaming.com/");
+				cliente.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+				cliente.DefaultRequestHeaders.Add("Origin", "https://www.greenmangaming.com");
 
 				decimal precioMax = precioMin + 1;
 
@@ -216,7 +219,7 @@ namespace APIs.GreenManGaming
 
 				if (string.IsNullOrEmpty(peticionEnBruto) == false)
 				{
-					HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://sczizsp09z-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20JavaScript%20(4.5.1)%3B%20Browser%20(lite)%3B%20instantsearch.js%20(4.8.3)%3B%20JS%20Helper%20(3.2.2)&x-algolia-api-key=3bc4cebab2aa8cddab9e9a3cfad5aef3&x-algolia-application-id=SCZIZSP09Z");
+					HttpRequestMessage peticion = new HttpRequestMessage(HttpMethod.Post, "https://sczizsp09z-dsn.algolia.net/1/indexes/*/queries?x-algolia-agent=Algolia for JavaScript (4.5.1); Browser (lite); instantsearch.js (4.8.3); JS Helper (3.2.2)&x-algolia-api-key=7f2aba1ccb27473dcf2cace71bf20e85&x-algolia-application-id=SCZIZSP09Z");
 					peticion.Content = new StringContent(peticionEnBruto, Encoding.UTF8, "application/json");
 
 					HttpResponseMessage respuesta = await cliente.SendAsync(peticion);
