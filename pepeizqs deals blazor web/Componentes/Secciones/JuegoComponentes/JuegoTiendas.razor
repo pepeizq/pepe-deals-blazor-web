@@ -3,67 +3,78 @@
 
 @if (preciosActualesDRM.Count > 0)
 {
-    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+    <div style="display: flex; flex-direction: column; gap: 20px; padding: 0px 20px;">
         @if (preciosMostrar?.Count > 0)
         {
-            foreach (JuegoPrecio precio in preciosMostrar.OrderBy(p => p.Precio))
+            if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
-                <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
-                                    usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" 
-                                    OnPrecioFinalCalculado="pf => precio.Precio = pf"/>
+                <Virtualize Context="precio" Items="preciosMostrar">
+                    <ItemContent>
+                        <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                            usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
+                                            OnPrecioFinalCalculado="pf => precio.Precio = pf" />
+                    </ItemContent>
+                </Virtualize>
             }
+            else
+            {
+                foreach (var precio in preciosMostrar.Take(3))
+                {
+                    <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                        usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
+                                        OnPrecioFinalCalculado="pf => precio.Precio = pf" />
+                }
+            } 
         }
 
         @if (preciosBajos?.Count > 0)
         {
-            <button class="juego-boton-pequeño" style="display: block;" @onclick="(e => DescuentosBajosMostrar(e))">
+            <button class="juego-boton-pequeño" style="display: block; @(mostrarDescuentosBajos == true ? "" : "margin-bottom: 10px;")" @onclick="(e => DescuentosBajosMostrar(e))">
                 <div style="display: flex; align-items: center; padding: 5px;">
-                    @if (mostrarDescuentosBajos == true)
-                    {
-                        <div style="max-width: 12px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
-                            </svg>
-                        </div>
+                    <div style="max-width: 12px;">
+                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="transform: rotate(@(mostrarDescuentosBajos == true ? "0deg" : "180deg")); transition: transform 0.2s;">
+                            <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
+                        </svg>
+                    </div>
 
-                        <div style="width: 100%; text-align: center; font-size: 14px;">
+                    <div style="width: 100%; text-align: center; font-size: 14px;">
+                        @if (mostrarDescuentosBajos == true)
+                        {
                             @Herramientas.Idiomas.BuscarTexto(idioma, "String43", "Game")
-                        </div>
-
-                        <div style="max-width: 12px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
-                            </svg>
-                        </div>
-                    }
-                    else
-                    {
-                        <div style="max-width: 12px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z" />
-                            </svg>
-                        </div>
-
-                        <div style="width: 100%; text-align: center; font-size: 14px;">
+                        }
+                        else
+                        {
                             @Herramientas.Idiomas.BuscarTexto(idioma, "String42", "Game")
-                        </div>
+                        }
+                    </div>
 
-                        <div style="max-width: 12px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M246.6 470.6c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 402.7 361.4 265.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3l-160 160zm160-352l-160 160c-12.5 12.5-32.8 12.5-45.3 0l-160-160c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L224 210.7 361.4 73.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3z" />
-                            </svg>
-                        </div>
-                    }
+                    <div style="max-width: 12px;">
+                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="transform: rotate(@(mostrarDescuentosBajos == true ? "0deg" : "180deg")); transition: transform 0.2s;">
+                            <path d="M246.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 109.3 361.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L224 301.3 361.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z" />
+                        </svg>
+                    </div>
                 </div>
             </button>
 
             if (mostrarDescuentosBajos == true)
             {
-                foreach (var precioBajo in preciosBajos)
+                if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                 {
-                    <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
-                                        usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
+                    <Virtualize Context="precioBajo" Items="preciosBajos">
+                        <ItemContent>
+                            <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                                usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
+                        </ItemContent>
+                    </Virtualize>
                 }
+                else
+                {
+                    foreach (var precioBajo in preciosBajos.Take(3))
+                    {
+                        <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
+                                            usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
+                    }
+                } 
             }
         }
     </div>
@@ -118,7 +129,7 @@ else
         preciosMostrar = new List<JuegoPrecio>();
         preciosBajos = new List<JuegoPrecio>();
 
-        var preciosActivos = preciosActualesDRM.Where(p => Herramientas.OfertaActiva.Verificar(p)).ToList();
+        List<JuegoPrecio> preciosActivos = preciosActualesDRM.Where(p => Herramientas.OfertaActiva.Verificar(p)).ToList();
 
         if (preciosActivos.Any() == false)
         {
@@ -128,7 +139,7 @@ else
         int descuentoMaximo = preciosActivos.Max(p => p.Descuento);
         int umbralDescuento = descuentoMaximo / 2;
 
-        var enlacesUsados = new HashSet<string>();
+        HashSet<string> enlacesUsados = new HashSet<string>();
 
         foreach (var precio in preciosActivos)
         {
@@ -164,14 +175,14 @@ else
             .DefaultIfEmpty(decimal.MaxValue)
             .Max();
 
-        var mover = preciosBajos
+        List<JuegoPrecio> mover = preciosBajos
             .Where(p =>
             {
                 decimal precioReal = ObtenerPrecioReal(p);
                 return precioReal > 0 && precioReal < precioMinimoMostrar;
             }).ToList();
 
-        foreach (var precio in mover)
+        foreach (JuegoPrecio precio in mover)
         {
             preciosBajos.Remove(precio);
             preciosMostrar.Add(precio);
@@ -206,13 +217,6 @@ else
 
     private void DescuentosBajosMostrar(MouseEventArgs e)
     {
-        if (mostrarDescuentosBajos == false)
-        {
-            mostrarDescuentosBajos = true;
-        }
-        else
-        {
-            mostrarDescuentosBajos = false;
-        }
+        mostrarDescuentosBajos = !mostrarDescuentosBajos;
     }
 }

@@ -1789,10 +1789,6 @@
                                                 enlaceBundle = Herramientas.EnlaceAcortador.Generar(bundle2.Enlace, bundle3.BundleTipo, usuarioPatreon, false);
                                             }
 
-                                            string imagenDRM = JuegoDRM2.SacarImagen(bundle2.DRM);
-                                            string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
-                                            string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
-
                                             <a class="juego-boton-pequeño" href="@enlaceBundle" target="_blank" rel="nofollow" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; display: inline-block; width: 100%; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                 <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                                     <div style="margin-right: 15px;">
@@ -1800,10 +1796,23 @@
                                                     </div>
 
                                                     <div style="margin-right: 30px;">
-                                                        <picture>
-                                                            <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                            <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
-                                                        </picture>
+                                                        @if (bundle2.DRM != JuegoDRM.DRMFree)
+                                                        {
+                                                            string imagenDRM = JuegoDRM2.SacarImagen(bundle2.DRM);
+                                                            string imagenDRM1 = !string.IsNullOrEmpty(imagenDRM) ? imagenDRM.Replace(".webp", "-sm.webp") : string.Empty;
+                                                            string imagenDRM2 = !string.IsNullOrEmpty(imagenDRM) ? imagenDRM.Replace(".webp", "-md.webp") : string.Empty;
+
+                                                            <picture>
+                                                                <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
+                                                                <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
+                                                            </picture>                                                        
+                                                        }
+                                                        else
+                                                        {
+                                                            <div style="max-width: 22px; font-size: 12px;">
+                                                                DRM Free 
+                                                            </div>
+                                                        }
                                                     </div>
 
                                                     <div style="margin-right: 20px;">
@@ -1838,10 +1847,6 @@
                                 {
                                     if (bundlesCache2.TryGetValue(bundle2.BundleId, out var bundle3) && bundle3 != null)
                                     {
-                                        string imagenDRM = JuegoDRM2.SacarImagen(bundle2.DRM);
-                                        string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
-                                        string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
-
                                         <button @onclick="(e => BundleAbrir(e, bundle2.BundleId))" class="boton-pequeño" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px;">
                                             <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                                 <div style="margin-right: 15px;">
@@ -1849,10 +1854,23 @@
                                                 </div>
 
                                                 <div style="margin-right: 30px;">
-                                                    <picture>
-                                                        <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                        <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
-                                                    </picture>
+                                                    @if (bundle2.DRM != JuegoDRM.DRMFree)
+                                                    {
+                                                        string imagenDRM = JuegoDRM2.SacarImagen(bundle2.DRM);
+                                                        string imagenDRM1 = !string.IsNullOrEmpty(imagenDRM) ? imagenDRM.Replace(".webp", "-sm.webp") : string.Empty;
+                                                        string imagenDRM2 = !string.IsNullOrEmpty(imagenDRM) ? imagenDRM.Replace(".webp", "-md.webp") : string.Empty;
+
+                                                        <picture>
+                                                            <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
+                                                            <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
+                                                        </picture>                                                        
+                                                    }
+                                                    else
+                                                    {
+                                                        <div style="max-width: 22px; font-size: 12px;">
+                                                            DRM Free 
+                                                        </div>
+                                                    }
                                                 </div>
 
                                                 <div style="margin-right: 20px;">
@@ -2033,7 +2051,7 @@
                                                         @suscripcionUsar.Nombre
                                                     </div>
 
-                                                    @if (suscripcionUsar.Precio > 0)
+                                                    @if (suscripcionUsar.Precio > 0 && usuarioRegion == TiendaRegion.Europa)
                                                     {
                                                         <div>
                                                             • @Herramientas.Precios.Euro(suscripcionUsar.Precio)
@@ -3541,7 +3559,11 @@
             if (bundle2.BundleId > 0 && !bundlesCache2.ContainsKey(bundle2.BundleId))
             {
                 var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
-                bundlesCache2[bundle2.BundleId] = bundle;
+
+                if (bundle != null)
+                {
+                    bundlesCache2[bundle2.BundleId] = bundle;
+                }
             }
         }
 

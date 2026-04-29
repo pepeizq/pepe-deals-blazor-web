@@ -135,6 +135,18 @@ namespace APIs.IndiePass
 						}
 					}
 				}
+
+				try
+				{
+					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+					{
+						return await conexion.ExecuteAsync("DELETE FROM temporalindiepassjson WHERE enlace='1'", transaction: sentencia);
+					});
+				}
+				catch (Exception ex)
+				{
+					BaseDatos.Errores.Insertar.Mensaje(Generar().Id.ToString().ToLower(), ex);
+				}
 			}
 		}
 	}

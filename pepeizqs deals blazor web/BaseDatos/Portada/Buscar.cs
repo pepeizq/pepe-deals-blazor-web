@@ -113,7 +113,7 @@ AND (
 			string busqueda = @$"SELECT TOP {cantidad} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
 				WHERE j.tipo = 0 {exclusionJuegos} {exclusionSteam} AND 
 				year(getdate()) < year(JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
-				CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) > 1.99 AND 
+				CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) >= 1.99 AND 
 				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
 				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
 				(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()) OR 

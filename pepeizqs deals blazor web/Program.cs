@@ -1,6 +1,7 @@
 ﻿using ApexCharts;
 using Herramientas;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -14,7 +15,6 @@ using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Telegram.Bot.Types;
 
 ClasesDapper.Registrar();
 
@@ -409,8 +409,29 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-	app.UseDeveloperExceptionPage();
-	//app.UseExceptionHandler("/Error", createScopeForErrors: true);
+	//app.UseDeveloperExceptionPage();
+
+	app.UseExceptionHandler(errorApp =>
+	{
+		errorApp.Run(async contexto =>
+		{
+			IExceptionHandlerPathFeature? error1 = contexto.Features.Get<IExceptionHandlerPathFeature>();
+			Exception? error2 = error1?.Error;
+
+			if (error2?.Message != null && error2.Message.Contains("anti-forgery"))
+			{
+				contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+				contexto.Response.Headers.Location = "/";
+				return;
+			}
+
+			contexto.Response.StatusCode = StatusCodes.Status500InternalServerError;
+			contexto.Response.ContentType = "text/plain";
+
+			await contexto.Response.WriteAsync("Unexpected error, I've already put the slaves to work on the fix.");
+		});
+	});
+
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
@@ -419,7 +440,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAntiforgery();
 
 app.MapStaticAssets();
 
@@ -437,6 +457,8 @@ if (Directory.Exists(imagenesRuta) == true)
 }
 
 #endregion
+
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {

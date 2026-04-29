@@ -4,8 +4,6 @@ using Dapper;
 using Juegos;
 using Microsoft.VisualBasic;
 using System.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using Tiendas2;
 using static pepeizqs_deals_blazor_web.Componentes.Cuenta.Cuenta.Juegos;
 using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos;
