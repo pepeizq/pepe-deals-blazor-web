@@ -179,6 +179,15 @@ namespace Tareas
 								siguienteComprobacion = TimeSpan.FromHours(3);
 							}
 						}
+						else if (tienda.Id == APIs.Gamesporium.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(3);
+
+							if (DateTime.Now.Hour == 19)
+							{
+								siguienteComprobacion = TimeSpan.FromHours(4);
+							}
+						}
 						else if (tienda.Id == APIs.GOG.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(3);
@@ -367,7 +376,7 @@ namespace Tareas
 							{
 								try
 								{
-									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
+									await TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
 
 									Environment.Exit(1);
 								}

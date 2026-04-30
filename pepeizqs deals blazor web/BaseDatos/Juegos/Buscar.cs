@@ -471,9 +471,9 @@ WHERE id=@id AND j.tipo=0";
 
 		public static async Task<List<Juego>> MultiplesJuegosSteam2(TiendaRegion region, List<int> ids)
 		{
-			if (ids?.Count == 0)
+			if (ids == null || ids?.Count == 0)
 			{
-				return new List<Juego>();
+				return null;
 			}
 
 			string precioMinimosHistoricos = region switch
@@ -550,14 +550,26 @@ WHERE id=@id AND j.tipo=0";
 
 			try
 			{
-				return await Herramientas.BaseDatos.Select(async conexion =>
-					(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = ids })).ToList()
-				);
+				const int loteTamaño = 2000;
+				List<Juego> resultados = new List<Juego>();
+
+				for (int i = 0; i < ids.Count; i += loteTamaño)
+				{
+					List<int> lote = ids.Skip(i).Take(loteTamaño).ToList();
+
+					List<Juego> juegosDeLote = await Herramientas.BaseDatos.Select(async conexion =>
+						(await conexion.QueryAsync<Juego>(sqlBuscar, new { Ids = lote })).ToList()
+					);
+
+					resultados.AddRange(juegosDeLote);
+				}
+
+				return resultados;
 			}
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Juego Multiples Steam", ex);
-				return new List<Juego>();
+				return null;
 			}
 		}
 

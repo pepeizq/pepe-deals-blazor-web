@@ -27,6 +27,11 @@ namespace APIs.Boosteroid
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "boosteroid", DateTime.Now, 0);
 
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
 			int cantidad = 0;
 
 			int i = 1;
@@ -36,7 +41,7 @@ namespace APIs.Boosteroid
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
-					BoosteroidDatos datos = JsonSerializer.Deserialize<BoosteroidDatos>(html);
+					BoosteroidDatos datos = JsonSerializer.Deserialize<BoosteroidDatos>(html, opciones);
 
 					if (datos != null)
 					{

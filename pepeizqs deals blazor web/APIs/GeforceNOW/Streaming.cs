@@ -29,7 +29,12 @@ namespace APIs.GeforceNOW
         {
             await BaseDatos.Admin.Actualizar.Tiendas(TiendaRegion.Europa, "geforcenow", DateTime.Now, 0);
 
-            int cantidad = 0;
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
+			int cantidad = 0;
             string cadena = string.Empty;
 
             int i = 0;
@@ -61,7 +66,7 @@ namespace APIs.GeforceNOW
 
                 if (string.IsNullOrEmpty(html) == false)
                 {
-                    GeforceNOWDatos datos = JsonSerializer.Deserialize<GeforceNOWDatos>(html);
+                    GeforceNOWDatos datos = JsonSerializer.Deserialize<GeforceNOWDatos>(html, opciones);
 
 					if (datos?.Datos?.Info != null)
 					{

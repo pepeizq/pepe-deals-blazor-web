@@ -1,7 +1,6 @@
 ﻿#nullable disable
 
 using Dapper;
-using System.Drawing;
 using Tiendas2;
 
 namespace BaseDatos.Admin

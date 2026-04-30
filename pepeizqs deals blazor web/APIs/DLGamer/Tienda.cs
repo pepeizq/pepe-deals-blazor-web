@@ -44,6 +44,11 @@ namespace APIs.DLGamer
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
 			string enlace = string.Empty;
 
 			if (region == TiendaRegion.Europa)
@@ -65,7 +70,7 @@ namespace APIs.DLGamer
 
 					try
 					{
-						basedatos = JsonSerializer.Deserialize<DLGamerJuegos>(html);
+						basedatos = JsonSerializer.Deserialize<DLGamerJuegos>(html, opciones);
 					}
 					catch (Exception ex)
 					{
