@@ -9,15 +9,6 @@ namespace Herramientas.Ficheros
 {
 	public static class Imagenes
 	{
-		public static string[] hostsPermitidos = new[]
-		{
-			"i.imgur.com",
-			"shared.cloudflare.steamstatic.com",
-			"shared.fastly.steamstatic.com",
-			"avatars.steamstatic.com",
-			"fanatical.imgix.net"
-		};
-
 		public static string ServidorExterno(string enlace, int ancho = 0, int alto = 0)
 		{
 			if (string.IsNullOrEmpty(enlace) == false)

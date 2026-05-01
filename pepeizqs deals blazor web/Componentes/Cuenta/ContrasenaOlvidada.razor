@@ -1,7 +1,5 @@
 ﻿@page "/account/forgot-password/"
 
-@attribute [ExcludeFromInteractiveRouting]
-
 @using Microsoft.AspNetCore.Components.Web;
 @using Microsoft.AspNetCore.Identity;
 @using Microsoft.AspNetCore.WebUtilities;
@@ -16,9 +14,17 @@
     .caja-contraseña-contenido {
         background-color: var(--fondoSubsubcabecera);
         border: 2px solid var(--fondoSubcabecera);
-        padding: 40px;
+        border-radius: 20px;
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
         max-width: 600px;
+    }
+
+    .caja-contraseña-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        padding: 20px 40px;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        font-size: 20px;
     }
 </style>
 
@@ -31,18 +37,27 @@
 </HeadContent>
 
 <div class="caja-contraseña-contenido" style="margin: 40px auto;">
-    <div class="texto-info">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ForgotPassword")</div>
+    <div class="caja-contraseña-titulo">
+        @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ForgotPassword")
+    </div>
 
-    <hr>
-
-    <div style="display: flex; flex-direction: column;">
+    <div style="display: flex; flex-direction: column; padding: 30px 40px 40px 40px;">
         <label class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "ForgotPassword")</label>
-        <input value="@correo" @onchange="@(e => CambiarCorreo(e))" style="padding: 5px 10px; background-color: var(--fondoEntrada); border: 0px; color: var(--colorTexto); display: block;" />
+        <input @bind-value="correo" @bind-value:event="oninput" style="padding: 5px 10px; background-color: var(--fondoEntrada); border: 0px; color: var(--colorTexto); display: block;" />
 
         <div style="margin-top: 30px;">
-            <button @onclick="EnviarCorreo" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "ForgotPassword")
-            </button>
+            @if (enviando == false)
+            {
+                <button @onclick="EnviarCorreo" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String3", "ForgotPassword")
+                </button>
+            }
+            else
+            {
+                <div>
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "ForgotPassword")
+                </div>
+            }
         </div>
 
         @if (string.IsNullOrEmpty(mensajeExito) == false)
@@ -74,24 +89,27 @@
         dominio = datos.Dominio;
     }
 
-    private void CambiarCorreo(ChangeEventArgs texto)
-    {
-        correo = texto.Value.ToString();
-    }
+    private bool enviando = false;
 
     private async Task EnviarCorreo()
     {
+        if (enviando == true)
+        {
+            return;
+        }
+
+        enviando = true;
         mensajeExito = null;
 
-        EmailAddressAttribute comprobador = new EmailAddressAttribute();
-
-        if (comprobador.IsValid(correo))
+        try
         {
-            Usuario usuario = await UserManager.FindByEmailAsync(correo);
+            EmailAddressAttribute comprobador = new EmailAddressAttribute();
 
-            if (usuario != null)
+            if (comprobador.IsValid(correo) == true)
             {
-                if (usuario.EmailConfirmed == true)
+                Usuario usuario = await UserManager.FindByEmailAsync(correo);
+
+                if (usuario?.EmailConfirmed == true)
                 {
                     string codigo = await UserManager.GeneratePasswordResetTokenAsync(usuario);
                     codigo = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(codigo));
@@ -100,8 +118,13 @@
 
                     await Herramientas.Correos.Cuenta.ContraseñaOlvidada(idioma, enlaceFinal, correo);
                     mensajeExito = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "ForgotPassword");
+                    correo = string.Empty;
                 }
             }
+        }
+        finally
+        {
+            enviando = false;
         }
     }
 }

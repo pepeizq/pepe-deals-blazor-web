@@ -11,12 +11,17 @@ namespace BaseDatos.UsuariosActualizar
 			if (string.IsNullOrEmpty(idUsuario) == false && string.IsNullOrEmpty(metodo) == false)
 			{
 				string añadir = @"
-					MERGE INTO usuariosActualizar AS target
-					USING (SELECT @idUsuario AS idUsuario, @metodo AS metodo) AS fuente
-					ON target.idUsuario = fuente.idUsuario
-					WHEN NOT MATCHED THEN
-						INSERT (idUsuario, metodo)
-						VALUES (fuente.idUsuario, fuente.metodo);
+					IF NOT EXISTS (SELECT 1 FROM usuariosActualizar WHERE idUsuario = @idUsuario)
+					BEGIN
+						INSERT INTO usuariosActualizar (idUsuario, metodo)
+						VALUES (@idUsuario, @metodo)
+					END
+					ELSE
+					BEGIN
+						UPDATE usuariosActualizar
+						SET metodo = @metodo
+						WHERE idUsuario = @idUsuario
+					END
 					";
 
 				try

@@ -1,7 +1,5 @@
 ﻿@page "/account/register"
 
-@attribute [ExcludeFromInteractiveRouting]
-
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
@@ -46,7 +44,7 @@
 {
     if (string.IsNullOrEmpty(mensajeError) == false)
     {
-        <div style="margin-top: 40px; background-color: var(--fondoPeligro); padding: 15px 20px;">
+        <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center;">
             @mensajeError
         </div>
     }
@@ -54,7 +52,9 @@
     <div class="caja-registro-contenido" style="margin: 40px auto;">
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegistrarUsuario" FormName="register" style="border-top-left-radius: inherit; border-top-right-radius: inherit; margin: 0;">
             <DataAnnotationsValidator />
-            <div class="caja-registro-titulo">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Register")</div>
+            <div class="caja-registro-titulo">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Register")
+            </div>
        
             <div style="padding: 30px 40px 40px 40px;">
                 <ValidationSummary class="texto-peligro-entrada" role="alert" />
@@ -124,34 +124,34 @@
 
     public async Task RegistrarUsuario(EditContext editContext)
     {
-        var user = CrearUsuario();
+        Usuario usuario = CrearUsuario();
 
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        await UserStore.SetUserNameAsync(usuario, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
-        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-        var result = await UserManager.CreateAsync(user, Input.Password);
+        await emailStore.SetEmailAsync(usuario, Input.Email, CancellationToken.None);
+        IdentityResult resultado = await UserManager.CreateAsync(usuario, Input.Password);
 
-        if (!result.Succeeded)
+        if (resultado.Succeeded == false)
         {
-            identityErrors = result.Errors;
+            identityErrors = resultado.Errors;
             return;
         }
 
-        var userId = await UserManager.GetUserIdAsync(user);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        var userId = await UserManager.GetUserIdAsync(usuario);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(usuario);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         var callbackUrl = NavManager.GetUriWithQueryParameters(
             NavManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
             new Dictionary<string, object> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
 
-        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+        await EmailSender.SendConfirmationLinkAsync(usuario, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
         if (UserManager.Options.SignIn.RequireConfirmedAccount == true)
         {
             NavManager.NavigateTo("/account");
         }
 
-        await SignInManager.SignInAsync(user, isPersistent: false);
+        await SignInManager.SignInAsync(usuario, isPersistent: false);
         NavManager.NavigateTo(ReturnUrl);
     }
 

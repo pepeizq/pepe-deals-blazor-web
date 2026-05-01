@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
 @using pepeizqs_deals_blazor_web.Componentes.Account
-@using pepeizqs_deals_blazor_web.Componentes.Account.Shared
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
@@ -52,7 +51,7 @@
 
 @if (string.IsNullOrEmpty(mensajeError) == false)
 {
-    <div style="margin-top: 40px; background-color: var(--fondoPeligro); padding: 15px 20px;">
+    <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center; max-width: 600px;">
         @mensajeError
     </div>
 }

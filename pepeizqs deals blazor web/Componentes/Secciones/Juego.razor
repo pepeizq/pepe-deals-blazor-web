@@ -2614,7 +2614,7 @@
                                             </div>
                                         </a>
                                     }
-                                    else if (enlace.Contains("https://www.threads.net/") == true || enlace.Contains("https://threads.net/") == true || enlace.Contains("https://www.threads.com/") == true)
+                                    else if (enlace.Contains("https://www.threads.net/") == true || enlace.Contains("https://threads.net/") == true || enlace.Contains("https://www.threads.com/") == true || enlace.Contains("https://threads.com/") == true)
                                     {
                                         <a href="@enlace" target="_blank" class="boton-pequeño" title="Threads" style="width: fit-content; padding: 10px;">
                                             <div style="width: 30px; height: 30px; padding: 2px;">
@@ -2672,7 +2672,7 @@
                                     }
                                     else
                                     {
-                                        global::BaseDatos.Errores.Insertar.Mensaje("Enlace no encontrado en juego", enlace + " - " + juego.Nombre);
+                                        global::BaseDatos.Errores.Insertar.Mensaje("Enlace red social no encontrado en juego", enlace + " - " + juego.Nombre);
                                     }
                                 }
                             </div>

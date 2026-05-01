@@ -8,7 +8,7 @@
         {
             if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
-                <Virtualize Context="precio" Items="preciosMostrar">
+                <Virtualize Context="precio" Items="preciosMostrar.OrderBy(p => p.Precio).ToList()">
                     <ItemContent>
                         <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                             usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
@@ -60,7 +60,7 @@
             {
                 if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                 {
-                    <Virtualize Context="precioBajo" Items="preciosBajos">
+                    <Virtualize Context="precioBajo" Items="preciosBajos.OrderBy(p => p.Precio).ToList()">
                         <ItemContent>
                             <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                                 usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
