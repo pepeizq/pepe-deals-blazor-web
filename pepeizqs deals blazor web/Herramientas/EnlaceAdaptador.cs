@@ -21,6 +21,10 @@ namespace Herramientas
             s2 = s2.Replace("™", string.Empty);
 			s2 = s2.Replace("-", string.Empty);
 			s2 = s2.Replace("~", string.Empty);
+			s2 = s2.Replace(":", string.Empty);
+			s2 = s2.Replace("%E2", string.Empty);
+			s2 = s2.Replace("%80", string.Empty);
+			s2 = s2.Replace("%99", string.Empty);
 			s2 = s2.Replace("&", "_");
 			s2 = s2.Replace(Strings.ChrW(160).ToString(), "_");
 			s2 = s2.Replace(" ", "_");
