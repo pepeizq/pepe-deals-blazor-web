@@ -32,6 +32,7 @@ namespace Herramientas
 			s2 = s2.Replace("】", "-");
 			s2 = s2.Replace("ü", "u");
 
+
 			int i = 0;
 			while (i < 10)
 			{
