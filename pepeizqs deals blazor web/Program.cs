@@ -300,23 +300,24 @@ app.Use(async (contexto, siguiente) =>
 {
 	string? ruta = contexto.Request.Path.Value?.ToLowerInvariant() ?? "";
 
-	// Evitar peticiones a rutas vacías
+	// Evitar peticiones a rutas muertas
 	if (ruta.EndsWith("/.svg") == true ||
 		ruta.EndsWith("/.png") == true ||
 		ruta.EndsWith("/.jpg") == true ||
 		ruta.EndsWith("/.webp") == true ||
 		ruta.EndsWith("/.gif") == true ||
-		ruta.Contains("/./") == true)
+		ruta.Contains("/./") == true ||
+		ruta.EndsWith(".php") == true ||
+		ruta.EndsWith("curator/gloomywasher/") == true ||
+		ruta.EndsWith("curator/haunted_hotel/") == true ||
+		ruta.EndsWith("curator/Lewdonymous/") == true ||
+		ruta.EndsWith("curator/ScorchedHeaven/") == true ||
+		ruta.EndsWith("curator/sinbeans/") == true ||
+		ruta.EndsWith("curator/trashgamed_g/") == true
+		)
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
-		return;
-	}
-
-	// Evitar peticiones a ruta php
-	if (ruta.EndsWith(".php") == true)
-	{
-		contexto.Response.StatusCode = StatusCodes.Status403Forbidden;
 		return;
 	}
 
