@@ -266,6 +266,22 @@ namespace BaseDatos.Juegos
 
 												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
 												datosDeseados.UltimoJuego = DateTime.Now;
+
+												if (datosDeseados.Juegos == null)
+												{
+													datosDeseados.Juegos = new List<DeseadosDatosJuego>();
+												}
+
+												datosDeseados.Juegos.Add(new DeseadosDatosJuego
+												{
+													Nombre = minimo.Nombre,
+													Enlace = minimo.Enlace,
+													Imagen = minimo.Imagen,
+													Precio = Herramientas.Precios.Euro(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
+													Tienda = minimo.Tienda,
+													DRM = minimo.DRM,
+													Fecha = DateTime.Now
+												});
 											}
 
 											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
@@ -588,6 +604,22 @@ namespace BaseDatos.Juegos
 
 												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
 												datosDeseados.UltimoJuego = DateTime.Now;
+
+												if (datosDeseados.Juegos == null)
+												{
+													datosDeseados.Juegos = new List<DeseadosDatosJuego>();
+												}
+
+												datosDeseados.Juegos.Add(new DeseadosDatosJuego
+												{
+													Nombre = minimo.Nombre,
+													Enlace = minimo.Enlace,
+													Imagen = minimo.Imagen,
+													Precio = Herramientas.Precios.Dolar(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
+													Tienda = minimo.Tienda,
+													DRM = minimo.DRM,
+													Fecha = DateTime.Now
+												});
 											}
 
 											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);

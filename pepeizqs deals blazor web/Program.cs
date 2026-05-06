@@ -308,8 +308,10 @@ app.Use(async (contexto, siguiente) =>
 		ruta.EndsWith("/.gif") == true ||
 		ruta.Contains("/./") == true ||
 		ruta.EndsWith(".php") == true ||
+		ruta.EndsWith("curator/funtrain/") == true ||
 		ruta.EndsWith("curator/gloomywasher/") == true ||
 		ruta.EndsWith("curator/haunted_hotel/") == true ||
+		ruta.EndsWith("curator/Hematite_AVN/") == true ||
 		ruta.EndsWith("curator/Lewdonymous/") == true ||
 		ruta.EndsWith("curator/ScorchedHeaven/") == true ||
 		ruta.EndsWith("curator/sinbeans/") == true ||

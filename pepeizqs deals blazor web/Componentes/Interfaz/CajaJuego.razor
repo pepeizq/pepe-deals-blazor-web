@@ -371,21 +371,21 @@
 							@if (drmUsar != JuegoDRM.NoEspecificado)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" />
+									<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" />
 								</div>
 							}
 
 							@if (string.IsNullOrEmpty(iconoTienda) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@iconoTienda" style="width: 20px; height: 20px;" alt="Store" />
+									<img src="@iconoTienda" style="width: 20px; height: 20px;" alt="Store" loading="lazy" />
 								</div>
 							}
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@tooltip.ReviewsIcono" style="width: 20px; height: 20px;" alt="Reviews"  />
+									<img src="@tooltip.ReviewsIcono" style="width: 20px; height: 20px;" alt="Reviews" loading="lazy" />
 								</div>
 							}
 
@@ -411,13 +411,13 @@
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							<div style="display: flex; margin-right: 20px;">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM"  />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM" loading="lazy" />
 							</div>
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews"  />
+									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews" loading="lazy" />
 								</div>
 							}
 
@@ -469,13 +469,13 @@
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							<div style="margin-right: 20px;">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM"  />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM" loading="lazy" />
 							</div>
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews"  />
+									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews" loading="lazy" />
 								</div>
 							}
 						</div>
@@ -486,7 +486,7 @@
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews"  />
+									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews" loading="lazy" />
 								</div>
 							}
 						</div>
@@ -560,7 +560,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
 					<div style="max-width: 230px;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" loading="eager" decoding="async" style="width: 100%; height: 100%;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" loading="lazy" decoding="async" style="width: 100%; height: 100%;" alt="@juego.Nombre" />
 					</div>
 
 					<div class="cjuego-titulo" style="width: 100%; display: flex; flex-flow: column wrap;">
@@ -576,7 +576,7 @@
 								<div style="display: flex;">
 									<picture>
 										<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
-										<img src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="eager" decoding="async" style="width: 18px; height: 18px;" />
+										<img src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" decoding="async" style="width: 18px; height: 18px;" />
 									</picture>
 								</div>
 
@@ -586,7 +586,7 @@
 								<div style="display: flex;">
 									<picture>
 										<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
-										<img src="@iconoTienda" alt="Store" loading="eager" decoding="async" style="width: 18px; height: 18px;" />
+										<img src="@iconoTienda" alt="Store" loading="lazy" decoding="async" style="width: 18px; height: 18px;" />
 									</picture>
 								</div>
 							}
@@ -630,7 +630,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="perfil-flexible-centrado">
 					<div style="max-width: 230px;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 100%; height: 100%;"  />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 100%; height: 100%;" loading="lazy" />
 					</div>
 
 					<div style="width: 100%; display: flex; flex-flow: column wrap; padding: 10px 20px;">
@@ -639,26 +639,26 @@
 						<div class="perfil-flexible-centrado" style="justify-content: left; margin-top: 12px; gap: 12px;">
 							@if (tipo == Tipo.MinimosHistoricos)
 							{
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 20px; height: 20px;" />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 20px; height: 20px;" loading="lazy" />
 							}
 
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 20px; height: 20px;"  />
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 20px; height: 20px;" loading="lazy" />
 
 							@if (string.IsNullOrEmpty(juego.Analisis?.Porcentaje) == false)
 							{
 								if (int.Parse(juego.Analisis.Porcentaje) > 74)
 								{
-									<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Good" />
+									<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Good" />
 								}
 
 								if (int.Parse(juego.Analisis.Porcentaje) > 49 && int.Parse(juego.Analisis.Porcentaje) < 75)
 								{
-									<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Meh" />
+									<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Meh" />
 								}
 
 								if (int.Parse(juego.Analisis.Porcentaje) < 50)
 								{
-									<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Bad" />
+									<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Bad" />
 								}
 							}
 						</div>
@@ -715,12 +715,12 @@
 					}
 
 					<div style="text-align: center;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="display: flex; align-items: center; flex-wrap: wrap;">
 						<div style="display: flex; align-items: center; gap: 15px; padding: 15px;">
-							<img src="@Juegos.JuegoDRM2.SacarImagen(drmBundle)" style="max-width: 20px; max-height: 20px;" alt="@Juegos.JuegoDRM2.DevolverDRM(drmBundle)" />
+							<img src="@Juegos.JuegoDRM2.SacarImagen(drmBundle)" style="max-width: 20px; max-height: 20px;" alt="@Juegos.JuegoDRM2.DevolverDRM(drmBundle)" loading="lazy" />
 
 							@if (juego.Analisis != null)
 							{
@@ -728,17 +728,17 @@
 								{
 									if (int.Parse(juego.Analisis.Porcentaje) > 74)
 									{
-										<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Good" />
+										<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Good" />
 									}
 
 									if (int.Parse(juego.Analisis.Porcentaje) > 49 && int.Parse(juego.Analisis.Porcentaje) < 75)
 									{
-										<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Meh" />
+										<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Meh" />
 									}
 
 									if (int.Parse(juego.Analisis.Porcentaje) < 50)
 									{
-										<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px;"  alt="Reviews Bad" />
+										<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Bad" />
 									}
 								}
 							}
@@ -780,11 +780,11 @@
 
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceNoticia" target="@enlaceNuevaPestaña">
 				<div>
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(imagen)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(imagen)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" loading="lazy" />
 				</div>
 
 				<div style="display: flex; align-items: center; justify-content: right; height: 40px;">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Juegos.JuegoDRM2.SacarImagen(drmNoticia))" style="max-width: 24px; max-height: 24px; margin: 10px;" alt="DRM" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Juegos.JuegoDRM2.SacarImagen(drmNoticia))" style="max-width: 24px; max-height: 24px; margin: 10px;" alt="DRM" loading="lazy" />
 				</div>
 			</a>
 		}
@@ -794,7 +794,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div style="display: flex; align-items: center;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 230px; height: 107px;" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 230px; height: 107px;" loading="lazy" alt="@juego.Nombre" />
 					</div>
 
 					<div style="padding: 0px 20px;">
@@ -814,7 +814,7 @@
 		{
 			<a class="boton-pequeño" style="padding: 0px; height: 100%; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div style="display: flex; flex-direction: column; height: 100%;" title="@juego.Nombre">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-height: 278px; object-fit: cover;" alt="@juego.Nombre" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-height: 278px; object-fit: cover;" alt="@juego.Nombre" loading="lazy" />
 
 					<div style="font-size: 14px; display: flex; align-items: center; justify-content: center; height: 100%; padding: 10px; text-align: center;">
 						@Herramientas.Buscador.GenerarMensaje(region, idioma, juego, true, true, true)
@@ -828,7 +828,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div style="display: flex; align-items: center;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 230px; height: 107px;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="width: 230px; height: 107px;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="padding: 0px 20px;">
@@ -848,7 +848,7 @@
 		{
 			<a class="boton-pequeño" style="padding: 0px; height: 100%; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña" @onclick="(e=> AbrirEnlace(e, enlace, false))">
 				<div style="display: flex; flex-direction: column; height: 100%;" title="@juego.Nombre">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 255, 120)" style="max-width: 100vw; max-height: 100vh; object-fit: cover;" alt="@juego.Nombre"  />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 255, 120)" style="max-width: 100vw; max-height: 100vh; object-fit: cover;" alt="@juego.Nombre" loading="lazy" />
 
 					<div style="font-size: 14px; display: flex; align-items: center; justify-content: center; height: 100%; padding: 10px; text-align: center;">
 						@Herramientas.Buscador.GenerarMensaje(region, idioma, juego, true, true, true)
@@ -863,15 +863,15 @@
 
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceGratis" target="@enlaceNuevaPestaña">
 				<div style="width: 100%; text-align: center;">
-					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 100%;" alt="@juego.Nombre" />
+					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 100%;" alt="@juego.Nombre" loading="lazy" />
 
 					<div style="margin: 10px 0px; text-align: center; padding: 5px;">
 						<div style="display: flex; align-items: center; justify-content: center; gap: 20px; height: 40px;">
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(gratis.ImagenLogo)" style="max-width: 140px; max-width: 140px;" alt="@gratis.Nombre" />
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(gratis.ImagenLogo)" style="max-width: 140px; max-width: 140px;" alt="@gratis.Nombre" loading="lazy" />
 
 							@if (gratis.DRMEnseñar == true)
 							{
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Juegos.JuegoDRM2.SacarImagen(drmGratis))" style="width: 28px; height: 28px;" alt="DRM" />
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Juegos.JuegoDRM2.SacarImagen(drmGratis))" style="width: 28px; height: 28px;" alt="DRM" loading="lazy" />
 							}
 						</div>
 					</div>
@@ -884,11 +884,11 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceSuscripcion" target="@enlaceNuevaPestaña">
 				<div class="boton-expandir" style="@fondoColor display: flex; flex-direction: column;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="width: 100%; text-align: right; padding: 10px;">
-						<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" />
+						<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" />
 					</div>
 				</div>
 			</a>
@@ -899,7 +899,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña" @onclick="(e => AbrirEnlace(e, enlace, false))">
 				<div class="boton-expandir" style="background: color-mix(in srgb, var(--fondoBotonPequeño), var(--fondoDlc) 30%); display: flex; align-items: center; gap: 20px;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="width: 100%;">
@@ -917,7 +917,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña" @onclick="(e => AbrirEnlace(e, enlace, false))">
                 <div class="boton-expandir" style="background: color-mix(in srgb, var(--fondoBotonPequeño), var(--fondoBandaSonora) 30%); display: flex; align-items: center; gap: 20px;">
                     <div>
-                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" />
+                        <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" loading="lazy" />
                     </div>
 
                     <div style="width: 100%;">
@@ -940,7 +940,7 @@
 			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div class="boton-expandir" style="@fondoColor display: flex; align-items: center; gap: 20px;">
 					<div>
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" style="max-width: 230px; max-height: 107px;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="width: 100%;">

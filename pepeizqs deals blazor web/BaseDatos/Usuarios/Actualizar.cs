@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Dapper;
+using Juegos;
 using pepeizqs_deals_web.Data;
 
 namespace BaseDatos.Usuarios
@@ -347,5 +348,17 @@ namespace BaseDatos.Usuarios
 		public int Cantidad { get; set; }
 		public DateTime? UltimaVisita { get; set; }
 		public DateTime? UltimoJuego { get; set; }
+		public List<DeseadosDatosJuego> Juegos { get; set; }
+	}
+
+	public class DeseadosDatosJuego
+	{
+		public string Nombre { get; set; }
+		public string Enlace { get; set; }
+		public string Imagen { get; set; }
+		public string Precio { get; set; }
+		public DateTime Fecha { get; set; }
+		public string Tienda { get; set; }
+		public JuegoDRM DRM { get; set; }
 	}
 }
