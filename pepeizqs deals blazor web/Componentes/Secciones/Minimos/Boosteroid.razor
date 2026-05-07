@@ -150,41 +150,41 @@
 						<ItemContent>
 							@if (juego.Excluido == false)
 							{
-								<div style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
+								JuegoDRM drmJuego = JuegoDRM.NoEspecificado;
+
+								if (usuarioRegion == TiendaRegion.Europa)
+								{
+									drmJuego = juego.Juego.PrecioMinimosHistoricos[0].DRM;
+								}
+								else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+								{
+									drmJuego = juego.Juego.PrecioMinimosHistoricosUS[0].DRM;
+								}
+
+								<div @key="juego.Juego.Id-drmJuego" style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 									<div style="width: 100%; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
 										<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.Boosteroid" userAgent="@userAgent" />
 									</div>
 			
 									@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DesplegableMostrar == true)
 									{
-										JuegoDRM drmDeseado = JuegoDRM.NoEspecificado;
-													
-										if (usuarioRegion == TiendaRegion.Europa)
-										{
-											drmDeseado = juego.Juego.PrecioMinimosHistoricos[0].DRM;
-										}
-										else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-										{
-											drmDeseado = juego.Juego.PrecioMinimosHistoricosUS[0].DRM;
-										}
-
 										<div style="position: absolute; top: 0; left: 0;">
-											<button @onclick="@(e => DesplegarDropdown(juego.Juego.Id, drmDeseado))"
+											<button @onclick="@(e => DesplegarDropdown(juego.Juego.Id, drmJuego))"
 													class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @juego.Color;">
 												<div class="svg-boton" style="display: flex;">
-													<svg style="width: 20px; height: 20px; transform: rotate(@(dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString() ? "180deg" : "0deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+													<svg style="width: 20px; height: 20px; transform: rotate(@(dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmJuego).ToString() ? "180deg" : "0deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 														<path d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z" />
 													</svg>
 												</div>
 											</button>
 										</div>
 
-										@if (dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString())
+										@if (dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmJuego).ToString())
 										{
 											<div style="position: absolute; top: 40px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; min-width: 200px; overflow: hidden;">
 												@if (juego.DeseadoImportado == false)
 												{
-													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, juego, drmDeseado); })"
+													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, juego, drmJuego); })"
 															style="width: 100%; padding: 10px 12px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
 															onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
 															onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">

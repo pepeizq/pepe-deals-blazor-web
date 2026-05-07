@@ -18,6 +18,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject NavigationManager Navegacion
 
 @if (juego != null)
 {
@@ -1959,10 +1960,6 @@
                                             <hr/>
                                         }
 
-                                        string imagenDRM = JuegoDRM2.SacarImagen(gratis2.DRM);
-                                        string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
-                                        string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
-
                                         <div style="display: flex; align-items: center; gap: 30px; font-size: 16px; padding: 15px 5px; flex-wrap: wrap;">
                                             <div style="display: flex; align-items: center; gap: 15px;">
                                                 <img src="@GratisCargar.DevolverGratis(gratis2.Tipo).ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout;" alt="@GratisCargar.DevolverGratis(gratis2.Tipo).Nombre">
@@ -1973,6 +1970,10 @@
                                                 }
                                                 else
                                                 {
+                                                    string imagenDRM = JuegoDRM2.SacarImagen(gratis2.DRM);
+                                                    string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
+                                                    string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
+
                                                     <picture>
                                                         <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
                                                         <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(gratis2.DRM)"/>
@@ -3375,6 +3376,10 @@
                 estaExcluido = Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.Id);
             }
         }
+        else
+        {
+            Navegacion.NavigateTo("/", true);
+        }
     }
 
     #region Inicio
@@ -3540,33 +3545,42 @@
 
         bundlesCache1?.Clear();
 
-        var ids = BundlesDisponibles(juego.Bundles).Where(b => b.BundleId > 0).Select(b => b.BundleId).Distinct().ToList();
-
-        foreach (var id in ids)
+        if (juego?.Bundles?.Count > 0)
         {
-            var bundle = await BaseDatos.Bundles.Buscar.UnBundle(id);
-            bundlesCache1[id] = bundle;
-        }
+            List<int> ids = BundlesDisponibles(juego.Bundles)?.Where(b => b.BundleId > 0).Select(b => b.BundleId).Distinct().ToList();
 
+            if (ids?.Count > 0)
+            {
+                foreach (var id in ids)
+                {
+                    var bundle = await BaseDatos.Bundles.Buscar.UnBundle(id);
+                    bundlesCache1[id] = bundle;
+                }    
+            }
+        }
+             
         #endregion
 
         #region Bundles Antiguos
 
         bundlesCache2?.Clear();
 
-        foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
+        if (juego?.Bundles?.Count > 0)
         {
-            if (bundle2.BundleId > 0 && !bundlesCache2.ContainsKey(bundle2.BundleId))
+            foreach (var bundle2 in BundlesAntiguos(juego.Bundles))
             {
-                var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
-
-                if (bundle != null)
+                if (bundle2.BundleId > 0 && !bundlesCache2.ContainsKey(bundle2.BundleId))
                 {
-                    bundlesCache2[bundle2.BundleId] = bundle;
+                    var bundle = await BaseDatos.Bundles.Buscar.UnBundle(bundle2.BundleId);
+
+                    if (bundle != null)
+                    {
+                        bundlesCache2[bundle2.BundleId] = bundle;
+                    }
                 }
             }
         }
-
+        
         #endregion
 
         #region Bundles Cargar, DRMs Cuantos Tienen Desean
@@ -3827,15 +3841,15 @@
                 }
             }
         }
-        else if (BundlesComprobar(juego.Bundles, drm) != null)
+        else if (juego?.Bundles?.Count > 0 && BundlesComprobar(juego.Bundles, drm) != null)
         {
             mostrar = true;
         }
-        else if (GratisComprobar(juego.Gratis, drm) != null)
+        else if (juego?.Gratis?.Count > 0 && GratisComprobar(juego.Gratis, drm) != null)
         {
             mostrar = true;
         }
-        else if (SuscripcionesComprobar(juego.Suscripciones, drm) != null)
+        else if (juego?.Suscripciones?.Count > 0 && SuscripcionesComprobar(juego.Suscripciones, drm) != null)
         {
             mostrar = true;
         }

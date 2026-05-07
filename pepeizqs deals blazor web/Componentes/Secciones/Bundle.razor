@@ -737,7 +737,7 @@
 			{
 				if (item != null)
 				{
-					if (!juegosBundlePrecargados.ContainsKey(int.Parse(item.JuegoId)))
+					if (juegosBundlePrecargados.ContainsKey(int.Parse(item.JuegoId)) == false)
 					{
 						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
 						juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;

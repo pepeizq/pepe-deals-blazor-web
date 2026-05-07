@@ -13,6 +13,7 @@ using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -93,9 +94,9 @@ builder.Services.AddRazorComponents(opciones =>
 	opciones.KeepAliveInterval = TimeSpan.FromSeconds(20);
 });
 
-builder.Services.AddSignalR(options =>
+builder.Services.AddSignalR(opciones =>
 {
-	options.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+	opciones.MaximumReceiveMessageSize = 10 * 1024 * 1024;
 });
 
 builder.Services.AddCascadingAuthenticationState();
@@ -300,23 +301,12 @@ app.Use(async (contexto, siguiente) =>
 {
 	string? ruta = contexto.Request.Path.Value?.ToLowerInvariant() ?? "";
 
-	// Evitar peticiones a rutas muertas
-	if (ruta.EndsWith("/.svg") == true ||
-		ruta.EndsWith("/.png") == true ||
-		ruta.EndsWith("/.jpg") == true ||
-		ruta.EndsWith("/.webp") == true ||
-		ruta.EndsWith("/.gif") == true ||
-		ruta.Contains("/./") == true ||
-		ruta.EndsWith(".php") == true ||
-		ruta.EndsWith("curator/funtrain/") == true ||
-		ruta.EndsWith("curator/gloomywasher/") == true ||
-		ruta.EndsWith("curator/haunted_hotel/") == true ||
-		ruta.EndsWith("curator/Hematite_AVN/") == true ||
-		ruta.EndsWith("curator/Lewdonymous/") == true ||
-		ruta.EndsWith("curator/ScorchedHeaven/") == true ||
-		ruta.EndsWith("curator/sinbeans/") == true ||
-		ruta.EndsWith("curator/trashgamed_g/") == true
-		)
+	HashSet<string> extensiones = new()
+	{
+		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", ".php"
+	};
+
+	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true)
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
@@ -346,6 +336,24 @@ app.Use(async (contexto, siguiente) =>
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
+	}
+
+	// Redireccionar www a no-www
+	string host = contexto.Request.Host.Host;
+
+	if (host.StartsWith("www."))
+	{
+		string nuevoHost = host.Substring(4);
+		string scheme = contexto.Request.Scheme;
+		PathString rutaBase = contexto.Request.PathBase;
+		PathString rutaSlug = contexto.Request.Path;
+		QueryString queryTexto = contexto.Request.QueryString;
+
+		string nuevoEnlace = $"{scheme}://{nuevoHost}{rutaBase}{rutaSlug}{queryTexto}";
+
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = nuevoEnlace;
+		return;
 	}
 
 	try
@@ -432,6 +440,25 @@ else
 			contexto.Response.ContentType = "text/plain";
 
 			await contexto.Response.WriteAsync("Unexpected error, I've already put the slaves to work on the fix.");
+
+			StringBuilder detallesError = new StringBuilder();
+			detallesError.AppendLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}]");
+			detallesError.AppendLine($"Ruta: {contexto.Request.Path}");
+			detallesError.AppendLine($"Método: {contexto.Request.Method}");
+			detallesError.AppendLine($"Query: {contexto.Request.QueryString}");
+			detallesError.AppendLine($"Excepción: {error2?.GetType().Name}");
+			detallesError.AppendLine($"Mensaje: {error2?.Message}");
+			detallesError.AppendLine($"StackTrace: {error2?.StackTrace}");
+
+			if (error2?.InnerException != null)
+			{
+				detallesError.AppendLine($"--- InnerException ---");
+				detallesError.AppendLine($"Tipo: {error2.InnerException.GetType().Name}");
+				detallesError.AppendLine($"Mensaje: {error2.InnerException.Message}");
+				detallesError.AppendLine($"StackTrace: {error2.InnerException.StackTrace}");
+			}
+
+			BaseDatos.Errores.Insertar.Mensaje($"Error 500 {contexto.Request.Path}", detallesError.ToString());
 		});
 	});
 
