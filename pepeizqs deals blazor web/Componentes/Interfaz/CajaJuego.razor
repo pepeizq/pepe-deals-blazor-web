@@ -881,7 +881,7 @@
 
 		@if (tipo == Tipo.Suscripciones)
 		{
-			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceSuscripcion" target="@enlaceNuevaPestaña">
+			<a @key="@juego.Id" class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceSuscripcion" target="@enlaceNuevaPestaña">
 				<div class="boton-expandir" style="@fondoColor display: flex; flex-direction: column;">
 					<div>
 						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Library_600x900)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" loading="lazy" />

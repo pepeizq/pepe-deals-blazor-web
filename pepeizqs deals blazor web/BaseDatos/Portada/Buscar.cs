@@ -117,10 +117,11 @@ AND (
 				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
 				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
 				(
-					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) > 2020 AND
+					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) > 2020 AND 
 					 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE())
 					OR
-					(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()))
+					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) <= 2020 AND
+					 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()))
 				) AND 
 				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 999 AND 
 				(NOT EXISTS (

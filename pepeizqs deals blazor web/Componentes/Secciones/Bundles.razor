@@ -280,7 +280,7 @@
 			{
 				foreach (var bundle in bundlesActuales)
 				{
-					<button @onclick="@(e => SeleccionarBundle(e, bundle))" class="boton-pequeño" style="padding: 0px;">
+					<button @key="bundle.Id" @onclick="@(e => SeleccionarBundle(e, bundle))" class="boton-pequeño" style="padding: 0px;">
 						<div style="width: 100%; text-align: center; padding: 2px; height: 100%; display: flex; flex-direction: column; gap: 10px;">
 							@if (bundle.BundleTipo == Bundles2.BundleTipo.HumbleBundle)
 							{

@@ -728,7 +728,7 @@
 
 	protected override async Task OnParametersSetAsync()
 	{
-		if (bundle?.Juegos != null)
+		if (bundle?.Juegos?.Count > 0)
 		{
 			juegosBundlePrecargados.Clear();
 			int reseñas = 0;
@@ -740,18 +740,22 @@
 					if (juegosBundlePrecargados.ContainsKey(int.Parse(item.JuegoId)) == false)
 					{
 						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
-						juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
 
-						if (string.IsNullOrEmpty(juego.Analisis?.Cantidad) == false)
+						if (juego != null)
 						{
-							string temp = juego.Analisis.Cantidad;
-							temp = temp.Replace(",", null);
-							int reseñasJuego = int.Parse(temp);
+							juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
 
-							if (reseñasJuego > reseñas)
+							if (string.IsNullOrEmpty(juego.Analisis?.Cantidad) == false)
 							{
-								reseñas = reseñasJuego;
-								fondo = juego.Imagenes.Library_1920x620;
+								string temp = juego.Analisis.Cantidad;
+								temp = temp.Replace(",", null);
+								int reseñasJuego = int.Parse(temp);
+
+								if (reseñasJuego > reseñas)
+								{
+									reseñas = reseñasJuego;
+									fondo = juego.Imagenes.Library_1920x620;
+								}
 							}
 						}
 					}

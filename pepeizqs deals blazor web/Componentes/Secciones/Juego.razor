@@ -3610,9 +3610,12 @@
             {	
                 string nombreParaEnlace = Herramientas.EnlaceAdaptador.Nombre(juego.Nombre);
  
-                if (string.IsNullOrEmpty(nombreParaEnlace) == false && string.IsNullOrEmpty(juegoNombre) == true)
+                if (string.IsNullOrEmpty(nombreParaEnlace) == false && nombreParaEnlace.Length > 0)
                 {
-                    await JavaScript.InvokeVoidAsync("ChangeUrl", "/game/" + juego.Id.ToString() + "/" + nombreParaEnlace + "/");
+                    if (string.IsNullOrEmpty(juegoNombre) == true || juegoNombre.Equals(nombreParaEnlace, StringComparison.OrdinalIgnoreCase) == false)
+                    {
+                        await JavaScript.InvokeVoidAsync("ChangeUrl", $"/game/{juego.Id}/{nombreParaEnlace}/");
+                    }
                 }
             }
  
@@ -3624,7 +3627,7 @@
                 await Task.WhenAll(dlcsTarea, bandasSonorasTarea);
  
                 dlcs ??= dlcsTarea.Result;
-                bandasSonoras ??= bandasSonorasTarea .Result;
+                bandasSonoras ??= bandasSonorasTarea.Result;
  
                 if (juego.IdSteam > 0)
                 {

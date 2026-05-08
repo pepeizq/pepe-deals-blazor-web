@@ -344,9 +344,9 @@
 					}
 				}
 
-				@if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
+				if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
 				{
-					@if (juegosSuscripcionesCache?.Count > 0)
+					if (juegosSuscripcionesCache?.Count > 0)
 					{
 						<div class="caja-noticia-contenido">
 							<div>@texto</div>
@@ -374,6 +374,12 @@
 							</div>
 						</div>
 					}
+				}
+				else
+				{
+					<div class="caja-noticia-contenido">
+						@((MarkupString)Herramientas.Idiomas.ElegirTexto(idioma, noticia.ContenidoEn, noticia.ContenidoEs))
+					</div>
 				}
 			}
 			else
@@ -727,7 +733,12 @@
 
 				if (string.IsNullOrEmpty(noticia.Juegos) == false)
 				{
-					juegos ??= await BaseDatos.Juegos.Buscar.MultiplesJuegos(Herramientas.Listados.Generar(noticia.Juegos));
+					var listaJuegos = Herramientas.Listados.Generar(noticia.Juegos);
+
+					if (listaJuegos?.Count > 0)
+					{
+						juegos ??= await BaseDatos.Juegos.Buscar.MultiplesJuegos(listaJuegos);
+					}
 				}
 
 				if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
@@ -829,7 +840,7 @@
 		juegosSuscripcionesCache.Clear();
 		juegosCache2.Clear();
 
-		if (!string.IsNullOrEmpty(noticia.SuscripcionesIds))
+		if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
 		{
 			var ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
 
@@ -842,7 +853,7 @@
 					{
 						juegosSuscripcionesCache.Add(suscripcion);
 
-						if (!juegosCache2.ContainsKey(suscripcion.JuegoId))
+						if (juegosCache2.ContainsKey(suscripcion.JuegoId) == false)
 						{
 							var juego = await BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
 							juegosCache2[suscripcion.JuegoId] = juego;

@@ -10,12 +10,8 @@ namespace Herramientas
 			{
 				if (datos != null)
 				{
-					List<string> lista = new List<string>();
-
-					string[] datosPartidos = datos.Split(',');
-					lista.AddRange(datosPartidos);
-
-					return lista;
+					var datosPartidos = datos.Split(',');
+					return new List<string>(datosPartidos);
 				}
 			}
 			catch 

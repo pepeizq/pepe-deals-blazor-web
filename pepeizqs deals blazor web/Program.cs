@@ -792,8 +792,6 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 
 app.MapHealthChecks("/vida");
 
-app.UseStatusCodePagesWithReExecute("/");
-
 Herramientas.ImagenesOptimizador.GenerarImagenesResponsive(builder.Environment.WebRootPath);
 
 app.Run();

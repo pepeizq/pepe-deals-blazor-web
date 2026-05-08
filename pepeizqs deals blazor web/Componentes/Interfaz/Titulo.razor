@@ -221,7 +221,7 @@
 	}
 </HeadContent>
 
-@code {
+	@code {
 
 	#nullable disable
 
@@ -777,35 +777,38 @@
 		string tituloJuego = nombre;
 		string tituloDRMs = string.Empty;
 
-		foreach (var drm in drmsEnseñar)
+		if (drmsEnseñar?.Count > 0)
 		{
-			if (string.IsNullOrEmpty(drm.Mensaje) == false)
+			foreach (var drm in drmsEnseñar)
 			{
-				if (drm.DRM == Juegos.JuegoDRM.Steam || drm.DRM == Juegos.JuegoDRM.GOG)
+				if (string.IsNullOrEmpty(drm.Mensaje) == false)
 				{
-					bool añadir = true;
-
-					if (string.IsNullOrEmpty(tituloDRMs) == false)
+					if (drm.DRM == Juegos.JuegoDRM.Steam || drm.DRM == Juegos.JuegoDRM.GOG)
 					{
-						if (tituloDRMs.Contains(Juegos.JuegoDRM2.DevolverDRM(drm.DRM)) == true)
-						{
-							añadir = false;
-						}
-					}
+						bool añadir = true;
 
-					if (añadir == true)
-					{
 						if (string.IsNullOrEmpty(tituloDRMs) == false)
 						{
-							tituloDRMs = tituloDRMs + ", ";
+							if (tituloDRMs.Contains(Juegos.JuegoDRM2.DevolverDRM(drm.DRM)) == true)
+							{
+								añadir = false;
+							}
 						}
 
-						tituloDRMs = tituloDRMs + Juegos.JuegoDRM2.DevolverDRM(drm.DRM);
+						if (añadir == true)
+						{
+							if (string.IsNullOrEmpty(tituloDRMs) == false)
+							{
+								tituloDRMs = tituloDRMs + ", ";
+							}
+
+							tituloDRMs = tituloDRMs + Juegos.JuegoDRM2.DevolverDRM(drm.DRM);
+						}
 					}
 				}
 			}
 		}
-
+		
 		if (gamePass == true)
 		{
 			if (string.IsNullOrEmpty(tituloDRMs) == false)

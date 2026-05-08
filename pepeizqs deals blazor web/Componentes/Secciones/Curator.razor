@@ -699,10 +699,6 @@
 
 														string enlaceFinal = Herramientas.EnlaceAcortador.Generar(minimoMostrar.Enlace, minimoMostrar.Tienda, usuarioPatreon, false);
 
-														string iconoDRM = JuegoDRM2.SacarImagen(minimoMostrar.DRM);
-														string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
-														string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
-
 														<a href="@enlaceFinal" class="boton-pequeño" target="_blank" style="width: fit-content; padding: 10px 20px;">
 															<div style="display: flex; align-items: center; gap: 15px;">
 																@if (minimoMostrar.DRM == JuegoDRM.DRMFree)
@@ -711,9 +707,9 @@
 																}
 																else
 																{
-																	string imagenDRM = JuegoDRM2.SacarImagen(minimoMostrar.DRM);
-																	string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
-																	string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
+																	string iconoDRM = JuegoDRM2.SacarImagen(minimoMostrar.DRM);
+																	string iconoDRM1 = iconoDRM.Replace(".webp", "-sm.webp");
+																	string iconoDRM2 = iconoDRM.Replace(".webp", "-md.webp");
 
 																	<div style="display: flex;">
 																		<picture>

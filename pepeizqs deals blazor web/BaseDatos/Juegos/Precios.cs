@@ -354,8 +354,9 @@ namespace BaseDatos.Juegos
                                 minimo.Descuento = nuevaOferta.Descuento;
 
                                 minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
+								minimo.FechaTermina = nuevaOferta.FechaTermina;
 
-                                DateTime tempFecha = nuevaOferta.FechaDetectado;
+								DateTime tempFecha = nuevaOferta.FechaDetectado;
                                 tempFecha = tempFecha.AddDays(30);
 
                                 bool cambiarFechaDetectado = false;
@@ -692,6 +693,7 @@ namespace BaseDatos.Juegos
 								minimo.Descuento = nuevaOferta.Descuento;
 
 								minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
+								minimo.FechaTermina = nuevaOferta.FechaTermina;
 
 								DateTime tempFecha = nuevaOferta.FechaDetectado;
 								tempFecha = tempFecha.AddDays(30);

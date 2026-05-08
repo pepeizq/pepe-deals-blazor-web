@@ -418,20 +418,20 @@ WHERE t.enlace = @Enlace
 			if (encontrado == false)
 			{
 				string sqlInsertar = $@"
-IF NOT EXISTS (SELECT 1 FROM {esquema} WHERE enlace = @Enlace)
-BEGIN
-    DECLARE @nuevaId NVARCHAR(MAX); 
+					IF NOT EXISTS (SELECT 1 FROM {esquema} WHERE enlace = @Enlace)
+					BEGIN
+						DECLARE @nuevaId NVARCHAR(MAX); 
 
-    SELECT @nuevaId = id 
-    FROM juegos 
-    WHERE nombreCodigo = @NombreCodigo;
+						SELECT @nuevaId = id 
+						FROM juegos 
+						WHERE nombreCodigo = @NombreCodigo;
 
-    IF @nuevaId IS NULL SET @nuevaId = 0;
+						IF @nuevaId IS NULL SET @nuevaId = 0;
 
-    INSERT INTO {esquema} (enlace, nombre, imagen, idJuegos, descartado)
-    VALUES (@Enlace, @Nombre, @Imagen, @nuevaId, 'no');
-END;
-";
+						INSERT INTO {esquema} (enlace, nombre, imagen, idJuegos, descartado)
+						VALUES (@Enlace, @Nombre, @Imagen, @nuevaId, 'no');
+					END;
+					";
 
 				try
 				{

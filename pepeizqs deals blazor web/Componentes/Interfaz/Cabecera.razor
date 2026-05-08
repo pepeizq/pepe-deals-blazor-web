@@ -427,26 +427,42 @@
                 <div class="botones-superiores">
                     @if (string.IsNullOrEmpty(usuarioId) == false)
                     {
-                        <a class="boton-superior" href="/wishlist" style="font-size: 15px;">
-                            @if (cantidadDeseados > 0)
-                            {
-                                <div style="display: flex; align-items: center; color: var(--colorTexto); background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                    <div style="background-color: var(--fondoAlerta); padding: 5px 15px; font-size: 17px;">
-                                        @cantidadDeseados
-                                    </div>
+                        <div class="menu-dropdown2">
+                            <a class="boton-superior" href="/wishlist" style="font-size: 15px;">
+                                @if (deseadosCantidad > 0)
+                                {
+                                    <div style="display: flex; align-items: center; color: var(--colorTexto); background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        <div style="background-color: var(--fondoAlerta); padding: 5px 15px; font-size: 17px;">
+                                            @deseadosCantidad
+                                        </div>
 
-                                    <div style="padding: 5px 15px;">
+                                        <div style="padding: 5px 15px;">
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "Wishlist", "Header")
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="@GenerarEstilo("/wishlist")">
                                         @Herramientas.Idiomas.BuscarTexto(idioma, "Wishlist", "Header")
                                     </div>
-                                </div>
-                            }
-                            else
+                                }
+                            </a>
+                            
+                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0)
                             {
-                                <div style="@GenerarEstilo("/wishlist")">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "Wishlist", "Header")
+                                <div class="menu-dropdown-contenido-centrado">
+                                    @foreach (var juego in deseadosJuegos.Take(5))
+                                    {
+                                         <a @key="juego.Enlace" class="texto-cabecera boton-superior" href="@juego.Enlace" target="_blank" style="font-size: 15px;">
+                                             <div style="text-align: center; display: flex; align-items: center; gap: 15px;">
+                                                 
+                                             </div>
+                                         </a>
+                                    }
                                 </div>
                             }
-                        </a>
+                        </div>
                     }
 
                     <div class="menu-dropdown2">
@@ -857,9 +873,9 @@
                                     {
                                         string textoDeseados = Herramientas.Idiomas.BuscarTexto(idioma, "Wishlist", "Header");
 
-                                        if (cantidadDeseados > 0)
+                                        if (deseadosCantidad > 0)
                                         {
-                                            textoBuscador = "(" + cantidadDeseados.ToString() + ") " + textoDeseados;
+                                            textoBuscador = "(" + deseadosCantidad.ToString() + ") " + textoDeseados;
                                         }
 
                                         <a class="texto-cabecera boton-superior" href="/wishlist" style="font-size: 15px;">
@@ -1051,7 +1067,7 @@
                                             }
                                         }
 
-                                        <div @key="juego.Id" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
+                                        <div @key="juego.Id-2" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
                                             @{
                                                 string imagen = juego.Imagenes.Header_460x215;
 
@@ -1153,7 +1169,8 @@
 
     [PersistentState] public Usuario opcionesCabecera { get; set; }
 
-    private int cantidadDeseados = 0;
+    private int deseadosCantidad = 0;
+    private List<DeseadosDatosJuego> deseadosJuegos = null;
     private string enlaceChrome = null;
     private string enlaceFirefox = null;
     private string enlaceEdge = null;
@@ -1220,21 +1237,26 @@
 
                 if (datos2 != null)
                 {
-                    cantidadDeseados = datos2.Cantidad;
+                    deseadosCantidad = datos2.Cantidad;
 
                     if (datos2.UltimaVisita != null && datos2.UltimoJuego != null)
                     {
                         if (datos2.UltimaVisita?.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
-                            cantidadDeseados = 0;
+                            deseadosCantidad = 0;
                         }
                     }
                     else if (datos2.UltimaVisita == null && datos2.UltimoJuego != null)
                     {
                         if (DateTime.Now.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
-                            cantidadDeseados = 0;
+                            deseadosCantidad = 0;
                         }
+                    }
+
+                    if (datos2.Juegos?.Count > 0)
+                    {
+                        deseadosJuegos = datos2.Juegos;
                     }
                 }
             }

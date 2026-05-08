@@ -128,7 +128,7 @@ namespace BaseDatos.Usuarios
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Usuario Actualiza Datos String", ex, false);
+				BaseDatos.Errores.Insertar.Mensaje($"Usuario Actualiza Datos String: {variable} - {valor}", ex, false);
 			}
 		}
 
