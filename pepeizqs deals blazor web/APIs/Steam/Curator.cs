@@ -14,7 +14,12 @@ namespace APIs.Steam
         
             if (string.IsNullOrEmpty(html) == false)
             {
-				SteamCuratorAPI api = JsonSerializer.Deserialize<SteamCuratorAPI>(html);
+				JsonSerializerOptions opciones = new JsonSerializerOptions
+				{
+					UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+				};
+
+				SteamCuratorAPI api = JsonSerializer.Deserialize<SteamCuratorAPI>(html, opciones);
 		
                 if (api != null)
                 {
@@ -31,7 +36,12 @@ namespace APIs.Steam
 
 			if (string.IsNullOrEmpty(html) == false)
 			{
-				SteamCuratorAPIVanidad api = JsonSerializer.Deserialize<SteamCuratorAPIVanidad>(html);
+				JsonSerializerOptions opciones = new JsonSerializerOptions
+				{
+					UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+				};
+
+				SteamCuratorAPIVanidad api = JsonSerializer.Deserialize<SteamCuratorAPIVanidad>(html, opciones);
 
 				if (api != null)
 				{

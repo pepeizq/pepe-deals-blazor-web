@@ -1007,6 +1007,8 @@ else
 	private bool usuarioAdmin = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
+	[PersistentState] public Usuario opciones { get; set; }
+
 	private string videoDestacado = string.Empty;
 
 	protected override async Task OnInitializedAsync()
@@ -1021,17 +1023,18 @@ else
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
 			Task<string> tareaIdiomaJuego = BaseDatos.Usuarios.Buscar.IdiomaJuegos(usuarioId);
+			Task<Usuario> tareaOpciones = (opciones != null) ? Task.FromResult(opciones) : BaseDatos.Usuarios.Buscar.OpcionesPortada(usuarioId);
 
-			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego);
+			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaIdiomaJuego, tareaOpciones);
 
 			idioma = tareaIdioma.Result;
-			juegosUsuario = tareaJuegos.Result;
+			juegosUsuario =  tareaJuegos.Result;
 			deseadosUsuario = tareaDeseados.Result;
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
 			usuarioAdmin = tareaAdmin.Result;
@@ -1042,7 +1045,7 @@ else
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 
-			Usuario opciones = await BaseDatos.Usuarios.Buscar.OpcionesPortada(usuarioId);
+			opciones = tareaOpciones.Result;
 
 			if (opciones != null)
 			{
@@ -1114,9 +1117,9 @@ else
 
 		//------------------------------------------------
 
-		Task tareaDestacados = CargarDestacados();
-		Task tareaNoticias = CargarNoticias();
-		Task tareaMinimos = CargarMinimos();
+		Task tareaDestacados = (juegosDestacadosMostrar?.Count > 0) ? Task.CompletedTask : CargarDestacados();
+		Task tareaNoticias = (noticias?.Count > 0) ? Task.CompletedTask : CargarNoticias();
+		Task tareaMinimos = (juegosMinimosGestor?.Count > 0) ? Task.CompletedTask : CargarMinimos();
 
 		await Task.WhenAll(tareaDestacados, tareaNoticias, tareaMinimos);
 	}
@@ -1322,7 +1325,7 @@ else
 		videoDestacado = null;
 
 		cronometroContador = 0;
-		cronometro.Dispose();
+		cronometro?.Dispose();
 		CronometroDestacados();
 	}
 
@@ -1606,7 +1609,7 @@ else
 	#region Minimos Filtrado
 
 	[PersistentState] public List<Juegos.Juego> juegosMinimosGestor { get; set; }
-	private List<JuegoMostrar> juegosMinimosMostrar = new List<JuegoMostrar>();
+	[PersistentState] public List<JuegoMostrar> juegosMinimosMostrar { get; set; }
 	private MinimosTipo tipoSeleccionadoMinimos = MinimosTipo.Nuevos;
 
 	private enum MinimosTipo
@@ -1623,7 +1626,7 @@ else
 
 		if (juegosMinimosGestor?.Count > 0)
 		{
-			juegosMinimosMostrar.Clear();
+			List<JuegoMostrar> listaMostrar = new List<JuegoMostrar>();
 
 			foreach (var juego in juegosMinimosGestor)
 			{
@@ -1682,13 +1685,10 @@ else
 					}
 				}
 
-				juegosMinimosMostrar.Add(juegoMinimoMostrar);
+				listaMostrar.Add(juegoMinimoMostrar);
 			}
-		}
 
-		if (juegosMinimosMostrar?.Count > 0)
-		{
-			await InvokeAsync(StateHasChanged);
+            juegosMinimosMostrar = listaMostrar;
 		}
 	}
 

@@ -1048,8 +1048,7 @@ else
 
 	private bool usuarioPatreon = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
-
-	[PersistentState] public Usuario opcionesMinimos { get; set; }
+	[PersistentState] public Usuario opciones { get; set; }
 
 	[SupplyParameterFromQuery] private string DRMs { get; set; }
 	[SupplyParameterFromQuery] private string Stores { get; set; }
@@ -1086,11 +1085,11 @@ else
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
-			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
+			Task<Usuario> tareaUsuario = (opciones != null) ? Task.FromResult(opciones) : BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
 
 			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaRegion, tareaUsuario);
 
@@ -1099,28 +1098,28 @@ else
 			deseadosUsuario = tareaDeseados.Result;
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
 			usuarioRegion = (TiendaRegion)tareaRegion.Result;
-			opcionesMinimos = tareaUsuario.Result;
+			opciones = tareaUsuario.Result;
 
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
 			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
 			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 
-			if (opcionesMinimos != null)
+			if (opciones != null)
 			{
-				if (opcionesMinimos.Currency.HasValue == true)
+				if (opciones.Currency.HasValue == true)
 				{
-					usuarioRegion = (TiendaRegion)opcionesMinimos.Currency.Value;
+					usuarioRegion = (TiendaRegion)opciones.Currency.Value;
 				}
 
 				#region Filtrado
 
-				if (opcionesMinimos.HistoricalLowsSort != null)
+				if (opciones.HistoricalLowsSort != null)
 				{
-					opcionesMinimos.HistoricalLowsSort = 1;
+					opciones.HistoricalLowsSort = 1;
 				}
 
-				if (opcionesMinimos.HistoricalLowsOption1 == true)
+				if (opciones.HistoricalLowsOption1 == true)
 				{
 					ocultarJuegosUsuarioSteam = "checked";
 				}
@@ -1129,7 +1128,7 @@ else
 					ocultarJuegosUsuarioSteam = null;
 				}
 
-				if (opcionesMinimos.HistoricalLowsOption4 == true)
+				if (opciones.HistoricalLowsOption4 == true)
 				{
 					ocultarJuegosUsuarioGog = "checked";
 				}
@@ -1138,19 +1137,19 @@ else
 					ocultarJuegosUsuarioGog = null;
 				}
 
-				if (opcionesMinimos.HistoricalLowsOption2.HasValue == true)
+				if (opciones.HistoricalLowsOption2.HasValue == true)
 				{
-					descuentoMinimo = opcionesMinimos.HistoricalLowsOption2.Value;
+					descuentoMinimo = opciones.HistoricalLowsOption2.Value;
 				}
 
-				if (opcionesMinimos.HistoricalLowsOption3.HasValue == true)
+				if (opciones.HistoricalLowsOption3.HasValue == true)
 				{
-					precioMaximo = opcionesMinimos.HistoricalLowsOption3.Value;
+					precioMaximo = opciones.HistoricalLowsOption3.Value;
 				}
 
-				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsDRMs) == false)
+				if (string.IsNullOrEmpty(opciones.HistoricalLowsDRMs) == false)
 				{
-					drmsListado = JsonSerializer.Deserialize<List<MostrarJuegoDRM>>(opcionesMinimos.HistoricalLowsDRMs);
+					drmsListado = JsonSerializer.Deserialize<List<MostrarJuegoDRM>>(opciones.HistoricalLowsDRMs);
 
 					if (drmsListado?.Count > 0)
 					{
@@ -1180,33 +1179,33 @@ else
 					}
 				}
 
-				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsStores) == false)
+				if (string.IsNullOrEmpty(opciones.HistoricalLowsStores) == false)
 				{
-					tiendas = GenerarListaTiendas(JsonSerializer.Deserialize<List<MostrarJuegoTienda>>(opcionesMinimos.HistoricalLowsStores));
+					tiendas = GenerarListaTiendas(JsonSerializer.Deserialize<List<MostrarJuegoTienda>>(opciones.HistoricalLowsStores));
 				}
 
-				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsTypes) == false)
+				if (string.IsNullOrEmpty(opciones.HistoricalLowsTypes) == false)
 				{
-					tipos = JsonSerializer.Deserialize<List<MostrarJuegoTipo>>(opcionesMinimos.HistoricalLowsTypes);
+					tipos = JsonSerializer.Deserialize<List<MostrarJuegoTipo>>(opciones.HistoricalLowsTypes);
 				}
 
-				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsCategories2) == false)
+				if (string.IsNullOrEmpty(opciones.HistoricalLowsCategories2) == false)
 				{
-					categorias = GenerarListaCategorias(JsonSerializer.Deserialize<List<int>>(opcionesMinimos.HistoricalLowsCategories2));
+					categorias = GenerarListaCategorias(JsonSerializer.Deserialize<List<int>>(opciones.HistoricalLowsCategories2));
 				}
 
-				if (string.IsNullOrEmpty(opcionesMinimos.HistoricalLowsTags) == false)
+				if (string.IsNullOrEmpty(opciones.HistoricalLowsTags) == false)
 				{
-					etiquetas = GenerarListaEtiquetas(JsonSerializer.Deserialize<List<int>>(opcionesMinimos.HistoricalLowsTags));
+					etiquetas = GenerarListaEtiquetas(JsonSerializer.Deserialize<List<int>>(opciones.HistoricalLowsTags));
 				}
 
-				if (opcionesMinimos.HistoricalLowsRelease == null)
+				if (opciones.HistoricalLowsRelease == null)
 				{
 					lanzamientoElegido = 0;
 				}
 				else
 				{
-					lanzamientoElegido = (int)opcionesMinimos.HistoricalLowsRelease;
+					lanzamientoElegido = (int)opciones.HistoricalLowsRelease;
 				}
 
 				if (lanzamientoElegido == 0)
@@ -1238,9 +1237,9 @@ else
 					lanzamientoChecked3 = "checked";
 				}
 
-				if (opcionesMinimos.HistoricalLowsReviews.HasValue == true)
+				if (opciones.HistoricalLowsReviews.HasValue == true)
 				{
-					minimoReseñas = opcionesMinimos.HistoricalLowsReviews.Value;
+					minimoReseñas = opciones.HistoricalLowsReviews.Value;
 				}
 
 				#endregion
@@ -1505,7 +1504,7 @@ else
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				opcionesMinimos ??= await BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
+				opciones ??= await BaseDatos.Usuarios.Buscar.OpcionesMinimos(usuarioId);
 			}
 		}
 	}
@@ -1518,42 +1517,42 @@ else
 
 			cargado = false;
 
-			if (opcionesMinimos == null)
+			if (opciones == null)
 			{
 				await OrdenarReseñasCantidad(true);
 			}
 			else
 			{
-				if (opcionesMinimos.HistoricalLowsSort == null)
+				if (opciones.HistoricalLowsSort == null)
 				{
-					opcionesMinimos.HistoricalLowsSort = 1;
+					opciones.HistoricalLowsSort = 1;
 				}
 
-				if (opcionesMinimos.HistoricalLowsSort == 0)
+				if (opciones.HistoricalLowsSort == 0)
 				{
 					await OrdenarReseñasPorcentaje(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 1)
+				else if (opciones.HistoricalLowsSort == 1)
 				{
 					await OrdenarReseñasCantidad(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 2)
+				else if (opciones.HistoricalLowsSort == 2)
 				{
 					await OrdenarNombreAZ(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 3)
+				else if (opciones.HistoricalLowsSort == 3)
 				{
 					await OrdenarNombreZA(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 4)
+				else if (opciones.HistoricalLowsSort == 4)
 				{
 					await OrdenarPrecio(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 5)
+				else if (opciones.HistoricalLowsSort == 5)
 				{
 					await OrdenarDescuento(true);
 				}
-				else if (opcionesMinimos.HistoricalLowsSort == 6)
+				else if (opciones.HistoricalLowsSort == 6)
 				{
 					await OrdenarFechaDetectado(true);
 				}
@@ -1636,9 +1635,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 0;
+			opciones.HistoricalLowsSort = 0;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1692,9 +1691,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 1;
+			opciones.HistoricalLowsSort = 1;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1748,9 +1747,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 2;
+			opciones.HistoricalLowsSort = 2;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1804,9 +1803,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 3;
+			opciones.HistoricalLowsSort = 3;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1860,9 +1859,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 4;
+			opciones.HistoricalLowsSort = 4;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1916,9 +1915,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 5;
+			opciones.HistoricalLowsSort = 5;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -1972,9 +1971,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 6;
+			opciones.HistoricalLowsSort = 6;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -2038,9 +2037,9 @@ else
 			juegosMostrar = Filtros(juegosGestor);
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSort = 7;
+			opciones.HistoricalLowsSort = 7;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -2293,22 +2292,22 @@ else
 
 	private async Task OcultarJuegosUsuarioSteam()
 	{
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			if (opcionesMinimos.HistoricalLowsOption1 == true)
+			if (opciones.HistoricalLowsOption1 == true)
 			{
-				opcionesMinimos.HistoricalLowsOption1 = false;
+				opciones.HistoricalLowsOption1 = false;
 				ocultarJuegosUsuarioSteam = null;
 			}
 			else
 			{
-				opcionesMinimos.HistoricalLowsOption1 = true;
+				opciones.HistoricalLowsOption1 = true;
 				ocultarJuegosUsuarioSteam = "checked";
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption1", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption1", (bool)opciones.HistoricalLowsOption1, usuarioId);
 			}
 
 			await ElegirOrdenamiento(false);
@@ -2319,22 +2318,22 @@ else
 
 	private async Task OcultarJuegosUsuarioGog()
 	{
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			if (opcionesMinimos.HistoricalLowsOption4 == true)
+			if (opciones.HistoricalLowsOption4 == true)
 			{
-				opcionesMinimos.HistoricalLowsOption4 = false;
+				opciones.HistoricalLowsOption4 = false;
 				ocultarJuegosUsuarioGog = null;
 			}
 			else
 			{
-				opcionesMinimos.HistoricalLowsOption4 = true;
+				opciones.HistoricalLowsOption4 = true;
 				ocultarJuegosUsuarioGog = "checked";
 			}
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption4", (bool)opcionesMinimos.HistoricalLowsOption1, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsOption4", (bool)opciones.HistoricalLowsOption1, usuarioId);
 			}
 
 			await ElegirOrdenamiento(false);
@@ -2345,9 +2344,9 @@ else
 
 	private async Task CambiarDescuentoMinimo()
 	{
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsOption2 = descuentoMinimo;
+			opciones.HistoricalLowsOption2 = descuentoMinimo;
 		}
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -2362,9 +2361,9 @@ else
 
 	private async Task CambiarPrecioMaximo()
 	{
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsOption3 = precioMaximo;
+			opciones.HistoricalLowsOption3 = precioMaximo;
 		}
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -2401,13 +2400,13 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsDRMs = JsonSerializer.Serialize(drmsListado);
+			opciones.HistoricalLowsDRMs = JsonSerializer.Serialize(drmsListado);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsDRMs", opcionesMinimos.HistoricalLowsDRMs, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsDRMs", opciones.HistoricalLowsDRMs, usuarioId);
 			}
 		}
 
@@ -2472,13 +2471,13 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsStores = JsonSerializer.Serialize(tiendas);
+			opciones.HistoricalLowsStores = JsonSerializer.Serialize(tiendas);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsStores", opcionesMinimos.HistoricalLowsStores, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsStores", opciones.HistoricalLowsStores, usuarioId);
 			}
 		}
 
@@ -2537,9 +2536,9 @@ else
 
 	private async Task CambiarReseñasMinimo()
 	{
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsReviews = minimoReseñas;
+			opciones.HistoricalLowsReviews = minimoReseñas;
 		}
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -2576,13 +2575,13 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsTypes = JsonSerializer.Serialize(tipos);
+			opciones.HistoricalLowsTypes = JsonSerializer.Serialize(tipos);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsTypes", opcionesMinimos.HistoricalLowsTypes, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsTypes", opciones.HistoricalLowsTypes, usuarioId);
 			}
 		}
 
@@ -2637,13 +2636,13 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSteamDeck = JsonSerializer.Serialize(deckListado);
+			opciones.HistoricalLowsSteamDeck = JsonSerializer.Serialize(deckListado);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamDeck", opcionesMinimos.HistoricalLowsSteamDeck, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamDeck", opciones.HistoricalLowsSteamDeck, usuarioId);
 			}
 		}
 
@@ -2709,13 +2708,13 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsSteamOS = JsonSerializer.Serialize(steamosListado);
+			opciones.HistoricalLowsSteamOS = JsonSerializer.Serialize(steamosListado);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamOS", opcionesMinimos.HistoricalLowsSteamOS, usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsSteamOS", opciones.HistoricalLowsSteamOS, usuarioId);
 			}
 		}
 
@@ -2795,13 +2794,13 @@ else
 			lanzamientoChecked3 = "checked";
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsRelease = lanzamientoElegido;
+			opciones.HistoricalLowsRelease = lanzamientoElegido;
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
-				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsRelease", opcionesMinimos.HistoricalLowsRelease.ToString(), usuarioId);
+				await BaseDatos.Usuarios.Actualizar.Opcion("HistoricalLowsRelease", opciones.HistoricalLowsRelease.ToString(), usuarioId);
 			}		
 		}
 
@@ -2844,9 +2843,9 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsTags = JsonSerializer.Serialize(etiquetas);
+			opciones.HistoricalLowsTags = JsonSerializer.Serialize(etiquetas);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -2965,9 +2964,9 @@ else
 			}
 		}
 
-		if (opcionesMinimos != null)
+		if (opciones != null)
 		{
-			opcionesMinimos.HistoricalLowsCategories2 = JsonSerializer.Serialize(categorias);
+			opciones.HistoricalLowsCategories2 = JsonSerializer.Serialize(categorias);
 
 			if (string.IsNullOrEmpty(usuarioId) == false)
 			{
@@ -3146,42 +3145,42 @@ else
 
 		cargandoMas = true;
 
-		if (opcionesMinimos == null)
+		if (opciones == null)
 		{
 			await OrdenarReseñasCantidad(true, true);
 		}
 		else
 		{
-			if (opcionesMinimos.HistoricalLowsSort == null)
+			if (opciones.HistoricalLowsSort == null)
 			{
-				opcionesMinimos.HistoricalLowsSort = 1;
+				opciones.HistoricalLowsSort = 1;
 			}
 
-			if (opcionesMinimos.HistoricalLowsSort == 0)
+			if (opciones.HistoricalLowsSort == 0)
 			{
 				await OrdenarReseñasPorcentaje(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 1)
+			else if (opciones.HistoricalLowsSort == 1)
 			{
 				await OrdenarReseñasCantidad(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 2)
+			else if (opciones.HistoricalLowsSort == 2)
 			{
 				await OrdenarNombreAZ(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 3)
+			else if (opciones.HistoricalLowsSort == 3)
 			{
 				await OrdenarNombreZA(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 4)
+			else if (opciones.HistoricalLowsSort == 4)
 			{
 				await OrdenarPrecio(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 5)
+			else if (opciones.HistoricalLowsSort == 5)
 			{
 				await OrdenarDescuento(true, true);
 			}
-			else if (opcionesMinimos.HistoricalLowsSort == 6)
+			else if (opciones.HistoricalLowsSort == 6)
 			{
 				await OrdenarFechaDetectado(true, true);
 			}

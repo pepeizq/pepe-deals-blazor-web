@@ -693,8 +693,8 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 
@@ -777,7 +777,12 @@
 			{
 				if (tipo == Tipo.Bundle && string.IsNullOrEmpty(bundleNombre) == true)
 				{
-					await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre) + "/");
+					bundleNombre = Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre);
+
+					if (string.IsNullOrEmpty(bundleNombre) == false && bundleNombre.Length > 0)
+					{
+						await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundle/" + bundle.Id.ToString() + "/" + bundleNombre + "/");
+					}
 				}
 
 				if (bundle?.Juegos?.Count > 0)

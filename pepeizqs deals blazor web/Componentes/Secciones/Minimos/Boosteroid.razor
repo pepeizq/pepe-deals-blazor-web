@@ -437,6 +437,7 @@
 	private bool usuarioPatreon = false;
 	private bool usuarioAdmin = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+	[PersistentState] public Usuario opciones { get; set; }
 
 	[PersistentState] public List<JuegoMostrar> juegosMostrar { get; set; }
 	[PersistentState] public JuegoDRM drmActual { get; set; }
@@ -457,12 +458,12 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
 			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
-			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesBoosteroid(usuarioId);
+			Task<Usuario> tareaUsuario = (opciones != null) ? Task.FromResult(opciones) : BaseDatos.Usuarios.Buscar.OpcionesBoosteroid(usuarioId);
 
 			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaRegion, tareaUsuario);
 
@@ -472,7 +473,7 @@
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
 			usuarioAdmin = tareaAdmin.Result;
 			usuarioRegion = (TiendaRegion)tareaRegion.Result;
-			Usuario opciones = tareaUsuario.Result;
+			opciones = tareaUsuario.Result;
 
 			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
 			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();

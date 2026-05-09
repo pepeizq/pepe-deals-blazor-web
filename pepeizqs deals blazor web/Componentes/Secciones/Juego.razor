@@ -3330,8 +3330,8 @@
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
             Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-            Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+            Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+            Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
             Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
             Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
             Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
@@ -3361,11 +3361,11 @@
 
         if (juego != null)
         {
-            var tareaBundlesActuales = CargarBundlesActuales();
-            var tareaBundlesPasados = CargarBundlesPasados();
-            var tareaDRMsMinimos = CargarDRMsMinimos();
-            var tareaSuscripciones = CargarSuscripciones();
-            var tareaStreaming = CargarStreaming();
+            Task tareaBundlesActuales = (cargadoBundlesActuales == true) ? Task.CompletedTask : CargarBundlesActuales();
+            Task tareaBundlesPasados = (cargadoBundlesPasados == true) ? Task.CompletedTask : CargarBundlesPasados();
+            Task tareaDRMsMinimos = (cargadoDRMsMinimos == true) ? Task.CompletedTask : CargarDRMsMinimos();
+            Task tareaSuscripciones = (cargadoSuscripciones == true) ? Task.CompletedTask : CargarSuscripciones();
+            Task tareaStreaming = (cargadoStreaming == true) ? Task.CompletedTask : CargarStreaming();
 
             await Task.WhenAll(tareaBundlesActuales, tareaBundlesPasados, tareaDRMsMinimos, tareaSuscripciones, tareaStreaming);
 
@@ -3384,8 +3384,12 @@
 
     #region Inicio
 
+    [PersistentState] public bool cargadoBundlesActuales { get; set; }
+
     private async Task CargarBundlesActuales()
     {
+        cargadoBundlesActuales = false;
+
         if (juego.BundlesActuales?.Count > 0)
         {
             foreach (var bundleActual in juego.BundlesActuales)
@@ -3426,10 +3430,16 @@
                 }                    
             }
         }
+
+        cargadoBundlesActuales = true;
     }
+
+    [PersistentState] public bool cargadoBundlesPasados { get; set; }
 
     private async Task CargarBundlesPasados()
     {
+        cargadoBundlesPasados = false;
+
         if (juego.BundlesPasados?.Count > 0)
         {
             foreach (var bundlePasado in juego.BundlesPasados)
@@ -3470,10 +3480,16 @@
                 }                    
             }
         }
+
+        cargadoBundlesPasados = true;
     }
+
+    [PersistentState] public bool cargadoDRMsMinimos { get; set; }
 
     private async Task CargarDRMsMinimos()
     {
+        cargadoDRMsMinimos = false;
+
         if (drmsEnseñar == null)
         {
             drmsEnseñar = new List<DRMEnseñar>();
@@ -3492,23 +3508,37 @@
                 drmsEnseñar.Add(new DRMEnseñar { DRM = drm.Id, Mensaje = mensajeMinimoDRM });                        
             }           
         }
+
+        cargadoDRMsMinimos = true;
     }
+
+    [PersistentState] public bool cargadoSuscripciones { get; set; }
 
     private async Task CargarSuscripciones()
     {
+        cargadoSuscripciones = false;
+
         if (juego != null)
         {
             juego.Suscripciones = await global::BaseDatos.Suscripciones.Buscar.JuegoId(juego.Id);
         }
+
+        cargadoSuscripciones = true;
     }
+
+    [PersistentState] public bool cargadoStreaming { get; set; }
 
     private async Task CargarStreaming()
     {
+        cargadoStreaming = false;
+
         if (juego != null && juego.Tipo == JuegoTipo.Game)
         {
             drmsGeforceNOW ??= await global::BaseDatos.Streaming.Buscar.DRMs("geforcenow", juego.Id);
             drmsBoosteroid ??= await global::BaseDatos.Streaming.Buscar.DRMs("boosteroid", juego.Id);
         }
+
+        cargadoStreaming = true;
     }
 
     #endregion

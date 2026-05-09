@@ -811,9 +811,9 @@
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
-			Task<Usuario> tareaUsuario = BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
-			Task<List<Bundles2.Bundle>> tareaBundles = BaseDatos.Bundles.Buscar.Actuales();
-			Task<List<JuegoSuscripcion>> tareaSuscripciones = BaseDatos.Suscripciones.Buscar.Actuales();
+			Task<Usuario> tareaUsuario = (opciones != null) ? Task.FromResult(opciones) : BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+			Task<List<Bundles2.Bundle>> tareaBundles = (bundlesActuales != null) ? Task.FromResult(bundlesActuales) : BaseDatos.Bundles.Buscar.Actuales();
+			Task<List<JuegoSuscripcion>> tareaSuscripciones = (suscripcionesActuales != null) ? Task.FromResult(suscripcionesActuales) : BaseDatos.Suscripciones.Buscar.Actuales();
 
 			await Task.WhenAll(tareaIdioma, tareaPatreon, tareaUsuario, tareaBundles, tareaSuscripciones);
 
@@ -841,8 +841,8 @@
 
 				await ElegirOrdenamiento();
 
-				Task tareaBundle = CargarBundles(bundlesActuales, deseadosGestor);
-				Task tareaSuscripcion = CargarSuscripciones(suscripcionesActuales, deseadosGestor);
+				Task tareaBundle = (deseadosBundles != null) ? Task.CompletedTask : CargarBundles(bundlesActuales, deseadosGestor);
+				Task tareaSuscripcion = (deseadosSuscripciones != null) ? Task.CompletedTask : CargarSuscripciones(suscripcionesActuales, deseadosGestor);
 
 				await Task.WhenAll(tareaBundle, tareaSuscripcion);
 			}

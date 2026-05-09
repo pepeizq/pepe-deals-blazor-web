@@ -1907,7 +1907,7 @@
 				{
 					if (precio.DRM != Juegos.JuegoDRM.NoEspecificado && precio.DRM != Juegos.JuegoDRM.Microsoft)
 					{
-						if (!preciosHistoricos.Contains(precio.DRM))
+						if (preciosHistoricos.Contains(precio.DRM) == false)
 						{
 							preciosHistoricos.Add(precio.DRM);
 						}
@@ -1929,7 +1929,7 @@
 				{
 					if (precio.DRM != Juegos.JuegoDRM.NoEspecificado && precio.DRM != Juegos.JuegoDRM.Microsoft)
 					{
-						if (!preciosActuales.Contains(precio.DRM))
+						if (preciosActuales.Contains(precio.DRM) == false)
 						{
 							preciosActuales.Add(precio.DRM);
 						}

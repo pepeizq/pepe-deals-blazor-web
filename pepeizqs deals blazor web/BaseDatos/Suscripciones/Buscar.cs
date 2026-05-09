@@ -168,12 +168,12 @@ FROM (
 		public static async Task<List<JuegoSuscripcion>> JuegoId(int id)
 		{
 			string busqueda = @"
-SELECT sub.*
-FROM (
-    SELECT *, suscripcion AS Tipo
-    FROM suscripciones
-    WHERE juegoId = @JuegoId
-) AS sub";
+				SELECT sub.*
+				FROM (
+					SELECT *, suscripcion AS Tipo
+					FROM suscripciones
+					WHERE juegoId = @JuegoId
+				) AS sub";
 
 			try
 			{

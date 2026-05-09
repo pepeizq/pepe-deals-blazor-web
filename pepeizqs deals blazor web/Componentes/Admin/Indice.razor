@@ -199,7 +199,7 @@
     public string subpagina { get; set; }
 
     private double porcentajeRAM = 0;
-    private int correosEnCola = 0;
+    [PersistentState] public int? correosEnCola { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -221,11 +221,11 @@
 
         if (usuarioAdmin == true)
         {
-            Task<int> erroresTarea = BaseDatos.Admin.Buscar.CantidadErrores();
-            Task<int> duplicadosTarea = BaseDatos.Admin.Buscar.Dato("duplicados");
-            Task<int> pendientesTarea = BaseDatos.Pendientes.Buscar.Cantidad();
-            Task<int> dlcsTarea = BaseDatos.Juegos.Buscar.DLCsCantidad();
-            Task<int> correosTarea = BaseDatos.CorreosEnviar.Buscar.Cantidad();
+            Task<int> erroresTarea = (nuevosErroresCantidad != null) ? Task.FromResult(nuevosErroresCantidad.Value) : BaseDatos.Admin.Buscar.CantidadErrores();
+            Task<int> duplicadosTarea = (nuevosDuplicadosCantidad != null) ? Task.FromResult(nuevosDuplicadosCantidad.Value) : BaseDatos.Admin.Buscar.Dato("duplicados");
+            Task<int> pendientesTarea = (nuevosPendientesCantidad != null) ? Task.FromResult(nuevosPendientesCantidad.Value) : BaseDatos.Pendientes.Buscar.Cantidad();
+            Task<int> dlcsTarea = (nuevosDLCsCantidad != null) ? Task.FromResult(nuevosDLCsCantidad.Value) : BaseDatos.Juegos.Buscar.DLCsCantidad();
+            Task<int> correosTarea = (correosEnCola != null) ? Task.FromResult(correosEnCola.Value) : BaseDatos.CorreosEnviar.Buscar.Cantidad();
 
             await Task.WhenAll(erroresTarea, duplicadosTarea, pendientesTarea, dlcsTarea, correosTarea);
 
@@ -413,7 +413,7 @@
     private bool mostrarDuplicados = false;
     private string estiloDuplicados = null;
     private string subpaginaDuplicados = "duplicados";
-    private int nuevosDuplicadosCantidad = 0;
+    [PersistentState] public int? nuevosDuplicadosCantidad { get; set; }
 
     private async void MostrarDuplicados()
     {
@@ -431,7 +431,7 @@
     private bool mostrarErrores = false;
     private string estiloErrores = null;
     private string subpaginaErrores = "errores";
-    private int nuevosErroresCantidad = 0;
+    [PersistentState] public int? nuevosErroresCantidad { get; set; }
 
     private async Task MostrarErrores()
     {
@@ -484,7 +484,7 @@
     private bool mostrarDLCs = false;
     private string estiloDLCs = null;
     private string subpaginaDLCs = "dlcs";
-    private int nuevosDLCsCantidad = 0;
+    [PersistentState] public int? nuevosDLCsCantidad { get; set; }
 
     private async Task MostrarDLCs()
     {
@@ -503,7 +503,7 @@
     private bool mostrarPendientes = false;
     private string estiloPendientes = null;
     private string subpaginaPendientes = "pendientes";
-    private int nuevosPendientesCantidad = 0;
+    [PersistentState] public int? nuevosPendientesCantidad { get; set; }
 
     private async Task MostrarPendientes()
     {

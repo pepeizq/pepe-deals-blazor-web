@@ -100,14 +100,14 @@ AND (
 			{
 				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
 				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionJuegos = $"AND (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+				exclusionJuegos = $"AND NOT EXISTS (SELECT 1 FROM @excluirJuegos WHERE Id = j.idMaestra)";
 			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam)";
 			}
 
 			string busqueda = @$"SELECT TOP {cantidad} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
@@ -289,21 +289,21 @@ AND (
 			{
 				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
 				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionJuegos = $"AND (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+				exclusionJuegos = $"AND NOT EXISTS (SELECT 1 FROM @excluirJuegos WHERE Id = j.idMaestra)";
 			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam)";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $"AND (j.idGog IS NULL OR j.idGog NOT IN (SELECT Id FROM @excluirGog))";
+				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog)";
 			}
 
 			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas,

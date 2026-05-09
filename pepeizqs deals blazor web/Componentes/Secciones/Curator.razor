@@ -927,24 +927,28 @@
 				if (DateTime.Now.Subtract(curator.Fecha.Value) > TimeSpan.FromDays(90))
 				{
 					SteamCuratorAPI nuevoCurator = await APIs.Steam.Curator.Extraer(curator.IdSteam.ToString());
-					curator.Nombre = nuevoCurator.Nombre;
-					curator.SteamIds = nuevoCurator.SteamIds;
-					curator.Descripcion = nuevoCurator.Descripcion;
-					curator.Imagen = nuevoCurator.Imagen;
-					curator.Web = nuevoCurator.Web;
 
-					SteamCuratorAPIVanidad api = await APIs.Steam.Curator.ExtraerVanidad(curator.IdSteam.ToString());
-
-					if (api != null)
+					if (nuevoCurator != null)
 					{
-						if (string.IsNullOrEmpty(api.Imagen) == false)
-						{
-							BaseDatos.Curators.Actualizar.ImagenFondo(api.Imagen, curator.IdSteam);
-							curator.ImagenFondo = api.Imagen;
-						}
-					}
+						curator.Nombre = nuevoCurator.Nombre;
+						curator.SteamIds = nuevoCurator.SteamIds;
+						curator.Descripcion = nuevoCurator.Descripcion;
+						curator.Imagen = nuevoCurator.Imagen;
+						curator.Web = nuevoCurator.Web;
 
-					global::BaseDatos.Curators.Actualizar.Ejecutar(curator);
+						SteamCuratorAPIVanidad api = await APIs.Steam.Curator.ExtraerVanidad(curator.IdSteam.ToString());
+
+						if (api != null)
+						{
+							if (string.IsNullOrEmpty(api.Imagen) == false)
+							{
+								BaseDatos.Curators.Actualizar.ImagenFondo(api.Imagen, curator.IdSteam);
+								curator.ImagenFondo = api.Imagen;
+							}
+						}
+
+						global::BaseDatos.Curators.Actualizar.Ejecutar(curator);
+					}
 				}
 			}
 
