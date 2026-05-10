@@ -98,37 +98,37 @@ namespace Herramientas
 		{
 			UsuarioJuegosIndex index = new UsuarioJuegosIndex();
 
-			if (listados.Excluidos != null)
+			if (listados?.Excluidos != null)
 			{
 				index.Excluidos = listados.Excluidos.ToHashSet();
 			}
 
-			if (listados.Steam != null)
+			if (listados?.Steam != null)
 			{
 				index.Steam = listados.Steam.Select(x => x.Id).ToHashSet();
 			}
 
-			if (listados.Gog != null)
+			if (listados?.Gog != null)
 			{
 				index.Gog = listados.Gog.Select(x => x.Id).ToHashSet();
 			}
 
-			if (listados.Amazon != null)
+			if (listados?.Amazon != null)
 			{
 				index.Amazon = listados.Amazon.ToHashSet();
 			}
 
-			if (listados.Epic != null)
+			if (listados?.Epic != null)
 			{
 				index.Epic = listados.Epic.ToHashSet();
 			}
 
-			if (listados.Ubisoft != null)
+			if (listados?.Ubisoft != null)
 			{
 				index.Ubisoft = listados.Ubisoft.ToHashSet();
 			}
 
-			if (listados.Ea != null)
+			if (listados?.Ea != null)
 			{	
 				index.Ea = listados.Ea.ToHashSet();
 			}

@@ -44,7 +44,7 @@
 {
     if (string.IsNullOrEmpty(mensajeError) == false)
     {
-        <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center;">
+        <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center; max-width: 600px;">
             @mensajeError
         </div>
     }
@@ -146,13 +146,12 @@
 
         await EmailSender.SendConfirmationLinkAsync(usuario, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
-        if (UserManager.Options.SignIn.RequireConfirmedAccount == true)
+        if (UserManager.Options.SignIn.RequireConfirmedAccount == false)
         {
-            NavManager.NavigateTo("/account");
+            await SignInManager.SignInAsync(usuario, isPersistent: false);
         }
 
-        await SignInManager.SignInAsync(usuario, isPersistent: false);
-        NavManager.NavigateTo(ReturnUrl);
+        NavManager.NavigateTo("/account/login?code=registered", true);
     }
 
     private Usuario CrearUsuario()

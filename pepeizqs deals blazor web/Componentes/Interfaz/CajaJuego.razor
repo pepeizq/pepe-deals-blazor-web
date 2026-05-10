@@ -691,7 +691,9 @@
 
 		@if (tipo == Tipo.Bundle)
 		{
-			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
+			string claveBundle = juego.Id.ToString() + "-" + drmBundle;
+
+			<a @key="@claveBundle" class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlace" target="@enlaceNuevaPestaña">
 				<div style="padding: 0px; position: relative;">
 					@{
 						bool añadirNuevo = false;
@@ -778,7 +780,9 @@
 				imagen = juego.Imagenes.Header_460x215;
 			}
 
-			<a class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceNoticia" target="@enlaceNuevaPestaña">
+			string claveNoticia = juego.Id.ToString() + "-" + drmNoticia;
+
+			<a @key="@claveNoticia" class="boton-pequeño" style="padding: 0px; @fondoColor" href="@enlaceNoticia" target="@enlaceNuevaPestaña">
 				<div>
 					<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(imagen)" style="max-width: 100%; max-height: 100%;" alt="@juego.Nombre" loading="lazy" />
 				</div>

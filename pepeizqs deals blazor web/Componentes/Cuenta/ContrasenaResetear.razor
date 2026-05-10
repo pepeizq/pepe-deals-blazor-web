@@ -13,13 +13,21 @@
     .caja-contraseña-contenido {
         background-color: var(--fondoSubsubcabecera);
         border: 2px solid var(--fondoSubcabecera);
-        padding: 40px;
+        border-radius: 20px;
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
         max-width: 600px;
     }
+
+    .caja-contraseña-titulo {
+        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+        padding: 20px 50px;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        font-size: 20px;
+    }
 </style>
 
-@if (string.IsNullOrEmpty(Code) == false)
+@if (string.IsNullOrEmpty(code) == false)
 {
     string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ResetPassword") + " • pepe's deals";
 
@@ -28,11 +36,11 @@
     </HeadContent>
 
     <div class="caja-contraseña-contenido" style="margin: 40px auto;">
-        <div class="texto-info">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ResetPassword")</div>
+        <div class="caja-contraseña-titulo">
+            @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ResetPassword")
+        </div>
 
-        <hr>
-
-        <div style="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: column; padding: 30px 40px 40px 40px;">
             <label class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "ResetPassword")</label>
             <input value="@correo" @onchange="@(e => CambiarCorreo(e))" style="padding: 5px 10px; background-color: var(--fondoEntrada); border: 0px; color: var(--colorTexto); width: 100%;" />
 
@@ -84,7 +92,9 @@
     private string idioma = "en";
 
     [SupplyParameterFromQuery]
-    private string Code { get; set; }
+    private string code { get; set; }
+
+    private string codigoDecodificado = string.Empty;
 
     private string correo = string.Empty;
     private string contraseñaNueva1 = string.Empty;
@@ -100,6 +110,19 @@
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
         idioma = datos.Idioma;
+
+        if (string.IsNullOrEmpty(code) == false)
+        {
+            try
+            {
+                codigoDecodificado = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            }
+            catch
+            {
+                codigoDecodificado = string.Empty;
+            }
+        }
+
     }
 
     private void CambiarCorreo(ChangeEventArgs texto)
@@ -180,7 +203,7 @@
 
             if (usuario != null)
             {
-                IdentityResult resultado = UserManager.ResetPasswordAsync(usuario, Code, contraseñaNueva1).Result;
+                IdentityResult resultado = await UserManager.ResetPasswordAsync(usuario, codigoDecodificado, contraseñaNueva1);
 
                 if (resultado.Succeeded == true)
                 {

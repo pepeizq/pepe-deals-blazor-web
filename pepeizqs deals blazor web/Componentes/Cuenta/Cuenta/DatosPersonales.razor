@@ -153,7 +153,12 @@
 
         if (resultado.Succeeded == true)
         {
-            await SignInManager.SignOutAsync();
+            try
+            {
+                await SignInManager.SignOutAsync();
+            }
+            catch { }
+       
             NavManager.NavigateTo("/", true);
         }
     }

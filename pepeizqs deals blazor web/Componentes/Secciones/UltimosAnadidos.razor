@@ -89,8 +89,8 @@
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
-			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = Herramientas.UsuarioJuegos.Cargar(usuarioId);
-			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
+			Task<Herramientas.UsuarioListadosJuegos> tareaJuegos = (juegosUsuario != null) ? Task.FromResult(juegosUsuario) : Herramientas.UsuarioJuegos.Cargar(usuarioId);
+			Task<Usuario> tareaDeseados = (deseadosUsuario != null) ? Task.FromResult(deseadosUsuario) : BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 
 			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados);
 

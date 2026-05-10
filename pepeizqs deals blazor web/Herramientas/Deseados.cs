@@ -478,11 +478,11 @@ namespace Herramientas
 
 		public static UsuarioDeseadosWebIndex CrearWebIndex(Usuario usuario)
 		{
-			var index = new UsuarioDeseadosWebIndex();
+			UsuarioDeseadosWebIndex index = new UsuarioDeseadosWebIndex();
 
-			if (!string.IsNullOrEmpty(usuario.Wishlist))
+			if (string.IsNullOrEmpty(usuario?.Wishlist) == false)
 			{
-				var lista = JsonSerializer.Deserialize<List<JuegoDeseado>>(usuario.Wishlist);
+				List<JuegoDeseado> lista = JsonSerializer.Deserialize<List<JuegoDeseado>>(usuario.Wishlist);
 
 				index.Juegos = lista
 					.Select(d => (int.Parse(d.IdBaseDatos), d.DRM))
