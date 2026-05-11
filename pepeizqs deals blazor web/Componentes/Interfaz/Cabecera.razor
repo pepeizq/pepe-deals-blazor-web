@@ -449,14 +449,14 @@
                                 }
                             </a>
                             
-                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0)
+                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0 && usuarioAdmin == true)
                             {
                                 <div class="menu-dropdown-contenido-centrado">
                                     @foreach (var juego in deseadosJuegos.Take(5))
                                     {
                                          <a @key="juego.Enlace" class="texto-cabecera boton-superior" href="@juego.Enlace" target="_blank" style="font-size: 15px;">
                                              <div style="text-align: center; display: flex; align-items: center; gap: 15px;">
-                                                 
+                                                 @juego.Nombre
                                              </div>
                                          </a>
                                     }
