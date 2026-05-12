@@ -1,5 +1,7 @@
 ﻿@page "/"
 
+@implements IAsyncDisposable
+
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
@@ -11,6 +13,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IConfiguration Configuracion
+@inject Servicios.Opciones ServicioOpciones
 
 @{
 	#nullable disable
@@ -659,25 +662,6 @@ else
 				</button>
 			}
 		</div>
-
-		@if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
-		{
-			<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-index-options')">
-				<button @onclick="MostrarOcultarOpciones" style="background: transparent; border: 0px; margin-left: 35px;">
-					<div style="width: 24px; height: 24px;">
-						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-							<path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z" />
-						</svg>
-					</div>
-				</button>
-
-				<div id="tooltip-index-options" class="tooltip-relleno">
-					<div style="margin: 8px; max-width: 300px; font-size: 14px;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "Filter", "Index")
-					</div>
-				</div>
-			</div>
-		}
 	</div>
 
 	<div class="portada-espacio" style="max-width: 1000px; width: 100vw; margin-top: 20px;">
@@ -866,40 +850,88 @@ else
 				</button>
 
 				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "Filter", "Index")
+					@Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Index")
 				</div>
 			</div>
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 20px;">
-				<AuthorizeView>
-					<Authorized>
-						<div style="display: flex; flex-direction: column; gap: 30px; border-radius: 10px; background-color: var(--fondoSubsubcabecera); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); padding: 20px;">
-							<div style="display: flex; align-items: center; gap: 20px;">
-								<div class="checkbox-caja">
-									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteam" @onchange="OcultarJuegosUsuarioSteam">
-								</div>
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Index") - @Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Index")
+					</div>
 
-								<div>
-									@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption1", "Index")
-								</div>
+					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteamDestacados" @onchange="OcultarJuegosUsuarioSteamDestacados">
 							</div>
 
-							<div style="display: flex; align-items: center; gap: 20px;">
-								<div class="checkbox-caja">
-									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioGog" @onchange="OcultarJuegosUsuarioGog">
-								</div>
-
-								<div>
-									@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption4", "Index")
-								</div>
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String23", "Index")
 							</div>
 						</div>
-					</Authorized>
-				</AuthorizeView>
+					</div>
+				</div>
 
 				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption2", "Index")
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String25", "Index") - @Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Index")
+					</div>
+
+					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="1" max="7" step="1" list="diasnoticias" @bind-value="noticiasDias" @bind-value:event="oninput" @bind-value:after="CambiarNoticiasDias" style="width: 100%;" />
+
+								<datalist id="diasnoticias">
+									<option value="1" label="1"></option>
+									<option value="2" label="2"></option>
+									<option value="3" label="3"></option>
+									<option value="4" label="4"></option>
+									<option value="5" label="5"></option>
+									<option value="6" label="6"></option>
+									<option value="7" label="7"></option>
+								</datalist>
+							</div>
+
+							<div style="width: 20%; text-align: center;">
+								@noticiasDias
+							</div>
+						</div>
+					</div>	
+				</div>
+
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Index") - @Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Index")
+					</div>
+
+					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteamMinimos" @onchange="OcultarJuegosUsuarioSteamMinimos">
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String23", "Index")
+							</div>
+						</div>
+
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioGogMinimos" @onchange="OcultarJuegosUsuarioGog">
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Index")
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Index") - @Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Index")
 					</div>
 
 					<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 20px;">
@@ -925,7 +957,7 @@ else
 								@if (drm.DRMId != JuegoDRM.DRMFree)
 								{
 									<div style="margin-left: 20px;">
-										<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px;" title="@nombreDRM"  />
+										<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px;" title="@nombreDRM" loading="lazy"/>
 									</div>
 								}
 								else
@@ -941,7 +973,7 @@ else
 
 				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-						@Herramientas.Idiomas.BuscarTexto(idioma, "FilterOption3", "Index")
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Index") - @Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Index")
 					</div>
 
 					<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px;">
@@ -1056,22 +1088,32 @@ else
 
 				#region Filtrado
 
+				if (opciones.IndexOption3.HasValue == true && opciones.IndexOption3.Value == true)
+				{
+					ocultarJuegosUsuarioSteamDestacados = "checked";
+				}
+
+				if (opciones.IndexOption4.HasValue == true && opciones.IndexOption4.Value > 0)
+				{
+					noticiasDias = opciones.IndexOption4.Value;
+				}
+
 				if (opciones.IndexOption1 == true)
 				{
-					ocultarJuegosUsuarioSteam = "checked";
+					ocultarJuegosUsuarioSteamMinimos = "checked";
 				}
 				else
 				{
-					ocultarJuegosUsuarioSteam = null;
+					ocultarJuegosUsuarioSteamMinimos = null;
 				}
 
 				if (opciones.IndexOption2 == true)
 				{
-					ocultarJuegosUsuarioGog = "checked";
+					ocultarJuegosUsuarioGogMinimos = "checked";
 				}
 				else
 				{
-					ocultarJuegosUsuarioGog = null;
+					ocultarJuegosUsuarioGogMinimos = null;
 				}
 
 				if (string.IsNullOrEmpty(opciones.IndexDRMs) == false)
@@ -1113,6 +1155,8 @@ else
 
 				#endregion
 			}
+
+			ServicioOpciones.OnMostrarOpcionesChanged += StateHasChanged;
 		}
 
 		//------------------------------------------------
@@ -1122,6 +1166,8 @@ else
 		Task tareaMinimos = (juegosMinimosGestor?.Count > 0) ? Task.CompletedTask : CargarMinimos();
 
 		await Task.WhenAll(tareaDestacados, tareaNoticias, tareaMinimos);
+
+		CronometroDestacados();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)
@@ -1138,9 +1184,9 @@ else
 	{
 		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
-			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamDestacados) == false)
 			{
-				if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+				if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
 				{
 					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
 				}
@@ -1203,19 +1249,17 @@ else
 				videoDestacado = null;
 			}
 		}
-
-		CronometroDestacados();
 	}
 
 	private async Task CargarNoticias()
 	{
 		try
 		{
-			noticias ??= await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+			noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, noticiasDias);
 
 			if (noticias?.Count > 0)
 			{
-				foreach (var noticia in noticias)
+				foreach (Noticias.Noticia noticia in noticias)
 				{
 					bool añadirTipo = true;
 
@@ -1373,9 +1417,9 @@ else
 						{
 							juegosDestacadosMostrar.Clear();
 
-							if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+							if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamDestacados) == false)
 							{
-								if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+								if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
 								{
 									excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
 								}
@@ -1482,17 +1526,17 @@ else
 				}
 			}
 
-			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteam) == false)
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamMinimos) == false)
 			{
-				if (ocultarJuegosUsuarioSteam == "checked" && excluirSteamIds?.Count == 0)
+				if (ocultarJuegosUsuarioSteamMinimos == "checked" && excluirSteamIds?.Count == 0)
 				{
 					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
 				}
 			}
 
-			if (string.IsNullOrEmpty(ocultarJuegosUsuarioGog) == false)
+			if (string.IsNullOrEmpty(ocultarJuegosUsuarioGogMinimos) == false)
 			{
-				if (ocultarJuegosUsuarioGog == "checked" && excluirGogIds?.Count == 0)
+				if (ocultarJuegosUsuarioGogMinimos == "checked" && excluirGogIds?.Count == 0)
 				{
 					excluirGogIds = juegosUsuario.Gog.Select(j => j.Id).ToList();	
 				}
@@ -1688,38 +1732,80 @@ else
 				listaMostrar.Add(juegoMinimoMostrar);
 			}
 
-            juegosMinimosMostrar = listaMostrar;
+			juegosMinimosMostrar = listaMostrar;
 		}
 	}
 
-	private bool mostrarOpciones { get; set; } = false;
+	private bool mostrarOpciones => ServicioOpciones.MostrarOpciones;
 
 	private async Task MostrarOcultarOpciones()
 	{
-		mostrarOpciones = !mostrarOpciones;
+		ServicioOpciones.AlternarOpciones();
 	}
 
-	private string ocultarJuegosUsuarioSteam = null;
-	private string ocultarJuegosUsuarioGog = null;
+	async ValueTask IAsyncDisposable.DisposeAsync()
+	{
+		ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
+	}
 
-	private async Task OcultarJuegosUsuarioSteam()
+	private string ocultarJuegosUsuarioSteamDestacados = null;
+	private string ocultarJuegosUsuarioSteamMinimos = null;
+	private string ocultarJuegosUsuarioGogMinimos = null;
+
+	private async Task OcultarJuegosUsuarioSteamDestacados()
 	{
 		bool valor = false;
 
-		if (ocultarJuegosUsuarioSteam == "checked")
+		if (ocultarJuegosUsuarioSteamDestacados == "checked")
 		{
-			ocultarJuegosUsuarioSteam = null;
+			ocultarJuegosUsuarioSteamDestacados = null;
 		}
 		else
 		{
-			ocultarJuegosUsuarioSteam = "checked";
+			ocultarJuegosUsuarioSteamDestacados = "checked";
 		}
 
-		if (ocultarJuegosUsuarioSteam == "checked")
+		if (ocultarJuegosUsuarioSteamDestacados == "checked")
 		{
 			valor = true;
 		}
-		else if (ocultarJuegosUsuarioSteam == null)
+		else if (ocultarJuegosUsuarioSteamDestacados == null)
+		{
+			valor = false;
+		}
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption3", valor, usuarioId);
+		}
+	}
+
+	private async Task CambiarNoticiasDias()
+	{
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption4", noticiasDias, usuarioId);
+		}
+	}
+
+	private async Task OcultarJuegosUsuarioSteamMinimos()
+	{
+		bool valor = false;
+
+		if (ocultarJuegosUsuarioSteamMinimos == "checked")
+		{
+			ocultarJuegosUsuarioSteamMinimos = null;
+		}
+		else
+		{
+			ocultarJuegosUsuarioSteamMinimos = "checked";
+		}
+
+		if (ocultarJuegosUsuarioSteamMinimos == "checked")
+		{
+			valor = true;
+		}
+		else if (ocultarJuegosUsuarioSteamMinimos == null)
 		{
 			valor = false;
 		}
@@ -1736,20 +1822,20 @@ else
 	{
 		bool valor = false;
 
-		if (ocultarJuegosUsuarioGog == "checked")
+		if (ocultarJuegosUsuarioGogMinimos == "checked")
 		{
-			ocultarJuegosUsuarioGog = null;
+			ocultarJuegosUsuarioGogMinimos = null;
 		}
 		else
 		{
-			ocultarJuegosUsuarioGog = "checked";
+			ocultarJuegosUsuarioGogMinimos = "checked";
 		}
 
-		if (ocultarJuegosUsuarioGog == "checked")
+		if (ocultarJuegosUsuarioGogMinimos == "checked")
 		{
 			valor = true;
 		}
-		else if (ocultarJuegosUsuarioGog == null)
+		else if (ocultarJuegosUsuarioGogMinimos == null)
 		{
 			valor = false;
 		}
@@ -1882,12 +1968,13 @@ else
 	#region Noticias
 
 	[PersistentState] public List<Noticias.Noticia> noticias { get; set; }
+	private int noticiasDias = 3;
 
 	private PeriodicTimer cronometroNoticias = null;
 	private int cronometroNoticiasContador = 0;
 
-	private async void CronometroNoticias(int limite)
-	{
+	private async Task CronometroNoticias(int limite)
+	{  
 		cronometroNoticias = new PeriodicTimer(TimeSpan.FromSeconds(1));
 
 		while (await cronometroNoticias.WaitForNextTickAsync())
@@ -1896,7 +1983,7 @@ else
 
 			if (cronometroNoticiasContador >= limite)
 			{
-				noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+				noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, noticiasDias);
 
 				cronometroNoticiasContador = 0;
 			}
@@ -1913,7 +2000,7 @@ else
 	private async Task CambiarTipo(MouseEventArgs e, NoticiaTipo nuevoTipo)
 	{
 		tipoSeleccionadoNoticias = nuevoTipo;
-		noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, 3);
+		noticias = await BaseDatos.Noticias.Buscar.Actuales(tipoSeleccionadoNoticias, noticiasDias);
 	}
 
 	private string CambiarEstilo(NoticiaTipo nuevoTipo)

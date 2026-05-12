@@ -66,7 +66,12 @@ builder.Services.AddWebOptimizer(
 			"css/resto.css"
 		);
 
-		acciones.AddJavaScriptBundle("/superjs.js",
+		var jsSettings = new WebOptimizer.Processors.JsSettings
+		{
+			GenerateSourceMap = false
+		};
+
+		acciones.AddJavaScriptBundle("/superjs.js", jsSettings,
 			"lib/jquery/dist/jquery.min.js",
 			"lib/bootstrap/dist/js/bootstrap.bundle.min.js"
 		);
@@ -153,9 +158,14 @@ builder.Services.AddIdentityCore<Usuario>(opciones =>
 
 builder.Services.AddSingleton<IEmailSender<Usuario>, IdentityNoOpEmailSender>();
 
-#region Tareas
+#region Servicios
 
 builder.Services.AddScoped<Servicios.Moneda>();
+builder.Services.AddScoped<Servicios.Opciones>();
+
+#endregion
+
+#region Tareas
 
 builder.Services.Configure<HostOptions>(opciones =>
 {
