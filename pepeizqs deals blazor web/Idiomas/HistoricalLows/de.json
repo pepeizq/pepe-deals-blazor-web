@@ -42,11 +42,13 @@
   "String41": "Laden Sie weitere historische Tiefststände",
   "String42": "Laden",
   "String43": "SteamOS",
-  "String44": "Optionen",
-  "String45": "Verstecken Sie die Spiele, die Sie bereits in {0} haben",
+  "String44": "Optionen Historische Tiefststände",
+  "String45": "Spiele, die Sie bereits in {0} haben",
   "String46": "Plattformen",
   "String47": "Streaming",
   "String48": "Schlagworte",
   "String49": "Kategorien",
-  "String50": "Bei Ihrer aktuellen Konfiguration gibt es keine historischen Tiefststände."
+  "String50": "Bei Ihrer aktuellen Konfiguration gibt es keine historischen Tiefststände.",
+  "String51": "Verstecken",
+  "String52": "Filter"
 }

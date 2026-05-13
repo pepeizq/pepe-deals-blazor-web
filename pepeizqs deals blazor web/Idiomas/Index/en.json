@@ -17,7 +17,7 @@
   "String14": "Loading",
   "String15": "PC game deals with historical lows on Steam. Updated news and the best discounts on digital games. Save big on your next purchase!",
   "String16": "Exclude",
-  "String17": "Options",
+  "String17": "Options Front Page",
   "String18": "Featured Games",
   "String19": "Historical Lows",
   "String20": "Hide",
@@ -27,8 +27,9 @@
   "String24": "Games you have on GOG",
   "String25": "News",
   "String26": "Days",
-  "FilterOption3.1": "Games",
-  "FilterOption3.2": "DLCs",
-  "FilterOption3.3": "Soundtracks",
-  "FilterOption3.4": "Software"
+  "String27": "You can change the days of the news, for example, if you want to show only news from the last 24 hours select 1 day, or if you want to show news from the whole week select 7 days.",
+  "String28": "Games",
+  "String29": "DLCs",
+  "String30": "Soundtracks",
+  "String31": "Software"
 }

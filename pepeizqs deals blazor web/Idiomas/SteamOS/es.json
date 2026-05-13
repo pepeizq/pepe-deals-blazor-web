@@ -6,9 +6,11 @@
   "String7": "SteamOS (Juegos con mínimos históricos)",
   "String8": "Descubre juegos verificados para SteamOS, los juegos mostrados son mínimos históricos procedentes de Steam y tiendas oficiales.",
   "String9": "Actualmente no hay juegos con mínimos históricos con esa búsqueda.",
-  "String10": "Opciones",
-  "String11": "Ocultar los juegos que ya tienes en Verificados.",
+  "String10": "Opciones SteamOS",
+  "String11": "Juegos que ya tienes en Verificados.",
   "String12": "Precio Máximo",
   "String13": "Descuento Mínimo",
-  "String14": "Minimo Reseñas en Steam"
+  "String14": "Minimo Reseñas en Steam",
+  "String15": "Ocultar",
+  "String16": "Filtrar"
 }

@@ -12,6 +12,7 @@
 @inject SignInManager<Usuario> SignInManager
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavManager
 
 <style>
     .caja-login-contenido {
@@ -148,7 +149,7 @@
 
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+            NavManager.NavigateTo("/", true);
         }
 
         if (Contexto.HttpContext != null)

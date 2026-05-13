@@ -1,4 +1,4 @@
-﻿// v1.0.8
+﻿// v1.0.9
 
 const CACHE_NAME = 'pepesdeals-v1';
 const STATIC_CACHE = [
@@ -19,7 +19,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-    console.log('Service Worker activando...');
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
@@ -35,16 +34,28 @@ self.addEventListener('fetch', event => {
     const { request } = event;
     const url = new URL(request.url);
 
-    if (request.destination === 'image' || 
-        request.destination === 'style' || 
+    const esMiDominio = url.hostname.includes('pepe.deals');
+
+    if (!esMiDominio) {
+        event.respondWith(fetch(request));
+        return;
+    }
+
+    if (request.destination === 'image' ||
+        request.destination === 'style' ||
         request.destination === 'script') {
         event.respondWith(
             caches.match(request).then(response => {
                 return response || fetch(request).then(fetchResponse => {
-                    return caches.open(CACHE_NAME).then(cache => {
-                        cache.put(request, fetchResponse.clone());
-                        return fetchResponse;
-                    });
+                    if (fetchResponse.status === 200) {
+                        return caches.open(CACHE_NAME).then(cache => {
+                            cache.put(request, fetchResponse.clone());
+                            return fetchResponse;
+                        });
+                    }
+                    return fetchResponse;
+                }).catch(() => {
+                    return caches.match(request);
                 });
             })
         );

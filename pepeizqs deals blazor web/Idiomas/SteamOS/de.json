@@ -6,9 +6,11 @@
   "String7": "SteamOS (Spiele mit historischen Tiefstständen)",
   "String8": "Entdecken Sie verifizierte Spiele für SteamOS. Die angezeigten Spiele sind historische Tiefststände von Steam und offiziellen Stores.",
   "String9": "Derzeit gibt es keine Spiele mit historischen Tiefstständen, die diesen Suchbegriff verwenden.",
-  "String10": "Optionen",
-  "String11": "Verstecken Sie die Spiele, die Sie bereits in Verified haben.",
+  "String10": "Optionen SteamOS",
+  "String11": "Spiele, die Sie bereits in Verified haben.",
   "String12": "Maximaler Preis",
   "String13": "Mindestrabatt",
-  "String14": "Mindestbewertungen auf Steam"
+  "String14": "Mindestbewertungen auf Steam",
+  "String15": "Verstecken",
+  "String16": "Filter"
 }

@@ -1,5 +1,7 @@
 ﻿@page "/historical-lows/"
 
+@implements IAsyncDisposable
+
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
@@ -11,6 +13,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject Servicios.Opciones ServicioOpciones
 
 <Titulo tipo="@Titulo.Tipo.Minimos" idioma="@idioma" dominio="@dominio"/>
 
@@ -201,22 +204,6 @@ else
 
 			<div class="caja-minimos caja-minimos-animacion @(mostrarBuscador ? "visible" : "")">
 				<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Subscriptions")" />
-			</div>
-		</div>
-
-		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-lows-options')">
-			<button @onclick="MostrarOcultarOpciones" style="background: transparent; border: 0px; margin-left: 25px;">
-				<div style="width: 24px; height: 24px;">
-					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-						<path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z" />
-					</svg>
-				</div>
-			</button>
-
-			<div id="tooltip-lows-options" class="tooltip-relleno">
-				<div style="margin: 8px; max-width: 300px; font-size: 14px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String44", "HistoricalLows")
-				</div>
 			</div>
 		</div>
 	</div>
@@ -578,121 +565,136 @@ else
 	<div class="opciones-panel">
 		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
 			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-				<button class="boton-pequeño" @onclick="MostrarOcultarOpciones" style="width: fit-content; padding: 10px 15px;">
-					<div style="max-width: 24px; max-height: 24px;">
-						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+				<button @onclick="MostrarOcultarOpciones" @onmouseenter="EntrarOpciones" @onmouseleave="SalirOpciones" style="background: var(--fondoBotonPequeño); padding: 8px 10px; border: 0px; position: absolute;">
+					<div style="width: 24px; height: 24px;">
+						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">
+							<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
 						</svg>
 					</div>
 				</button>
 
-				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String44", "HistoricalLows")
+				<div style="display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center;">
+					<div style="font-size: 20px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String44", "HistoricalLows")
+					</div>
 				</div>
 			</div>
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
-				@if (string.IsNullOrEmpty(usuarioId) == false)
-				{
-					<div style="display: flex; align-items: center; gap: 20px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteam" @onchange="OcultarJuegosUsuarioSteam">
-						</div>
-
-						<div>
-							@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String45", "HistoricalLows"), "Steam")
-						</div>
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String51", "HistoricalLows")
 					</div>
 
-					<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 10px;">
-						<div class="checkbox-caja">
-							<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioGog" @onchange="OcultarJuegosUsuarioGog">
-						</div>
-
-						<div>
-							@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String45", "HistoricalLows"), "GOG")
-						</div>
-					</div>
-				}
-
-				 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-					<div style="display: flex; flex-direction: column; gap: 10px;">
-						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "HistoricalLows")
-						</div>
-
-						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
-
-								<datalist id="precios">
-									<option value="5" label="5€"></option>
-									<option value="20" label="20€"></option>
-									<option value="40" label="40€"></option>
-									<option value="60" label="60€"></option>
-									<option value="80" label="80€"></option>
-									<option value="100" label="100€"></option>
-								</datalist>
+					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteam" @onchange="OcultarJuegosUsuarioSteam">
 							</div>
 
-							<div style="width: 20%; text-align: center;">
-								@precioMaximo€
+							<div>
+								@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String45", "HistoricalLows"), "Steam")
 							</div>
 						</div>
-					</div>
 
-					<div style="display: flex; flex-direction: column; gap: 10px;">
-						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "HistoricalLows")
-						</div>
-
-						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-								<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" style="width: 100%;" />
-
-								<datalist id="descuentos">
-									<option value="5" label="5%"></option>
-									<option value="20" label="20%"></option>
-									<option value="40" label="40%"></option>
-									<option value="60" label="60%"></option>
-									<option value="80" label="80%"></option>
-									<option value="95" label="95%"></option>
-								</datalist>
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioGog" @onchange="OcultarJuegosUsuarioGog">
 							</div>
 
-							<div style="width: 20%; text-align: center;">
-								@descuentoMinimo%
+							<div>
+								@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String45", "HistoricalLows"), "GOG")
 							</div>
 						</div>
 					</div>
 				</div>
-				
-				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-					<div style="display: flex; flex-direction: column; gap: 10px;">
-						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String40", "HistoricalLows")
-						</div>
 
-						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-								<input type="range" min="0" max="10000" step="500" list="resenas" @bind-value="minimoReseñas" @bind-value:event="oninput" @bind-value:after="CambiarReseñasMinimo" style="width: 100%;" />
+				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String52", "HistoricalLows")
+					</div>
+					
+					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div style="margin-left: 15px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "HistoricalLows")
+								</div>
 
-								<datalist id="resenas">
-									<option value="0" label="0"></option>
-									<option value="2000" label="2000"></option>
-									<option value="4000" label="4000"></option>
-									<option value="6000" label="6000"></option>
-									<option value="8000" label="8000"></option>
-									<option value="10000" label="10000"></option>
-								</datalist>
+								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+										<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
+
+										<datalist id="precios">
+											<option value="5" label="5€"></option>
+											<option value="20" label="20€"></option>
+											<option value="40" label="40€"></option>
+											<option value="60" label="60€"></option>
+											<option value="80" label="80€"></option>
+											<option value="100" label="100€"></option>
+										</datalist>
+									</div>
+
+									<div style="width: 20%; text-align: center;">
+										@precioMaximo€
+									</div>
+								</div>
 							</div>
 
-							<div style="width: 20%; text-align: center;">
-								@minimoReseñas
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div style="margin-left: 15px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "HistoricalLows")
+								</div>
+
+								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+										<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" style="width: 100%;" />
+
+										<datalist id="descuentos">
+											<option value="5" label="5%"></option>
+											<option value="20" label="20%"></option>
+											<option value="40" label="40%"></option>
+											<option value="60" label="60%"></option>
+											<option value="80" label="80%"></option>
+											<option value="95" label="95%"></option>
+										</datalist>
+									</div>
+
+									<div style="width: 20%; text-align: center;">
+										@descuentoMinimo%
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
+							<div style="display: flex; flex-direction: column; gap: 10px;">
+								<div style="margin-left: 15px;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String40", "HistoricalLows")
+								</div>
+
+								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
+									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+										<input type="range" min="0" max="10000" step="500" list="resenas" @bind-value="minimoReseñas" @bind-value:event="oninput" @bind-value:after="CambiarReseñasMinimo" style="width: 100%;" />
+
+										<datalist id="resenas">
+											<option value="0" label="0"></option>
+											<option value="2000" label="2000"></option>
+											<option value="4000" label="4000"></option>
+											<option value="6000" label="6000"></option>
+											<option value="8000" label="8000"></option>
+											<option value="10000" label="10000"></option>
+										</datalist>
+									</div>
+
+									<div style="width: 20%; text-align: center;">
+										@minimoReseñas
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div> 
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1243,6 +1245,8 @@ else
 				}
 
 				#endregion
+
+				ServicioOpciones.OnMostrarOpcionesChanged += StateHasChanged;
 
 				cargoFiltradoUsuario = true;
 			}
@@ -2279,13 +2283,30 @@ else
 
 	#endregion
 
-	#region Opciones Usuario
+	#region Opciones
 
-	private bool mostrarOpciones { get; set; } = false;
+	private bool mostrarOpciones => ServicioOpciones.MostrarOpciones;
 
 	private async Task MostrarOcultarOpciones()
 	{
-		mostrarOpciones = !mostrarOpciones;
+		ServicioOpciones.AlternarOpciones();
+	}
+
+	async ValueTask IAsyncDisposable.DisposeAsync()
+	{
+		ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
+	}
+
+	private bool usuarioEncimaOpciones = false;
+
+	private void EntrarOpciones(MouseEventArgs e)
+	{
+		usuarioEncimaOpciones = true;
+	}
+
+	private void SalirOpciones(MouseEventArgs e)
+	{
+		usuarioEncimaOpciones = false;
 	}
 
 	private string ocultarJuegosUsuarioSteam = null;

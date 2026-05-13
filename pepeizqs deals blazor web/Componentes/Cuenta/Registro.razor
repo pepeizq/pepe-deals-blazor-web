@@ -120,6 +120,11 @@
         idioma = datos.Idioma;
         usuarioId = datos.UsuarioId;
         userAgent = datos.UserAgent;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            NavManager.NavigateTo("/", true);
+        }
     }
 
     public async Task RegistrarUsuario(EditContext editContext)

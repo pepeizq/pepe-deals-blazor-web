@@ -503,7 +503,7 @@ else
 
                 if (seccion == "language")
                 {
-                    await MostrarIdioma();
+                    MostrarIdioma();
                 }
 
                 if (seccion == "keys")
@@ -624,7 +624,7 @@ else
 
     private bool mostrarIdioma = false;
 
-    private async Task MostrarIdioma()
+    private async void MostrarIdioma()
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Account");

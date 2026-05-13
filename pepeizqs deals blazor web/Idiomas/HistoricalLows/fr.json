@@ -42,11 +42,13 @@
   "String41": "Charger plus de plus bas historiques",
   "String42": "Chargement",
   "String43": "SteamOS",
-  "String44": "Possibilités",
-  "String45": "Masquez les jeux que vous possédez déjà dans {0}",
+  "String44": "Possibilités Des Plus Bas Historiques",
+  "String45": "Jeux que vous avez déjà dans {0}",
   "String46": "Plateformes",
   "String47": "Streaming",
   "String48": "Balises",
   "String49": "Catégories",
-  "String50": "Il n’y a pas de creux historiques avec votre configuration actuelle."
+  "String50": "Il n’y a pas de creux historiques avec votre configuration actuelle.",
+  "String51": "Cacher",
+  "String52": "Filtres"
 }

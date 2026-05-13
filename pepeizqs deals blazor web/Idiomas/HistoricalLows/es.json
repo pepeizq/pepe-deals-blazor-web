@@ -42,11 +42,13 @@
   "String41": "Cargar más mínimos históricos",
   "String42": "Cargando",
   "String43": "SteamOS",
-  "String44": "Opciones",
-  "String45": "Ocultar los juegos que ya tienes en {0}",
+  "String44": "Opciones Mínimos Históricos",
+  "String45": "Juegos que ya tienes en {0}",
   "String46": "Plataformas",
   "String47": "Streaming",
   "String48": "Etiquetas",
   "String49": "Categorías",
-  "String50": "No hay mínimos históricos con tu configuración actual."
+  "String50": "No hay mínimos históricos con tu configuración actual.",
+  "String51": "Ocultar",
+  "String52": "Filtros"
 }

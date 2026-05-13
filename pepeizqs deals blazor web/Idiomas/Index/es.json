@@ -17,7 +17,7 @@
   "String14": "Cargando",
   "String15": "Ofertas de juegos para PC con mínimos históricos en Steam. Noticias actualizadas y las mejores rebajas en videojuegos digitales. ¡Ahorra!",
   "String16": "Excluir",
-  "String17": "Opciones",
+  "String17": "Opciones Portada",
   "String18": "Juegos Destacados",
   "String19": "Mínimos Históricos",
   "String20": "Ocultar",
@@ -27,8 +27,9 @@
   "String24": "Juegos que tienes en GOG",
   "String25": "Noticias",
   "String26": "Días",
-  "FilterOption3.1": "Juegos",
-  "FilterOption3.2": "DLCs",
-  "FilterOption3.3": "Bandas Sonoras",
-  "FilterOption3.4": "Software"
+  "String27": "Puedes cambiar los días de las noticias, por ejemplo, si quieres mostrar solo noticias de las últimas 24 horas selecciona 1 día, o si quieres mostrar noticias de toda la semana selecciona 7 días.",
+  "String28": "Juegos",
+  "String29": "DLCs",
+  "String30": "Bandas Sonoras",
+  "String31": "Software"
 }

@@ -42,11 +42,13 @@
   "String41": "Load more historical lows",
   "String42": "Loading",
   "String43": "SteamOS",
-  "String44": "Options",
-  "String45": "Hide the games you already have in {0}",
+  "String44": "Options Historical Lows",
+  "String45": "Games you already have in {0}",
   "String46": "Platforms",
   "String47": "Streaming",
   "String48": "Tags",
   "String49": "Categories",
-  "String50": "There are no historical lows with your current configuration."
+  "String50": "There are no historical lows with your current configuration.",
+  "String51": "Hide",
+  "String52": "Filters"
 }
