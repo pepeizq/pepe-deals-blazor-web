@@ -75,7 +75,7 @@ AND (
 			return null;
 		}
 
-		public static async Task<List<Juego>> Destacados(TiendaRegion region, int cantidad, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null)
+		public static async Task<List<Juego>> Destacados(TiendaRegion region, int cantidadJuegos, int minimoReseñas, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null)
 		{
 			string tabla = "seccionMinimos";
 
@@ -110,7 +110,7 @@ AND (
 				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam)";
 			}
 
-			string busqueda = @$"SELECT TOP {cantidad} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
+			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
 				WHERE j.tipo = 0 {exclusionJuegos} {exclusionSteam} AND 
 				year(getdate()) < year(JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
 				CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) >= 1.99 AND 
@@ -123,7 +123,7 @@ AND (
 					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) <= 2020 AND
 					 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()))
 				) AND 
-				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 999 AND 
+				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= {minimoReseñas} AND 
 				(NOT EXISTS (
 					SELECT 1
 					FROM bundles b

@@ -1,4 +1,4 @@
-﻿// v1.0.9
+﻿// v1.0.12
 
 const CACHE_NAME = 'pepesdeals-v1';
 const STATIC_CACHE = [

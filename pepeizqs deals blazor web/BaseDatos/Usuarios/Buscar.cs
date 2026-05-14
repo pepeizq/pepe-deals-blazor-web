@@ -240,7 +240,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT IndexOption1, IndexOption2, IndexOption3, IndexOption4, IndexDRMs, IndexCategories, ForumIndex, Currency FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT IndexOption1, IndexOption2, IndexOption3, IndexOption4, IndexOption5, IndexDRMs, IndexCategories, ForumIndex, Currency FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{
@@ -252,6 +252,30 @@ namespace BaseDatos.Usuarios
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Portada", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesJuego(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT GameOption1 FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Juego", ex);
 			}
 
 			return null;

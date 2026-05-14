@@ -394,7 +394,9 @@
         else
         {
             <div style="overflow: hidden;">
-                <div class="juego-galeria-numero">@(mediaMostrarPosicion + 1) / @(capturas?.Count)</div>
+                <div class="juego-galeria-numero">
+                    @(mediaMostrarPosicion + 1) / @(capturas?.Count)
+                </div>
 
                 @if (difuminar == false)
                 {
@@ -560,7 +562,6 @@
             if (capturas?.Count > 0)
             {
                 mediaMostrar = capturas[0].Imagen;
-                mediaMostrarPosicion = 1;
             }
         }
     }

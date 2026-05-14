@@ -313,7 +313,7 @@ app.Use(async (contexto, siguiente) =>
 
 	HashSet<string> extensiones = new()
 	{
-		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", ".php"
+		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", ".php", "/en/", "/es/"
 	};
 
 	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true)

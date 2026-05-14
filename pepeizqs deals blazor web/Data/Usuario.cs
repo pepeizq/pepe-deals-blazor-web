@@ -189,6 +189,10 @@ public class Usuario : IdentityUser
 	public int? IndexOption4 { get; set; }
 
 	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? IndexOption5 { get; set; }
+
+	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
 	public string? IndexDRMs { get; set; }
 
@@ -457,4 +461,8 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
 	public string? GamesExcluded { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? GameOption1 { get; set; }
 }
