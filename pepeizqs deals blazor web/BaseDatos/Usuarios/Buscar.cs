@@ -264,7 +264,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT GameOption1 FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT GameOption1, GameOption2, GameOption3, LanguageGames FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{

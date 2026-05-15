@@ -122,5 +122,9 @@
   "String122": "Por petición tuya esta excluido. Esto significa que no aparecerá en la web pero si deseas quitar la exclusión basta con pulsar el botón de al lado.",
   "String123": "Opciones Juego",
   "String124": "Steam",
-  "String125": "Mostrar la compatibilidad con Steam Deck"
+  "String125": "Mostrar la compatibilidad con Steam Deck",
+  "String126": "Todas las Plataformas",
+  "String127": "Mostrar si esta disponible en Geforce NOW",
+  "String128": "Mostrar si esta disponible en Boosteroid",
+  "String129": "Mostrar un idioma del juego"
 }

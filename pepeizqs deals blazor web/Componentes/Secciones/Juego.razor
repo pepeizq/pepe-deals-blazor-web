@@ -27,7 +27,7 @@
 {
     string descripcion = string.Empty; 
     
-    if (juego.Caracteristicas?.Descripcion?.Length > 120)
+    if (juego.Caracteristicas?.Descripcion?.Length > 150)
     {
         descripcion = juego.Caracteristicas.Descripcion;
     }
@@ -1162,7 +1162,7 @@
                                                     }
                                                 }
 
-                                                if (drmsGeforceNOW?.Count > 0)
+                                                if (drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true)
                                                 {
                                                     foreach (var drmG in drmsGeforceNOW)
                                                     {
@@ -1174,7 +1174,7 @@
                                                     }
                                                 }
 
-                                                if (drmsBoosteroid?.Count > 0)
+                                                if (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true)
                                                 {
                                                     foreach (var drmB in drmsBoosteroid)
                                                     {
@@ -1444,7 +1444,7 @@
                                                             </button>
                                                         }
 
-                                                        @if (drmsGeforceNOW?.Count > 0)
+                                                        @if (drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true)
                                                         {
                                                             foreach (var drmG in drmsGeforceNOW)
                                                             {
@@ -1477,7 +1477,7 @@
                                                             }
                                                         }
 
-                                                        @if (drmsBoosteroid?.Count > 0)
+                                                        @if (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true)
                                                         {
                                                             foreach (var drmB in drmsBoosteroid)
                                                             {
@@ -1862,7 +1862,7 @@
                                         <button @onclick="(e => BundleAbrir(e, bundle2.BundleId))" class="boton-pequeño" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px;">
                                             <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                                 <div style="margin-right: 15px;">
-                                                    <img src="@BundlesCargar.DevolverBundle(bundle3.BundleTipo).ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout;" alt="Bundle" />
+                                                    <img src="@BundlesCargar.DevolverBundle(bundle3.BundleTipo).ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout;" loading="lazy" alt="@bundle2.Nombre" />
                                                 </div>
 
                                                 <div style="margin-right: 30px;">
@@ -1874,7 +1874,7 @@
 
                                                         <picture>
                                                             <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                            <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
+                                                            <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" loading="lazy" alt="@JuegoDRM2.DevolverDRM(bundle2.DRM)"/>
                                                         </picture>                                                        
                                                     }
                                                     else
@@ -2725,8 +2725,7 @@
                                 <a class="boton-pequeño" title="SteamDB" href="@enlaceSteamDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamDB1 1x, @imagenSteamDB2 2x" type="image/webp">
-                                        <img src="@imagenSteamDB" style="width: 30px; height: 30px;"
-                                                loading="lazy" alt="Geforce NOW">
+                                        <img src="@imagenSteamDB" style="width: 30px; height: 30px;" loading="lazy" alt="SteamDB">
                                     </picture>
                                 </a>
 
@@ -2738,7 +2737,7 @@
                                 <a class="boton-pequeño" title="ProtonDB" href="@enlaceProtonDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenProtonDB1 1x, @imagenProtonDB2 2x" type="image/webp">
-                                        <img src="@imagenProtonDB" style="width: 30px; height: 30px;" alt="ProtonDB"/>
+                                        <img src="@imagenProtonDB" style="width: 30px; height: 30px;" loading="lazy" alt="ProtonDB"/>
                                     </picture>
                                 </a>
 
@@ -2750,7 +2749,7 @@
                                 <a class="boton-pequeño" title="PCGamingWiki" href="@enlacePCGamingWiki" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenPCGamingWiki1 1x, @imagenPCGamingWiki2 2x" type="image/webp">
-                                        <img src="@imagenPCGamingWiki" style="width: 30px; height: 30px;" alt="PCGamingWiki"/>
+                                        <img src="@imagenPCGamingWiki" style="width: 30px; height: 30px;" loading="lazy" alt="PCGamingWiki"/>
                                     </picture>
                                 </a>
                             }
@@ -2765,7 +2764,7 @@
                                 <a class="boton-pequeño" title="GogDB" href="@enlaceGogDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenGogDB1 1x, @imagenGogDB2 2x" type="image/webp">
-                                        <img src="@imagenGogDB" style="width: 30px; height: 30px;" alt="GogDB"/>
+                                        <img src="@imagenGogDB" style="width: 30px; height: 30px;" loading="lazy" alt="GogDB"/>
                                     </picture>
                                 </a>
                             }
@@ -2780,7 +2779,7 @@
                                 <a class="boton-pequeño" title="SteamGifts" href="@enlaceSteamGifts" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamGifts1 1x, @imagenSteamGifts2 2x" type="image/webp">
-                                        <img src="@imagenSteamGifts" style="width: 30px; height: 30px;" alt="SteamGifts"/>
+                                        <img src="@imagenSteamGifts" style="width: 30px; height: 30px;" loading="lazy" alt="SteamGifts"/>
                                     </picture>
                                 </a>
 
@@ -2792,7 +2791,7 @@
                                 <a class="boton-pequeño" title="SteamInputDB" href="@enlaceSteamInputDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamInputDB1 1x, @imagenSteamInputDB2 2x" type="image/webp">
-                                        <img src="@imagenSteamInputDB" style="width: 30px; height: 30px;" alt="SteamInputDB"/>
+                                        <img src="@imagenSteamInputDB" style="width: 30px; height: 30px;" loading="lazy" alt="SteamInputDB" />
                                     </picture>
                                 </a>
                             }
@@ -3308,6 +3307,90 @@
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
                 <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String126", "Game")
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+                        <div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                            <div>
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String129", "Game")
+                            </div>
+
+                            <div class="menu-dropdown" style="width: fit-content; flex-shrink: 0;">
+                                <button class="boton-pequeño" style="display: flex; align-items: center; gap: 10px; justify-content: center; padding: 10px 25px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
+                                    <img src="@opcionesBanderaJuegos" style="display: block; max-width: 20px; max-height: 20px;" />
+
+                                    <div style="font-size: 14px; color: var(--colorEnlace); margin-right: 5px;">
+                                        @opcionesIdiomaJuegos
+                                    </div>
+
+                                    <div style="max-width: 9px; min-width: 9px;">
+                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+                                        </svg>
+                                    </div>
+                                </button>
+
+                                <div>
+                                    <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--fondoBotonPequeño);">
+                                        @{
+                                            List<Herramientas.IdiomaClase> listadoIdiomas2 = new List<Herramientas.IdiomaClase>();
+
+                                            foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
+                                            {
+                                                idioma2.Traduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
+                                                listadoIdiomas2.Add(idioma2);
+                                            }
+
+                                            if (listadoIdiomas2.Count > 0)
+                                            {
+                                                listadoIdiomas2 = listadoIdiomas2.OrderBy(x => x.Traduccion).ToList();
+                                            }
+
+                                            foreach (var idioma2 in listadoIdiomas2)
+                                            {
+                                                <button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="(e => CambiarIdiomaJuegos(e, idioma2.Id))">
+                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                        @{
+                                                            string imagenBandera = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(idioma2.Id) + ".svg";
+                                                        }
+
+                                                        <img src="@imagenBandera" style="display: block; max-width: 20px; max-height: 20px;" />
+
+                                                        @Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages")
+                                                    </div>
+                                                </button>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="checkbox-caja">
+                                <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGeforceNow == true ? "checked" : null)" @onchange="EnseñarGeforceNow">
+                            </div>
+
+                            <div>
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String127", "Game")
+                            </div>
+                        </div>
+
+                         <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="checkbox-caja">
+                                <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesBoosteroid == true ? "checked" : null)" @onchange="EnseñarBoosteroid">
+                            </div>
+
+                            <div>
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String128", "Game")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String124", "Game")
 					</div>
@@ -3324,7 +3407,6 @@
 						</div>
 					</div>
 				</div>
-
             </div>
         </div>
     </div>
@@ -3418,9 +3500,30 @@
 
             if (opciones != null)
             {
+                if (string.IsNullOrEmpty(opciones.LanguageGames) == true)
+                {
+                    opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountLanguage");
+                    opcionesBanderaJuegos = null;
+                }
+                else
+                {
+                    opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(opciones.LanguageGames), "Languages");
+                    opcionesBanderaJuegos = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(opciones.LanguageGames) + ".svg";
+                }
+
                 if (opciones.GameOption1.HasValue == true)
                 {
                     enseñarOpcionesSteamDeck = opciones.GameOption1.Value;
+                }
+
+                if (opciones.GameOption2.HasValue == true)
+                {
+                    enseñarOpcionesGeforceNow = opciones.GameOption2.Value;
+                }
+
+                if (opciones.GameOption3.HasValue == true)
+                {
+                    enseñarOpcionesBoosteroid = opciones.GameOption3.Value;
                 }
             }
 
@@ -3604,8 +3707,15 @@
 
         if (juego != null && juego.Tipo == JuegoTipo.Game)
         {
-            drmsGeforceNOW ??= await global::BaseDatos.Streaming.Buscar.DRMs("geforcenow", juego.Id);
-            drmsBoosteroid ??= await global::BaseDatos.Streaming.Buscar.DRMs("boosteroid", juego.Id);
+            if (enseñarOpcionesGeforceNow == true)
+            {
+                drmsGeforceNOW ??= await global::BaseDatos.Streaming.Buscar.DRMs("geforcenow", juego.Id);
+            }
+
+            if (enseñarOpcionesBoosteroid == true)
+            {
+                drmsBoosteroid ??= await global::BaseDatos.Streaming.Buscar.DRMs("boosteroid", juego.Id);
+            }           
         }
 
         cargadoStreaming = true;
@@ -4902,6 +5012,56 @@
     }
 
     private bool usuarioEncimaOpciones = false;
+
+    private string opcionesIdiomaJuegos = string.Empty;
+    private string opcionesBanderaJuegos = string.Empty;
+
+    private async void CambiarIdiomaJuegos(MouseEventArgs e, string nuevoIdioma)
+    {
+        bool actualizar = false;
+
+        if (string.IsNullOrEmpty(opciones.LanguageGames) == true || opciones.LanguageGames != nuevoIdioma)
+        {
+            actualizar = true;
+        }
+
+        if (actualizar == true)
+        {
+            opciones.LanguageGames = nuevoIdioma;
+            idiomaJuego = nuevoIdioma;
+
+            opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(opciones.LanguageGames), "Languages");
+            opcionesBanderaJuegos = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(opciones.LanguageGames) + ".svg";
+
+            await BaseDatos.Usuarios.Actualizar.Opcion("LanguageGames", opciones.LanguageGames, usuarioId);
+          
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private bool enseñarOpcionesGeforceNow = true;
+
+    private async Task EnseñarGeforceNow()
+    {
+        enseñarOpcionesGeforceNow = !enseñarOpcionesGeforceNow; 
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption2", enseñarOpcionesGeforceNow, usuarioId);
+        }
+    }
+
+    private bool enseñarOpcionesBoosteroid = true;
+
+    private async Task EnseñarBoosteroid()
+    {
+        enseñarOpcionesBoosteroid = !enseñarOpcionesBoosteroid;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption3", enseñarOpcionesBoosteroid, usuarioId);
+        }
+    }
 
     private bool enseñarOpcionesSteamDeck = true;
 

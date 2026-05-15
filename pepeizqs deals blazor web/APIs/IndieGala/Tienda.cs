@@ -43,9 +43,10 @@ namespace APIs.IndieGala
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 
 			int juegos2 = 0;
+			int totalPaginas = 10;
 
 			int i = 1;
-			while (i < 10)
+			while (i <= totalPaginas)
 			{
 				string html = await Decompiladores.Estandar("https://www.indiegala.com/store_games_rss?&sale=true&page=" + i.ToString());
 
@@ -56,32 +57,104 @@ namespace APIs.IndieGala
 						break;
 					}
 
-					XmlSerializer xml = new XmlSerializer(typeof(IndieGalaRSS));
-					IndieGalaRSS listaJuegos = null;
+					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-					using (TextReader lector = new StringReader(html))
+					using (XmlReader reader = XmlReader.Create(new StringReader(html)))
 					{
-						listaJuegos = (IndieGalaRSS)xml.Deserialize(lector);
-					}
-
-					if (listaJuegos?.Canal?.Buscador?.Juegos?.Count > 0)
-					{
-						List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-						foreach (IndieGalaJuego juego in listaJuegos.Canal.Buscador.Juegos)
+						while (reader.Read() == true)
 						{
-							bool buscar = true;
-
-							if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
+							if (i == 1 && reader.NodeType == XmlNodeType.Element && reader.Name == "totalPages")
 							{
-								List<string> listaPaisesRestringidos = new List<string>();
+								string totalPaginasTexto = reader.ReadElementContentAsString();
 
-								string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-								listaPaisesRestringidos.AddRange(datosPartidos);
-
-								if (listaPaisesRestringidos.Count > 0)
+								if (int.TryParse(totalPaginasTexto, out int paginas))
 								{
-									foreach (var pais in listaPaisesRestringidos)
+									totalPaginas = paginas;
+								}
+
+								continue;
+							}
+
+							if (reader.NodeType == XmlNodeType.Element && reader.Name == "item")
+							{
+								string nombre = null;
+								string enlace = null;
+								string precioRebajado = null;
+								string precioBase = null;
+								string precioRebajadoUS = null;
+								string precioBaseUS = null;
+								string imagen = null;
+								string drm = null;
+								string fecha = null;
+								string estado = null;
+								string paisesStockAprobados = null;
+								string paisesAprobados = null;
+								string paisesRestringidos = null;
+
+								while (reader.Read() == true)
+								{
+									if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "item")
+									{
+										break;
+									}
+
+									if (reader.NodeType == XmlNodeType.Element)
+									{
+										switch (reader.Name)
+										{
+											case "title":
+												nombre = reader.ReadElementContentAsString();
+												break;
+											case "link":
+												enlace = reader.ReadElementContentAsString();
+												break;
+											case "discountPriceEUR":
+												precioRebajado = reader.ReadElementContentAsString();
+												break;
+											case "priceEUR":
+												precioBase = reader.ReadElementContentAsString();
+												break;
+											case "discountPriceUSD":
+												precioRebajadoUS = reader.ReadElementContentAsString();
+												break;
+											case "priceUSD":
+												precioBaseUS = reader.ReadElementContentAsString();
+												break;
+											case "boximg":
+												imagen = reader.ReadElementContentAsString();
+												break;
+											case "drminfo":
+												drm = reader.ReadElementContentAsString();
+												break;
+											case "discountEnd":
+												fecha = reader.ReadElementContentAsString();
+												break;
+											case "state":
+												estado = reader.ReadElementContentAsString();
+												break;
+											case "regionStockAvailable":
+												paisesStockAprobados = reader.ReadElementContentAsString();
+												break;
+											case "regionAvailable":
+												paisesAprobados = reader.ReadElementContentAsString();
+												break;
+											case "notAvailableRegions":
+												paisesRestringidos = reader.ReadElementContentAsString();
+												break;
+											default:
+												reader.Skip();
+												break;
+										}
+									}
+								}
+
+								bool buscar = true;
+
+								if (string.IsNullOrEmpty(paisesRestringidos) == false)
+								{
+									List<string> listaPaisesRestringidos = paisesRestringidos.Split(',').ToList();
+
+									foreach (string pais in listaPaisesRestringidos)
 									{
 										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
 										{
@@ -95,193 +168,158 @@ namespace APIs.IndieGala
 										}
 									}
 								}
-							}
 
-							if (string.IsNullOrEmpty(juego.PaisesStockAprobados) == false)
-							{
-								List<string> listaPaisesAprobados = new List<string>();
-
-								string[] datosPartidos = juego.PaisesStockAprobados.Split(',');
-								listaPaisesAprobados.AddRange(datosPartidos);
-
-								if (listaPaisesAprobados.Count > 0)
+								if (buscar == true && string.IsNullOrEmpty(paisesStockAprobados) == false)
 								{
-									bool encontrado = false;
-									foreach (var pais in listaPaisesAprobados)
-									{
-										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-										{
-											encontrado = true;
-											break;
-										}
-										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-										{
-											encontrado = true;
-											break;
-										}
-									}
+									List<string> listaPaisesAprobados = paisesStockAprobados.Split(',').ToList();
+
+									bool encontrado = listaPaisesAprobados.Any(pais =>
+										(region == TiendaRegion.Europa && pais.ToLower() == "es") ||
+										(region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									);
 
 									if (encontrado == false)
 									{
 										buscar = false;
 									}
 								}
-							}
 
-							if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
-							{
-								List<string> listaPaisesAprobados = new List<string>();
-
-								string[] datosPartidos = juego.PaisesAprobados.Split(',');
-								listaPaisesAprobados.AddRange(datosPartidos);
-
-								if (listaPaisesAprobados.Count > 0)
+								if (buscar == true && string.IsNullOrEmpty(paisesAprobados) == false)
 								{
-									bool encontrado = false;
-									foreach (var pais in listaPaisesAprobados)
-									{
-										if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-										{
-											encontrado = true;
-											break;
-										}
-										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-										{
-											encontrado = true;
-											break;
-										}
-									}
+									List<string> listaPaisesAprobados = paisesAprobados.Split(',').ToList();
+
+									bool encontrado = listaPaisesAprobados.Any(pais =>
+										(region == TiendaRegion.Europa && pais.ToLower() == "es") ||
+										(region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
+									);
 
 									if (encontrado == false)
 									{
 										buscar = false;
 									}
 								}
-							}
 
-							if (buscar == true)
-							{
-								if (juego.Estado == "available")
+								if (buscar == true && estado == "available")
 								{
-									int descuento = 0;
-									decimal precioBase = 10000000000;
-									decimal precioRebajado = 10000000000;
+									bool puedeAñadir = false;
+									decimal precioRebajadoFinal = 0;
+									decimal precioBaseFinal = 0;
 
-									if (region == TiendaRegion.Europa)
+									if (region == TiendaRegion.Europa &&
+										decimal.TryParse(precioBase, out decimal precioBaseEur) == true &&
+										decimal.TryParse(precioRebajado, out decimal precioRebajadoEur) == true)
 									{
-										precioBase = decimal.Parse(juego.PrecioBase);
-										precioRebajado = decimal.Parse(juego.PrecioRebajado);
-										descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-									}
-									else if (region == TiendaRegion.EstadosUnidos)
-									{
-										precioBase = decimal.Parse(juego.PrecioBaseUS);
-										precioRebajado = decimal.Parse(juego.PrecioRebajadoUS);
-										descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+										precioBaseFinal = precioBaseEur;
+										precioRebajadoFinal = precioRebajadoEur;
+										puedeAñadir = true;
 									}
 
-									if (descuento > 0)
+									else if (region == TiendaRegion.EstadosUnidos &&
+										decimal.TryParse(precioBaseUS, out decimal precioBaseUsd) == true &&
+										decimal.TryParse(precioRebajadoUS, out decimal precioRebajadoUsd) == true)
 									{
-										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+										precioBaseFinal = precioBaseUsd;
+										precioRebajadoFinal = precioRebajadoUsd;
+										puedeAñadir = true;
+									}
 
-										string enlace = juego.Enlace;
+									if (puedeAñadir == true)
+									{
+										int descuento = Calculadora.SacarDescuento(precioBaseFinal, precioRebajadoFinal);
 
-										string imagen = juego.Imagen;
-
-										if (imagen.Contains("https://www.indiegalacdn.com/") == false)
+										if (descuento > 0)
 										{
-											imagen = "https://www.indiegalacdn.com/" + imagen;
-										}
+											nombre = WebUtility.HtmlDecode(nombre ?? string.Empty);
 
-										JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-										if (nombre.Contains("(Epic)") == true)
-										{
-											drm = JuegoDRM.Epic;
-										}
-										else if (ComprobarEpicFalsos(enlace) == true)
-										{
-											drm = JuegoDRM.Epic;
-										}
-										else if (enlace.Contains("_epic") == true)
-										{
-											drm = JuegoDRM.Epic;
-										}
-
-										if (ComprobarElderFalsos(enlace) == true)
-										{
-											drm = JuegoDRM.ElderScrolls;
-										}
-
-										if (ComprobarRockstarFalsos(enlace) == true)
-										{
-											drm = JuegoDRM.Rockstar;
-										}
-
-										JuegoPrecio oferta = new JuegoPrecio
-										{
-											Nombre = nombre,
-											Enlace = enlace,
-											Imagen = imagen,
-											Moneda = JuegoMoneda.Euro,
-											Precio = precioRebajado,
-											Descuento = descuento,
-											Tienda = Generar().Id,
-											DRM = drm,
-											FechaDetectado = DateTime.Now,
-											FechaActualizacion = DateTime.Now
-										};
-
-										if (region == TiendaRegion.EstadosUnidos)
-										{
-											oferta.Moneda = JuegoMoneda.Dolar;
-										}
-
-										if (string.IsNullOrEmpty(juego.Fecha) == false)
-										{
-											if (juego.Fecha != "None")
+											if (imagen.Contains("https://www.indiegalacdn.com/") == false)
 											{
-												DateTime fechaTermina = DateTime.Parse(juego.Fecha, CultureInfo.InvariantCulture);
-												oferta.FechaTermina = fechaTermina;
+												imagen = "https://www.indiegalacdn.com/" + imagen;
 											}
-										}
 
-										ofertas.Add(oferta);
+											JuegoDRM juegoDRM = JuegoDRM2.Traducir(drm, Generar().Id);
+
+											if (nombre.Contains("(Epic)") == true)
+											{
+												juegoDRM = JuegoDRM.Epic;
+											}
+											else if (ComprobarEpicFalsos(enlace) == true)
+											{
+												juegoDRM = JuegoDRM.Epic;
+											}
+											else if (enlace.Contains("_epic") == true)
+											{
+												juegoDRM = JuegoDRM.Epic;
+											}
+
+											if (ComprobarElderFalsos(enlace) == true)
+											{
+												juegoDRM = JuegoDRM.ElderScrolls;
+											}
+
+											if (ComprobarRockstarFalsos(enlace) == true)
+											{
+												juegoDRM = JuegoDRM.Rockstar;
+											}
+
+											JuegoPrecio oferta = new JuegoPrecio
+											{
+												Nombre = nombre,
+												Enlace = enlace,
+												Imagen = imagen,
+												Moneda = region == TiendaRegion.EstadosUnidos ? JuegoMoneda.Dolar : JuegoMoneda.Euro,
+												Precio = precioRebajadoFinal,
+												Descuento = descuento,
+												Tienda = Generar().Id,
+												DRM = juegoDRM,
+												FechaDetectado = DateTime.Now,
+												FechaActualizacion = DateTime.Now
+											};
+
+											if (string.IsNullOrEmpty(fecha) == false && fecha != "None")
+											{
+												if (DateTime.TryParse(fecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fechaTermina))
+												{
+													oferta.FechaTermina = fechaTermina;
+												}
+											}
+
+											ofertas.Add(oferta);
+										}
 									}
 								}
 							}
 						}
+					}
 
-						if (ofertas?.Count > 0)
+					if (ofertas?.Count > 0)
+					{
+						int tamaño = 500;
+						var lotes = ofertas
+							.Select((oferta, indice) => new { oferta, indice })
+							.GroupBy(x => x.indice / tamaño)
+							.Select(g => g.Select(x => x.oferta).ToList())
+							.ToList();
+
+						foreach (var lote in lotes)
 						{
-							int tamaño = 500;
-							var lotes = ofertas
-								.Select((oferta, indice) => new { oferta, indice })
-								.GroupBy(x => x.indice / tamaño)
-								.Select(g => g.Select(x => x.oferta).ToList())
-								.ToList();
-
-							foreach (var lote in lotes)
+							try
 							{
-								try
-								{
-									await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-								}
-								catch (Exception ex)
-								{
-									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-								}
+								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+							}
 
-								juegos2 += lote.Count;
+							juegos2 += lote.Count;
 
-								try
-								{
-									await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-								}
-								catch (Exception ex)
-								{
-									BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-								}
+							try
+							{
+								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+							}
+							catch (Exception ex)
+							{
+								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
 							}
 						}
 					}

@@ -387,6 +387,7 @@ namespace Juegos
 					"nintendo switch",
 					"no",
 					"none",
+					"null",
 					"nv_bundle",
 					"nvidia",
 					"oculus",

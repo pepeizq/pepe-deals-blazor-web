@@ -4,7 +4,7 @@ using Herramientas;
 using Juegos;
 using System.Globalization;
 using System.Net;
-using System.Xml.Serialization;
+using System.Xml;
 using Tiendas2;
 
 namespace APIs.GamersGate
@@ -58,149 +58,137 @@ namespace APIs.GamersGate
 
 			if (string.IsNullOrEmpty(html) == false)
 			{
-                GamersGateJuegos listaJuegos = new GamersGateJuegos();
-                XmlSerializer xml = new XmlSerializer(typeof(GamersGateJuegos));
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-                using (StringReader lector = new StringReader(html))
-                {
-                    listaJuegos = (GamersGateJuegos)xml.Deserialize(lector);
-                }
-
-                if (listaJuegos?.Juegos?.Count > 0)
-                {
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (GamersGateJuego juego in listaJuegos.Juegos)
-                    {
-                        decimal precioBase = decimal.Parse(juego.PrecioBase);
-                        decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-                        int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                        if (descuento > 0)
-                        {
-                            string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-                            string enlaceJuego = juego.Enlace;
-
-                            string imagen = juego.ImagenGrande;
-
-                            JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, Generar().Id);
-
-                            JuegoPrecio oferta = new JuegoPrecio
-                            {
-                                Nombre = nombre,
-                                Enlace = enlaceJuego,
-                                Imagen = imagen,
-                                Moneda = JuegoMoneda.Euro,
-                                Precio = precioRebajado,
-                                Descuento = descuento,
-                                Tienda = Generar().Id,
-                                DRM = drm,
-                                FechaDetectado = DateTime.Now,
-                                FechaActualizacion = DateTime.Now
-                            };
-
-							if (region == TiendaRegion.EstadosUnidos)
-							{
-								oferta.Moneda = JuegoMoneda.Dolar;
-							}
-
-                            if (juego.Fecha != null)
-                            {
-                                DateTime fechaTermina = DateTime.Parse(juego.Fecha, CultureInfo.InvariantCulture);
-                                oferta.FechaTermina = fechaTermina;
-                            }
-
-                            ofertas.Add(oferta);
-                        }
-                    }
-
-					if (ofertas?.Count > 0)
+				using (var reader = XmlReader.Create(new StringReader(html)))
+				{
+					while (reader.Read() == true)
 					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (reader.NodeType == XmlNodeType.Element && reader.Name == "item")
 						{
-							try
+							string nombre = null;
+							string enlaceJuego = null;
+							string precioRebajadoTexto = null;
+							string precioBaseTexto = null;
+							string imagen = null;
+							string drm = null;
+							string fecha = null;
+
+							while (reader.Read() == true)
 							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "item")
+								{
+									break;
+								}
+
+								if (reader.NodeType == XmlNodeType.Element)
+								{
+									switch (reader.Name)
+									{
+										case "title":
+											nombre = reader.ReadElementContentAsString();
+											break;
+										case "link":
+											enlaceJuego = reader.ReadElementContentAsString();
+											break;
+										case "price":
+											precioRebajadoTexto = reader.ReadElementContentAsString();
+											break;
+										case "srp":
+											precioBaseTexto = reader.ReadElementContentAsString();
+											break;
+										case "boximg":
+											imagen = reader.ReadElementContentAsString();
+											break;
+										case "drm":
+											drm = reader.ReadElementContentAsString();
+											break;
+										case "discount_end":
+											fecha = reader.ReadElementContentAsString();
+											break;
+										default:
+											reader.Skip();
+											break;
+									}
+								}
 							}
 
-							juegos2 += lote.Count;
+							if (string.IsNullOrEmpty(precioBaseTexto) == false && string.IsNullOrEmpty(precioRebajadoTexto) == false &&
+								decimal.TryParse(precioBaseTexto, out decimal precioBase) == true &&
+								decimal.TryParse(precioRebajadoTexto, out decimal precioRebajado) == true)
+							{
+								int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+								if (descuento > 0)
+								{
+									nombre = WebUtility.HtmlDecode(nombre);
+
+									JuegoDRM juegoDRM = JuegoDRM2.Traducir(drm, Generar().Id);
+
+									JuegoPrecio oferta = new JuegoPrecio
+									{
+										Nombre = nombre,
+										Enlace = enlaceJuego,
+										Imagen = imagen,
+										Moneda = region == TiendaRegion.EstadosUnidos ? JuegoMoneda.Dolar : JuegoMoneda.Euro,
+										Precio = precioRebajado,
+										Descuento = descuento,
+										Tienda = Generar().Id,
+										DRM = juegoDRM,
+										FechaDetectado = DateTime.Now,
+										FechaActualizacion = DateTime.Now
+									};
+
+									if (string.IsNullOrEmpty(fecha) == false)
+									{
+										if (DateTime.TryParse(fecha, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime fechaTermina))
+										{
+											oferta.FechaTermina = fechaTermina;
+										}
+									}
+
+									ofertas.Add(oferta);
+								}
 							}
 						}
 					}
-                }
-            }
+				}
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+						}
+					}
+				}
+			}
 		}
-    }
-
-    [XmlRoot("xml")]
-    public class GamersGateJuegos
-	{
-		[XmlElement("item")]
-		public List<GamersGateJuego> Juegos { get; set; }
-	}
-
-	public class GamersGateJuego
-	{
-		[XmlElement("title")]
-		public string Nombre { get; set; }
-
-		[XmlElement("link")]
-		public string Enlace { get; set; }
-
-		[XmlElement("price")]
-		public string PrecioRebajado { get; set; }
-
-		[XmlElement("srp")]
-		public string PrecioBase { get; set; }
-
-		[XmlElement("sku")]
-		public string ID { get; set; }
-
-		[XmlElement("boximg")]
-		public string ImagenGrande { get; set; }
-
-		[XmlElement("boximg_medium")]
-		public string ImagenPequeña { get; set; }
-
-		[XmlElement("drm")]
-		public string DRM { get; set; }
-
-		[XmlElement("publisher")]
-		public string Desarrollador { get; set; }
-
-		[XmlElement("discount_end")]
-		public string Fecha { get; set; }
-
-		[XmlElement("platforms")]
-		public string Sistemas { get; set; }
-
-		[XmlElement("type")]
-		public string Tipo { get; set; }
-
-		[XmlElement("state")]
-		public string Estado { get; set; }
 	}
 }

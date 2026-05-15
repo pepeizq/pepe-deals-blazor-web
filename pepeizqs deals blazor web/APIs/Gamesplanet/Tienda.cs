@@ -3,6 +3,8 @@
 using Herramientas;
 using Juegos;
 using System.Net;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using Tiendas2;
 
@@ -87,6 +89,137 @@ namespace APIs.Gamesplanet
 			return enlace + "?ref=pepeizq";
 		}
 
+		private static GamesplanetJuego LeerJuegoXml(XmlReader reader)
+		{
+			GamesplanetJuego juego = new GamesplanetJuego();
+
+			while (reader.Read() == true)
+			{
+				if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "product")
+					break;
+
+				if (reader.NodeType == XmlNodeType.Element)
+				{
+					switch (reader.Name)
+					{
+						case "name":
+							juego.Nombre = reader.ReadElementContentAsString();
+							break;
+						case "uid":
+							juego.Id = reader.ReadElementContentAsString();
+							break;
+						case "link":
+							juego.Enlace = reader.ReadElementContentAsString();
+							break;
+						case "price":
+							juego.PrecioRebajado = reader.ReadElementContentAsString();
+							break;
+						case "price_base":
+							juego.PrecioBase = reader.ReadElementContentAsString();
+							break;
+						case "teaser620":
+							juego.Imagen = reader.ReadElementContentAsString();
+							break;
+						case "delivery_type":
+							juego.DRM = reader.ReadElementContentAsString();
+							break;
+						case "steam_id":
+							juego.SteamId = reader.ReadElementContentAsString();
+							break;
+						case "country_whitelist":
+							juego.PaisesAprobados = reader.ReadElementContentAsString();
+							break;
+						case "country_blacklist":
+							juego.PaisesRestringidos = reader.ReadElementContentAsString();
+							break;
+						default:
+							reader.Skip();
+							break;
+					}
+				}
+			}
+
+			return juego;
+		}
+
+		private static bool MirarRegiones(GamesplanetJuego juego, TiendaRegion region)
+		{
+			bool buscar = true;
+
+			if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
+			{
+				string[] paises = juego.PaisesRestringidos.Split(',');
+
+				if (region == TiendaRegion.Europa && paises.Contains("es", StringComparer.OrdinalIgnoreCase))
+				{
+					buscar = false;
+				}
+				else if (region == TiendaRegion.EstadosUnidos && paises.Contains("us", StringComparer.OrdinalIgnoreCase))
+				{
+					buscar = false;
+				}
+			}
+
+			if (buscar == true && string.IsNullOrEmpty(juego.PaisesAprobados) == false)
+			{
+				string[] paises = juego.PaisesAprobados.Split(',');
+				bool encontrado = (region == TiendaRegion.Europa && paises.Contains("es", StringComparer.OrdinalIgnoreCase)) ||
+								 (region == TiendaRegion.EstadosUnidos && paises.Contains("us", StringComparer.OrdinalIgnoreCase));
+
+				if (encontrado == false)
+				{
+					buscar = false;
+				}
+			}
+
+			return buscar;
+		}
+
+		private static JuegoPrecio ConvertirAOferta(GamesplanetJuego juego, TiendaRegion region, string tiendaId)
+		{
+			if (decimal.TryParse(juego.PrecioBase, out decimal precioBase) == false ||
+				decimal.TryParse(juego.PrecioRebajado, out decimal precioRebajado) == false)
+			{
+				return null;
+			}
+
+			int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
+
+			if (descuento <= 0)
+			{
+				return null;
+			}
+
+			string nombre = WebUtility.HtmlDecode(juego.Nombre);
+
+			JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, GenerarUk().Id);
+
+			JuegoMoneda monedaUsar = JuegoMoneda.Euro;
+
+			if (tiendaId == GenerarUk().Id)
+			{
+				monedaUsar = JuegoMoneda.Libra;
+			}
+			else if (tiendaId == GenerarUs().Id)
+			{
+				monedaUsar = JuegoMoneda.Dolar;
+			}
+
+			return new JuegoPrecio
+			{
+				Nombre = nombre,
+				Enlace = juego.Enlace,
+				Imagen = juego.Imagen,
+				Moneda = monedaUsar,
+				Precio = precioRebajado,
+				Descuento = descuento,
+				Tienda = tiendaId,
+				DRM = drm,
+				FechaDetectado = DateTime.Now,
+				FechaActualizacion = DateTime.Now
+			};
+		}
+
 		public static async Task BuscarOfertasUk(TiendaRegion region)
 		{
 			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUk().Id, DateTime.Now, 0);
@@ -95,150 +228,68 @@ namespace APIs.Gamesplanet
 
 			if (string.IsNullOrEmpty(htmluk) == false)
 			{
-                GamesplanetJuegos listaJuegos = new GamesplanetJuegos();
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-                XmlSerializer xml = new XmlSerializer(typeof(GamesplanetJuegos));
-                listaJuegos = (GamesplanetJuegos)xml.Deserialize(new StringReader(htmluk));
-
-                if (listaJuegos?.Juegos?.Count > 0)
-                {
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
-                    {
-                        bool buscar = true;
-
-                        if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
-                        {
-                            List<string> listaPaisesRestringidos = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-                            listaPaisesRestringidos.AddRange(datosPartidos);
-
-                            if (listaPaisesRestringidos.Count > 0)
-                            {
-                                foreach (var pais in listaPaisesRestringidos)
-                                {
-                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-                                    {
-                                        buscar = false;
-                                        break;
-                                    }
-                                    else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-                                    {
-                                        buscar = false;
-                                        break;
-									}
-								}
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
-                        {
-                            List<string> listaPaisesAprobados = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesAprobados.Split(',');
-                            listaPaisesAprobados.AddRange(datosPartidos);
-
-                            if (listaPaisesAprobados.Count > 0)
-                            {
-                                bool encontrado = false;
-                                foreach (var pais in listaPaisesAprobados)
-                                {
-                                    if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-                                    {
-                                        encontrado = true;
-                                        break;
-                                    }
-                                    else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-                                    {
-                                        encontrado = true;
-                                        break;
-                                    }
-                                }
-
-                                if (encontrado == false)
-                                {
-                                    buscar = false;
-                                }
-                            }
-                        }
-
-                        if (buscar == true)
-                        {
-                            decimal precioBase = decimal.Parse(juego.PrecioBase);
-                            decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-                            int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                            if (descuento > 0)
-                            {
-                                string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-                                string enlace = juego.Enlace;
-
-                                string imagen = juego.Imagen;
-
-                                JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, GenerarUk().Id);
-
-                                JuegoPrecio oferta = new JuegoPrecio
-                                {
-                                    Nombre = nombre,
-                                    Enlace = enlace,
-                                    Imagen = imagen,
-                                    Moneda = JuegoMoneda.Libra,
-                                    Precio = precioRebajado,
-                                    Descuento = descuento,
-                                    Tienda = GenerarUk().Id,
-                                    DRM = drm,
-                                    FechaDetectado = DateTime.Now,
-                                    FechaActualizacion = DateTime.Now
-                                };
-
-                                ofertas.Add(oferta);
-                            }
-                        }
-                    }
-
-					if (ofertas?.Count > 0)
+				using (var reader = XmlReader.Create(new StringReader(htmluk)))
+				{
+					reader.MoveToContent();
+					while (reader.Read() == true)
 					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (reader.NodeType == XmlNodeType.Element && reader.Name == "product")
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
-							}
+							var juego = LeerJuegoXml(reader);
 
-							juegos2 += lote.Count;
+							if (juego != null && MirarRegiones(juego, region) == true)
+							{
+								var oferta = ConvertirAOferta(juego, region, GenerarUk().Id);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUk().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
+								if (oferta != null)
+								{
+									ofertas.Add(oferta);
+								}
 							}
 						}
 					}
 				}
-            }
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUk().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarUk().Id, ex);
+						}
+					}
+				}
+			}
 		}
 
-        public static async Task BuscarOfertasFr(TiendaRegion region)
+		public static async Task BuscarOfertasFr(TiendaRegion region)
         {
 			await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarFr().Id, DateTime.Now, 0);
 
@@ -246,147 +297,65 @@ namespace APIs.Gamesplanet
 
 			if (string.IsNullOrEmpty(htmlfr) == false)
 			{
-                GamesplanetJuegos listaJuegos = new GamesplanetJuegos();
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-                XmlSerializer xml = new XmlSerializer(typeof(GamesplanetJuegos));
-                listaJuegos = (GamesplanetJuegos)xml.Deserialize(new StringReader(htmlfr));
-
-                if (listaJuegos?.Juegos?.Count > 0)
-                {
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
-                    {
-                        bool buscar = true;
-
-                        if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
-                        {
-                            List<string> listaPaisesRestringidos = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-                            listaPaisesRestringidos.AddRange(datosPartidos);
-
-                            if (listaPaisesRestringidos.Count > 0)
-                            {
-                                foreach (var pais in listaPaisesRestringidos)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										buscar = false;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										buscar = false;
-										break;
-									}
-								}
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
-                        {
-                            List<string> listaPaisesAprobados = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesAprobados.Split(',');
-                            listaPaisesAprobados.AddRange(datosPartidos);
-
-                            if (listaPaisesAprobados.Count > 0)
-                            {
-                                bool encontrado = false;
-                                foreach (var pais in listaPaisesAprobados)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										encontrado = true;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										encontrado = true;
-										break;
-									}
-								}
-
-                                if (encontrado == false)
-                                {
-                                    buscar = false;
-                                }
-                            }
-                        }
-
-                        if (buscar == true)
-                        {
-                            decimal precioBase = decimal.Parse(juego.PrecioBase);
-                            decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-                            int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                            if (descuento > 0)
-                            {
-                                string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-                                string enlace = juego.Enlace;
-
-                                string imagen = juego.Imagen;
-
-                                JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, GenerarFr().Id);
-
-                                JuegoPrecio oferta = new JuegoPrecio
-                                {
-                                    Nombre = nombre,
-                                    Enlace = enlace,
-                                    Imagen = imagen,
-                                    Moneda = JuegoMoneda.Euro,
-                                    Precio = precioRebajado,
-                                    Descuento = descuento,
-                                    Tienda = GenerarFr().Id,
-                                    DRM = drm,
-                                    FechaDetectado = DateTime.Now,
-                                    FechaActualizacion = DateTime.Now
-                                };
-
-								ofertas.Add(oferta);
-							}
-                        }
-                    }
-
-					if (ofertas?.Count > 0)
+				using (var reader = XmlReader.Create(new StringReader(htmlfr)))
+				{
+					reader.MoveToContent();
+					while (reader.Read() == true)
 					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (reader.NodeType == XmlNodeType.Element && reader.Name == "product")
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
-							}
+							var juego = LeerJuegoXml(reader);
 
-							juegos2 += lote.Count;
+							if (juego != null && MirarRegiones(juego, region) == true)
+							{
+								var oferta = ConvertirAOferta(juego, region, GenerarFr().Id);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarFr().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
+								if (oferta != null)
+								{
+									ofertas.Add(oferta);
+								}
 							}
 						}
 					}
 				}
-            }
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarFr().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarFr().Id, ex);
+						}
+					}
+				}
+			}
 		}
 
 		public static async Task BuscarOfertasDe(TiendaRegion region)
@@ -397,147 +366,65 @@ namespace APIs.Gamesplanet
 
 			if (string.IsNullOrEmpty(htmlde) == false)
 			{
-                GamesplanetJuegos listaJuegos = new GamesplanetJuegos();
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-                XmlSerializer xml = new XmlSerializer(typeof(GamesplanetJuegos));
-                listaJuegos = (GamesplanetJuegos)xml.Deserialize(new StringReader(htmlde));
-
-                if (listaJuegos?.Juegos?.Count > 0)
-                {
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
-                    {
-                        bool buscar = true;
-
-                        if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
-                        {
-                            List<string> listaPaisesRestringidos = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-                            listaPaisesRestringidos.AddRange(datosPartidos);
-
-                            if (listaPaisesRestringidos.Count > 0)
-                            {
-                                foreach (var pais in listaPaisesRestringidos)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										buscar = false;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										buscar = false;
-										break;
-									}
-								}
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
-                        {
-                            List<string> listaPaisesAprobados = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesAprobados.Split(',');
-                            listaPaisesAprobados.AddRange(datosPartidos);
-
-                            if (listaPaisesAprobados.Count > 0)
-                            {
-                                bool encontrado = false;
-                                foreach (var pais in listaPaisesAprobados)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										encontrado = true;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										encontrado = true;
-										break;
-									}
-								}
-
-                                if (encontrado == false)
-                                {
-                                    buscar = false;
-                                }
-                            }
-                        }
-
-                        if (buscar == true)
-                        {
-                            decimal precioBase = decimal.Parse(juego.PrecioBase);
-                            decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-                            int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                            if (descuento > 0)
-                            {
-                                string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-                                string enlace = juego.Enlace;
-
-                                string imagen = juego.Imagen;
-
-                                JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, GenerarDe().Id);
-
-                                JuegoPrecio oferta = new JuegoPrecio
-                                {
-                                    Nombre = nombre,
-                                    Enlace = enlace,
-                                    Imagen = imagen,
-                                    Moneda = JuegoMoneda.Euro,
-                                    Precio = precioRebajado,
-                                    Descuento = descuento,
-                                    Tienda = GenerarDe().Id,
-                                    DRM = drm,
-                                    FechaDetectado = DateTime.Now,
-                                    FechaActualizacion = DateTime.Now
-                                };
-
-								ofertas.Add(oferta);
-							}
-                        }
-                    }
-
-					if (ofertas?.Count > 0)
+				using (var reader = XmlReader.Create(new StringReader(htmlde)))
+				{
+					reader.MoveToContent();
+					while (reader.Read() == true)
 					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (reader.NodeType == XmlNodeType.Element && reader.Name == "product")
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
-							}
+							var juego = LeerJuegoXml(reader);
 
-							juegos2 += lote.Count;
+							if (juego != null && MirarRegiones(juego, region) == true)
+							{
+								var oferta = ConvertirAOferta(juego, region, GenerarDe().Id);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarDe().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
+								if (oferta != null)
+								{
+									ofertas.Add(oferta);
+								}
 							}
 						}
 					}
 				}
-            }
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarDe().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarDe().Id, ex);
+						}
+					}
+				}
+			}
 		}
 
 		public static async Task BuscarOfertasUs(TiendaRegion region)
@@ -548,147 +435,65 @@ namespace APIs.Gamesplanet
 
 			if (string.IsNullOrEmpty(htmlus) == false)
 			{
-                GamesplanetJuegos listaJuegos = new GamesplanetJuegos();
+				List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-                XmlSerializer xml = new XmlSerializer(typeof(GamesplanetJuegos));
-                listaJuegos = (GamesplanetJuegos)xml.Deserialize(new StringReader(htmlus));
-
-                if (listaJuegos?.Juegos?.Count > 0)
-                {
-					List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
-
-					foreach (GamesplanetJuego juego in listaJuegos.Juegos)
-                    {
-                        bool buscar = true;
-
-                        if (string.IsNullOrEmpty(juego.PaisesRestringidos) == false)
-                        {
-                            List<string> listaPaisesRestringidos = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesRestringidos.Split(',');
-                            listaPaisesRestringidos.AddRange(datosPartidos);
-
-                            if (listaPaisesRestringidos.Count > 0)
-                            {
-                                foreach (var pais in listaPaisesRestringidos)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										buscar = false;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										buscar = false;
-										break;
-									}
-								}
-                            }
-                        }
-
-                        if (string.IsNullOrEmpty(juego.PaisesAprobados) == false)
-                        {
-                            List<string> listaPaisesAprobados = new List<string>();
-
-                            string[] datosPartidos = juego.PaisesAprobados.Split(',');
-                            listaPaisesAprobados.AddRange(datosPartidos);
-
-                            if (listaPaisesAprobados.Count > 0)
-                            {
-                                bool encontrado = false;
-                                foreach (var pais in listaPaisesAprobados)
-                                {
-									if (region == TiendaRegion.Europa && pais.ToLower() == "es")
-									{
-										encontrado = true;
-										break;
-									}
-									else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
-									{
-										encontrado = true;
-										break;
-									}
-								}
-
-                                if (encontrado == false)
-                                {
-                                    buscar = false;
-                                }
-                            }
-                        }
-
-                        if (buscar == true)
-                        {
-                            decimal precioBase = decimal.Parse(juego.PrecioBase);
-                            decimal precioRebajado = decimal.Parse(juego.PrecioRebajado);
-
-                            int descuento = Calculadora.SacarDescuento(precioBase, precioRebajado);
-
-                            if (descuento > 0)
-                            {
-                                string nombre = WebUtility.HtmlDecode(juego.Nombre);
-
-                                string enlace = juego.Enlace;
-
-                                string imagen = juego.Imagen;
-
-                                JuegoDRM drm = JuegoDRM2.Traducir(juego.DRM, GenerarUs().Id);
-
-                                JuegoPrecio oferta = new JuegoPrecio
-                                {
-                                    Nombre = nombre,
-                                    Enlace = enlace,
-                                    Imagen = imagen,
-                                    Moneda = JuegoMoneda.Dolar,
-                                    Precio = precioRebajado,
-                                    Descuento = descuento,
-                                    Tienda = GenerarUs().Id,
-                                    DRM = drm,
-                                    FechaDetectado = DateTime.Now,
-                                    FechaActualizacion = DateTime.Now
-                                };
-
-								ofertas.Add(oferta);
-							}
-                        }
-                    }
-
-					if (ofertas?.Count > 0)
+				using (var reader = XmlReader.Create(new StringReader(htmlus)))
+				{
+					reader.MoveToContent();
+					while (reader.Read() == true)
 					{
-						int juegos2 = 0;
-
-						int tamaño = 500;
-						var lotes = ofertas
-							.Select((oferta, indice) => new { oferta, indice })
-							.GroupBy(x => x.indice / tamaño)
-							.Select(g => g.Select(x => x.oferta).ToList())
-							.ToList();
-
-						foreach (var lote in lotes)
+						if (reader.NodeType == XmlNodeType.Element && reader.Name == "product")
 						{
-							try
-							{
-								await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
-							}
+							var juego = LeerJuegoXml(reader);
 
-							juegos2 += lote.Count;
+							if (juego != null && MirarRegiones(juego, region) == true)
+							{
+								var oferta = ConvertirAOferta(juego, region, GenerarUs().Id);
 
-							try
-							{
-								await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUs().Id, DateTime.Now, juegos2);
-							}
-							catch (Exception ex)
-							{
-								BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
+								if (oferta != null)
+								{
+									ofertas.Add(oferta);
+								}
 							}
 						}
 					}
 				}
-            }
+
+				if (ofertas?.Count > 0)
+				{
+					int juegos2 = 0;
+
+					int tamaño = 500;
+					var lotes = ofertas
+						.Select((oferta, indice) => new { oferta, indice })
+						.GroupBy(x => x.indice / tamaño)
+						.Select(g => g.Select(x => x.oferta).ToList())
+						.ToList();
+
+					foreach (var lote in lotes)
+					{
+						try
+						{
+							await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
+						}
+
+						juegos2 += lote.Count;
+
+						try
+						{
+							await BaseDatos.Admin.Actualizar.Tiendas(region, GenerarUs().Id, DateTime.Now, juegos2);
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje(GenerarUs().Id, ex);
+						}
+					}
+				}
+			}
 		}
     }
 
