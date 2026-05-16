@@ -473,4 +473,16 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? GameOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? GameOption4 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? GameOption5 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? GameOption6 { get; set; }
 }

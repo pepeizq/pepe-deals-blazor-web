@@ -126,5 +126,9 @@
   "String126": "All Platforms",
   "String127": "Show if it's available on Geforce NOW",
   "String128": "Show if it's available on Boosteroid",
-  "String129": "Display a game language"
+  "String129": "Display a game language",
+  "String130": "Show if has achievements",
+  "String131": "Show if has cloud saves",
+  "String132": "Show if has trading cards",
+  "String133": "Has trading cards"
 }

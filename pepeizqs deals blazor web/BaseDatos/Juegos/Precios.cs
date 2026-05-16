@@ -19,58 +19,6 @@ namespace BaseDatos.Juegos
 			bool ultimaModificacion = false;
 			bool añadir = true;
 
-            #region Limpiar Duplicados Historicos
-
-            if (ofertasHistoricas?.Count > 0)
-            {
-                int duplicadosDRM = 0;
-
-                foreach (var historico in ofertasHistoricas)
-                {
-                    if (historico.DRM == nuevaOferta.DRM)
-                    {
-                        duplicadosDRM += 1;
-                    }
-                }
-
-                if (duplicadosDRM > 1)
-                {
-                    decimal precioMinimoValor = 100000;
-                    JuegoPrecio precioMinimoFinal = null;
-
-                    if (ofertasHistoricas?.Count > 0)
-                    {
-                        foreach (var historico in ofertasHistoricas)
-                        {
-                            if (historico.DRM == nuevaOferta.DRM)
-                            {
-                                if (historico.Moneda != Herramientas.JuegoMoneda.Euro && historico.PrecioCambiado > 0 && historico.PrecioCambiado < precioMinimoValor)
-                                {
-                                    precioMinimoValor = historico.PrecioCambiado;
-                                    precioMinimoFinal = historico;
-                                }
-                                else if (historico.Moneda != Herramientas.JuegoMoneda.Euro && historico.PrecioCambiado == 0 && historico.Precio < precioMinimoValor)
-                                {
-                                    precioMinimoValor = historico.Precio;
-                                    precioMinimoFinal = historico;
-                                }
-                                else if (historico.Moneda == Herramientas.JuegoMoneda.Euro && historico.Precio > 0 && historico.Precio < precioMinimoValor)
-                                {
-                                    precioMinimoValor = historico.Precio;
-                                    precioMinimoFinal = historico;
-                                }
-                            }
-                        }
-
-                        ofertasHistoricas.RemoveAll(x => x.DRM == nuevaOferta.DRM);
-
-                        ofertasHistoricas.Add(precioMinimoFinal);
-                    }
-                }
-            }
-
-			#endregion
-
 			#region Aplicar Codigo Descuento
 
 			decimal RedondearHaciaAbajo(decimal valor)
@@ -78,7 +26,7 @@ namespace BaseDatos.Juegos
 				return Math.Floor(valor * 100) / 100;
 			}
 
-			if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
+			if (nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
             {
                 nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevaOferta.Precio, nuevaOferta.Moneda);
 
@@ -111,19 +59,19 @@ namespace BaseDatos.Juegos
                     {
                         bool cambiarFechaDetectado = false;
 
-                        if (nuevaOferta.Moneda == Herramientas.JuegoMoneda.Euro && precio.Moneda == Herramientas.JuegoMoneda.Euro && (nuevaOferta.Precio < precio.Precio || nuevaOferta.Precio > precio.Precio))
+                        if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.Precio < precio.Precio || nuevaOferta.Precio > precio.Precio))
                         {
                             cambiarFechaDetectado = true;
                         }
-                        else if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && precio.Moneda == Herramientas.JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.Precio || nuevaOferta.PrecioCambiado > precio.Precio))
+                        else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.Precio || nuevaOferta.PrecioCambiado > precio.Precio))
                         {
                             cambiarFechaDetectado = true;
                         }
-                        else if (nuevaOferta.Moneda == Herramientas.JuegoMoneda.Euro && precio.Moneda != Herramientas.JuegoMoneda.Euro && (nuevaOferta.Precio < precio.PrecioCambiado || nuevaOferta.Precio > precio.PrecioCambiado))
+                        else if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.Precio < precio.PrecioCambiado || nuevaOferta.Precio > precio.PrecioCambiado))
                         {
                             cambiarFechaDetectado = true;
                         }
-                        else if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro && precio.Moneda != Herramientas.JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.PrecioCambiado || nuevaOferta.PrecioCambiado > precio.PrecioCambiado))
+                        else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.PrecioCambiado || nuevaOferta.PrecioCambiado > precio.PrecioCambiado))
                         {
                             cambiarFechaDetectado = true;
                         }
@@ -141,7 +89,7 @@ namespace BaseDatos.Juegos
                             precio.FechaDetectado = nuevaOferta.FechaDetectado;
                         }
 
-                        if (nuevaOferta.Moneda != Herramientas.JuegoMoneda.Euro)
+                        if (nuevaOferta.Moneda != JuegoMoneda.Euro)
                         {
                             precio.PrecioCambiado = nuevaOferta.PrecioCambiado;
                         }
@@ -245,81 +193,102 @@ namespace BaseDatos.Juegos
 									{
 										if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
 										{
-											DeseadosDatos datosDeseados = null;
-
-											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.Europa, usuarioInteresado, "WishlistData");
-
-											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
+											try
 											{
-												datosDeseados = new DeseadosDatos();
-											}
-											else
-											{
-												try
-												{
-													datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
-												}
-												catch
+												DeseadosDatos datosDeseados = null;
+
+												string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.Europa, usuarioInteresado, "WishlistData");
+
+												if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 												{
 													datosDeseados = new DeseadosDatos();
 												}
-
-												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
-												datosDeseados.UltimoJuego = DateTime.Now;
-
-												if (datosDeseados.Juegos == null)
+												else
 												{
-													datosDeseados.Juegos = new List<DeseadosDatosJuego>();
-												}
-
-												datosDeseados.Juegos.Add(new DeseadosDatosJuego
-												{
-													Nombre = minimo.Nombre,
-													Enlace = minimo.Enlace,
-													Imagen = minimo.Imagen,
-													Precio = Herramientas.Precios.Euro(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
-													Tienda = minimo.Tienda,
-													DRM = minimo.DRM,
-													Fecha = DateTime.Now
-												});
-											}
-
-											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
-
-											string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
-
-											if (string.IsNullOrEmpty(correo) == false)
-											{
-												try
-												{
-													await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
-												}
-											}
-
-											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.Europa, usuarioInteresado, "NotificationPushLows");
-
-											if (enviarPush == true)
-											{
-												try
-												{
-													decimal precioNotificar = minimo.Precio;
-
-													if (minimo.PrecioCambiado > 0)
+													try
 													{
-														precioNotificar = minimo.PrecioCambiado;
+														datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
+													}
+													catch
+													{
+														datosDeseados = new DeseadosDatos();
 													}
 
-													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
+													datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
+													datosDeseados.UltimoJuego = DateTime.Now;
+
+													if (datosDeseados.Juegos == null)
+													{
+														datosDeseados.Juegos = new List<DeseadosDatosJuego>();
+													}
+
+													datosDeseados.Juegos.Add(new DeseadosDatosJuego
+													{
+														Nombre = minimo.Nombre,
+														Enlace = minimo.Enlace,
+														Imagen = minimo.Imagen,
+														Precio = Herramientas.Precios.Euro(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
+														Tienda = minimo.Tienda,
+														DRM = minimo.DRM,
+														Fecha = DateTime.Now
+													});
 												}
-												catch (Exception ex)
+
+												await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Actualizar Datos Deseados Minimo", ex);
+											}
+
+											try
+											{
+												string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
+
+												if (string.IsNullOrEmpty(correo) == false)
 												{
-													BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
+													try
+													{
+														await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
+													}
+													catch (Exception ex)
+													{
+														BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo 2", ex);
+													}
 												}
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo 1", ex);
+											}
+											
+											try
+											{
+												bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.Europa, usuarioInteresado, "NotificationPushLows");
+
+												if (enviarPush == true)
+												{
+													try
+													{
+														decimal precioNotificar = minimo.Precio;
+
+														if (minimo.PrecioCambiado > 0)
+														{
+															precioNotificar = minimo.PrecioCambiado;
+														}
+
+														var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
+														await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Euro(precioNotificar), minimo.Enlace);
+													}
+													catch (Exception ex)
+													{
+														BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo 2", ex);
+													}
+												}
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo 1", ex);
 											}
 										}
 									}
@@ -393,26 +362,48 @@ namespace BaseDatos.Juegos
 				ahora = DateTime.Now;
 			}
 
-			var sql = new StringBuilder();
+			StringBuilder sql = new StringBuilder();
 			sql.Append("UPDATE juegos SET ");
 			sql.Append($"precioActualesTiendas=@precioActualesTiendas{indice}, ");
 			sql.Append($"precioMinimosHistoricos=@precioMinimosHistoricos{indice} ");
 
-			if (cambioPrecio) sql.Append($", historicos=@historicos{indice} ");
+			if (cambioPrecio == true)
+			{
+				sql.Append($", historicos=@historicos{indice} ");
+			}
+
 			if (!string.IsNullOrEmpty(slugGOG)) sql.Append($", idGog=@idGog{indice}, slugGOG=@slugGOG{indice} ");
 			if (!string.IsNullOrEmpty(slugEpic)) sql.Append($", slugEpic=@slugEpic{indice} ");
-			if (ahora != null) sql.Append($", ultimaModificacion=@ultimaModificacion{indice} ");
+			
+			if (ahora != null)
+			{
+				sql.Append($", ultimaModificacion=@ultimaModificacion{indice} ");
+			}
 
 			sql.Append($"WHERE id=@id{indice};");
 
-			var parametros = new DynamicParameters();
+			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add($"@id{indice}", id);
 			parametros.Add($"@precioActualesTiendas{indice}", JsonSerializer.Serialize(ofertasActuales));
 			parametros.Add($"@precioMinimosHistoricos{indice}", JsonSerializer.Serialize(ofertasHistoricas));
-			if (cambioPrecio) parametros.Add($"@historicos{indice}", JsonSerializer.Serialize(historicos));
+			
+			if (cambioPrecio == true)
+			{
+				parametros.Add($"@historicos{indice}", JsonSerializer.Serialize(historicos));
+			}
+
 			if (!string.IsNullOrEmpty(slugGOG)) { parametros.Add($"@idGog{indice}", idGOG); parametros.Add($"@slugGOG{indice}", slugGOG); }
 			if (!string.IsNullOrEmpty(slugEpic)) parametros.Add($"@slugEpic{indice}", slugEpic);
-			if (ahora != null) parametros.Add($"@ultimaModificacion{indice}", ahora);
+
+			if (ahora != null)
+			{
+				parametros.Add($"@ultimaModificacion{indice}", ahora);
+			}
+
+			if (idSteam == 1663850 || nuevaOferta.Enlace == "https://store.steampowered.com/app/1663850")
+			{
+				BaseDatos.Errores.Insertar.Mensaje("test", parametros, sql.ToString());
+			}
 
 			return (sql.ToString(), parametros);
 		}
@@ -584,81 +575,102 @@ namespace BaseDatos.Juegos
 									{
 										if (await Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, nuevaOferta.DRM) == false)
 										{
-											DeseadosDatos datosDeseados = null;
-
-											string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "WishlistData");
-
-											if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
+											try
 											{
-												datosDeseados = new DeseadosDatos();
-											}
-											else
-											{
-												try
-												{
-													datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
-												}
-												catch
+												DeseadosDatos datosDeseados = null;
+
+												string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "WishlistData");
+
+												if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
 												{
 													datosDeseados = new DeseadosDatos();
 												}
-
-												datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
-												datosDeseados.UltimoJuego = DateTime.Now;
-
-												if (datosDeseados.Juegos == null)
+												else
 												{
-													datosDeseados.Juegos = new List<DeseadosDatosJuego>();
-												}
-
-												datosDeseados.Juegos.Add(new DeseadosDatosJuego
-												{
-													Nombre = minimo.Nombre,
-													Enlace = minimo.Enlace,
-													Imagen = minimo.Imagen,
-													Precio = Herramientas.Precios.Dolar(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
-													Tienda = minimo.Tienda,
-													DRM = minimo.DRM,
-													Fecha = DateTime.Now
-												});
-											}
-
-											await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
-
-											string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationLows");
-
-											if (string.IsNullOrEmpty(correo) == false)
-											{
-												try
-												{
-													await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
-												}
-												catch (Exception ex)
-												{
-													BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
-												}
-											}
-
-											bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationPushLows");
-
-											if (enviarPush == true)
-											{
-												try
-												{
-													decimal precioNotificar = minimo.Precio;
-
-													if (minimo.PrecioCambiado > 0)
+													try
 													{
-														precioNotificar = minimo.PrecioCambiado;
+														datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
+													}
+													catch
+													{
+														datosDeseados = new DeseadosDatos();
 													}
 
-													var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
-													await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Dolar(precioNotificar), minimo.Enlace);
+													datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
+													datosDeseados.UltimoJuego = DateTime.Now;
+
+													if (datosDeseados.Juegos == null)
+													{
+														datosDeseados.Juegos = new List<DeseadosDatosJuego>();
+													}
+
+													datosDeseados.Juegos.Add(new DeseadosDatosJuego
+													{
+														Nombre = minimo.Nombre,
+														Enlace = minimo.Enlace,
+														Imagen = minimo.Imagen,
+														Precio = Herramientas.Precios.Dolar(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
+														Tienda = minimo.Tienda,
+														DRM = minimo.DRM,
+														Fecha = DateTime.Now
+													});
 												}
-												catch (Exception ex)
+
+												await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Actualizar Datos Deseados Minimo", ex);
+											}
+
+											try
+											{
+												string correo = await Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationLows");
+
+												if (string.IsNullOrEmpty(correo) == false)
 												{
-													BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo", ex);
+													try
+													{
+														await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, minimo, correo);
+													}
+													catch (Exception ex)
+													{
+														BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo 2", ex);
+													}
 												}
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo 1", ex);
+											}
+
+											try
+											{
+												bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.EstadosUnidos, usuarioInteresado, "NotificationPushLows");
+
+												if (enviarPush == true)
+												{
+													try
+													{
+														decimal precioNotificar = minimo.Precio;
+
+														if (minimo.PrecioCambiado > 0)
+														{
+															precioNotificar = minimo.PrecioCambiado;
+														}
+
+														var notificaciones = ServiciosGlobales.ServiceProvider.GetRequiredService<NotificacionesPush>();
+														await notificaciones.EnviarNotificacion(usuarioInteresado, minimo.Nombre + " - " + Herramientas.Precios.Dolar(precioNotificar), minimo.Enlace);
+													}
+													catch (Exception ex)
+													{
+														BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo 2", ex);
+													}
+												}
+											}
+											catch (Exception ex)
+											{
+												BaseDatos.Errores.Insertar.Mensaje("Enviar Push Minimo 1", ex);
 											}
 										}
 									}

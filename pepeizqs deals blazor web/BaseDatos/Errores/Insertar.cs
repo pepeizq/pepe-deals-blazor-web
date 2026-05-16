@@ -101,5 +101,45 @@ namespace BaseDatos.Errores
 				}, transaction: sentencia);
 			});
 		}
-    }
+
+		public static async void Mensaje(string seccion, DynamicParameters dynamicParams, string baseSql)
+		{
+			var paramField = dynamicParams.GetType().GetField("parameters", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			var paramDict = paramField?.GetValue(dynamicParams) as Dictionary<string, object>;
+
+			string sqlResult = baseSql;
+
+			if (paramDict != null)
+			{
+				foreach (var param in paramDict)
+				{
+					string paramName = param.Key;
+					object paramValue = param.Value;
+
+					string formattedValue = paramValue == null ? "NULL" :
+						paramValue is string ? $"'{paramValue.ToString().Replace("'", "''")}'" :
+						paramValue.ToString();
+
+					sqlResult = sqlResult.Replace($"@{paramName}", formattedValue);
+				}
+			}
+
+			string sql = @"
+				INSERT INTO errores
+				(seccion, mensaje, stacktrace, fecha)
+				VALUES (@seccion, @mensaje, @stacktrace, @fecha);
+			";
+
+			await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+			{
+				return await conexion.ExecuteAsync(sql, new
+				{
+					seccion,
+					sqlResult,
+					stacktrace = "",
+					fecha = DateTime.Now
+				}, transaction: sentencia);
+			});
+		}
+	}
 }

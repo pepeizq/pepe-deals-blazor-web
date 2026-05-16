@@ -344,7 +344,7 @@
 						@if (string.IsNullOrEmpty(videoDestacado) == false)
 						{
 							<div class="destacado-fondo">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="eager">
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="lazy">
 							</div>
 
 							<div class="destacado-video">
@@ -356,12 +356,12 @@
 						}
 						else
 						{
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="eager">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="lazy">
 						}
 
 						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @destacadoActual?.Color);" class="destacado-hueco">
 
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre" loading="lazy">
 
 							<div style="display: flex; align-items: center; margin-bottom: 30px; color: var(--colorTexto); position: relative;">
 								@if (usuarioRegion == TiendaRegion.Europa && destacadoActual?.Juego?.PrecioMinimosHistoricos?.Count > 0 ||
@@ -424,7 +424,7 @@
 									<div style="display: flex; margin-right: 20px;">
 										<picture>
 											<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
-											<img class="destacado-icono" src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmDestacado)" />
+											<img class="destacado-icono" src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmDestacado)" loading="lazy" />
 										</picture>
 									</div>
 
@@ -434,7 +434,7 @@
 									<div style="display: flex; margin-right: 40px;">
 										<picture>
 											<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
-											<img class="destacado-icono" src="@iconoTienda" alt="@nombreTienda" />
+											<img class="destacado-icono" src="@iconoTienda" alt="@nombreTienda" loading="lazy" />
 										</picture>
 									</div>
 

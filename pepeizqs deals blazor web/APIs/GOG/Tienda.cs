@@ -190,11 +190,13 @@ namespace APIs.GOG
 							string precioBaseTexto = juego.Precios.PrecioBase;
 							precioBaseTexto = precioBaseTexto.Replace("€", null);
 							precioBaseTexto = precioBaseTexto.Replace("$", null);
+							precioBaseTexto = precioBaseTexto.Replace(",", ".");
 							precioBaseTexto = precioBaseTexto.Trim();
 
 							string precioRebajadoTexto = juego.Precios.PrecioRebajado;
 							precioRebajadoTexto = precioRebajadoTexto.Replace("€", null);
 							precioRebajadoTexto = precioRebajadoTexto.Replace("$", null);
+							precioRebajadoTexto = precioRebajadoTexto.Replace(",", ".");
 							precioRebajadoTexto = precioRebajadoTexto.Trim();
 
 							decimal precioBase = decimal.Parse(precioBaseTexto);
