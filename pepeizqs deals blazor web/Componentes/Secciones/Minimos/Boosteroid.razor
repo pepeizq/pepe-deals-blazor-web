@@ -284,7 +284,7 @@
 {
 	<div class="opciones-panel">
 		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); position: sticky;">
 				<button @onclick="MostrarOcultarOpciones" @onmouseenter="_ => usuarioEncimaOpciones = true" @onmouseleave="_ => usuarioEncimaOpciones = false" style="@(usuarioEncimaOpciones == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px; position: absolute;">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">

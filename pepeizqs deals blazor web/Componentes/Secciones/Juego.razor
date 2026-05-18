@@ -1294,19 +1294,19 @@
 
                                                                 if (juego.Tipo == JuegoTipo.Game)
                                                                 {
-                                                                    if (juego.GalaxyGOG.Logros == true || juego.GalaxyGOG.GuardadoNube == true)
+                                                                    if ((juego.GalaxyGOG.Logros == true && enseñarOpcionesGogLogros == true) || (juego.GalaxyGOG.GuardadoNube == true && enseñarOpcionesGogGuardadoNube == true))
                                                                     {
                                                                         <div style="display: flex; align-items: center; gap: 8px; height: 20px; margin: 0px 5px;">
                                                                             <img src="/imagenes/otros/goggalaxy2.webp" title="GOG Galaxy" style="width: 20px; height: 20px;"  />
 
-                                                                            @if (juego.GalaxyGOG.Logros == true)
+                                                                            @if (juego.GalaxyGOG.Logros == true && enseñarOpcionesGogLogros == true)
                                                                             {
                                                                                 <div title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String75", "Game"), "GOG Galaxy")" style="max-width: 20px; max-height: 20px; width: 100%; height: 100%;">
                                                                                     <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 512 512" fill="var(--colorTexto)"><path d="M211 7.3C205 1 196-1.4 187.6 .8s-14.9 8.9-17.1 17.3L154.7 80.6l-62-17.5c-8.4-2.4-17.4 0-23.5 6.1s-8.5 15.1-6.1 23.5l17.5 62L18.1 170.6c-8.4 2.1-15 8.7-17.3 17.1S1 205 7.3 211l46.2 45L7.3 301C1 307-1.4 316 .8 324.4s8.9 14.9 17.3 17.1l62.5 15.8-17.5 62c-2.4 8.4 0 17.4 6.1 23.5s15.1 8.5 23.5 6.1l62-17.5 15.8 62.5c2.1 8.4 8.7 15 17.1 17.3s17.3-.2 23.4-6.4l45-46.2 45 46.2c6.1 6.2 15 8.7 23.4 6.4s14.9-8.9 17.1-17.3l15.8-62.5 62 17.5c8.4 2.4 17.4 0 23.5-6.1s8.5-15.1 6.1-23.5l-17.5-62 62.5-15.8c8.4-2.1 15-8.7 17.3-17.1s-.2-17.4-6.4-23.4l-46.2-45 46.2-45c6.2-6.1 8.7-15 6.4-23.4s-8.9-14.9-17.3-17.1l-62.5-15.8 17.5-62c2.4-8.4 0-17.4-6.1-23.5s-15.1-8.5-23.5-6.1l-62 17.5L341.4 18.1c-2.1-8.4-8.7-15-17.1-17.3S307 1 301 7.3L256 53.5 211 7.3z"></path></svg>
                                                                                 </div>
                                                                             }
 
-                                                                            @if (juego.GalaxyGOG.GuardadoNube == true)
+                                                                            @if (juego.GalaxyGOG.GuardadoNube == true && enseñarOpcionesGogGuardadoNube == true)
                                                                             {
                                                                                 <div title="@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String76", "Game"), "GOG Galaxy")" style="max-width: 20px; max-height: 20px;">
                                                                                     <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 640 512" fill="var(--colorTexto)"><path d="M0 336c0 79.5 64.5 144 144 144l368 0c70.7 0 128-57.3 128-128c0-61.9-44-113.6-102.4-125.4c4.1-10.7 6.4-22.4 6.4-34.6c0-53-43-96-96-96c-19.7 0-38.1 6-53.3 16.2C367 64.2 315.3 32 256 32C167.6 32 96 103.6 96 192c0 2.7 .1 5.4 .2 8.1C40.2 219.8 0 273.2 0 336z" /></svg>
@@ -1315,7 +1315,7 @@
                                                                         </div>
                                                                     }
 
-                                                                    if (juego.GalaxyGOG.Preservacion == true)
+                                                                    if (juego.GalaxyGOG.Preservacion == true && enseñarOpcionesGogPreservacion == true)
                                                                     {
                                                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String77", "Game")">
                                                                             <img src="/imagenes/otros/gogpreserved.webp" style="max-width: 22px; max-height: 22px; aspect-ratio: 1 / 1; contain: layout;"  />
@@ -1519,7 +1519,7 @@
                                                             }
                                                         }
 
-                                                        @if (juego.Idiomas?.Count > 0 && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+                                                        @if (juego.Idiomas?.Count > 0 && Herramientas.Bots.UserAgentEsBot(userAgent) == false && enseñarOpcionesIdiomas == true)
                                                         {
                                                             bool tieneIdiomasSteam = false;
                                                             bool tieneIdiomasGog = false;
@@ -1694,7 +1694,7 @@
 
                                                         @if (juego.Tipo == JuegoTipo.Game)
                                                         {
-                                                            if (juego.Caracteristicas?.DemoIdSteam > 0 && drm.Id == JuegoDRM.Steam)
+                                                            if (juego.Caracteristicas?.DemoIdSteam > 0 && drm.Id == JuegoDRM.Steam && enseñarOpcionesSteamDemo == true)
                                                             {
                                                                 string enlaceDemo = "https://store.steampowered.com/app/" + juego.Caracteristicas.DemoIdSteam.ToString();
 
@@ -3298,7 +3298,7 @@
 {
     <div class="opciones-panel">
 		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); position: sticky;">
 				<button @onclick="MostrarOcultarOpciones" @onmouseenter="_ => usuarioEncimaOpciones = true" @onmouseleave="_ => usuarioEncimaOpciones = false" style="@(usuarioEncimaOpciones == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px; position: absolute;">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">
@@ -3322,59 +3322,66 @@
 
                     <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
                         <div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                            <div class="checkbox-caja">
+                                <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesIdiomas == true ? "checked" : null)" @onchange="EnseñarOpcionesIdiomas">
+                            </div>
+                            
                             <div>
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String129", "Game")
                             </div>
 
-                            <div class="menu-dropdown" style="width: fit-content; flex-shrink: 0;">
-                                <button class="boton-pequeño" style="display: flex; align-items: center; gap: 10px; justify-content: center; padding: 10px 25px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
-                                    <img src="@opcionesBanderaJuegos" style="display: block; max-width: 20px; max-height: 20px;" />
+                            @if (enseñarOpcionesIdiomas == true)
+                            {
+                                <div class="menu-dropdown" style="width: fit-content; flex-shrink: 0;">
+                                    <button class="boton-pequeño" style="display: flex; align-items: center; gap: 10px; justify-content: center; padding: 10px 25px; margin: 0; border: 0px; color: var(--colorTextoVisitado);">
+                                        <img src="@opcionesBanderaJuegos" style="display: block; max-width: 20px; max-height: 20px;" />
 
-                                    <div style="font-size: 14px; color: var(--colorEnlace); margin-right: 5px;">
-                                        @opcionesIdiomaJuegos
-                                    </div>
+                                        <div style="font-size: 14px; color: var(--colorEnlace); margin-right: 5px;">
+                                            @opcionesIdiomaJuegos
+                                        </div>
 
-                                    <div style="max-width: 9px; min-width: 9px;">
-                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-                                            <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
-                                        </svg>
-                                    </div>
-                                </button>
+                                        <div style="max-width: 9px; min-width: 9px;">
+                                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                <path d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" />
+                                            </svg>
+                                        </div>
+                                    </button>
 
-                                <div>
-                                    <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--fondoBotonPequeño);">
-                                        @{
-                                            List<Herramientas.IdiomaClase> listadoIdiomas2 = new List<Herramientas.IdiomaClase>();
+                                    <div>
+                                        <div class="menu-dropdown-contenido" style="right: 0; width: 100%; background-color: var(--fondoBotonPequeño);">
+                                            @{
+                                                List<Herramientas.IdiomaClase> listadoIdiomas2 = new List<Herramientas.IdiomaClase>();
 
-                                            foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
-                                            {
-                                                idioma2.Traduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
-                                                listadoIdiomas2.Add(idioma2);
+                                                foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
+                                                {
+                                                    idioma2.Traduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
+                                                    listadoIdiomas2.Add(idioma2);
+                                                }
+
+                                                if (listadoIdiomas2.Count > 0)
+                                                {
+                                                    listadoIdiomas2 = listadoIdiomas2.OrderBy(x => x.Traduccion).ToList();
+                                                }
+
+                                                foreach (var idioma2 in listadoIdiomas2)
+                                                {
+                                                    <button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="(e => CambiarIdiomaJuegos(e, idioma2.Id))">
+                                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                                            @{
+                                                                string imagenBandera = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(idioma2.Id) + ".svg";
+                                                            }
+
+                                                            <img src="@imagenBandera" style="display: block; max-width: 20px; max-height: 20px;" />
+
+                                                            @Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages")
+                                                        </div>
+                                                    </button>
+                                                }
                                             }
-
-                                            if (listadoIdiomas2.Count > 0)
-                                            {
-                                                listadoIdiomas2 = listadoIdiomas2.OrderBy(x => x.Traduccion).ToList();
-                                            }
-
-                                            foreach (var idioma2 in listadoIdiomas2)
-                                            {
-                                                <button class="texto-cabecera menu-dropdown-item" style="font-size: 14px; text-align: left; width: 100%; border: 0px;" @onclick="(e => CambiarIdiomaJuegos(e, idioma2.Id))">
-                                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                                        @{
-                                                            string imagenBandera = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(idioma2.Id) + ".svg";
-                                                        }
-
-                                                        <img src="@imagenBandera" style="display: block; max-width: 20px; max-height: 20px;" />
-
-                                                        @Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages")
-                                                    </div>
-                                                </button>
-                                            }
-                                        }
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }                     
                         </div>
 
                         <div style="display: flex; align-items: center; gap: 20px;">
@@ -3444,8 +3451,56 @@
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String125", "Game")
                             </div>
                         </div>
+
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="checkbox-caja">
+                                <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamDemo == true ? "checked" : null)" @onchange="EnseñarSteamDemo">
+                            </div>
+
+                            <div>
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String134", "Game")
+                            </div>
+                        </div>
 					</div>
 				</div>
+
+                <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+				    <div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+					    @Herramientas.Idiomas.BuscarTexto(idioma, "String135", "Game")
+				    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
+						<div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogLogros == true ? "checked" : null)" @onchange="EnseñarGogLogros">
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String130", "Game")
+							</div>
+						</div>
+
+                        <div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogGuardadoNube == true ? "checked" : null)" @onchange="EnseñarGogGuardadoNube">
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String131", "Game")
+							</div>
+						</div>
+
+                         <div style="display: flex; align-items: center; gap: 20px;">
+							<div class="checkbox-caja">
+								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogPreservacion == true ? "checked" : null)" @onchange="EnseñarGogPreservacion">
+							</div>
+
+							<div>
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String136", "Game")
+							</div>
+						</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -3539,17 +3594,6 @@
 
             if (opciones != null)
             {
-                if (string.IsNullOrEmpty(opciones.LanguageGames) == true)
-                {
-                    opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountLanguage");
-                    opcionesBanderaJuegos = null;
-                }
-                else
-                {
-                    opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(opciones.LanguageGames), "Languages");
-                    opcionesBanderaJuegos = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(opciones.LanguageGames) + ".svg";
-                }
-
                 if (opciones.GameOption1.HasValue == true)
                 {
                     enseñarOpcionesSteamDeck = opciones.GameOption1.Value;
@@ -3578,6 +3622,47 @@
                 if (opciones.GameOption6.HasValue == true)
                 {
                     enseñarOpcionesSteamCromos = opciones.GameOption6.Value;
+                }
+
+                bool enseñarIdiomas = true;
+
+                if (opciones.GameOption7.HasValue == true)
+                {
+                    enseñarIdiomas = opciones.GameOption7.Value;
+                }
+
+                if (enseñarIdiomas == true)
+                {
+                    if (string.IsNullOrEmpty(opciones.LanguageGames) == true)
+                    {
+                        opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountLanguage");
+                        opcionesBanderaJuegos = null;
+                    }
+                    else
+                    {
+                        opcionesIdiomaJuegos = Herramientas.Idiomas.BuscarTexto(idioma, Herramientas.Idiomas.SacarIdiomaUsuarioWeb(opciones.LanguageGames), "Languages");
+                        opcionesBanderaJuegos = "/imagenes/banderas/" + Herramientas.Idiomas.EncontrarIdiomaImagen(opciones.LanguageGames) + ".svg";
+                    }
+                }
+
+                if (opciones.GameOption8.HasValue == true)
+                {
+                    enseñarOpcionesSteamDemo = opciones.GameOption8.Value;
+                }
+
+                if (opciones.GameOption9.HasValue == true)
+                {
+                    enseñarOpcionesGogLogros = opciones.GameOption9.Value;
+                }
+
+                if (opciones.GameOption10.HasValue == true)
+                {
+                    enseñarOpcionesGogGuardadoNube = opciones.GameOption10.Value;
+                }
+
+                if (opciones.GameOption11.HasValue == true)
+                {
+                    enseñarOpcionesGogPreservacion = opciones.GameOption11.Value;
                 }
             }
 
@@ -5057,6 +5142,18 @@
 
     private bool usuarioEncimaOpciones = false;
 
+    private bool enseñarOpcionesIdiomas = true;
+
+    private async Task EnseñarOpcionesIdiomas()
+    {
+        enseñarOpcionesIdiomas = !enseñarOpcionesIdiomas;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption7", enseñarOpcionesIdiomas, usuarioId);
+        }
+    }
+
     private string opcionesIdiomaJuegos = string.Empty;
     private string opcionesBanderaJuegos = string.Empty;
 
@@ -5154,6 +5251,54 @@
 			await BaseDatos.Usuarios.Actualizar.Opcion("GameOption1", enseñarOpcionesSteamDeck, usuarioId);
 		}
 	}
+
+    private bool enseñarOpcionesSteamDemo = true;
+
+    private async Task EnseñarSteamDemo()
+    {
+        enseñarOpcionesSteamDemo = !enseñarOpcionesSteamDemo;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption8", enseñarOpcionesSteamDemo, usuarioId);
+        }
+    }
+
+    private bool enseñarOpcionesGogLogros = true;
+
+    private async Task EnseñarGogLogros()
+    {
+        enseñarOpcionesGogLogros = !enseñarOpcionesGogLogros;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption9", enseñarOpcionesGogLogros, usuarioId);
+        }
+    }
+
+    private bool enseñarOpcionesGogGuardadoNube = true;
+
+    private async Task EnseñarGogGuardadoNube()
+    {
+        enseñarOpcionesGogGuardadoNube = !enseñarOpcionesGogGuardadoNube;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption10", enseñarOpcionesGogGuardadoNube, usuarioId);
+        }
+    }
+
+    private bool enseñarOpcionesGogPreservacion = true;
+
+    private async Task EnseñarGogPreservacion()
+    {
+        enseñarOpcionesGogPreservacion = !enseñarOpcionesGogPreservacion;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption11", enseñarOpcionesGogPreservacion, usuarioId);
+        }
+    }
 
     #endregion
 }
