@@ -26,5 +26,6 @@
   "#SteamDeckVerified_TestResult_UnsupportedAntiCheat_Other": "Dieses Spiel wird auf Steam Deck aufgrund der Verwendung eines nicht unterstützten Anti-Cheat- oder Multiplayer-Dienstes nicht unterstützt",
   "#SteamDeckVerified_TestResult_ExternalControllersNotSupportedLocalMultiplayer": "Dieses Spiel unterstützt auf dem Steam Deck keine externen Bluetooth/USB-Controller für den lokalen Mehrspielermodus.",
   "#SteamDeckVerified_TestResult_DeviceCompatibilityWarningsShown": "Dieses Spiel zeigt Kompatibilitätswarnungen beim Laufen auf Steam Deck an, läuft jedoch gut",
-  "#SteamDeckVerified_TestResult_DisplayOutputHasNonblockingIssues": "Dieses Spiel hat kleinere Grafik-/Anzeigeprobleme auf Steam Deck"
+  "#SteamDeckVerified_TestResult_DisplayOutputHasNonblockingIssues": "Dieses Spiel hat kleinere Grafik-/Anzeigeprobleme auf Steam Deck",
+  "#SteamDeckVerified_TestResult_SteamOSDoesNotSupport_VR": "Steam Deck unterstützt VR-Spiele nicht"
 }

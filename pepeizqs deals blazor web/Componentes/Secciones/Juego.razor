@@ -1679,7 +1679,7 @@
                                                         {
                                                             if (juego.Caracteristicas != null)
                                                             {
-                                                                if (drm.Id == JuegoDRM.Steam && juego.Caracteristicas.RealidadVirtual != null)
+                                                                if (drm.Id == JuegoDRM.Steam && juego.Caracteristicas.RealidadVirtual != null && enseñarOpcionesSteamRV == true)
                                                                 {
                                                                     <button @onclick="(e => RVEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 12px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                         <div style="font-size: 14px;">
@@ -3193,14 +3193,14 @@
     if (juego.Caracteristicas?.RealidadVirtual != null)
     {
         <div class="opciones-panel">
-            <div class="caja-juego-contenido" style="width: 600px;">
-                <div class="caja-juego-titulo" style="display: flex; align-items: center; gap: 30px;">
-                    <button @onclick="@(e => RVCerrar(e))" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
-                        <div style="max-width: 24px; max-height: 24px;">
-                            <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
-                            </svg>
-                        </div>
+            <div style="max-width: 600px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+               <div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+                    <button @onclick="@(e => RVCerrar(e))" @onmouseenter="_ => usuarioEncimaRV = true" @onmouseleave="_ => usuarioEncimaRV = false" style="@(usuarioEncimaRV == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px;">
+                        <div style="width: 24px; height: 24px;">
+						    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaRV == true ? "180deg" : "0deg")); transition: transform 0.2s;">
+							    <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+						    </svg>
+					    </div>
                     </button>
 
                     <div>
@@ -3461,6 +3461,16 @@
                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String134", "Game")
                             </div>
                         </div>
+
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div class="checkbox-caja">
+                                <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamRV == true ? "checked" : null)" @onchange="EnseñarSteamRV">
+                            </div>
+
+                            <div>
+                                @Herramientas.Idiomas.BuscarTexto(idioma, "String137", "Game")
+                            </div>
+                        </div>
 					</div>
 				</div>
 
@@ -3663,6 +3673,11 @@
                 if (opciones.GameOption11.HasValue == true)
                 {
                     enseñarOpcionesGogPreservacion = opciones.GameOption11.Value;
+                }
+
+                if (opciones.GameOption12.HasValue == true)
+                {
+                    enseñarOpcionesSteamRV = opciones.GameOption12.Value;
                 }
             }
 
@@ -5097,6 +5112,7 @@
     #region Ventana Realidad Virtual
 
     private bool enseñarRV = false;
+    private bool usuarioEncimaRV = false;
     private JuegoDRM rvDrmSeleccionado = JuegoDRM.NoEspecificado;
     private string rvDrmSeleccionadoTexto = string.Empty;
 
@@ -5261,6 +5277,18 @@
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
             await BaseDatos.Usuarios.Actualizar.Opcion("GameOption8", enseñarOpcionesSteamDemo, usuarioId);
+        }
+    }
+
+    private bool enseñarOpcionesSteamRV = true;
+
+    private async Task EnseñarSteamRV()
+    {
+        enseñarOpcionesSteamRV = !enseñarOpcionesSteamRV;
+
+        if (string.IsNullOrEmpty(usuarioId) == false)
+        {
+            await BaseDatos.Usuarios.Actualizar.Opcion("GameOption12", enseñarOpcionesSteamRV, usuarioId);
         }
     }
 

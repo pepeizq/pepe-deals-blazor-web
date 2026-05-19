@@ -26,5 +26,6 @@
   "#SteamDeckVerified_TestResult_UnsupportedAntiCheat_Other": "Este juego no es compatible con Steam Deck porque utiliza un sistema antitrampas o un servicio multijugador incompatibles.",
   "#SteamDeckVerified_TestResult_ExternalControllersNotSupportedLocalMultiplayer": "Este juego no permite usar mandos Bluetooth o USB externos en Deck para el modo multijugador local.",
   "#SteamDeckVerified_TestResult_DeviceCompatibilityWarningsShown": "Este juego muestra advertencias de compatibilidad cuando se ejecuta en Steam Deck, pero funciona bien.",
-  "#SteamDeckVerified_TestResult_DisplayOutputHasNonblockingIssues": "Este juego tiene pequeños problemas gráficos o de visualización en Steam Deck."
+  "#SteamDeckVerified_TestResult_DisplayOutputHasNonblockingIssues": "Este juego tiene pequeños problemas gráficos o de visualización en Steam Deck.",
+  "#SteamDeckVerified_TestResult_SteamOSDoesNotSupport_VR": "Steam Deck no admite juegos de Realidad Virtual"
 }

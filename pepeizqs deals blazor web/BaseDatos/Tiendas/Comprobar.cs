@@ -196,13 +196,34 @@ namespace BaseDatos.Tiendas
 				{
 					foreach (var grupo in updates.Chunk(100))
 					{
-						var sqlBatch = new StringBuilder();
-						var parametrosBatch = new DynamicParameters();
+						StringBuilder sqlBatch = new StringBuilder();
+						DynamicParameters parametrosBatch = new DynamicParameters();
+
+						int indiceGlobal = 0;
 
 						foreach (var (sql, parametros2) in grupo)
 						{
-							sqlBatch.Append(sql);
-							parametrosBatch.AddDynamicParams(parametros2);
+							Dictionary<string, string> mapeoParametros = new Dictionary<string, string>();
+
+							foreach (var paramName in parametros2.ParameterNames)
+							{
+								string paramBaseNombre = System.Text.RegularExpressions.Regex.Replace(paramName, @"\d+$", "");
+								string nuevoParamName = paramBaseNombre + indiceGlobal;
+
+								mapeoParametros[paramName] = nuevoParamName;
+
+								var paramValue = parametros2.Get<dynamic>(paramName);
+								parametrosBatch.Add(nuevoParamName, paramValue);
+							}
+
+							string sqlNormalizado = sql;
+							foreach (var kvp in mapeoParametros)
+							{
+								sqlNormalizado = sqlNormalizado.Replace(kvp.Key, kvp.Value);
+							}
+
+							sqlBatch.Append(sqlNormalizado);
+							indiceGlobal++;
 						}
 
 						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
@@ -395,21 +416,45 @@ WHERE t.enlace = @Enlace
 					}
 				}
 
-				foreach (var grupo in updates.Chunk(100))
+				if (indice > 0)
 				{
-					var sqlBatch = new StringBuilder();
-					var parametrosBatch = new DynamicParameters();
-
-					foreach (var (sql, parametros2) in grupo)
+					foreach (var grupo in updates.Chunk(100))
 					{
-						sqlBatch.Append(sql);
-						parametrosBatch.AddDynamicParams(parametros2);
+						StringBuilder sqlBatch = new StringBuilder();
+						DynamicParameters parametrosBatch = new DynamicParameters();
+
+						int indiceGlobal = 0;
+
+						foreach (var (sql, parametros2) in grupo)
+						{
+							Dictionary<string, string> mapeoParametros = new Dictionary<string, string>();
+
+							foreach (var paramName in parametros2.ParameterNames)
+							{
+								string paramBaseNombre = System.Text.RegularExpressions.Regex.Replace(paramName, @"\d+$", "");
+								string nuevoParamName = paramBaseNombre + indiceGlobal;
+
+								mapeoParametros[paramName] = nuevoParamName;
+
+								var paramValue = parametros2.Get<dynamic>(paramName);
+								parametrosBatch.Add(nuevoParamName, paramValue);
+							}
+
+							string sqlNormalizado = sql;
+							foreach (var kvp in mapeoParametros)
+							{
+								sqlNormalizado = sqlNormalizado.Replace(kvp.Key, kvp.Value);
+							}
+
+							sqlBatch.Append(sqlNormalizado);
+							indiceGlobal++;
+						}
+
+						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
+						{
+							return await conexion.ExecuteAsync(sqlBatch.ToString(), parametrosBatch, transaction: transaccion);
+						});
 					}
-
-					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
-					{
-						return await conexion.ExecuteAsync(sqlBatch.ToString(), parametrosBatch, transaction: transaccion);
-					});
 				}
 			}
 
@@ -679,10 +724,31 @@ WHERE t.enlace = @Enlace
 						StringBuilder sqlBatch = new StringBuilder();
 						DynamicParameters parametrosBatch = new DynamicParameters();
 
+						int indiceGlobal = 0;
+
 						foreach (var (sql, parametros2) in grupo)
 						{
-							sqlBatch.Append(sql);
-							parametrosBatch.AddDynamicParams(parametros2);
+							Dictionary<string, string> mapeoParametros = new Dictionary<string, string>();
+
+							foreach (var paramName in parametros2.ParameterNames)
+							{
+								string paramBaseNombre = System.Text.RegularExpressions.Regex.Replace(paramName, @"\d+$", "");
+								string nuevoParamName = paramBaseNombre + indiceGlobal;
+
+								mapeoParametros[paramName] = nuevoParamName;
+
+								var paramValue = parametros2.Get<dynamic>(paramName);
+								parametrosBatch.Add(nuevoParamName, paramValue);
+							}
+
+							string sqlNormalizado = sql;
+							foreach (var kvp in mapeoParametros)
+							{
+								sqlNormalizado = sqlNormalizado.Replace(kvp.Key, kvp.Value);
+							}
+
+							sqlBatch.Append(sqlNormalizado);
+							indiceGlobal++; 
 						}
 
 						await Herramientas.BaseDatos.RestoOperaciones(async (conexion, transaccion) =>
@@ -692,7 +758,7 @@ WHERE t.enlace = @Enlace
 					}
 				}
 
-				var enlacesNoEncontrados = mapaOfertas.Where(kv => !enlacesEncontrados.Contains(kv.Key)).ToList();
+				var enlacesNoEncontrados = mapaOfertas.Where(kv => enlacesEncontrados.Contains(kv.Key) == false).ToList();
 
 				if (enlacesNoEncontrados.Count > 0)
 				{
@@ -700,27 +766,18 @@ WHERE t.enlace = @Enlace
 					{
 						var oferta = kvp.Value;
 
-						string sqlInsertar = $@"
-							IF NOT EXISTS (SELECT 1 FROM {esquema} WHERE enlace = @Enlace)
-							BEGIN
-								DECLARE @nuevaId NVARCHAR(MAX); 
-
-								SELECT @nuevaId = id 
-								FROM juegos 
-								WHERE nombreCodigo = @NombreCodigo;
-
-								IF @nuevaId IS NULL SET @nuevaId = 0;
-
-								INSERT INTO {esquema} (enlace, nombre, imagen, idJuegos, descartado)
-								VALUES (@Enlace, @Nombre, @Imagen, @nuevaId, 'no');
-							END;
-							";
+						string sqlMergear = $@"MERGE INTO {esquema} AS mergeador
+							USING (SELECT @Enlace AS enlace) AS fuente
+							ON mergeador.enlace = fuente.enlace
+							WHEN NOT MATCHED THEN
+								INSERT (enlace, nombre, imagen)
+								VALUES (@Enlace, @Nombre, @Imagen);";
 
 						try
 						{
 							await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 							{
-								return await conexion.ExecuteAsync(sqlInsertar, new
+								return await conexion.ExecuteAsync(sqlMergear, new
 								{
 									oferta.Enlace,
 									oferta.Nombre,
@@ -731,7 +788,7 @@ WHERE t.enlace = @Enlace
 						}
 						catch (Exception ex)
 						{
-							BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 2 - " + sqlInsertar, ex);
+							BaseDatos.Errores.Insertar.Mensaje("Tiendas Comprobar Resto 2 - " + sqlMergear, ex);
 						}
 					}
 				}

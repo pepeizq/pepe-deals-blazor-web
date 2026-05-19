@@ -400,11 +400,6 @@ namespace BaseDatos.Juegos
 				parametros.Add($"@ultimaModificacion{indice}", ahora);
 			}
 
-			if (idSteam == 1663850 || nuevaOferta.Enlace == "https://store.steampowered.com/app/1663850")
-			{
-				BaseDatos.Errores.Insertar.Mensaje("test", parametros, sql.ToString());
-			}
-
 			return (sql.ToString(), parametros);
 		}
 
