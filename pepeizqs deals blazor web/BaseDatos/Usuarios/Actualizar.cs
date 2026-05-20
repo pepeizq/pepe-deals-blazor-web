@@ -353,12 +353,14 @@ namespace BaseDatos.Usuarios
 
 	public class DeseadosDatosJuego
 	{
-		public string Nombre { get; set; }
+		public int Id { get; set; }
 		public string Enlace { get; set; }
-		public string Imagen { get; set; }
+		public string Descuento { get; set; }
 		public string Precio { get; set; }
 		public DateTime Fecha { get; set; }
 		public string Tienda { get; set; }
 		public JuegoDRM DRM { get; set; }
+		public string Nombre2 { get; set; }
+		public string Imagen2 { get; set; }
 	}
 }

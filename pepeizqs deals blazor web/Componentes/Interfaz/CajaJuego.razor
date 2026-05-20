@@ -216,15 +216,8 @@
 			//--------------------------------------------------------
 
 			List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
-
-			foreach (var tienda in tiendas)
-			{
-				if (tienda.Id == oferta.Tienda)
-				{
-					iconoTienda = tienda.ImagenIcono;
-					break;
-				}
-			}
+			var tienda = tiendas.FirstOrDefault(t => t.Id == oferta.Tienda);
+			iconoTienda = tienda?.ImagenIcono ?? string.Empty;
 		}
 	}
 
@@ -639,10 +632,10 @@
 						<div class="perfil-flexible-centrado" style="justify-content: left; margin-top: 12px; gap: 12px;">
 							@if (tipo == Tipo.MinimosHistoricos)
 							{
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="width: 20px; height: 20px;" loading="lazy" />
+								<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="width: 20px; height: 20px;" loading="lazy" />
 							}
 
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoTienda)" style="width: 20px; height: 20px;" loading="lazy" />
+							<img src="@iconoTienda" style="width: 20px; height: 20px;" loading="lazy" />
 
 							@if (string.IsNullOrEmpty(juego.Analisis?.Porcentaje) == false)
 							{

@@ -956,6 +956,7 @@
 				ultimaVisita = datos2.UltimaVisita ?? DateTime.Now;
 				datos2.Cantidad = 0;
 				datos2.UltimaVisita = DateTime.Now;
+                datos2.Juegos = null;
 				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
 			}
 		}

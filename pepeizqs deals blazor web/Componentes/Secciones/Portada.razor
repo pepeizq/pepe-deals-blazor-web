@@ -335,9 +335,9 @@
 {
 	var destacadoActual = juegosDestacadosMostrar[posicionMostrarDestacados];
 
-	<div class="portada-espacio cuerpo-ancho">
-		@if (destacadoActual.Juego != null && destacadoActual.Excluido == false)
-		{
+	@if (destacadoActual.Juego != null && destacadoActual.Excluido == false)
+	{
+		<div class="portada-espacio cuerpo-ancho">
 			<a href="/game/@destacadoActual.Juego.IdMaestra.ToString()/@Herramientas.EnlaceAdaptador.Nombre(destacadoActual.Juego.Nombre)/" style="cursor: pointer; border: 0px; padding: 0px; display: block; width: 100%;">
 				<div style="position: relative; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); background-color: @destacadoActual.Color;">
 					<div class="destacado-mostrar" @onmouseover="@(e => EnseñarDestacadoVideo(e, destacadoActual?.Juego))">
@@ -377,7 +377,7 @@
 										drmDestacado = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.DRM ?? JuegoDRM.NoEspecificado;
 										tiendaComparar = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.Tienda ?? "";
 										descuento = destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.Descuento.ToString() ?? "";
-									
+
 										if (destacadoActual?.Juego?.PrecioMinimosHistoricos[0]?.PrecioCambiado > 0)
 										{
 											precioMostrar = Herramientas.Precios.Euro(destacadoActual.Juego.PrecioMinimosHistoricos?[0].PrecioCambiado);
@@ -392,7 +392,7 @@
 										drmDestacado = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.DRM ?? JuegoDRM.NoEspecificado;
 										tiendaComparar = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.Tienda ?? "";
 										descuento = destacadoActual?.Juego?.PrecioMinimosHistoricosUS[0]?.Descuento.ToString() ?? "";
-									
+
 										if (destacadoActual?.Juego?.PrecioMinimosHistoricosUS?[0].PrecioCambiado > 0)
 										{
 											precioMostrar = Herramientas.Precios.Dolar(destacadoActual.Juego.PrecioMinimosHistoricosUS?[0].PrecioCambiado);
@@ -461,11 +461,11 @@
 										}
 
 										<div onclick="anularEnlace(event)" style="margin-left: 30px;">
-											<button @onclick="@(e => DesplegarDropdown("destacado", destacadoActual?.Juego?.Id ?? 0, drmDeseado))" 
+											<button @onclick="@(e => DesplegarDropdown("destacado", destacadoActual?.Juego?.Id ?? 0, drmDeseado))"
 													class="boton-pequeño" style="width: fit-content; padding: 10px; background-color: @destacadoActual?.Color;">
 												<div class="svg-boton" style="display: flex;">
 													<svg style="width: 35px; height: 35px; transform: rotate(@(dropdownAbierto == "destacado" + destacadoActual?.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString() ? "0deg" : "180deg")); transition: transform 0.2s;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-														<path d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z"/>
+														<path d="M297.4 438.6C309.9 451.1 330.2 451.1 342.7 438.6L502.7 278.6C515.2 266.1 515.2 245.8 502.7 233.3C490.2 220.8 469.9 220.8 457.4 233.3L320 370.7L182.6 233.4C170.1 220.9 149.8 220.9 137.3 233.4C124.8 245.9 124.8 266.2 137.3 278.7L297.3 438.7z" />
 													</svg>
 												</div>
 											</button>
@@ -473,13 +473,13 @@
 
 										@if (dropdownAbierto == "destacado" + destacadoActual?.Juego.Id.ToString() + "-" + ((int)drmDeseado).ToString())
 										{
-											<div onclick="anularEnlace(event)" style="position: absolute; bottom: 55px; right: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; overflow: hidden; display: flex; flex-direction: column;" >
+											<div onclick="anularEnlace(event)" style="position: absolute; bottom: 55px; right: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; overflow: hidden; display: flex; flex-direction: column;">
 												@if (destacadoActual?.DeseadoImportado == false)
 												{
-													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, destacadoActual, drmDeseado); })" 
-														style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
-														onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
-														onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
+													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, destacadoActual, drmDeseado); })"
+															style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
+															onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
+															onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
 														<div style="display: flex; align-items: center; gap: 10px;">
 															<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
 																@if (destacadoActual.Color == "var(--fondoAlerta)")
@@ -510,14 +510,14 @@
 													</button>
 												}
 
-												<button @onclick="@(async e => { await ExcluirJuego(e, "destacado", usuarioId, destacadoActual); })" 
-													style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
-													onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
-													onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
+												<button @onclick="@(async e => { await ExcluirJuego(e, "destacado", usuarioId, destacadoActual); })"
+														style="width: 100%; padding: 10px 15px; text-align: left; border: none; cursor: pointer; border-bottom: 1px solid var(--fondoCodigo); background-color: var(--fondoBotonPequeño); transition: background-color 0.2s;"
+														onmouseover="this.style.backgroundColor='var(--fondoBotonPequeñoHover)'"
+														onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
 													<div style="display: flex; align-items: center; gap: 10px;">
 														<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
 															<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-																<path d="M431.2 476.5L163.5 208.8C141.1 240.2 128 278.6 128 320C128 426 214 512 320 512C361.5 512 399.9 498.9 431.2 476.5zM476.5 431.2C498.9 399.8 512 361.4 512 320C512 214 426 128 320 128C278.5 128 240.1 141.1 208.8 163.5L476.5 431.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320z"/>
+																<path d="M431.2 476.5L163.5 208.8C141.1 240.2 128 278.6 128 320C128 426 214 512 320 512C361.5 512 399.9 498.9 431.2 476.5zM476.5 431.2C498.9 399.8 512 361.4 512 320C512 214 426 128 320 128C278.5 128 240.1 141.1 208.8 163.5L476.5 431.2zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320z" />
 															</svg>
 														</div>
 
@@ -535,39 +535,39 @@
 					</div>
 				</div>
 			</a>
-		}
 
-		<div class="destacados-galeria-fila">
-			@foreach (var destacado in juegosDestacadosMostrar)
-			{
-				if (destacado.Excluido == false)
+			<div class="destacados-galeria-fila">
+				@foreach (var destacado in juegosDestacadosMostrar)
 				{
-					bool mostrarBarra = false;
-					string opacidad = string.Empty;
-
-					if (destacadoActual != null)
+					if (destacado.Excluido == false)
 					{
-						if (destacado.Juego.IdMaestra == destacadoActual?.Juego?.IdMaestra)
+						bool mostrarBarra = false;
+						string opacidad = string.Empty;
+
+						if (destacadoActual != null)
 						{
-							opacidad = "opacity: 1;";
-							mostrarBarra = true;
+							if (destacado.Juego.IdMaestra == destacadoActual?.Juego?.IdMaestra)
+							{
+								opacidad = "opacity: 1;";
+								mostrarBarra = true;
+							}
 						}
+
+						<div class="destacados-galeria-columna" @onclick="@(e => CambiarJuegoDestacado(e, destacado))" style="background-color: @destacado.Color;">
+							<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura @(mostrarBarra ? "activo" : "")" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
+
+							@if (mostrarBarra == true)
+							{
+								<div class="destacado-barra-contenedor">
+									<div class="destacado-progreso" style="filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
+								</div>
+							}
+						</div>
 					}
-
-					<div class="destacados-galeria-columna" @onclick="@(e => CambiarJuegoDestacado(e, destacado))" style="background-color: @destacado.Color;">
-						<img @key="destacado.Juego.Id.ToString()" class="destacados-galeria-captura @(mostrarBarra ? "activo" : "")" src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacado.Juego.Imagenes.Header_460x215, 214, 100)" style="@opacidad" alt="@destacado.Juego.Nombre">
-
-						@if (mostrarBarra == true)
-						{
-							<div class="destacado-barra-contenedor">
-								<div class="destacado-progreso" style="filter: brightness(150%); background: color-mix(in srgb, var(--fondoCodigo), @destacado.Color 50%);" />
-							</div>
-						}
-					</div>
 				}
-			}
+			</div>
 		</div>
-	</div>
+	}
 }
 
 @if (noticias?.Count > 0)

@@ -381,6 +381,28 @@
     .menu-dropdown2:hover .svg-icono-rotante {
         transform: rotate(180deg);
     }
+
+    .boton-cabecera-deseados {
+        transition: all 0.3s ease;
+    }
+
+    a:hover .boton-cabecera-deseados {
+        transform: translateY(-3px);
+    }
+
+        a:hover .boton-cabecera-deseados > div:first-child {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.15);
+        }
+    }
 </style>
 
 <header class="cabecera2">
@@ -436,12 +458,12 @@
                             <a class="boton-superior" href="/wishlist" style="font-size: 15px;">
                                 @if (deseadosCantidad > 0)
                                 {
-                                    <div style="display: flex; align-items: center; color: var(--colorTexto); background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                        <div style="background-color: var(--fondoAlerta); padding: 5px 15px; font-size: 17px;">
+                                    <div class="boton-cabecera-deseados" style="display: flex; align-items: center; color: var(--colorTexto); background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); border-radius: 5px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        <div style="background-color: var(--fondoAlerta); padding: 5px 15px; font-size: 17px; border-radius: 5px 0px 0px 5px; border: 2px solid var(--fondoAlerta);">
                                             @deseadosCantidad
                                         </div>
 
-                                        <div style="padding: 5px 15px;">
+                                        <div style="padding: 5px 15px; border: 2px solid var(--fondoAlerta); border-radius: 0px 5px 5px 0px;">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "Wishlist", "Header")
                                         </div>
                                     </div>
@@ -454,14 +476,39 @@
                                 }
                             </a>
                             
-                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0 && usuarioAdmin == true)
+                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0)
                             {
-                                <div class="menu-dropdown-contenido-centrado">
-                                    @foreach (var juego in deseadosJuegos.Take(5))
+                                <div class="menu-dropdown-contenido-centrado" style="min-width: 400px; background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); border-radius: 5px; border: 2px solid var(--fondoAlerta);">
+                                    @foreach (var juego in deseadosJuegos.OrderByDescending(j => j.Fecha).Take(5))
                                     {
-                                         <a @key="juego.Enlace" class="texto-cabecera boton-superior" href="@juego.Enlace" target="_blank" style="font-size: 15px;">
+                                        List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
+                                        var tienda = tiendas.FirstOrDefault(t => t.Id == juego.Tienda);
+                                        string iconoTienda = tienda?.ImagenIcono ?? string.Empty;
+
+                                        <a @key="juego.Enlace" class="texto-cabecera boton-superior" href="@Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tienda, usuarioPatreon, false)" target="_blank" style="font-size: 15px; padding: 0px; border-radius: 5px;">
                                              <div style="text-align: center; display: flex; align-items: center; gap: 15px;">
-                                                 @juego.Nombre
+                                                 <img src="@juego.Imagen2" style="width: 173px; height: 65px;"/>
+
+                                                 <div style="width: 100%;">
+                                                    <div style="text-align: left; flex-shrink: 0; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                        @juego.Nombre2
+                                                     </div>
+                                                     
+                                                     <div style="margin-top: 5px; display: flex; align-items: center; gap: 10px;">
+                                                        <img src="@JuegoDRM2.SacarImagen(juego.DRM)" style="width: 20px; height: 20px;" loading="lazy" />
+                                                        <img src="@iconoTienda" style="width: 20px; height: 20px;" loading="lazy" />
+                                                     </div>
+                                                 </div>
+
+                                                 <div style="text-align: center; display: flex; align-items: center;">
+                                                    <div style="background-color: var(--fondoBien); padding: 5px 10px;">
+                                                        @juego.Descuento%
+                                                    </div>
+
+                                                    <div style="background-color: var(--fondoBotonPequeño); padding: 5px 10px;">
+                                                        @juego.Precio
+                                                    </div>
+                                                 </div>
                                              </div>
                                          </a>
                                     }
@@ -1275,6 +1322,7 @@
                         if (datos2.UltimaVisita?.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
                             deseadosCantidad = 0;
+                            datos2.Juegos = null;
                         }
                     }
                     else if (datos2.UltimaVisita == null && datos2.UltimoJuego != null)
@@ -1282,11 +1330,35 @@
                         if (DateTime.Now.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
                         {
                             deseadosCantidad = 0;
+                            datos2.Juegos = null;
                         }
                     }
 
-                    if (datos2.Juegos?.Count > 0)
+                    if (deseadosCantidad > 0 && datos2.Juegos?.Count > 0)
                     {
+                        List<string> juegosBuscar = datos2.Juegos.Select(j => j.Id.ToString()).ToList();
+
+                        if (juegosBuscar?.Count > 0)
+                        {
+                            var juegosBuscados = await BaseDatos.Juegos.Buscar.MultiplesJuegosReducido(juegosBuscar);
+
+                            if (juegosBuscados?.Count > 0)
+                            {
+                                foreach (var juego in juegosBuscados)
+                                {
+                                    var juegoDeseado = datos2.Juegos.FirstOrDefault(j => j.Id == juego.Id);
+
+                                    if (juegoDeseado != null)
+                                    {
+                                        juegoDeseado.Nombre2 = juego.Nombre;
+                                        juegoDeseado.Imagen2 = juego.Imagenes.Capsule_231x87;
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
                         deseadosJuegos = datos2.Juegos;
                     }
                 }

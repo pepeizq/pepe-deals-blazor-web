@@ -1,8 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@using System.Text.Json
+@using System.Threading.Tasks
+@using BaseDatos.Usuarios
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.Data.SqlClient
-@using System.Text.Json
-@using System.Threading.Tasks
 @using Tiendas2
 @using global::Juegos
 @using pepeizqs_deals_web.Data
@@ -1404,44 +1405,60 @@
             {
                 if (await BaseDatos.Usuarios.Buscar.UsuarioTieneJuego(usuarioInteresado, id, drm) == false)
                 {
-                    // BaseDatos.Usuarios.DeseadosDatos datosDeseados = null;
+					DeseadosDatos datosDeseados = null;
 
-                    // string datosDeseadosTexto = BaseDatos.Usuarios.Buscar.Opcion(usuarioInteresado, "WishlistData");
+					string datosDeseadosTexto = await BaseDatos.Usuarios.Buscar.OpcionStringRegion(TiendaRegion.Europa, usuarioInteresado, "WishlistData");
 
-                    // if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
-                    // {
-                    //     datosDeseados = new BaseDatos.Usuarios.DeseadosDatos();
-                    // }
-                    // else
-                    // {
-                    //     try
-                    //     {
-                    //         datosDeseados = JsonSerializer.Deserialize<BaseDatos.Usuarios.DeseadosDatos>(datosDeseadosTexto);
-                    //     }
-                    //     catch
-                    //     {
-                    //         datosDeseados = new BaseDatos.Usuarios.DeseadosDatos();
-                    //     }
-
-                    //     datosDeseados.Cantidad += 1;
-                    //     datosDeseados.UltimoJuego = DateTime.Now;
-                    // }
-
-                    // BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
-
-					string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
-
-					if (string.IsNullOrEmpty(correo) == false)
+					if (string.IsNullOrEmpty(datosDeseadosTexto) == true)
+					{
+						datosDeseados = new DeseadosDatos();
+					}
+					else
 					{
 						try
 						{
-							await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, nuevaOferta, correo);
+							datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(datosDeseadosTexto);
 						}
-						catch (Exception ex)
+						catch
 						{
-							BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
+							datosDeseados = new DeseadosDatos();
 						}
+
+						datosDeseados.Cantidad = datosDeseados.Cantidad + 1;
+						datosDeseados.UltimoJuego = DateTime.Now;
+
+						if (datosDeseados.Juegos == null)
+						{
+							datosDeseados.Juegos = new List<DeseadosDatosJuego>();
+						}
+
+						datosDeseados.Juegos.Add(new DeseadosDatosJuego
+						{
+							Id = id,
+							Enlace = nuevaOferta.Enlace,
+							Descuento = nuevaOferta.Descuento.ToString(),
+							Precio = Herramientas.Precios.Euro(nuevaOferta.PrecioCambiado > 0 ? nuevaOferta.PrecioCambiado : nuevaOferta.Precio),
+							Tienda = nuevaOferta.Tienda,
+							DRM = nuevaOferta.DRM,
+							Fecha = DateTime.Now
+						});
 					}
+
+					await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioInteresado);
+
+					// string correo = await BaseDatos.Usuarios.Buscar.UsuarioQuiereCorreos(TiendaRegion.Europa, usuarioInteresado, "NotificationLows");
+
+					// if (string.IsNullOrEmpty(correo) == false)
+					// {
+					// 	try
+					// 	{
+					// 		await Herramientas.Correos.DeseadoMinimo.Nuevo(usuarioInteresado, id, nuevaOferta, correo);
+					// 	}
+					// 	catch (Exception ex)
+					// 	{
+					// 		BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo", ex);
+					// 	}
+					// }
 				}
 			}
 		}		

@@ -224,9 +224,9 @@ namespace BaseDatos.Juegos
 
 													datosDeseados.Juegos.Add(new DeseadosDatosJuego
 													{
-														Nombre = minimo.Nombre,
+														Id = id,
 														Enlace = minimo.Enlace,
-														Imagen = minimo.Imagen,
+														Descuento = minimo.Descuento.ToString(),
 														Precio = Herramientas.Precios.Euro(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
 														Tienda = minimo.Tienda,
 														DRM = minimo.DRM,
@@ -601,9 +601,9 @@ namespace BaseDatos.Juegos
 
 													datosDeseados.Juegos.Add(new DeseadosDatosJuego
 													{
-														Nombre = minimo.Nombre,
+														Id = id,
 														Enlace = minimo.Enlace,
-														Imagen = minimo.Imagen,
+														Descuento = minimo.Descuento.ToString(),
 														Precio = Herramientas.Precios.Dolar(minimo.PrecioCambiado > 0 ? minimo.PrecioCambiado : minimo.Precio),
 														Tienda = minimo.Tienda,
 														DRM = minimo.DRM,
