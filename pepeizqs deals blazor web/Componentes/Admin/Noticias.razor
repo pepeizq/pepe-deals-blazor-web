@@ -458,34 +458,6 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 <div style="display: flex; align-items: center; gap: 40px;">
                     <div style="display: flex; align-items: center; gap: 20px;">
                         <div style="max-width: 24px; max-height: 24px;">
-                            <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" /></svg>
-                        </div> 
-            
-                        @if (enviandoTwitter == true)
-                        {
-                            <div style="max-width: 24px; max-height: 24px;">
-                                <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M304 48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zm0 416a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM48 304a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm464-48a48 48 0 1 0 -96 0 48 48 0 1 0 96 0zM142.9 437A48 48 0 1 0 75 369.1 48 48 0 1 0 142.9 437zm0-294.2A48 48 0 1 0 75 75a48 48 0 1 0 67.9 67.9zM369.1 437A48 48 0 1 0 437 369.1 48 48 0 1 0 369.1 437z"/></svg>
-                            </div>
-                        }
-                        else
-                        {
-                            if (enviadoTwitter == true)
-                            {
-                                <div style="max-width: 24px; max-height: 24px;">
-                                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>
-                                </div>
-                            }
-                            else
-                            {
-                                <div style="max-width: 24px; max-height: 24px;">
-                                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
-                                </div>
-                            }
-                        }
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="max-width: 24px; max-height: 24px;">
                             <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M111.8 62.2C170.2 105.9 233 194.7 256 242.4c23-47.6 85.8-136.4 144.2-180.2c42.1-31.6 110.3-56 110.3 21.8c0 15.5-8.9 130.5-14.1 149.2C478.2 298 412 314.6 353.1 304.5c102.9 17.5 129.1 75.5 72.5 133.5c-107.4 110.2-154.3-27.6-166.3-62.9l0 0c-1.7-4.9-2.6-7.8-3.3-7.8s-1.6 3-3.3 7.8l0 0c-12 35.3-59 173.1-166.3 62.9c-56.5-58-30.4-116 72.5-133.5C100 314.6 33.8 298 15.7 233.1C10.4 214.4 1.5 99.4 1.5 83.9c0-77.8 68.2-53.4 110.3-21.8z" /></svg>
                         </div>
             
@@ -676,8 +648,6 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
     private bool enviandoNoticia = false;
     private int idNoticiaEnviada = 0;
 
-    private bool enviandoTwitter = false;
-    private bool enviadoTwitter = false;
     private bool enviandoBluesky = false;
     private bool enviadoBluesky = false;
     private bool enviandoTelegram = false;
@@ -842,21 +812,6 @@ else if (noticiaTipoSeleccionada == NoticiaTipo.Despedidas)
                 }
             }
         }
-
-        enviandoTwitter = true;
-
-        try
-        {
-            enviadoTwitter = await Herramientas.RedesSociales.Twitter.Twitear(Configuracion, noticiaAñadir, dominio);
-        }
-        catch (Exception ex)
-        {
-            BaseDatos.Errores.Insertar.Mensaje("Enviar Twitter Noticia", ex);
-        }
-
-        enviandoTwitter = false;
-
-        await InvokeAsync(StateHasChanged);
 
         enviandoBluesky = true;
 

@@ -24,6 +24,7 @@
   "1621": "Musica",
   "1625": "Platform",
   "1628": "Metroidvania",
+  "1637": "Cani",
   "1638": "Cane",
   "1643": "Edificio",
   "1644": "Guida",
@@ -192,6 +193,7 @@
   "4835": "6DOF",
   "4840": "Locale per 4 giocatori",
   "4845": "Capitalismo",
+  "4852": "Billiardo",
   "4853": "Politico",
   "4878": "Parodia ",
   "4885": "Inferno di proiettili",
@@ -329,6 +331,7 @@
   "12190": "Boxe",
   "12286": "Warhammer 40K",
   "12472": "Gestione",
+  "12686": "Vampiri",
   "13070": "Solitario",
   "13190": "America",
   "13276": "Serbatoi",
@@ -424,6 +427,7 @@
   "363767": "Biliardo",
   "379975": "Cliccatore",
   "454187": "Roguelike tradizionale",
+  "507423": "Volpi",
   "552282": "Sano",
   "560542": "Incremental",
   "603297": "Hardware",
@@ -447,5 +451,6 @@
   "1199779": "Sparatutto ad estrazione",
   "1220528": "Simulazione hobbistica",
   "1254546": "Calcio (calcio)",
-  "1254552": "Calcio (americano)"
+  "1254552": "Calcio (americano)",
+  "1352486": "Capibara"
 }

@@ -24,6 +24,7 @@
   "1621": "Música",
   "1625": "Plataforma",
   "1628": "Metroidvânia",
+  "1637": "Cães",
   "1638": "Cachorro",
   "1643": "Prédio",
   "1644": "Condução",
@@ -192,6 +193,7 @@
   "4835": "6DOF",
   "4840": "4 jogadores locais",
   "4845": "Capitalismo",
+  "4852": "Bilhar",
   "4853": "Político",
   "4878": "Paródia ",
   "4885": "Inferno de bala",
@@ -329,6 +331,7 @@
   "12190": "Boxe",
   "12286": "Martelo de Guerra 40K",
   "12472": "Gerenciamento",
+  "12686": "Vampiros",
   "13070": "Solitário",
   "13190": "América",
   "13276": "Tanques",
@@ -424,6 +427,7 @@
   "363767": "Sinuca",
   "379975": "Clique",
   "454187": "Roguelike Tradicional",
+  "507423": "Raposas",
   "552282": "Saudável",
   "560542": "Incremental",
   "603297": "Hardware",
@@ -447,5 +451,6 @@
   "1199779": "Atirador de extração",
   "1220528": "Passatempo Sim",
   "1254546": "Futebol (futebol)",
-  "1254552": "Futebol (americano)"
+  "1254552": "Futebol (americano)",
+  "1352486": "Capivaras"
 }

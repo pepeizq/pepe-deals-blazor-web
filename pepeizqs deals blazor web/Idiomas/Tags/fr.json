@@ -24,6 +24,7 @@
   "1621": "Musique",
   "1625": "Plateforme",
   "1628": "Métroidvanie",
+  "1637": "Chiens",
   "1638": "Chien",
   "1643": "Bâtiment",
   "1644": "Conduite",
@@ -192,6 +193,7 @@
   "4835": "6DOF",
   "4840": "4 joueurs locaux",
   "4845": "Capitalisme",
+  "4852": "Billard",
   "4853": "Politique",
   "4878": "Parodie ",
   "4885": "L'enfer des balles",
@@ -329,6 +331,7 @@
   "12190": "Boxe",
   "12286": "Warhammer 40K",
   "12472": "Gestion",
+  "12686": "Vampires",
   "13070": "Solitaire",
   "13190": "Amérique",
   "13276": "Réservoirs",
@@ -424,6 +427,7 @@
   "363767": "Billard",
   "379975": "Cliqueur",
   "454187": "Rogue-like traditionnel",
+  "507423": "Renards",
   "552282": "Sain",
   "560542": "Incrémental avec clics",
   "603297": "Matériel",
@@ -447,5 +451,6 @@
   "1199779": "Tireur d'extraction",
   "1220528": "Sim de passe-temps",
   "1254546": "Football (Football)",
-  "1254552": "Football (américain)"
+  "1254552": "Football (américain)",
+  "1352486": "Capybaras"
 }

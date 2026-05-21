@@ -163,10 +163,6 @@
 			</div>
 
 			<div style="width: 85%; display: flex; align-items: center; gap: 20px;">
-				<button @onclick="(e => EnviarTwitter(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
-					Twitter
-				</button>
-
 				<button @onclick="(e => EnviarBlueSky(e))" class="boton-pequeño" style="width: auto; padding: 10px 20px;">
 					BlueSky
 				</button>
@@ -373,11 +369,6 @@
 	private async Task EnviarCorreoPruebaGmail(MouseEventArgs e)
 	{
 		await Herramientas.Correos.Noticias.Enviar(noticia, Configuracion["CorreosPersonales:Gmail"], "es-ES", dominio);
-	}
-
-	private async Task EnviarTwitter(MouseEventArgs e)
-	{
-		await Herramientas.RedesSociales.Twitter.Twitear(Configuracion, noticia, dominio);
 	}
 
 	private async Task EnviarBlueSky(MouseEventArgs e)
