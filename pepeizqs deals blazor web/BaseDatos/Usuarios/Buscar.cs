@@ -240,7 +240,7 @@ namespace BaseDatos.Usuarios
 				return null;
 			}
 
-			string busqueda = "SELECT IndexOption1, IndexOption2, IndexOption3, IndexOption4, IndexOption5, IndexDRMs, IndexCategories, ForumIndex, Currency FROM AspNetUsers WHERE Id=@Id";
+			string busqueda = "SELECT IndexOption1, IndexOption2, IndexOption3, IndexOption4, IndexOption5, IndexOption6, IndexDRMs, IndexCategories, ForumIndex, Currency FROM AspNetUsers WHERE Id=@Id";
 
 			try
 			{

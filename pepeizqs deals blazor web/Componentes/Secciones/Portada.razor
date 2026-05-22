@@ -888,6 +888,16 @@ else
 									@Herramientas.Idiomas.BuscarTexto(idioma, "String23", "Index")
 								</div>
 							</div>
+
+							<div style="display: flex; align-items: center; gap: 20px;">
+								<div class="checkbox-caja">
+									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosBundlesDestacados" @onchange="OcultarJuegosBundlesDestacados">
+								</div>
+
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Index")
+								</div>
+							</div>
 						</div>
 					</div>
 
@@ -1151,9 +1161,31 @@ else
 
 				#region Opciones
 
+				if (opciones.IndexOption1.HasValue == true && opciones.IndexOption1.Value == true)
+				{
+					ocultarJuegosUsuarioSteamMinimos = "checked";
+				}
+				else
+				{
+					ocultarJuegosUsuarioSteamMinimos = null;
+				}
+
+				if (opciones.IndexOption2.HasValue == true && opciones.IndexOption2.Value == true)
+				{
+					ocultarJuegosUsuarioGogMinimos = "checked";
+				}
+				else
+				{
+					ocultarJuegosUsuarioGogMinimos = null;
+				}
+
 				if (opciones.IndexOption3.HasValue == true && opciones.IndexOption3.Value == true)
 				{
 					ocultarJuegosUsuarioSteamDestacados = "checked";
+				}
+				else
+				{
+					ocultarJuegosUsuarioSteamDestacados = null;
 				}
 
 				if (opciones.IndexOption4.HasValue == true && opciones.IndexOption4.Value > 0)
@@ -1166,22 +1198,13 @@ else
 					minimoReseñasDestacados = opciones.IndexOption5.Value;
 				}
 
-				if (opciones.IndexOption1 == true)
+				if (opciones.IndexOption6.HasValue == true && opciones.IndexOption6.Value == true)
 				{
-					ocultarJuegosUsuarioSteamMinimos = "checked";
+					ocultarJuegosBundlesDestacados = "checked";
 				}
 				else
 				{
-					ocultarJuegosUsuarioSteamMinimos = null;
-				}
-
-				if (opciones.IndexOption2 == true)
-				{
-					ocultarJuegosUsuarioGogMinimos = "checked";
-				}
-				else
-				{
-					ocultarJuegosUsuarioGogMinimos = null;
+					ocultarJuegosBundlesDestacados = null;
 				}
 
 				if (string.IsNullOrEmpty(opciones.IndexDRMs) == false)
@@ -1260,7 +1283,21 @@ else
 				}
 			}
 
-			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds);
+			bool ocultarBundles = true;
+
+			if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
+			{
+				if (ocultarJuegosBundlesDestacados == "checked")
+				{
+					ocultarBundles = true;
+				}
+				else
+				{
+					ocultarBundles = false;
+				}
+			}
+
+			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds, ocultarBundles);
 
 			if (juegosDestacadosMostrar2?.Count > 0)
 			{
@@ -1484,7 +1521,21 @@ else
 								}
 							}
 
-							List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds);
+							bool ocultarBundles = true;
+
+							if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
+							{
+								if (ocultarJuegosBundlesDestacados == "checked")
+								{
+									ocultarBundles = true;
+								}
+								else
+								{
+									ocultarBundles = false;
+								}
+							}
+
+							List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds, ocultarBundles);
 
 							if (juegosDestacadosMostrar2?.Count > 0)
 							{
@@ -1848,8 +1899,6 @@ else
 	}
 
 	private string ocultarJuegosUsuarioSteamDestacados = null;
-	private string ocultarJuegosUsuarioSteamMinimos = null;
-	private string ocultarJuegosUsuarioGogMinimos = null;
 
 	private async Task OcultarJuegosUsuarioSteamDestacados()
 	{
@@ -1879,6 +1928,38 @@ else
 		}
 	}
 
+	private string ocultarJuegosBundlesDestacados = "checked";
+
+	private async Task OcultarJuegosBundlesDestacados()
+	{
+		bool valor = false;
+
+		if (ocultarJuegosBundlesDestacados == "checked")
+		{
+			ocultarJuegosBundlesDestacados = null;
+		}
+		else
+		{
+			ocultarJuegosBundlesDestacados = "checked";
+		}
+
+		if (ocultarJuegosBundlesDestacados == "checked")
+		{
+			valor = true;
+		}
+		else if (ocultarJuegosBundlesDestacados == null)
+		{
+			valor = false;
+		}
+
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption6", valor, usuarioId);
+		}
+
+		await CargarDestacados();
+	}
+
 	private async Task CambiarMinimoReseñasDestacados()
 	{
 		if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1896,6 +1977,9 @@ else
 			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption4", noticiasDias, usuarioId);
 		}
 	}
+
+	private string ocultarJuegosUsuarioSteamMinimos = null;
+	private string ocultarJuegosUsuarioGogMinimos = null;
 
 	private async Task OcultarJuegosUsuarioSteamMinimos()
 	{
@@ -2223,7 +2307,21 @@ else
 				excluirJuegosIds2.Add(juego2.Juego.Id);
 			}
 
-			List<Juegos.Juego> nuevoJuego = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 1, minimoReseñasDestacados, excluirJuegosIds2, excluirSteamIds);
+			bool ocultarBundles = true;
+
+			if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
+			{
+				if (ocultarJuegosBundlesDestacados == "checked")
+				{
+					ocultarBundles = true;
+				}
+				else
+				{
+					ocultarBundles = false;
+				}
+			}
+
+			List<Juegos.Juego> nuevoJuego = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 1, minimoReseñasDestacados, excluirJuegosIds2, excluirSteamIds, ocultarBundles);
 
 			if (nuevoJuego?.Count == 1)
 			{

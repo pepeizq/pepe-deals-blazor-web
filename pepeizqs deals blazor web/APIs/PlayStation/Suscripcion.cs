@@ -24,7 +24,7 @@ namespace APIs.PlayStation
 				DRMDefecto = JuegoDRM.PlayStation,
 				UsuarioEnlacesEspecificos = true,
 				ParaSiempre = false,
-				Precio = 16.99,
+				Precio = 18.99,
 				AdminPendientes = true,
 				TablaPendientes = "suscripcionplaystationplus",
 				SoloStreaming = true,
