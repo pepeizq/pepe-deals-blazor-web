@@ -407,6 +407,7 @@ namespace BaseDatos.Juegos
 			juego.Media = nuevoJuego.Media;
 			juego.Categorias = nuevoJuego.Categorias;
 			juego.Etiquetas = nuevoJuego.Etiquetas;
+			juego.Delistado = nuevoJuego.Delistado;
 
 			if (juego.Idiomas == null)
 			{
@@ -453,7 +454,8 @@ namespace BaseDatos.Juegos
 					fechaSteamAPIComprobacion=@fechaSteamAPIComprobacion,
 					idiomas=@idiomas,
 					deck=@deck,
-					steamOS=@steamOS
+					steamOS=@steamOS,
+					delistado=@delistado
 					{columnasAnalisis}
 				WHERE id=@id;";
 
@@ -475,6 +477,7 @@ namespace BaseDatos.Juegos
 						idiomas = JsonSerializer.Serialize(juego.Idiomas),
 						deck = juego.Deck,
 						steamOS = juego.SteamOS,
+						delistado = juego.Delistado,
 						analisis = paramReseñas
 					}, transaction: sentencia);
 				});

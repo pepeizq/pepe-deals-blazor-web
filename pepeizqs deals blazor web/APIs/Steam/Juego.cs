@@ -66,6 +66,7 @@ namespace APIs.Steam
 							List<Juegos.JuegoIdioma> idiomas = new List<Juegos.JuegoIdioma>();
 							Juegos.JuegoPrecio precio = null;
 							int idMaestro = 0;
+							bool delistado = false;
 
 							#region Nombre
 
@@ -622,6 +623,15 @@ namespace APIs.Steam
 
 							#endregion
 
+							#region Delistado
+
+							if (juegoApi.Delistado == true)
+							{
+								delistado = true;
+							}
+
+							#endregion
+
 							Juegos.Juego juego = new Juegos.Juego
 							{
 								IdSteam = int.Parse(id),
@@ -633,7 +643,8 @@ namespace APIs.Steam
 								FreeToPlay = freeToPlay.ToString(),
 								Tipo = tipo,
 								MayorEdad = "false",
-								Analisis = reseñas
+								Analisis = reseñas,
+								Delistado = delistado
 							};
 
 							if (tipo == Juegos.JuegoTipo.DLC || tipo == Juegos.JuegoTipo.Music)
@@ -1094,6 +1105,9 @@ namespace APIs.Steam
 
 		[JsonPropertyName("is_early_access")]
 		public bool AccesoAnticipado { get; set; }
+
+		[JsonPropertyName("unlisted")]
+		public bool Delistado { get; set; }
 
 		[JsonPropertyName("assets")]
 		public SteamJuegoAPI2JuegoImagenes Imagenes { get; set; }

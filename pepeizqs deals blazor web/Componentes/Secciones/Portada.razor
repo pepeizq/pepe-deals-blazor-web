@@ -1271,33 +1271,38 @@ else
 
 	#region Inicio 
 
+	private async Task<List<Juegos.Juego>> CargarJuegosDestacados(int cantidad = 6)
+	{
+		if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamDestacados) == false)
+		{
+			if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
+			{
+				excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+			}
+		}
+
+		bool ocultarBundles = true;
+
+		if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
+		{
+			if (ocultarJuegosBundlesDestacados == "checked")
+			{
+				ocultarBundles = true;
+			}
+			else
+			{
+				ocultarBundles = false;
+			}
+		}
+
+		return await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, cantidad, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds, ocultarBundles);
+	}
+
 	private async Task CargarDestacados()
 	{
 		if (juegosDestacadosMostrar == null || juegosDestacadosMostrar?.Count == 0)
 		{
-			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamDestacados) == false)
-			{
-				if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
-				{
-					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
-				}
-			}
-
-			bool ocultarBundles = true;
-
-			if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
-			{
-				if (ocultarJuegosBundlesDestacados == "checked")
-				{
-					ocultarBundles = true;
-				}
-				else
-				{
-					ocultarBundles = false;
-				}
-			}
-
-			List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds, ocultarBundles);
+			List<Juegos.Juego> juegosDestacadosMostrar2 = await CargarJuegosDestacados(6);
 
 			if (juegosDestacadosMostrar2?.Count > 0)
 			{
@@ -1513,29 +1518,7 @@ else
 						{
 							juegosDestacadosMostrar.Clear();
 
-							if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamDestacados) == false)
-							{
-								if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
-								{
-									excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
-								}
-							}
-
-							bool ocultarBundles = true;
-
-							if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
-							{
-								if (ocultarJuegosBundlesDestacados == "checked")
-								{
-									ocultarBundles = true;
-								}
-								else
-								{
-									ocultarBundles = false;
-								}
-							}
-
-							List<Juegos.Juego> juegosDestacadosMostrar2 = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 6, minimoReseñasDestacados, excluirJuegosIds, excluirSteamIds, ocultarBundles);
+							List<Juegos.Juego> juegosDestacadosMostrar2 = await CargarJuegosDestacados(6);
 
 							if (juegosDestacadosMostrar2?.Count > 0)
 							{
@@ -2300,28 +2283,12 @@ else
 
 			excluirJuegosIds.Add(juego.Juego.Id);
 
-			List<int> excluirJuegosIds2 = excluirJuegosIds;
-
 			foreach (var juego2 in juegosDestacadosMostrar)
 			{
-				excluirJuegosIds2.Add(juego2.Juego.Id);
+				excluirJuegosIds.Add(juego2.Juego.Id);
 			}
 
-			bool ocultarBundles = true;
-
-			if (string.IsNullOrEmpty(ocultarJuegosBundlesDestacados) == false)
-			{
-				if (ocultarJuegosBundlesDestacados == "checked")
-				{
-					ocultarBundles = true;
-				}
-				else
-				{
-					ocultarBundles = false;
-				}
-			}
-
-			List<Juegos.Juego> nuevoJuego = await BaseDatos.Portada.Buscar.Destacados(usuarioRegion, 1, minimoReseñasDestacados, excluirJuegosIds2, excluirSteamIds, ocultarBundles);
+			List<Juegos.Juego> nuevoJuego = await CargarJuegosDestacados(1);
 
 			if (nuevoJuego?.Count == 1)
 			{
