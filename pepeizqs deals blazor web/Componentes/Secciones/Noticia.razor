@@ -14,6 +14,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject NavigationManager Navegacion
 
 @if (noticia != null)
 {
@@ -793,13 +794,17 @@
 				noticiaAnterior ??= await BaseDatos.Noticias.Buscar.UnaNoticia(id - 1);
 				noticiaPosterior ??= await BaseDatos.Noticias.Buscar.UnaNoticia(id + 1);
 			}
+			else
+			{
+				Navegacion.NavigateTo("/", true);
+			}
 		}
 	}
 
 	private Bundles2.Bundle bundleCache;
 
 	private List<Juegos.JuegoGratis> juegosGratisCache = new();
-    private Dictionary<int, Juegos.Juego> juegosCache1 = new();
+	private Dictionary<int, Juegos.Juego> juegosCache1 = new();
 
 	private List<Juegos.JuegoSuscripcion> juegosSuscripcionesCache = new();
 	private Dictionary<int, Juegos.Juego> juegosCache2 = new();
@@ -808,59 +813,62 @@
 	{
 		bundleCache = null;
 
-		if (noticia.BundleId > 0)
+		if (noticia != null)
 		{
-			bundleCache = await BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
-		}
-
-		juegosGratisCache.Clear();
-		juegosCache1.Clear();
-
-		if (!string.IsNullOrEmpty(noticia.GratisIds))
-		{
-			var ids = Herramientas.Listados.Generar(noticia.GratisIds);
-
-			foreach (var id in ids)
+			if (noticia.BundleId > 0)
 			{
-				var gratis = await BaseDatos.Gratis.Buscar.UnGratis(id);
-				if (gratis != null)
-				{
-					juegosGratisCache.Add(gratis);
-
-					if (gratis.JuegoId > 0 && !juegosCache1.ContainsKey(gratis.JuegoId))
-					{
-						var juego = await BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
-						juegosCache1[gratis.JuegoId] = juego;
-					}
-				}
+				bundleCache = await BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
 			}
-		}
 
-		juegosSuscripcionesCache.Clear();
-		juegosCache2.Clear();
+			juegosGratisCache.Clear();
+			juegosCache1.Clear();
 
-		if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
-		{
-			var ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
-
-			foreach (var idStr in ids)
+			if (string.IsNullOrEmpty(noticia.GratisIds) == false)
 			{
-				if (int.TryParse(idStr, out var id))
-				{
-					var suscripcion = await BaseDatos.Suscripciones.Buscar.Id(id);
-					if (suscripcion != null)
-					{
-						juegosSuscripcionesCache.Add(suscripcion);
+				var ids = Herramientas.Listados.Generar(noticia.GratisIds);
 
-						if (juegosCache2.ContainsKey(suscripcion.JuegoId) == false)
+				foreach (var id in ids)
+				{
+					var gratis = await BaseDatos.Gratis.Buscar.UnGratis(id);
+					if (gratis != null)
+					{
+						juegosGratisCache.Add(gratis);
+
+						if (gratis.JuegoId > 0 && !juegosCache1.ContainsKey(gratis.JuegoId))
 						{
-							var juego = await BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
-							juegosCache2[suscripcion.JuegoId] = juego;
+							var juego = await BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
+							juegosCache1[gratis.JuegoId] = juego;
 						}
 					}
 				}
 			}
-		}
+
+			juegosSuscripcionesCache.Clear();
+			juegosCache2.Clear();
+
+			if (string.IsNullOrEmpty(noticia.SuscripcionesIds) == false)
+			{
+				var ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
+
+				foreach (var idStr in ids)
+				{
+					if (int.TryParse(idStr, out var id))
+					{
+						var suscripcion = await BaseDatos.Suscripciones.Buscar.Id(id);
+						if (suscripcion != null)
+						{
+							juegosSuscripcionesCache.Add(suscripcion);
+
+							if (juegosCache2.ContainsKey(suscripcion.JuegoId) == false)
+							{
+								var juego = await BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
+								juegosCache2[suscripcion.JuegoId] = juego;
+							}
+						}
+					}
+				}
+			}
+		}	
 	}
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)

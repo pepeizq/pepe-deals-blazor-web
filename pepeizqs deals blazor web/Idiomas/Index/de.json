@@ -33,5 +33,7 @@
   "String30": "Soundtracks",
   "String31": "Software",
   "String32": "Minimum Bewertungen auf Steam",
-  "String33": "Spiele, die in mindestens einem Bundle in den letzten 6 Monaten waren"
+  "String33": "Spiele, die in den letzten {0} Monaten in mindestens einem Bundle für Steam enthalten waren",
+  "String34": "Spiele, die kostenlos bei Steam (oder für Steam in einem anderen Store) beansprucht werden könnten",
+  "String35": "Spiele, die in den letzten {0} Monaten ein Steam-Abonnement hatten"
 }

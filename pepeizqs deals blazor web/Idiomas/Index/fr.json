@@ -33,5 +33,7 @@
   "String30": "Bandes sonores",
   "String31": "Logiciel",
   "String32": "Minimum d'avis sur Steam",
-  "String33": "Jeux qui ont été dans au moins un bundle dans les 6 derniers mois"
+  "String33": "Jeux faisant partie d'au moins un bundle pour Steam au cours des {0} derniers mois",
+  "String34": "Jeux pouvant être réclamés gratuitement sur Steam (ou pour Steam dans un autre magasin)",
+  "String35": "Jeux bénéficiant d'un abonnement à Steam au cours des {0} derniers mois"
 }

@@ -13,19 +13,19 @@ namespace Herramientas.Redireccionador
 		{
 			Noticia noticia = await global::BaseDatos.Noticias.Buscar.UnaNoticia(id);
 
-			if (string.IsNullOrEmpty(noticia.Enlace) == false)
+			if (string.IsNullOrEmpty(noticia?.Enlace) == false)
 			{
 				if (noticia.NoticiaTipo == NoticiaTipo.Bundles)
 				{
-					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.BundleTipo, false, false));
+					return Redirect(EnlaceAcortador.Generar(noticia.Enlace, noticia.BundleTipo, false, false));
 				}
 				else if (noticia.NoticiaTipo == NoticiaTipo.Gratis)
 				{
-					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.GratisTipo, false, false));
+					return Redirect(EnlaceAcortador.Generar(noticia.Enlace, noticia.GratisTipo, false, false));
 				}
 				else if (noticia.NoticiaTipo == NoticiaTipo.Suscripciones)
 				{
-					return Redirect(Herramientas.EnlaceAcortador.Generar(noticia.Enlace, noticia.SuscripcionTipo, false, false));
+					return Redirect(EnlaceAcortador.Generar(noticia.Enlace, noticia.SuscripcionTipo, false, false));
 				}
 				else
 				{
@@ -33,7 +33,7 @@ namespace Herramientas.Redireccionador
 				}
 			}
 
-			return Redirect("~/news/" + id.ToString() + "/");
+			return Redirect("/");
 		}
 	}
 }

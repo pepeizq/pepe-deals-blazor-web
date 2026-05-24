@@ -1,4 +1,4 @@
-﻿// v1.0.12
+﻿// v1.0.14
 
 const CACHE_NAME = 'pepesdeals-v1';
 const STATIC_CACHE = [
@@ -14,7 +14,12 @@ self.addEventListener('install', event => {
             .then(cache => {
                 return cache.addAll(STATIC_CACHE);
             })
-            .then(() => self.skipWaiting())
+            .then(() => {
+                return self.skipWaiting();
+            })
+            .catch(err => {
+                console.error('Error en install:', err);
+            })
     );
 });
 
@@ -65,7 +70,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
         fetch(request)
             .then(response => {
-                if (response.status === 200) {
+                if (response.status === 200 && request.method === 'GET') {
                     const responseClone = response.clone();
                     caches.open(CACHE_NAME).then(cache => {
                         cache.put(request, responseClone);
@@ -74,7 +79,10 @@ self.addEventListener('fetch', event => {
                 return response;
             })
             .catch(() => {
-                return caches.match(request);
+                if (request.method === 'GET') {
+                    return caches.match(request);
+                }
+                throw new Error('Network request failed');
             })
     );
 });

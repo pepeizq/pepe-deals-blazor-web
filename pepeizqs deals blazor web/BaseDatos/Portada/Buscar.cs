@@ -75,7 +75,7 @@ AND (
 			return null;
 		}
 
-		public static async Task<List<Juego>> Destacados(TiendaRegion region, int cantidadJuegos, int minimoReseñas, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, bool ocultarBundles = true)
+		public static async Task<List<Juego>> Destacados(TiendaRegion region, int cantidadJuegos, int minimoReseñas, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, bool ocultarBundles = true, int ocultarBundlesCantidad = 6, bool ocultarGratis = true, bool ocultarSuscripciones = true, int ocultarSuscripcionesCantidad = 6)
 		{
 			string tabla = "seccionMinimos";
 
@@ -123,17 +123,10 @@ AND (
 					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) <= 2020 AND
 					 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate()))
 				) AND 
-				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= {minimoReseñas} AND 
-				{(ocultarBundles == true ? "NOT EXISTS (SELECT 1 FROM bundles b INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id WHERE bj.JuegoId = j.idMaestra AND b.fechaTermina > DATEADD(MONTH, -6, GETDATE())) AND" : "")} 
-				NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = j.idMaestra AND gratis.DRM = 0) AND 
-				NOT EXISTS (
-					SELECT 1 
-					FROM suscripciones 
-					WHERE suscripciones.juegoId = j.idMaestra 
-					AND suscripciones.DRM = 0
-					AND suscripciones.fechaTermina > DATEADD(MONTH, -6, GETDATE())
-				) 
-				) AND 
+				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= {minimoReseñas}) AND 
+				{(ocultarBundles == true ? $"NOT EXISTS (SELECT 1 FROM bundles b INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id WHERE bj.JuegoId = j.idMaestra AND b.fechaTermina > DATEADD(MONTH, -{ocultarBundlesCantidad}, GETDATE())) AND " : "")} 
+				{(ocultarGratis == true ? "NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = j.idMaestra AND gratis.DRM = 0) AND " : "")}
+				{(ocultarSuscripciones == true ? @$"NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = j.idMaestra AND suscripciones.DRM = 0 AND suscripciones.fechaTermina > DATEADD(MONTH, -{ocultarSuscripcionesCantidad}, GETDATE())) AND " : "")}
 				(j.ocultarPortada IS NULL OR j.ocultarPortada = 'false') 
 				ORDER BY NEWID()";
 
