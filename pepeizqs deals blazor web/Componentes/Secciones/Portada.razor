@@ -878,13 +878,13 @@ else
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 20px;">
 				@if (mostrarPestañaDestacados == true)
 				{
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+					<div style="border-radius: 10px;">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 							@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Index")
 						</div>
 
-						<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-							<div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+						<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px;  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteamDestacados" @onchange="OcultarJuegosUsuarioSteamDestacados">
 								</div>
@@ -894,7 +894,7 @@ else
 								</div>
 							</div>
 
-							<div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosBundlesDestacados" @onchange="OcultarJuegosBundlesDestacados">
 								</div>
@@ -920,7 +920,7 @@ else
 								}
 							</div>
 
-							<div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosGratisDestacados" @onchange="OcultarJuegosGratisDestacados">
 								</div>
@@ -930,7 +930,7 @@ else
 								</div>
 							</div>
 
-							<div style="display: flex; align-items: center; gap: 20px;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosSuscripcionesDestacados" @onchange="OcultarJuegosSuscripcionesDestacados">
 								</div>
@@ -958,15 +958,23 @@ else
 						</div>
 					</div>
 
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Index")
+					<div style="border-radius: 10px;">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String36", "Index")
 						</div>
 
-						<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-							<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-								<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-									<input type="range" min="1000" max="5000" step="1000" list="minimoresenas" @bind-value="minimoReseñasDestacados" @bind-value:event="oninput" @bind-value:after="CambiarMinimoReseñasDestacados" style="width: 100%;" />
+						<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+								<div style="width: 100%;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Index")
+								</div>
+
+								<div>
+									@minimoReseñasDestacados
+								</div>
+
+								<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+									<input type="range" min="1000" max="5000" step="1000" list="minimoresenas" @bind-value="minimoReseñasDestacados" @bind-value:event="oninput" @bind-value:after="CambiarMinimoReseñasDestacados" />
 
 									<datalist id="minimoresenas">
 										<option value="1000" label="1000"></option>
@@ -976,10 +984,6 @@ else
 										<option value="5000" label="5000"></option>
 									</datalist>
 								</div>
-
-								<div style="width: 20%; text-align: center;">
-									@minimoReseñasDestacados
-								</div>
 							</div>
 						</div>
 					</div>
@@ -987,15 +991,15 @@ else
 				
 				@if (mostrarPestañaNoticias == true)
 				{
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Index")
+					<div style="border-radius: 10px;">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Index") (@noticiasDias)
 						</div>
 
-						<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-							<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-								<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-									<input type="range" min="1" max="7" step="1" list="diasnoticias" @bind-value="noticiasDias" @bind-value:event="oninput" @bind-value:after="CambiarNoticiasDias" style="width: 100%;" />
+						<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+								<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+									<input type="range" min="1" max="7" step="1" list="diasnoticias" @bind-value="noticiasDias" @bind-value:event="oninput" @bind-value:after="CambiarNoticiasDias" />
 
 									<datalist id="diasnoticias">
 										<option value="1" label="1"></option>
@@ -1007,20 +1011,8 @@ else
 										<option value="7" label="7"></option>
 									</datalist>
 								</div>
-
-								<div style="width: 20%; text-align: center;">
-									@noticiasDias
-								</div>
-							</div>
-
-							<div style="display: flex; align-items: center; gap: 15px;">
-								<div style="width: 24px; height: 24px; flex-shrink: 0;">
-									<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-										<path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM288 224C288 206.3 302.3 192 320 192C337.7 192 352 206.3 352 224C352 241.7 337.7 256 320 256C302.3 256 288 241.7 288 224zM280 288L328 288C341.3 288 352 298.7 352 312L352 400L360 400C373.3 400 384 410.7 384 424C384 437.3 373.3 448 360 448L280 448C266.7 448 256 437.3 256 424C256 410.7 266.7 400 280 400L304 400L304 336L280 336C266.7 336 256 325.3 256 312C256 298.7 266.7 288 280 288z" />
-									</svg>
-								</div>
-
-								<div style="font-size: 14px;">
+								
+								<div style="width: 100%; font-size: 14px;">
 									@Herramientas.Idiomas.BuscarTexto(idioma, "String27", "Index")
 								</div>
 							</div>
@@ -1030,13 +1022,13 @@ else
 				
 				@if (mostrarPestañaMinimos == true)
 				{
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+					<div style="border-radius: 10px;">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 							@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Index")
 						</div>
 
-						<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-							<div style="display: flex; align-items: center; gap: 20px;">
+						<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioSteamMinimos" @onchange="OcultarJuegosUsuarioSteamMinimos">
 								</div>
@@ -1046,7 +1038,7 @@ else
 								</div>
 							</div>
 
-							<div style="display: flex; align-items: center; gap: 20px;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
 								<div class="checkbox-caja">
 									<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuarioGogMinimos" @onchange="OcultarJuegosUsuarioGog">
 								</div>
@@ -1058,85 +1050,124 @@ else
 						</div>
 					</div>
 
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Index")
+					<div style="border-radius: 10px;">
+						<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String36", "Index")
 						</div>
 
-						<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 20px;">
-							@foreach (var drm in drms)
-							{
-								string iconoDRM = string.Empty;
-								string nombreDRM = string.Empty;
+						<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+								<div style="width: 100%;">
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String32", "Index")
+								</div>
 
-								foreach (var drm2 in JuegoDRM2.GenerarListado())
-								{
-									if (drm2.Id == drm.DRMId)
-									{
-										iconoDRM = drm2.Imagen;
-										nombreDRM = drm2.Nombre;
-									}
-								}
+								<div>
+									@minimoReseñasMinimos
+								</div>
 
-								<div style="display: flex; align-items: center;" title="@nombreDRM">
-									<div class="checkbox-caja">
-										<input type="checkbox" class="checkbox-interior" checked="@drm.Checkbox" @onchange="@(e => EnseñarJuegosDRM(e, drm.DRMId))">
-									</div>
+								<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+									<input type="range" min="100" max="1000" step="100" list="minimoresenas" @bind-value="minimoReseñasMinimos" @bind-value:event="oninput" @bind-value:after="CambiarMinimoReseñasMinimos" />
 
-									@if (drm.DRMId != JuegoDRM.DRMFree)
+									<datalist id="minimoresenas">
+										<option value="100" label="100"></option>
+										<option value="200" label="200"></option>
+										<option value="300" label="300"></option>
+										<option value="400" label="400"></option>
+										<option value="500" label="500"></option>
+										<option value="600" label="600"></option>
+										<option value="700" label="700"></option>
+										<option value="800" label="800"></option>
+										<option value="900" label="900"></option>
+										<option value="1000" label="1000"></option>
+									</datalist>
+								</div>
+							</div>
+
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; flex-direction: column; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Index")
+								</div>
+
+								<hr/>
+
+								<div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px;">
+									@foreach (var drm in drms)
 									{
-										<div style="margin-left: 20px;">
-											<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px;" title="@nombreDRM" loading="lazy" />
-										</div>
-									}
-									else
-									{
-										<div style="margin-left: 20px;">
-											<label style="font-size: 10px; max-width: 24px; text-align: center;">@nombreDRM</label>
+										string iconoDRM = string.Empty;
+										string nombreDRM = string.Empty;
+
+										foreach (var drm2 in JuegoDRM2.GenerarListado())
+										{
+											if (drm2.Id == drm.DRMId)
+											{
+												iconoDRM = drm2.Imagen;
+												nombreDRM = drm2.Nombre;
+											}
+										}
+
+										<div style="display: flex; align-items: center;" title="@nombreDRM">
+											<div class="checkbox-caja">
+												<input type="checkbox" class="checkbox-interior" checked="@drm.Checkbox" @onchange="@(e => EnseñarJuegosDRM(e, drm.DRMId))">
+											</div>
+
+											@if (drm.DRMId != JuegoDRM.DRMFree)
+											{
+												<div style="margin-left: 20px;">
+													<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px;" title="@nombreDRM" loading="lazy" />
+												</div>
+											}
+											else
+											{
+												<div style="margin-left: 20px;">
+													<label style="font-size: 10px; max-width: 24px; text-align: center;">@nombreDRM</label>
+												</div>
+											}
 										</div>
 									}
 								</div>
-							}
-						</div>
-					</div>
+							</div>
 
-					<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-						<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Index")
-						</div>
-
-						<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 20px;">
-							@foreach (var categoria in categorias)
-							{
-								string nombreCategoria = string.Empty;
-
-								if (categoria.Categoria == JuegoTipo.Game)
-								{
-									nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String28", "Index");
-								}
-								else if (categoria.Categoria == JuegoTipo.DLC)
-								{
-									nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Index");
-								}
-								else if (categoria.Categoria == JuegoTipo.Music)
-								{
-									nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String30", "Index");
-								}
-								else if (categoria.Categoria == JuegoTipo.Software)
-								{
-									nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Index");
-								}
-
-								<div style="display: flex; align-items: center;" title="@nombreCategoria">
-									<div class="checkbox-caja">
-										<input type="checkbox" class="checkbox-interior" checked="@categoria.Checkbox" @onchange="@(e => EnseñarJuegosCategoria(e, categoria.Categoria))">
-									</div>
-
-									<div style="margin-left: 15px;">
-										<label style="font-size: 14px;">@nombreCategoria</label>
-									</div>
+							<div style="background-color: var(--fondoSubsubcabecera); display: flex; flex-direction: column; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+								<div>
+									@Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Index")
 								</div>
-							}
+
+								<hr/>
+
+								<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+									@foreach (var categoria in categorias)
+									{
+										string nombreCategoria = string.Empty;
+
+										if (categoria.Categoria == JuegoTipo.Game)
+										{
+											nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String28", "Index");
+										}
+										else if (categoria.Categoria == JuegoTipo.DLC)
+										{
+											nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Index");
+										}
+										else if (categoria.Categoria == JuegoTipo.Music)
+										{
+											nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String30", "Index");
+										}
+										else if (categoria.Categoria == JuegoTipo.Software)
+										{
+											nombreCategoria = Herramientas.Idiomas.BuscarTexto(idioma, "String31", "Index");
+										}
+
+										<div style="display: flex; align-items: center;" title="@nombreCategoria">
+											<div class="checkbox-caja">
+												<input type="checkbox" class="checkbox-interior" checked="@categoria.Checkbox" @onchange="@(e => EnseñarJuegosCategoria(e, categoria.Categoria))">
+											</div>
+
+											<div style="margin-left: 15px;">
+												<label style="font-size: 14px;">@nombreCategoria</label>
+											</div>
+										</div>
+									}
+								</div>
+							</div>
 						</div>
 					</div>
 				}			
@@ -1266,17 +1297,17 @@ else
 
 				if (opciones.IndexOption7.HasValue == true)
 				{
-                    cantidadMesesOcultarBundlesDestacados = opciones.IndexOption7.Value;
+					cantidadMesesOcultarBundlesDestacados = opciones.IndexOption7.Value;
 				}
 
-                if (opciones.IndexOption8.HasValue == true && opciones.IndexOption8.Value == true)
-                {
-                    ocultarJuegosGratisDestacados = "checked";
-                }
-                else
-                {
-                    ocultarJuegosGratisDestacados = null;
-                }
+				if (opciones.IndexOption8.HasValue == true && opciones.IndexOption8.Value == true)
+				{
+					ocultarJuegosGratisDestacados = "checked";
+				}
+				else
+				{
+					ocultarJuegosGratisDestacados = null;
+				}
 
 				if (opciones.IndexOption9.HasValue == true && opciones.IndexOption9.Value == true)
 				{
@@ -1290,6 +1321,11 @@ else
 				if (opciones.IndexOption10.HasValue == true)
 				{
 					cantidadMesesOcultarSuscripcionesDestacados = opciones.IndexOption10.Value;
+				}
+
+				if (opciones.IndexOption11.HasValue == true)
+				{
+					minimoReseñasMinimos = opciones.IndexOption11.Value;
 				}
 
 				if (string.IsNullOrEmpty(opciones.IndexDRMs) == false)
@@ -1535,7 +1571,7 @@ else
 
 	private async Task CargarMinimos()
 	{
-		await Filtros();
+		await FiltrarListaMinimos();
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -1717,6 +1753,7 @@ else
 
 	private int posicionJuegosMinimos = 0;
 	private bool cargandoMasMinimos = false;
+    private int minimoReseñasMinimos = 100;
 
 	private async Task GenerarListaMinimos(bool fusionar = false)
 	{
@@ -1768,33 +1805,33 @@ else
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 99, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 99, excluirJuegosIds, excluirSteamIds, excluirGogIds));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 0, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds));
 				}				
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Populares)
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 99, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 99, excluirJuegosIds, excluirSteamIds, excluirGogIds));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 1, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds));
 				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Lanzamientos)
 			{
 				if (fusionar == false)
 				{
-					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+					juegosMinimosGestor = await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 				}
 				else
 				{
-					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, 29, excluirJuegosIds, excluirSteamIds, excluirGogIds));
+					juegosMinimosGestor.AddRange(await BaseDatos.Portada.Buscar.Minimos(usuarioRegion, 2, posicionJuegosMinimos, categoriasNumeros, drmsNumeros, minimoReseñasMinimos, excluirJuegosIds, excluirSteamIds, excluirGogIds));
 				}
 			}
 			else if (tipoSeleccionadoMinimos == MinimosTipo.Proximamente)
@@ -1814,7 +1851,7 @@ else
 
 		posicionJuegosMinimos = posicionJuegosMinimos + 100;
 
-		await Filtros(true);
+		await FiltrarListaMinimos(true);
 
 		cargandoMasMinimos = false;
 	}
@@ -1832,7 +1869,7 @@ else
 
 			if (cronometroMinimosContador >= limite)
 			{
-				await Filtros();
+				await FiltrarListaMinimos();
 
 				cronometroMinimosContador = 0;
 			}
@@ -1843,7 +1880,7 @@ else
 	{
 		tipoSeleccionadoMinimos = nuevoTipo;
 
-		await Filtros();
+		await FiltrarListaMinimos();
 	}
 
 	private string CambiarEstilo(MinimosTipo nuevoTipo)
@@ -1886,7 +1923,7 @@ else
 		Proximamente
 	}
 
-	private async Task Filtros(bool fusionar = false)
+	private async Task FiltrarListaMinimos(bool fusionar = false)
 	{
 		await GenerarListaMinimos(fusionar);
 
@@ -2198,7 +2235,7 @@ else
 			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption1", valor, usuarioId);
 		}
 
-		await Filtros();
+		await FiltrarListaMinimos();
 	}
 
 	private async Task OcultarJuegosUsuarioGog()
@@ -2228,7 +2265,17 @@ else
 			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption2", valor, usuarioId);
 		}	
 
-		await Filtros();
+		await FiltrarListaMinimos();
+	}
+
+	private async Task CambiarMinimoReseñasMinimos()
+	{
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			await BaseDatos.Usuarios.Actualizar.Opcion("IndexOption11", minimoReseñasMinimos, usuarioId);
+		}
+
+		await FiltrarListaMinimos();
 	}
 
 	private async Task EnseñarJuegosDRM(ChangeEventArgs e, JuegoDRM drmElegido)
@@ -2255,7 +2302,7 @@ else
 			await BaseDatos.Usuarios.Actualizar.Opcion("IndexDRMs", JsonSerializer.Serialize(drms), usuarioId);
 		}
 
-		await Filtros();
+		await FiltrarListaMinimos();
 	}
 
 	private List<MostrarJuegoDRM> drms = CrearListaDRMs();
@@ -2314,7 +2361,7 @@ else
 			await BaseDatos.Usuarios.Actualizar.Opcion("IndexCategories", JsonSerializer.Serialize(categorias), usuarioId);
 		}
 
-		await Filtros();
+		await FiltrarListaMinimos();
 	}
 
 	private List<MostrarJuegoCategoria> categorias = CrearListaCategorias();

@@ -21,7 +21,7 @@
   "String18": "Juegos Destacados",
   "String19": "Mínimos Históricos",
   "String20": "Ocultar",
-  "String21": "DRMs",
+  "String21": "Plataformas (o DRMs)",
   "String22": "Categorías",
   "String23": "Juegos que tienes en Steam",
   "String24": "Juegos que tienes en GOG",
@@ -32,8 +32,9 @@
   "String29": "DLCs",
   "String30": "Bandas Sonoras",
   "String31": "Software",
-  "String32": "Mínimo reseñas en Steam",
+  "String32": "Número mínimo de reseñas en Steam",
   "String33": "Juegos que han estado en al menos un bundle para Steam en los últimos {0} meses",
   "String34": "Juegos que se han podido reclamar gratis en Steam (o para Steam en otra tienda)",
-  "String35": "Juegos que han estado en una suscripción para Steam en los últimos {0} meses"
+  "String35": "Juegos que han estado en una suscripción para Steam en los últimos {0} meses",
+  "String36": "Filtrar"
 }

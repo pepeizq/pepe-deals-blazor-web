@@ -21,7 +21,7 @@
   "String18": "Giochi in evidenza",
   "String19": "Minimi storici",
   "String20": "Nascondere",
-  "String21": "DRM",
+  "String21": "Piattaforme (o DRM)",
   "String22": "Categorie",
   "String23": "Giochi che hai su Steam",
   "String24": "Giochi che hai su GOG",
@@ -32,8 +32,9 @@
   "String29": "DLCs",
   "String30": "Bande sonore",
   "String31": "Software",
-  "String32": "Recensioni minime su Steam",
+  "String32": "Numero minimo di recensioni su Steam",
   "String33": "Giochi presenti in almeno un bundle per Steam negli ultimi {0} mesi",
   "String34": "Giochi che potrebbero essere richiesti gratuitamente su Steam (o per Steam in un altro negozio)",
-  "String35": "Giochi con abbonamento a Steam negli ultimi {0} mesi"
+  "String35": "Giochi con abbonamento a Steam negli ultimi {0} mesi",
+  "String36": "Filtro"
 }

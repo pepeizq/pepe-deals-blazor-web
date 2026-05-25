@@ -21,7 +21,7 @@
   "String18": "Featured Games",
   "String19": "Historical Lows",
   "String20": "Hide",
-  "String21": "DRMs",
+  "String21": "Platforms (or DRMs)",
   "String22": "Categories",
   "String23": "Games you have on Steam",
   "String24": "Games you have on GOG",
@@ -32,8 +32,9 @@
   "String29": "DLCs",
   "String30": "Soundtracks",
   "String31": "Software",
-  "String32": "Minimum reviews on Steam",
+  "String32": "Minimum number of reviews on Steam",
   "String33": "Games that have been in at least one bundle for Steam in the last {0} months",
   "String34": "Games that could be claimed for free on Steam (or for Steam in another store)",
-  "String35": "Games that have been on a subscription for Steam in the last {0} months"
+  "String35": "Games that have been on a subscription for Steam in the last {0} months",
+  "String36": "Filter"
 }

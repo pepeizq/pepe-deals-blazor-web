@@ -314,7 +314,7 @@ app.Use(async (contexto, siguiente) =>
 
 	HashSet<string> extensiones = new()
 	{
-		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", ".php", "/en/", "/es/"
+		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", "/ads.txt", ".php", "/en/", "/es/"
 	};
 
 	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true)
@@ -341,14 +341,6 @@ app.Use(async (contexto, siguiente) =>
 		return;
 	}
 
-	// Evitar peticiones a recursos que no existen
-	if (contexto.Response.StatusCode == 404 && (ruta.Contains("/imagenes/") == true ||  ruta.StartsWith("/lib/") == true ||
-												ruta.StartsWith("/css/") == true || ruta.StartsWith("/js/") == true))
-	{
-		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
-		contexto.Response.Headers.Location = "/";
-	}
-
 	// Redireccionar www a no-www
 	string host = contexto.Request.Host.Host;
 
@@ -370,6 +362,15 @@ app.Use(async (contexto, siguiente) =>
 	try
 	{
 		await siguiente();
+
+		// Evitar peticiones a recursos que no existen despues de enviar una peticion
+		if (contexto.Response.StatusCode == 404 && (ruta.Contains("/imagenes/") == true || ruta.StartsWith("/lib/") == true ||
+													ruta.StartsWith("/css/") == true || ruta.StartsWith("/js/") == true ||
+													(ruta == "/news" && contexto.Request.Query.ContainsKey("id") == true)))
+		{
+			contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+			contexto.Response.Headers.Location = "/";
+		}
 	}
 	catch (Exception ex)
 	{

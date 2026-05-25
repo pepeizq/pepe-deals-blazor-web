@@ -213,6 +213,10 @@ public class Usuario : IdentityUser
 	public int? IndexOption10 { get; set; }
 
 	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? IndexOption11 { get; set; }
+
+	[PersonalData]
 	[Column(TypeName = "nvarchar(max)")]
 	public string? IndexDRMs { get; set; }
 

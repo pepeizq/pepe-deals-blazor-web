@@ -3330,13 +3330,13 @@
 			</div>
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
-                <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-                    <div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+                <div style="border-radius: 10px;">
+                    <div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
                         @Herramientas.Idiomas.BuscarTexto(idioma, "String126", "Game")
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-                        <div style="display: flex; align-items: center; gap: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    <div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesIdiomas == true ? "checked" : null)" @onchange="EnseñarOpcionesIdiomas">
                             </div>
@@ -3399,7 +3399,7 @@
                             }                     
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGeforceNow == true ? "checked" : null)" @onchange="EnseñarGeforceNow">
                             </div>
@@ -3409,7 +3409,7 @@
                             </div>
                         </div>
 
-                         <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesBoosteroid == true ? "checked" : null)" @onchange="EnseñarBoosteroid">
                             </div>
@@ -3421,13 +3421,13 @@
                     </div>
                 </div>
 
-                <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+                <div style="border-radius: 10px;">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String124", "Game")
 					</div>
 					
-					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-						<div style="display: flex; align-items: center; gap: 20px;">
+					<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamLogros == true ? "checked" : null)" @onchange="EnseñarSteamLogros">
 							</div>
@@ -3437,7 +3437,7 @@
 							</div>
 						</div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamGuardadoNube == true ? "checked" : null)" @onchange="EnseñarSteamGuardadoNube">
 							</div>
@@ -3447,7 +3447,7 @@
 							</div>
 						</div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamCromos == true ? "checked" : null)" @onchange="EnseñarSteamCromos">
 							</div>
@@ -3457,7 +3457,7 @@
 							</div>
 						</div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamDeck == true ? "checked" : null)" @onchange="EnseñarSteamDeck">
                             </div>
@@ -3467,7 +3467,7 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamDemo == true ? "checked" : null)" @onchange="EnseñarSteamDemo">
                             </div>
@@ -3477,7 +3477,7 @@
                             </div>
                         </div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
                             <div class="checkbox-caja">
                                 <input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesSteamRV == true ? "checked" : null)" @onchange="EnseñarSteamRV">
                             </div>
@@ -3489,13 +3489,13 @@
 					</div>
 				</div>
 
-                <div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-				    <div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+                <div style="border-radius: 10px;">
+				    <div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 					    @Herramientas.Idiomas.BuscarTexto(idioma, "String135", "Game")
 				    </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-						<div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogLogros == true ? "checked" : null)" @onchange="EnseñarGogLogros">
 							</div>
@@ -3505,7 +3505,7 @@
 							</div>
 						</div>
 
-                        <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogGuardadoNube == true ? "checked" : null)" @onchange="EnseñarGogGuardadoNube">
 							</div>
@@ -3515,7 +3515,7 @@
 							</div>
 						</div>
 
-                         <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@(enseñarOpcionesGogPreservacion == true ? "checked" : null)" @onchange="EnseñarGogPreservacion">
 							</div>

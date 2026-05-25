@@ -293,13 +293,13 @@
 			</div>
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">	
-				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+				<div style="border-radius: 10px;">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "SteamOS")
 					</div>
 
-					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-						<div style="display: flex; align-items: center; gap: 20px;">
+					<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
 							<div class="checkbox-caja">
 								<input type="checkbox" class="checkbox-interior" checked="@ocultarJuegosUsuario" @onchange="OcultarJuegosUsuario">
 							</div>
@@ -311,95 +311,85 @@
 					</div>
 				</div>
 
-				<div style="background-color: var(--fondoSubsubcabecera); border-radius: 10px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
-					<div style="display: flex; align-items: center; gap: 30px; padding: 10px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+				<div style="border-radius: 10px;">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "SteamOS")
 					</div>
 
-					<div style="display: flex; flex-direction: column; gap: 20px; padding: 20px;">
-						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-							<div style="display: flex; flex-direction: column; gap: 10px;">
-								<div style="margin-left: 15px;">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "SteamOS")
-								</div>
-
-								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-										<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
-
-										<datalist id="precios">
-											<option value="5" label="5"></option>
-											<option value="20" label="20"></option>
-											<option value="40" label="40"></option>
-											<option value="60" label="60"></option>
-											<option value="80" label="80"></option>
-											<option value="100" label="100"></option>
-										</datalist>
-									</div>
-
-									<div style="width: 20%; text-align: center;">
-										@if (usuarioRegion == TiendaRegion.Europa)
-										{
-											@(precioMaximo.ToString() + "€")
-										}
-										else if (usuarioRegion == TiendaRegion.EstadosUnidos)
-										{
-											@("$" + precioMaximo.ToString())
-										}
-									</div>
-								</div>
+					<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+							<div style="width: 100%;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "SteamOS")
 							</div>
 
-							<div style="display: flex; flex-direction: column; gap: 10px;">
-								<div style="margin-left: 15px;">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "SteamOS")
-								</div>
+							<div>
+								@if (usuarioRegion == TiendaRegion.Europa)
+								{
+									@(precioMaximo.ToString() + "€")
+								}
+								else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+								{
+									@("$" + precioMaximo.ToString())
+								}
+							</div>
 
-								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-										<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" style="width: 100%;" />
+							<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" />
 
-										<datalist id="descuentos">
-											<option value="5" label="5%"></option>
-											<option value="20" label="20%"></option>
-											<option value="40" label="40%"></option>
-											<option value="60" label="60%"></option>
-											<option value="80" label="80%"></option>
-											<option value="95" label="95%"></option>
-										</datalist>
-									</div>
-
-									<div style="width: 20%; text-align: center;">
-										@descuentoMinimo%
-									</div>
-								</div>
+								<datalist id="precios">
+									<option value="5" label="5€"></option>
+									<option value="20" label="20€"></option>
+									<option value="40" label="40€"></option>
+									<option value="60" label="60€"></option>
+									<option value="80" label="80€"></option>
+									<option value="100" label="100€"></option>
+								</datalist>
 							</div>
 						</div>
 
-						<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-							<div style="display: flex; flex-direction: column; gap: 10px;">
-								<div style="margin-left: 15px;">
-									@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "SteamOS")
-								</div>
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+							<div style="width: 100%;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "SteamOS")
+							</div>
 
-								<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-									<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-										<input type="range" min="0" max="10000" step="500" list="resenas" @bind-value="minimoReseñas" @bind-value:event="oninput" @bind-value:after="CambiarReseñasMinimo" style="width: 100%;" />
+							<div>
+								@descuentoMinimo%
+							</div>
 
-										<datalist id="resenas">
-											<option value="0" label="0"></option>
-											<option value="2000" label="2000"></option>
-											<option value="4000" label="4000"></option>
-											<option value="6000" label="6000"></option>
-											<option value="8000" label="8000"></option>
-											<option value="10000" label="10000"></option>
-										</datalist>
-									</div>
+							<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" />
 
-									<div style="width: 20%; text-align: center;">
-										@minimoReseñas
-									</div>
-								</div>
+								<datalist id="descuentos">
+									<option value="5" label="5%"></option>
+									<option value="20" label="20%"></option>
+									<option value="40" label="40%"></option>
+									<option value="60" label="60%"></option>
+									<option value="80" label="80%"></option>
+									<option value="95" label="95%"></option>
+								</datalist>
+							</div>
+						</div>
+
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="width: 100%;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "SteamOS")
+							</div>
+
+							<div>
+								@minimoReseñas
+							</div>
+
+							<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="0" max="10000" step="500" list="resenas" @bind-value="minimoReseñas" @bind-value:event="oninput" @bind-value:after="CambiarReseñasMinimo" />
+
+								<datalist id="resenas">
+									<option value="0" label="0"></option>
+									<option value="2000" label="2000"></option>
+									<option value="4000" label="4000"></option>
+									<option value="6000" label="6000"></option>
+									<option value="8000" label="8000"></option>
+									<option value="10000" label="10000"></option>
+								</datalist>
 							</div>
 						</div>
 					</div>

@@ -21,7 +21,7 @@
   "String18": "Ausgewählte Spiele",
   "String19": "Historische Tiefs",
   "String20": "Verstecken",
-  "String21": "DRMs",
+  "String21": "Plattformen (oder DRMs)",
   "String22": "Kategorien",
   "String23": "Spiele, die Sie auf Steam haben",
   "String24": "Spiele, die Sie auf GOG haben",
@@ -32,8 +32,9 @@
   "String29": "DLCs",
   "String30": "Soundtracks",
   "String31": "Software",
-  "String32": "Minimum Bewertungen auf Steam",
+  "String32": "Mindestanzahl an Rezensionen auf Steam",
   "String33": "Spiele, die in den letzten {0} Monaten in mindestens einem Bundle für Steam enthalten waren",
   "String34": "Spiele, die kostenlos bei Steam (oder für Steam in einem anderen Store) beansprucht werden könnten",
-  "String35": "Spiele, die in den letzten {0} Monaten ein Steam-Abonnement hatten"
+  "String35": "Spiele, die in den letzten {0} Monaten ein Steam-Abonnement hatten",
+  "String36": "Filter"
 }
