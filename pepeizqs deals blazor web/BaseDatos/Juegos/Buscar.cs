@@ -1398,21 +1398,21 @@ END DESC";
 			{
 				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
 				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionJuegos = $" (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+				exclusionJuegos = $" NOT EXISTS (SELECT 1 FROM @excluirJuegos WHERE Id = j.idMaestra)";
 			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $" (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+				exclusionSteam = $" NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $" (j.idGog IS NULL OR j.idGog NOT IN (SELECT Id FROM @excluirGog))";
+				exclusionGog = $" NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
 			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
@@ -1760,21 +1760,21 @@ END DESC";
 			{
 				DataTable tablaJuegos = CrearDataTable(excluirJuegosIds);
 				parametros.Add("excluirJuegos", tablaJuegos.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionJuegos = $" AND (j.idMaestra IS NULL OR j.idMaestra NOT IN (SELECT Id FROM @excluirJuegos))";
+				exclusionJuegos = $" AND NOT EXISTS (SELECT 1 FROM @excluirJuegos WHERE Id = j.idMaestra)";
 			}
 
 			if (excluirSteamIds?.Count > 0)
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $" AND (j.idSteam IS NULL OR j.idSteam NOT IN (SELECT Id FROM @excluirSteam))";
+				exclusionSteam = $" AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $" AND (j.idGog IS NULL OR j.idGog NOT IN (SELECT Id FROM @excluirGog))";
+				exclusionGog = $" AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
 			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
@@ -1930,7 +1930,7 @@ END DESC";
 				BaseDatos.Errores.Insertar.Mensaje("Juego Ultimos", ex);
 			}
 
-			return new List<Juego>();
+			return null;
 		}
 
 		public static async Task<List<Juego>> DLCs(string idMaestro = null, JuegoTipo tipo = JuegoTipo.DLC)

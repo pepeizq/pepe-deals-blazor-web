@@ -501,6 +501,11 @@ namespace APIs.Steam
 								{
 									SteamPurchaseOption opcionCompra = juego.OpcionCompraMejor;
 
+									if (opcionCompra.MustPurchaseAsSet == true)
+									{
+										continue;
+									}
+
 									if (opcionCompra.Descuento != null)
 									{
 										if (opcionCompra.Descuento > 0 && opcionCompra.PaqueteId > 0 && juego.Reseñas?.SumarioFiltrado?.ReseñasCantidad > 9)

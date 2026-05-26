@@ -43,13 +43,7 @@ namespace APIs.GreenManGaming
                 sku = sku.Remove(sku.IndexOf("/"), sku.Length - sku.IndexOf("/"));
             }
 
-            enlace = enlace.Replace(":", "%3A");
-            enlace = enlace.Replace("/", "%2F");
-            enlace = enlace.Replace("/", "%2F");
-            enlace = enlace.Replace("?", "%3F");
-            enlace = enlace.Replace("=", "%3D");
-
-            return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?prodsku=" + sku + "&u=" + enlace;
+            return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?prodsku=" + sku + "&u=" + Uri.EscapeDataString(enlace);
         }
 
         public static async Task<Bundles2.Bundle> ExtraerDatos(Bundles2.Bundle bundle)

@@ -107,7 +107,7 @@ AND (
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam)";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
 			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
@@ -283,14 +283,14 @@ AND (
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam)";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog)";
+				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
 			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas,

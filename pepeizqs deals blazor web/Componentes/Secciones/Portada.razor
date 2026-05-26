@@ -1753,7 +1753,7 @@ else
 
 	private int posicionJuegosMinimos = 0;
 	private bool cargandoMasMinimos = false;
-    private int minimoReseñasMinimos = 100;
+	private int minimoReseñasMinimos = 100;
 
 	private async Task GenerarListaMinimos(bool fusionar = false)
 	{
@@ -1785,6 +1785,8 @@ else
 				}
 			}
 
+			excluirSteamIds?.Clear();
+
 			if (string.IsNullOrEmpty(ocultarJuegosUsuarioSteamMinimos) == false)
 			{
 				if (ocultarJuegosUsuarioSteamMinimos == "checked" && excluirSteamIds?.Count == 0)
@@ -1792,6 +1794,8 @@ else
 					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
 				}
 			}
+
+            excluirGogIds?.Clear();
 
 			if (string.IsNullOrEmpty(ocultarJuegosUsuarioGogMinimos) == false)
 			{

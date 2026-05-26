@@ -12,11 +12,11 @@ using Microsoft.Extensions.FileProviders;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
+using SixLabors.ImageSharp;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Telegram.Bot.Types;
 
 ClasesDapper.Registrar();
 
@@ -338,6 +338,20 @@ app.Use(async (contexto, siguiente) =>
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
+		return;
+	}
+
+	// Redireccionar HTTP a HTTPS
+	#nullable disable
+
+	string piscinaApp = builder.Configuration.GetValue<string>("PoolWeb:Contenido");
+	string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
+
+	if (piscinaApp == piscinaUsada && contexto.Request.IsHttps == false)
+	{
+		string rutaFinal = $"https://{contexto.Request.Host}{contexto.Request.Path}{contexto.Request.QueryString}";
+		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+		contexto.Response.Headers.Location = rutaFinal;
 		return;
 	}
 

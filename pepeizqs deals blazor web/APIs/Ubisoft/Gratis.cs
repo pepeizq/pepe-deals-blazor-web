@@ -24,13 +24,7 @@
 
 		public static string Referido(string enlace)
 		{
-			enlace = enlace.Replace(":", "%3A");
-			enlace = enlace.Replace("/", "%2F");
-			enlace = enlace.Replace("/", "%2F");
-			enlace = enlace.Replace("?", "%3F");
-			enlace = enlace.Replace("=", "%3D");
-
-			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + enlace;
+			return "https://ubisoft.pxf.io/c/1382810/1186371/12050?u=" + Uri.EscapeDataString(enlace);
 		}
 	}
 }

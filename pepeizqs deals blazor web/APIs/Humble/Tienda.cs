@@ -38,13 +38,7 @@ namespace APIs.Humble
 
 		public static string Referido(string enlace)
 		{
-            enlace = enlace.Replace(":", "%3A");
-            enlace = enlace.Replace("/", "%2F");
-            enlace = enlace.Replace("/", "%2F");
-            enlace = enlace.Replace("?", "%3F");
-            enlace = enlace.Replace("=", "%3D");
-
-            return "https://humblebundleinc.sjv.io/c/1382810/2059850/25796?u=" + enlace;
+            return "https://humblebundleinc.sjv.io/c/1382810/2059850/25796?u=" + Uri.EscapeDataString(enlace);
 		}
 
 		public static Tiendas2.Tienda GenerarChoice()

@@ -34,13 +34,7 @@ namespace APIs.GreenManGaming
 
 		public static string Referido(string enlace)
 		{
-			enlace = enlace.Replace(":", "%3A");
-			enlace = enlace.Replace("/", "%2F");
-			enlace = enlace.Replace("/", "%2F");
-			enlace = enlace.Replace("?", "%3F");
-			enlace = enlace.Replace("=", "%3D");
-
-			return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?u=" + enlace;
+			return "https://greenmangaming.sjv.io/c/1382810/1219987/15105?u=" + Uri.EscapeDataString(enlace);
 		}
 
 		public static Tiendas2.Tienda GenerarGold()
