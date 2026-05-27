@@ -1,13 +1,11 @@
 ﻿@page "/wishlist/"
 
-@attribute [StreamRendering(true)]
+@implements IAsyncDisposable
 
-@using APIs.Steam
 @using BaseDatos.Usuarios
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
 @using Microsoft.JSInterop
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
@@ -17,131 +15,12 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject Servicios.Opciones ServicioOpciones
 
 @if (string.IsNullOrEmpty(perfilUsuarioId) == true)
 {
 	<Titulo tipo="@Titulo.Tipo.Deseados" idioma="@idioma" dominio="@dominio"/>
 }
-
-<script>
-	window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-	const arrayBuffer = await contentStreamReference.arrayBuffer();
-	const blob = new Blob([arrayBuffer]);
-	const url = URL.createObjectURL(blob);
-	const anchorElement = document.createElement('a');
-	anchorElement.href = url;
-	anchorElement.download = fileName ?? '';
-	anchorElement.click();
-	anchorElement.remove();
-	URL.revokeObjectURL(url);
-	}
-</script>
-
-<script>
-	function enseñarTooltip(e, id) {
-		var x = e.clientX,
-			y = e.clientY;
-
-		var tooltip = document.getElementById(id);
-
-		if (screen.width / 2 > x) {
-			tooltip.style.top = (y + 10) + 'px';
-			tooltip.style.left = (x + 20) + 'px';
-		}
-		else {
-			tooltip.style.top = (y - 10) + 'px';
-			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-		};
-	}
-</script>
-
-<style>
-	.deseado-imagen {
-		width: 26%;
-	}
-
-	@@media (max-width: 800px) {
-		.deseado-imagen {
-			display: none;
-		}
-	}
-</style>
-
-<style>
-	.cargando {
-		width: 48px;
-		height: 48px;
-		border: 5px solid var(--colorTexto);
-		border-bottom-color: transparent;
-		border-radius: 50%;
-		display: inline-block;
-		box-sizing: border-box;
-		animation: rotation 1s linear infinite;
-	}
-
-	@@keyframes rotation {
-	0% {
-	transform: rotate(0deg);
-	}
-
-	100% {
-	transform: rotate(360deg);
-	}
-	}
-</style>
-
-<style>
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(41, 55, 81, 0.6);
-		--noResultados: rgba(132, 32, 41, 0.5);
-		--botonSeleccionado: rgba(13, 22, 33, 0.75);
-	}
-
-	.caja-deseados {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 5px;
-		width: max-content;
-		box-shadow: 0 22px 34px rgba(0, 0, 0, 0.25);
-		background-color: var(--glaseadoFondo);
-		background-blend-mode: overlay;
-		border-radius: 100px;
-		border: 2px solid var(--glaseadoBorde);
-		backdrop-filter: blur(25px);
-		flex-wrap: wrap;
-	}
-
-		.caja-deseados > button {
-			display: inline-flex;
-			align-items: center;
-			flex: 0 0 auto; 
-			padding: 15px 25px; 
-		}
-
-	.caja-deseados-animacion {
-		opacity: 0;
-		transform: scaleX(0);
-		transform-origin: left;
-		pointer-events: none;
-		transition: all 0.5s ease, transform 0.2s ease;
-	}
-
-		.caja-deseados-animacion.visible {
-			opacity: 1;
-			transform: scaleX(1);
-			pointer-events: auto;
-		}
-
-	.boton-deseados {
-		transition: backdrop-filter 0.2s ease;
-	}
-
-		.boton-deseados:hover {
-			backdrop-filter: brightness(50%);
-		}
-</style>
 
 @if (string.IsNullOrEmpty(usuarioId) == false)
 {
@@ -221,7 +100,7 @@
 				@if (pestañaMostrar == 0 || pestañaMostrar == 1)
 				{
 					<div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 35px; margin-left: 40px; @anchoBuscador">
-						<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-search')">
+						<div class="tooltip-juego" style="display: flex;" onmousemove="window.enseñarTooltip2(event, 'tooltip-wishlist-search')">
 							<button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;">
 								<div style="width: 24px; height: 24px;">
 									<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -243,8 +122,8 @@
 					</div>
 				}
 
-				<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-order')">
-					<button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px; margin-left: 25px;">
+				<div class="tooltip-juego" style="margin-left: 25px; display: flex;" onmousemove="window.enseñarTooltip2(event, 'tooltip-wishlist-order')">
+					<button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px;">
 						<div style="width: 24px; height: 24px;">
 							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 								<path d="M130.4 268.2C135.4 280.2 147 288 160 288L480 288C492.9 288 504.6 280.2 509.6 268.2C514.6 256.2 511.8 242.5 502.7 233.3L342.7 73.3C330.2 60.8 309.9 60.8 297.4 73.3L137.4 233.3C128.2 242.5 125.5 256.2 130.5 268.2zM130.4 371.7C125.4 383.7 128.2 397.4 137.3 406.6L297.3 566.6C309.8 579.1 330.1 579.1 342.6 566.6L502.6 406.6C511.8 397.4 514.5 383.7 509.5 371.7C504.5 359.7 492.9 352 480 352L160 352C147.1 352 135.4 359.8 130.4 371.8z" />
@@ -259,18 +138,22 @@
 					</div>
 				</div>
 
-				<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-options')">
-					<button @onclick="MostrarOcultarOpciones" style="background: transparent; border: 0px; margin-left: 25px;">
+				<div class="tooltip-juego" style="margin-left: 30px; display: flex;" onmousemove="window.enseñarTooltip2(event, 'tooltip-wishlist-rss')">
+					@{
+						string regionRss = usuarioRegion == TiendaRegion.Europa ? "eu" : "us"; 
+					}
+
+					<a href="/rss/@regionRss/@usuarioId" target="_blank" style="background: transparent; border: 0px;">
 						<div style="width: 24px; height: 24px;">
 							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-								<path d="M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z" />
+								<path d="M96 128C96 110.3 110.3 96 128 96C357.8 96 544 282.2 544 512C544 529.7 529.7 544 512 544C494.3 544 480 529.7 480 512C480 317.6 322.4 160 128 160C110.3 160 96 145.7 96 128zM96 480C96 444.7 124.7 416 160 416C195.3 416 224 444.7 224 480C224 515.3 195.3 544 160 544C124.7 544 96 515.3 96 480zM128 224C287.1 224 416 352.9 416 512C416 529.7 401.7 544 384 544C366.3 544 352 529.7 352 512C352 388.3 251.7 288 128 288C110.3 288 96 273.7 96 256C96 238.3 110.3 224 128 224z" />
 							</svg>
 						</div>
-					</button>
+					</a>
 
-					<div id="tooltip-wishlist-options" class="tooltip-relleno">
+					<div id="tooltip-wishlist-rss" class="tooltip-relleno">
 						<div style="margin: 8px; max-width: 300px; font-size: 14px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Wishlist")
+							@Herramientas.Idiomas.BuscarTexto(idioma, "String34", "Wishlist")
 						</div>
 					</div>
 				</div>
@@ -293,7 +176,7 @@
 
 					if (deseadosFinales?.Count > 0)
 					{
-						<Virtualize Context="juego" Items="deseadosFinales" ItemSize="alturaFila">
+						<Virtualize Context="juego" Items="deseadosFinales">
 							<ItemContent>
 								<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
 									@{
@@ -412,7 +295,7 @@
 					if (deseadosBundles?.Count > 0)
 					{
 						<div>
-							<Virtualize Context="juego" Items="deseadosBundles" ItemSize="alturaFila">
+							<Virtualize Context="juego" Items="deseadosBundles">
 								<ItemContent>
 									@if (juego.IdBundle > 0 && bundlesCache.TryGetValue(juego.IdBundle, out var bundle) && bundle != null)
 									{
@@ -531,7 +414,7 @@
 					if (deseadosSuscripciones?.Count > 0)
 					{
 						<div>
-							<Virtualize Context="juego" Items="deseadosSuscripciones" ItemSize="alturaFila">
+							<Virtualize Context="juego" Items="deseadosSuscripciones">
 								<ItemContent>
 									@if (juego.IdSuscripcion > 0 && suscripcionesCache.TryGetValue(juego.IdSuscripcion, out var suscripcion) && suscripcion != null)
 									{
@@ -613,18 +496,20 @@
 @if (mostrarOrdenar == true)
 {
 	<div class="opciones-panel">
-		<div style="max-width: 500px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; position: relative; justify-content: center; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); justify-content: center;">
-				<button class="boton-pequeño" @onclick="MostrarOcultarOrdenar" style="width: fit-content; padding: 10px 15px; position: absolute; left: 30px;">
-					<div style="max-width: 24px; max-height: 24px;">
-						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+		<div style="max-width: 500px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); position: sticky;">
+				<button @onclick="MostrarOcultarOrdenar" @onmouseenter="_ => usuarioEncimaOrdenar = true" @onmouseleave="_ => usuarioEncimaOrdenar = false" style="@(usuarioEncimaOrdenar == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px; position: absolute;">
+					<div style="width: 24px; height: 24px;">
+						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaOrdenar == true ? "180deg" : "0deg")); transition: transform 0.2s;">
+							<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
 						</svg>
 					</div>
 				</button>
 
-				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Wishlist")
+				<div style="display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center;">
+					<div style="font-size: 20px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Wishlist")
+					</div>
 				</div>
 			</div>
 
@@ -663,30 +548,47 @@
 {
 	<div class="opciones-panel">
 		<div style="max-width: 800px; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
-			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
-				<button class="boton-pequeño" @onclick="MostrarOcultarOpciones" style="width: fit-content; padding: 10px 15px;">
-					<div style="max-width: 24px; max-height: 24px;">
-						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-							<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
+			<div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); position: sticky;">
+				<button @onclick="MostrarOcultarOpciones" @onmouseenter="_ => usuarioEncimaOpciones = true" @onmouseleave="_ => usuarioEncimaOpciones = false" style="@(usuarioEncimaOpciones == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px; position: absolute;">
+					<div style="width: 24px; height: 24px;">
+						<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">
+							<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
 						</svg>
 					</div>
 				</button>
 
-				<div style="font-size: 20px;">
-					@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Wishlist")
+				<div style="display: flex; flex-direction: column; gap: 5px; width: 100%; align-items: center;">
+					<div style="font-size: 20px;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Wishlist")
+					</div>
 				</div>
 			</div>
 
 			<div style="display: flex; flex-direction: column; gap: 30px; padding: 30px;">
-				<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px;">
-					<div style="display: flex; flex-direction: column; gap: 10px;">
-						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Wishlist")
-						</div>
+				<div style="border-radius: 10px;">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						@Herramientas.Idiomas.BuscarTexto(idioma, "String27", "Wishlist")
+					</div>
 
-						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" style="width: 100%;" />
+					<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1);">
+							<div style="width: 100%;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String20", "Wishlist")
+							</div>
+
+							<div>
+								@if (usuarioRegion == TiendaRegion.Europa)
+								{
+									@(precioMaximo.ToString() + "€")
+								}
+								else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+								{
+									@("$" + precioMaximo.ToString())
+								}
+							</div>
+
+							<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="100" step="5" list="precios" @bind-value="precioMaximo" @bind-value:event="oninput" @bind-value:after="CambiarPrecioMaximo" />
 
 								<datalist id="precios">
 									<option value="5" label="5€"></option>
@@ -697,21 +599,19 @@
 									<option value="100" label="100€"></option>
 								</datalist>
 							</div>
+						</div>
 
-							<div style="width: 20%; text-align: center;">
-								@precioMaximo€
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<div style="width: 100%;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Wishlist")
 							</div>
-						</div>
-					</div>
 
-					<div style="display: flex; flex-direction: column; gap: 10px;">
-						<div style="margin-left: 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Wishlist")
-						</div>
+							<div>
+								@descuentoMinimo%
+							</div>
 
-						<div style="display: flex; align-items: center; gap: 5px; border-radius: 10px; padding: 5px; background: color-mix(in srgb, var(--fondoSubcabecera) 25%, var(--fondoBotonPequeño)); border: 2px solid var(--fondoBotonPequeño);">
-							<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); width: 100%; border-radius: inherit; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
-								<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" style="width: 100%;" />
+							<div style="background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--glaseadoBorde); padding: 10px 15px;">
+								<input type="range" min="5" max="95" step="5" list="descuentos" @bind-value="descuentoMinimo" @bind-value:event="oninput" @bind-value:after="CambiarDescuentoMinimo" />
 
 								<datalist id="descuentos">
 									<option value="5" label="5%"></option>
@@ -722,21 +622,17 @@
 									<option value="95" label="95%"></option>
 								</datalist>
 							</div>
-
-							<div style="width: 20%; text-align: center;">
-								@descuentoMinimo%
-							</div>
 						</div>
 					</div>
 				</div>
 
-				<div>
-					<div style="margin-left: 15px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
-						<div>
+				<div style="border-radius: 10px;">
+					<div style="display: flex; align-items: center; gap: 30px; padding: 15px 20px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit;">
+						<div style="width: 100%;">
 							@Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Wishlist")
 						</div>
 
-						<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-export')">
+						<div class="tooltip-juego" onmousemove="window.enseñarTooltip2(event, 'tooltip-wishlist-export')">
 							<div style="width: 24px; height: 24px;">
 								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 									<path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
@@ -751,10 +647,12 @@
 						</div>
 					</div>
 
-					<div style="background: color-mix(in srgb, var(--fondoSubcabecera) 75%, var(--fondoBotonPequeño)); padding: 10px; display: flex; align-items: center; gap: 5px; border-radius: 10px; width: fit-content; border: 1px solid var(--glaseadoBorde);">
-						<button @onclick="@(e => DescargarJson())" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
-							@Herramientas.Idiomas.BuscarTexto(idioma, "String25", "Wishlist")
-						</button>
+					<div style="display: flex; flex-direction: column; gap: 5px; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+						<div style="background-color: var(--fondoSubsubcabecera); display: flex; align-items: center; gap: 20px; padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1),0px 0px 2px 0px rgba(0, 0, 0, 0.1); border-bottom-left-radius: inherit; border-bottom-right-radius: inherit;">
+							<button @onclick="@(e => DescargarJson())" class="boton-pequeño" style="width: fit-content; padding: 10px 15px;">
+								@Herramientas.Idiomas.BuscarTexto(idioma, "String25", "Wishlist")
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -773,13 +671,13 @@
 	private bool usuarioPatreon = false;
 	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
 
-	[PersistentState] public Usuario opciones { get; set; }
+	public Usuario opciones { get; set; }
 	[PersistentState] public DateTime ultimaVisita { get; set; }
 
 	[Parameter]
 	public string perfilUsuarioId { get; set; }
 
-	private int pestañaMostrar = 0;
+	[PersistentState] public int pestañaMostrar { get; set; }
 
 	[PersistentState] public List<JuegoDeseadoMostrar> deseadosGestor { get; set; }
 	public List<JuegoDeseadoMostrar> deseadosOfertas = new List<JuegoDeseadoMostrar>();
@@ -787,17 +685,15 @@
 	[PersistentState] public List<JuegoDeseadoMostrar> deseadosBundles { get; set; }
 	[PersistentState] public List<JuegoDeseadoMostrar> deseadosSuscripciones { get; set; }
 
-	[PersistentState] public List<Bundles2.Bundle> bundlesActuales { get; set; }
-	[PersistentState] public List<JuegoSuscripcion> suscripcionesActuales { get; set; }
+	public List<Bundles2.Bundle> bundlesActuales { get; set; }
+	public List<JuegoSuscripcion> suscripcionesActuales { get; set; }
 
 	private string ordenamientoElegido = string.Empty;
 
-	private int alturaFila = 82;
-
 	private bool cargado = false;
 
-	private Dictionary<int, Bundles2.Bundle> bundlesCache = new();
-	private Dictionary<int, JuegoSuscripcion> suscripcionesCache = new();
+	[PersistentState] public Dictionary<int, Bundles2.Bundle> bundlesCache { get; set; }
+	[PersistentState] public Dictionary<int, JuegoSuscripcion> suscripcionesCache { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -828,23 +724,42 @@
 				await CargarWishlistData(opciones);
 			}
 
-			CargarOpciones(opciones);
+			if (opciones?.Currency.HasValue == true)
+			{
+				usuarioRegion = (TiendaRegion)opciones.Currency.Value;
+			}
 
-			deseadosGestor = await Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
+			if (opciones?.WishlistPosition.HasValue == true)
+			{
+				pestañaMostrar = (int)opciones.WishlistPosition.Value;
+			}
+            else
+            {
+                pestañaMostrar = 1;
+            }
+
+			await CambiarPestañaFondo(pestañaMostrar);
+
+			deseadosGestor ??= await Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
 
 			if (deseadosGestor?.Count > 0)
 			{
-				if (opciones?.WishlistSort == null)
+				if (opciones?.WishlistSort.HasValue == false)
 				{
 					opciones.WishlistSort = 3;
 				}
 
 				await ElegirOrdenamiento();
 
-				Task tareaBundle = (deseadosBundles != null) ? Task.CompletedTask : CargarBundles(bundlesActuales, deseadosGestor);
-				Task tareaSuscripcion = (deseadosSuscripciones != null) ? Task.CompletedTask : CargarSuscripciones(suscripcionesActuales, deseadosGestor);
+				bundlesCache ??= new Dictionary<int, Bundles2.Bundle>();
+				suscripcionesCache ??= new Dictionary<int, JuegoSuscripcion>();
 
-				await Task.WhenAll(tareaBundle, tareaSuscripcion);
+				await CargarBundles(bundlesActuales ?? new List<Bundles2.Bundle>(), deseadosGestor);
+				await CargarSuscripciones(suscripcionesActuales ?? new List<JuegoSuscripcion>(), deseadosGestor);
+
+				ServicioOpciones.OnMostrarOpcionesChanged += StateHasChanged;
+
+				StateHasChanged();
 			}
 
 			cargado = true;
@@ -856,16 +771,48 @@
 		}
 	}
 
+	private IJSObjectReference moduloJs;
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Deseados.razor.js");
+			await moduloJs.InvokeVoidAsync("inicializarLlamadasGlobales");
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
+
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch (JSDisconnectedException)
+			{
+
+			}
+		}
+	}
+
 	#region Inicio
 
 	private async Task CargarBundles(List<Bundles2.Bundle> bundles, List<JuegoDeseadoMostrar> deseados)
 	{
+		deseadosBundles ??= new List<JuegoDeseadoMostrar>();
+		bundlesCache ??= new Dictionary<int, Bundles2.Bundle>();
+
 		if (bundles?.Count == 0) 
 		{
 			return;
 		}
 
-		deseadosBundles = new List<JuegoDeseadoMostrar>();
+		deseadosBundles.Clear();
+
 		HashSet<int> bundlesCargar = new HashSet<int>();
 
 		foreach (var bundle in bundles)
@@ -897,20 +844,32 @@
 
 		if (bundlesCargar.Count > 0)
 		{
-			List<Task<Bundles2.Bundle>> tareasBundle = bundlesCargar.Select(bundleId => BaseDatos.Bundles.Buscar.UnBundle(bundleId).ContinueWith(t => bundlesCache[bundleId] = t.Result)).ToList();
+			var idsArray = bundlesCargar.ToArray();
+			var tareasBundle = idsArray.Select(bundleId => BaseDatos.Bundles.Buscar.UnBundle(bundleId)).ToList();
+			var resultados = await Task.WhenAll(tareasBundle);
 
-			await Task.WhenAll(tareasBundle);
+			for (int i = 0; i < idsArray.Length; i++)
+			{
+				if (resultados[i] != null)
+				{
+					bundlesCache[idsArray[i]] = resultados[i];
+				}
+			}
 		}
 	}
 
 	private async Task CargarSuscripciones(List<JuegoSuscripcion> suscripciones, List<JuegoDeseadoMostrar> deseados)
 	{
+		deseadosSuscripciones ??= new List<JuegoDeseadoMostrar>();
+		suscripcionesCache ??= new Dictionary<int, JuegoSuscripcion>();
+
 		if (suscripciones?.Count == 0) 
 		{
 			return;
 		}
 
-		deseadosSuscripciones = new List<JuegoDeseadoMostrar>();
+		deseadosSuscripciones.Clear();
+
 		HashSet<int> suscripcionesCargar = new HashSet<int>();
 
 		foreach (var juegoSuscripcion in suscripciones)
@@ -939,9 +898,17 @@
 
 		if (suscripcionesCargar.Count > 0)
 		{
-			List<Task<JuegoSuscripcion>> tareasSuscripcion = suscripcionesCargar.Select(suscripcionId => BaseDatos.Suscripciones.Buscar.Id(suscripcionId).ContinueWith(t => suscripcionesCache[suscripcionId] = t.Result)).ToList();
+			var idsArray = suscripcionesCargar.ToArray();
+			var tareasSuscripcion = idsArray.Select(id => BaseDatos.Suscripciones.Buscar.Id(id)).ToList();
+			var resultados = await Task.WhenAll(tareasSuscripcion);
 
-			await Task.WhenAll(tareasSuscripcion);
+			for (int i = 0; i < idsArray.Length; i++)
+			{
+				if (resultados[i] != null)
+				{
+					suscripcionesCache[idsArray[i]] = resultados[i];
+				}
+			}
 		}
 	}
 
@@ -959,19 +926,6 @@
                 datos2.Juegos = null;
 				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
 			}
-		}
-	}
-
-	private void CargarOpciones(Usuario opciones)
-	{
-		if (opciones.Currency.HasValue == true)
-		{
-			usuarioRegion = (TiendaRegion)opciones.Currency.Value;
-		}
-
-		if (opciones.WishlistPosition.HasValue == true)
-		{
-			pestañaMostrar = (int)opciones.WishlistPosition.Value;
 		}
 	}
 
@@ -1345,12 +1299,14 @@
 
 	#region Opciones
 
-	private bool mostrarOpciones { get; set; } = false;
+	private bool mostrarOpciones => ServicioOpciones.MostrarOpciones;
 
 	private async Task MostrarOcultarOpciones()
 	{
-		mostrarOpciones = !mostrarOpciones;
+		ServicioOpciones.AlternarOpciones();
 	}
+
+	private bool usuarioEncimaOpciones = false;
 
 	private int precioMaximo = 100;
 
@@ -1443,6 +1399,7 @@
 	}
 
 	private bool mostrarOrdenar = false;
+	private bool usuarioEncimaOrdenar = false;
 
 	private async Task MostrarOcultarOrdenar()
 	{
@@ -1506,9 +1463,11 @@
 
 			string ficheroNombre = "wishlist.json";
 
-			using var streamRef = new DotNetStreamReference(stream: ficheroStream);
-
-			await JavaScript.InvokeVoidAsync("downloadFileFromStream", ficheroNombre, streamRef);
+			if (moduloJs != null)
+			{
+				using var streamRef = new DotNetStreamReference(stream: ficheroStream);
+				await moduloJs.InvokeVoidAsync("downloadFileFromStream", ficheroNombre, streamRef);
+			}
 		}
 	}
 

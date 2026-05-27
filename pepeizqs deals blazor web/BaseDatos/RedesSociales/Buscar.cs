@@ -2,16 +2,20 @@
 
 using Dapper;
 using Juegos;
+using Tiendas2;
 
 namespace BaseDatos.RedesSociales
 {
     public static class Buscar
     {
-        public static async Task<List<Juego>> OfertasDelDia(int drm)
+        public static async Task<List<Juego>> OfertasDelDia(TiendaRegion region, int drm)
         {
-            string busqueda = @"SELECT TOP 100 j.idMaestra, j.nombre, j.precioMinimosHistoricos, CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') AS DRM, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM seccionMinimos j
-                WHERE JSON_VALUE(j.precioMinimosHistoricos, '$[0].DRM') = @drm
-                AND CAST(CONVERT(datetime2, JSON_VALUE(j.precioMinimosHistoricos, '$[0].FechaDetectado')) AS date) = CAST(GETDATE() AS date)
+			string seccionMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
+			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
+
+			string busqueda = $@"SELECT TOP 100 j.idMaestra, j.nombre, j.{precioMinimosHistoricos}, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') AS DRM, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
+                WHERE JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = @drm
+                AND CAST(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS date) = CAST(GETDATE() AS date)
                 ";
 
 			if (drm == 0)

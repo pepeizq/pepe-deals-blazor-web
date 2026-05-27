@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using Herramientas;
+using Tiendas2;
 
 namespace Tareas
 {
@@ -43,23 +44,52 @@ namespace Tareas
 
 						try
 						{
-							List<Juegos.Juego> juegosDiaSteam = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.Steam);
+							#region Europa
+
+							List<Juegos.Juego> juegosDiaSteam = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.Europa, (int)Juegos.JuegoDRM.Steam);
 
 							if (juegosDiaSteam?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaSteam, Juegos.JuegoDRM.Steam);
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaSteam, Juegos.JuegoDRM.Steam);
 							}
 
-							List<Juegos.Juego> juegosDiaGog = await BaseDatos.RedesSociales.Buscar.OfertasDelDia((int)Juegos.JuegoDRM.GOG);
+							List<Juegos.Juego> juegosDiaGog = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.Europa, (int)Juegos.JuegoDRM.GOG);
 
 							if (juegosDiaGog?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, juegosDiaGog, Juegos.JuegoDRM.GOG);
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaGog, Juegos.JuegoDRM.GOG);
 							}
+
+							#endregion
 						}
 						catch (Exception ex)
 						{
-							BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales", ex);
+							BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales EU", ex);
+						}
+
+						try
+						{ 
+							#region Estados Unidos
+
+							List<Juegos.Juego> juegosDiaSteamUS = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.EstadosUnidos, (int)Juegos.JuegoDRM.Steam);
+
+							if (juegosDiaSteamUS?.Count > 3)
+							{
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaSteamUS, Juegos.JuegoDRM.Steam);
+							}
+
+							List<Juegos.Juego> juegosDiaGogUS = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.EstadosUnidos, (int)Juegos.JuegoDRM.GOG);
+
+							if (juegosDiaGogUS?.Count > 3)
+							{
+								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaGogUS, Juegos.JuegoDRM.GOG);
+							}
+
+							#endregion
+						}
+						catch (Exception ex)
+						{
+							BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales US", ex);
 						}
 					}
 				}

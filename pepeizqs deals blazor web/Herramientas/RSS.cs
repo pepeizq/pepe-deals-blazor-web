@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Xml;
 using System.Security.Claims;
 using Tiendas2;
+using Juegos;
 
 namespace Herramientas
 {
@@ -19,9 +20,9 @@ namespace Herramientas
         [HttpGet("rss-en.xml")]
         public async Task<IActionResult> GenerarEnRSS()
         {
-			string dominio = "https://" + HttpContext.Request.Host.Value;
+            string dominio = "https://" + HttpContext.Request.Host.Value;
 
-			SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS in English from the web", new Uri(dominio), "RSSUrl", DateTime.Now)
+            SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS in English from the web", new Uri(dominio), "RSSUrl", DateTime.Now)
             {
                 Copyright = new TextSyndicationContent($"{DateTime.Now.Year}")
             };
@@ -86,9 +87,9 @@ namespace Herramientas
         [HttpGet("rss-es.xml")]
         public async Task<IActionResult> GenerarEsRSS()
         {
-			string dominio = "https://" + HttpContext.Request.Host.Value;
+            string dominio = "https://" + HttpContext.Request.Host.Value;
 
-			SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS en Español de la web", new Uri(dominio), "RSSUrl", DateTime.Now)
+            SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS en Español de la web", new Uri(dominio), "RSSUrl", DateTime.Now)
             {
                 Copyright = new TextSyndicationContent($"{DateTime.Now.Year}")
             };
@@ -153,9 +154,9 @@ namespace Herramientas
         [HttpGet("news-rss")]
         public async Task<IActionResult> CogerNoticiasRSS()
         {
-			string dominio = "https://" + HttpContext.Request.Host.Value;
+            string dominio = "https://" + HttpContext.Request.Host.Value;
 
-			if (User.Identity.IsAuthenticated == true)
+            if (User.Identity.IsAuthenticated == true)
             {
                 if (await global::BaseDatos.Usuarios.Buscar.RolDios(User.FindFirst(ClaimTypes.NameIdentifier).Value) == true)
                 {
@@ -190,11 +191,11 @@ namespace Herramientas
             if (region2 == "us")
             {
                 region = TiendaRegion.EstadosUnidos;
-			}
+            }
 
-			string dominio = "https://" + HttpContext.Request.Host.Value;
+            string dominio = "https://" + HttpContext.Request.Host.Value;
 
-			List<string> drmsUsar = new List<string>();
+            List<string> drmsUsar = new List<string>();
 
             foreach (var drm2 in Juegos.JuegoDRM2.GenerarListado())
             {
@@ -204,40 +205,40 @@ namespace Herramientas
                     {
                         int posicion = Array.IndexOf(Enum.GetValues(typeof(Juegos.JuegoDRM)), drm2.Id);
 
-						drmsUsar.Add(posicion.ToString());
+                        drmsUsar.Add(posicion.ToString());
                     }
                 }
             }
 
             if (drmsUsar.Count > 0)
             {
-				if (cantidadReseñas < 200)
-				{
-					cantidadReseñas = 199;
-				}
+                if (cantidadReseñas < 200)
+                {
+                    cantidadReseñas = 199;
+                }
 
-				if (cantidadReseñas > 10000)
-				{
-					cantidadReseñas = 9999;
-				}
+                if (cantidadReseñas > 10000)
+                {
+                    cantidadReseñas = 9999;
+                }
 
-				SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS Last Deals", new Uri(dominio), "RSSUrl", DateTime.Now)
-				{
-					Copyright = new TextSyndicationContent($"{DateTime.Now.Year}")
-				};
+                SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS Last Deals", new Uri(dominio), "RSSUrl", DateTime.Now)
+                {
+                    Copyright = new TextSyndicationContent($"{DateTime.Now.Year}")
+                };
 
-				List<SyndicationItem> items = new List<SyndicationItem>();
+                List<SyndicationItem> items = new List<SyndicationItem>();
 
-				List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(region, 3, 50, null, drmsUsar, cantidadReseñas);
+                List<Juegos.Juego> juegos = await global::BaseDatos.Portada.Buscar.Minimos(region, 3, 50, null, drmsUsar, cantidadReseñas);
 
-				if (juegos.Count > 0)
-				{
-					foreach (Juegos.Juego juego in juegos)
-					{
-						string enlace = dominio + "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                if (juegos.Count > 0)
+                {
+                    foreach (Juegos.Juego juego in juegos)
+                    {
+                        string enlace = dominio + "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
 
-						string titulo = juego.Nombre;
-						string contenido = string.Empty;
+                        string titulo = juego.Nombre;
+                        string contenido = string.Empty;
 
                         if (region == TiendaRegion.Europa)
                         {
@@ -246,6 +247,101 @@ namespace Herramientas
                         else if (region == TiendaRegion.EstadosUnidos)
                         {
                             contenido = juego.PrecioMinimosHistoricosUS[0].Descuento.ToString() + "% - " + Herramientas.Precios.Dolar(juego.PrecioMinimosHistoricosUS[0].Precio);
+                        }
+
+                        Uri enlaceUri = null;
+
+                        if (enlace != null)
+                        {
+                            enlaceUri = new Uri(enlace);
+                        }
+
+                        SyndicationItem item = new SyndicationItem(titulo, contenido, enlaceUri);
+
+                        if (string.IsNullOrEmpty(juego.Imagenes.Header_460x215) == false)
+                        {
+                            item.ElementExtensions.Add(new XElement("image", juego.Imagenes.Header_460x215));
+                        }
+
+                        items.Add(item);
+                    }
+
+                    feed.Items = items;
+
+                    XmlWriterSettings opciones = new XmlWriterSettings
+                    {
+                        Encoding = Encoding.UTF8,
+                        NewLineHandling = NewLineHandling.Entitize,
+                        NewLineOnAttributes = true,
+                        Indent = true
+                    };
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        using (XmlWriter xmlEscritor = XmlWriter.Create(stream, opciones))
+                        {
+                            Rss20FeedFormatter rssFormateador = new Rss20FeedFormatter(feed, false);
+                            rssFormateador.WriteTo(xmlEscritor);
+                            xmlEscritor.Flush();
+                        }
+
+                        return File(stream.ToArray(), "application/rss+xml; charset=utf-8");
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        [ResponseCache(Duration = 30000)]
+        [HttpGet("rss/{region2}/{usuarioId}")]
+        public async Task<IActionResult> GenerarDeseados(string region2, string usuarioId)
+        {
+            TiendaRegion region = TiendaRegion.Europa;
+
+            if (region2 == "us")
+            {
+                region = TiendaRegion.EstadosUnidos;
+            }
+
+            string dominio = "https://" + HttpContext.Request.Host.Value;
+
+			SyndicationFeed feed = new SyndicationFeed("pepe's deals", "RSS Wishlisted Games", new Uri(dominio), "RSSUrl", DateTime.Now)
+			{
+				Copyright = new TextSyndicationContent($"{DateTime.Now.Year}")
+			};
+
+			List<SyndicationItem> items = new List<SyndicationItem>();
+
+			List<JuegoDeseadoMostrar> juegos = await Deseados.LeerJuegos(region, usuarioId);
+
+			if (juegos?.Count > 0)
+			{
+                juegos = juegos?.OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
+
+				foreach (JuegoDeseadoMostrar juego in juegos)
+				{
+                    if (juego.Historico == true)
+                    {
+						string enlace = dominio + "/game/" + juego.Id.ToString() + "/" + EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+
+						string titulo = juego.Nombre;
+						string contenido = string.Empty;
+
+						decimal precioMostrar = juego.Precio.Precio;
+
+						if (juego.Precio.PrecioCambiado > 0)
+						{
+							precioMostrar = juego.Precio.PrecioCambiado;
+						}
+
+						if (region == TiendaRegion.Europa)
+						{
+							contenido = juego.Precio.Descuento.ToString() + "% - " + Precios.Euro(precioMostrar);
+						}
+						else if (region == TiendaRegion.EstadosUnidos)
+						{
+							contenido = juego.Precio.Descuento.ToString() + "% - " + Precios.Dolar(precioMostrar);
 						}
 
 						Uri enlaceUri = null;
@@ -257,39 +353,39 @@ namespace Herramientas
 
 						SyndicationItem item = new SyndicationItem(titulo, contenido, enlaceUri);
 
-						if (string.IsNullOrEmpty(juego.Imagenes.Header_460x215) == false)
+						if (string.IsNullOrEmpty(juego.Imagen) == false)
 						{
-							item.ElementExtensions.Add(new XElement("image", juego.Imagenes.Header_460x215));
+							item.ElementExtensions.Add(new XElement("image", juego.Imagen));
 						}
 
 						items.Add(item);
 					}
+				}
 
-					feed.Items = items;
+				feed.Items = items;
 
-					XmlWriterSettings opciones = new XmlWriterSettings
+				XmlWriterSettings opciones = new XmlWriterSettings
+				{
+					Encoding = Encoding.UTF8,
+					NewLineHandling = NewLineHandling.Entitize,
+					NewLineOnAttributes = true,
+					Indent = true
+				};
+
+				using (MemoryStream stream = new MemoryStream())
+				{
+					using (XmlWriter xmlEscritor = XmlWriter.Create(stream, opciones))
 					{
-						Encoding = Encoding.UTF8,
-						NewLineHandling = NewLineHandling.Entitize,
-						NewLineOnAttributes = true,
-						Indent = true
-					};
-
-					using (MemoryStream stream = new MemoryStream())
-					{
-						using (XmlWriter xmlEscritor = XmlWriter.Create(stream, opciones))
-						{
-							Rss20FeedFormatter rssFormateador = new Rss20FeedFormatter(feed, false);
-							rssFormateador.WriteTo(xmlEscritor);
-							xmlEscritor.Flush();
-						}
-
-						return File(stream.ToArray(), "application/rss+xml; charset=utf-8");
+						Rss20FeedFormatter rssFormateador = new Rss20FeedFormatter(feed, false);
+						rssFormateador.WriteTo(xmlEscritor);
+						xmlEscritor.Flush();
 					}
+
+					return File(stream.ToArray(), "application/rss+xml; charset=utf-8");
 				}
 			}
 
             return null;
-        }
+		}
     }
 }

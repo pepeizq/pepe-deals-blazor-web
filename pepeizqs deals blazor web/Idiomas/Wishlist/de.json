@@ -12,7 +12,7 @@
   "String9": "Bewertungen (Anzahl)",
   "String10": "Name (A-Z)",
   "String11": "Historische Tiefststände ({0})",
-  "String12": "Optionen",
+  "String12": "Optionen Wunschliste",
   "String13": "Neu",
   "String14": "Name (Z-A)",
   "String15": "1 Spiel auswählen",
@@ -32,5 +32,6 @@
   "String30": "Es werden Spiele auf Ihrer Wunschliste angezeigt, die mindestens den angegebenen Mindestrabatt haben.",
   "String31": "Spiele auf Ihrer Wunschliste, die den angegebenen Höchstpreis überschreiten, werden nicht angezeigt.",
   "String32": "Datum erkannt",
-  "String33": "Öffnen Sie die Synchronisierung"
+  "String33": "Öffnen Sie die Synchronisierung",
+  "String34": "RSS Feed"
 }

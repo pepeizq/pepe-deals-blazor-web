@@ -9,109 +9,86 @@ namespace Herramientas.RedesSociales
 	{
 		public static async Task<bool> Postear(IConfiguration configuracion, Noticias.Noticia noticia, string dominio)
 		{
+			bool estado = false;
+
 			string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
 			string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
-			string clientId = configuracion.GetValue<string>("Reddit:ClientID");
-			string clientSecret = configuracion.GetValue<string>("Reddit:ClientSecret");
+			string clienteId = configuracion.GetValue<string>("Reddit:ClientID");
+			string clienteSecreto = configuracion.GetValue<string>("Reddit:ClientSecret");
 
-            var webAgent = new Reddit2.BotWebAgent(cuenta, contraseña, clientId, clientSecret, "https://" + dominio + "/");          
-            var reddit = new RedditSharp.Reddit(webAgent, false);
-            
-			RedditSharp.Things.Subreddit subreddit = await reddit.GetSubredditAsync("gamedealsue");
+			Reddit2.BotWebAgent webAgent = new Reddit2.BotWebAgent(cuenta, contraseña, clienteId, clienteSecreto, "https://" + dominio + "/");
+			RedditSharp.Reddit reddit = new RedditSharp.Reddit(webAgent, false);
 
-			if (subreddit != null)
+			string titulo = string.Empty;
+
+			if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
 			{
-                string titulo = string.Empty;
-                string texto = string.Empty;
+				titulo = "[Bundle] " + noticia.TituloEn;
+			}
 
-                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Bundles)
-                {
-                    titulo = "[Bundle] " + noticia.TituloEn;
+			if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
+			{
+				titulo = "[Free] " + noticia.TituloEn;
+			}
 
-     //               var bundle = await global::BaseDatos.Bundles.Buscar.UnBundle(noticia.BundleId);
-					//texto = await Bundle(bundle);
-                }
+			if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
+			{
+				titulo = "[Subscriptions] " + noticia.TituloEn;
+			}
 
-                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Gratis)
-                {
-                    titulo = "[Free] " + noticia.TituloEn;
+			string enlace = string.Empty;
 
-        //            List<string> ids = Herramientas.Listados.Generar(noticia.GratisIds);
-        //            List<Juegos.JuegoGratis> juegosGratis = new List<Juegos.JuegoGratis>();
+			if (string.IsNullOrEmpty(noticia.Enlace) == true)
+			{
+				enlace = "https://" + dominio + "/news/" + noticia.Id.ToString();
+			}
+			else
+			{
+				enlace = noticia.Enlace;
+			}
 
-        //            if (ids?.Count > 0)
-        //            {
-        //                foreach (var id in ids)
-        //                {
-        //                    var gratis = await global::BaseDatos.Gratis.Buscar.UnGratis(id);
+			if (string.IsNullOrEmpty(titulo) == false)
+			{
+				RedditSharp.Things.Subreddit subredditEU = await reddit.GetSubredditAsync("gamedealsue");
 
-        //                    if (gratis != null)
-        //                    {
-								//gratis.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(gratis.JuegoId);
-
-								//juegosGratis.Add(gratis);
-        //                    }
-        //                }
-        //            }
-
-        //            texto = await Gratis(juegosGratis);
-                }
-
-                if (noticia.NoticiaTipo == Noticias.NoticiaTipo.Suscripciones)
-                {
-                    titulo = "[Subscriptions] " + noticia.TituloEn;
-
-        //            List<string> ids = Herramientas.Listados.Generar(noticia.SuscripcionesIds);
-        //            List<Juegos.JuegoSuscripcion> juegosSuscripciones = new List<Juegos.JuegoSuscripcion>();
-
-        //            if (ids?.Count > 0)
-        //            {
-        //                foreach (var id in ids)
-        //                {
-        //                    var suscripcion = await global::BaseDatos.Suscripciones.Buscar.Id(int.Parse(id));
-
-        //                    if (suscripcion != null)
-        //                    {
-								//suscripcion.Juego = await global::BaseDatos.Juegos.Buscar.UnJuego(suscripcion.JuegoId);
-
-								//juegosSuscripciones.Add(suscripcion);
-        //                    }
-        //                }
-        //            }
-
-        //            texto = await Suscripciones(juegosSuscripciones);
-                }
-               
-                if (string.IsNullOrEmpty(titulo) == false)
-                {
-                    try
-                    {
-						string enlace = string.Empty;
-
-						if (string.IsNullOrEmpty(noticia.Enlace) == true)
-						{
-							enlace = "https://" + dominio + "/news/" + noticia.Id.ToString();
-						}
-						else
-						{
-							enlace = noticia.Enlace;
-						}
-
-						RedditSharp.Things.Post post = await subreddit.SubmitPostAsync(titulo, enlace);
+				if (subredditEU != null)
+				{
+					try
+					{
+						RedditSharp.Things.Post post = await subredditEU.SubmitPostAsync(titulo, enlace);
 
 						if (post != null)
 						{
-							return true;
+							estado = true;
 						}
 					}
-                    catch (Exception ex) 
-                    {
-                        global::BaseDatos.Errores.Insertar.Mensaje("Reddit Postear Noticia", ex);
-                    }
-                }
-			}
+					catch (Exception ex)
+					{
+						global::BaseDatos.Errores.Insertar.Mensaje("Reddit Postear Noticia EU", ex);
+					}
+				}
 
-			return false;
+				RedditSharp.Things.Subreddit subredditUS = await reddit.GetSubredditAsync("gamedealsUS");
+
+				if (subredditUS != null)
+				{
+					try
+					{
+						RedditSharp.Things.Post post = await subredditUS.SubmitPostAsync(titulo, enlace);
+
+						if (post != null)
+						{
+							estado = true;
+						}
+					}
+					catch (Exception ex)
+					{
+						global::BaseDatos.Errores.Insertar.Mensaje("Reddit Postear Noticia US", ex);
+					}
+				}
+			}
+				
+			return estado;
 		}
 
 		public static async Task<string> Bundle(Bundles2.Bundle bundle)
@@ -738,7 +715,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static async Task PostearOfertasDia(IConfiguration configuracion, List<Juego> juegos, JuegoDRM drm)
+        public static async Task PostearOfertasDia(IConfiguration configuracion, TiendaRegion region, List<Juego> juegos, JuegoDRM drm)
         {
             string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
             string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
@@ -748,7 +725,14 @@ namespace Herramientas.RedesSociales
             var webAgent = new Reddit2.BotWebAgent(cuenta, contraseña, clientId, clientSecret, "https://pepeizqdeals.com/");
             var reddit = new RedditSharp.Reddit(webAgent, false);
 
-            RedditSharp.Things.Subreddit subreddit = await reddit.GetSubredditAsync("gamedealsue");
+			string sub = "gamedealsue";
+
+			if (region == TiendaRegion.EstadosUnidos)
+			{
+				sub = "gamedealsUS";
+			}
+
+			RedditSharp.Things.Subreddit subreddit = await reddit.GetSubredditAsync(sub);
 
             string titulo = "Today's Deals for " + JuegoDRM2.DevolverDRM(drm) + " [" + DateTime.Now.Day.ToString() + "/" + DateTime.Now.Month.ToString() + "/" + DateTime.Now.Year.ToString() + "]";
             string texto = null;
@@ -771,7 +755,7 @@ namespace Herramientas.RedesSociales
 				}
 				
 				Dictionary<string, List<Juego>> juegosPorTienda = new Dictionary<string, List<Juego>>();
-				List<Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
+				List<Tienda> tiendas = TiendasCargar.GenerarListado();
 
                 foreach (var juego in juegos)
                 {
@@ -797,24 +781,47 @@ namespace Herramientas.RedesSociales
 
                         string codigo = string.Empty;
 
-                        if (string.IsNullOrEmpty(listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto) == false)
-                        {
-                            codigo = Environment.NewLine + ">Code: **" + listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto + "**";
-						}
-
-                        texto = texto + "**" + tienda + "**" + codigo + Environment.NewLine;
-
-						foreach (var juego in listaJuegos)
-                        {
-							string precio = Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].Precio);
-
-							if (juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+						if (region == TiendaRegion.Europa)
+						{
+							if (string.IsNullOrEmpty(listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto) == false)
 							{
-								precio = Herramientas.Precios.Euro(juego.PrecioMinimosHistoricos[0].PrecioCambiado);
-
+								codigo = Environment.NewLine + ">Code: **" + listaJuegos[0]?.PrecioMinimosHistoricos[0]?.CodigoTexto + "**";
 							}
 
-							texto = texto + "* [" + juego.Nombre + " • " + juego.PrecioMinimosHistoricos[0].Descuento.ToString() + "% • " + precio + "](" + juego.PrecioMinimosHistoricos[0].Enlace + ")" + Environment.NewLine;
+							texto = texto + "**" + tienda + "**" + codigo + Environment.NewLine;
+
+							foreach (var juego in listaJuegos)
+							{
+								string precio = Precios.Euro(juego.PrecioMinimosHistoricos[0].Precio);
+
+								if (juego.PrecioMinimosHistoricos[0].PrecioCambiado > 0)
+								{
+									precio = Precios.Euro(juego.PrecioMinimosHistoricos[0].PrecioCambiado);
+								}
+
+								texto = texto + "* [" + juego.Nombre + " • " + juego.PrecioMinimosHistoricos[0].Descuento.ToString() + "% • " + precio + "](" + juego.PrecioMinimosHistoricos[0].Enlace + ")" + Environment.NewLine;
+							}
+						}
+						else if (region == TiendaRegion.EstadosUnidos)
+						{
+							if (string.IsNullOrEmpty(listaJuegos[0]?.PrecioMinimosHistoricosUS[0]?.CodigoTexto) == false)
+							{
+								codigo = Environment.NewLine + ">Code: **" + listaJuegos[0]?.PrecioMinimosHistoricosUS[0]?.CodigoTexto + "**";
+							}
+
+							texto = texto + "**" + tienda + "**" + codigo + Environment.NewLine;
+
+							foreach (var juego in listaJuegos)
+							{
+								string precio = Precios.Dolar(juego.PrecioMinimosHistoricosUS[0].Precio);
+
+								if (juego.PrecioMinimosHistoricosUS[0].PrecioCambiado > 0)
+								{
+									precio = Precios.Dolar(juego.PrecioMinimosHistoricosUS[0].PrecioCambiado);
+								}
+
+								texto = texto + "* [" + juego.Nombre + " • " + juego.PrecioMinimosHistoricosUS[0].Descuento.ToString() + "% • " + precio + "](" + juego.PrecioMinimosHistoricosUS[0].Enlace + ")" + Environment.NewLine;
+							}
 						}
 
 						texto = texto + Environment.NewLine + "---" + Environment.NewLine + Environment.NewLine;

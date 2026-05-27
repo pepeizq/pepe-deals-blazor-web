@@ -12,7 +12,7 @@
   "String9": "Avis (quantité)",
   "String10": "Nom (A-Z)",
   "String11": "Plus bas historiques ({0})",
-  "String12": "Possibilités",
+  "String12": "Possibilités Liste de souhaits",
   "String13": "Nouveau",
   "String14": "Nom (Z-A)",
   "String15": "Choisir 1 jeu",
@@ -32,5 +32,6 @@
   "String30": "Les jeux de votre liste de souhaits qui bénéficient au moins de la réduction minimale indiquée seront affichés.",
   "String31": "Les jeux de votre liste de souhaits qui dépassent le prix maximum indiqué ne seront pas affichés.",
   "String32": "Date détectée",
-  "String33": "Ouvrir la synchronisation"
+  "String33": "Ouvrir la synchronisation",
+  "String34": "RSS Feed"
 }

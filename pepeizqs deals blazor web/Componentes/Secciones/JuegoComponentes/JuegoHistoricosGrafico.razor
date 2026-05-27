@@ -33,12 +33,25 @@
 
                     if (precio > 0)
                     {
-                        string precioTexto = Herramientas.Precios.Euro(precio);
-                        string fechaTexto = puntosDatos.Items.FirstOrDefault()?.DiaMes.Day.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.DiaMes.Month.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.Año.ToString();
+                        string precioTexto = string.Empty;
 
-                        <div>
-                            <strong>@precioTexto</strong> - @fechaTexto
-                        </div>
+                        if (usuarioRegion == TiendaRegion.Europa)
+                        {
+                            precioTexto = Herramientas.Precios.Euro(precio);
+                        }
+                        else
+                        {
+                            precioTexto = Herramientas.Precios.Dolar(precio);
+                        }
+
+                        if (string.IsNullOrEmpty(precioTexto) == false)
+                        {
+                            string fechaTexto = puntosDatos.Items.FirstOrDefault()?.DiaMes.Day.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.DiaMes.Month.ToString() + "/" + puntosDatos.Items.FirstOrDefault()?.Año.ToString();
+
+                            <div>
+                                <strong>@precioTexto</strong> - @fechaTexto
+                            </div>
+                        }
                     }
                 }
             </div>

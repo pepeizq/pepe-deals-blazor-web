@@ -18,83 +18,6 @@
 @inject Servicios.Moneda ServiciosMoneda
 @inject Servicios.Opciones ServicioOpciones
 
-<script>
-    window.clipboardCopy = {
-        copyText: function(text) {
-            navigator.clipboard.writeText(text);
-        }
-    };
-</script>
-
-<script>
-    window.buscador = {
-        teclearBusqueda: function (elemento, dotNetRef, retraso) {
-
-            let timerId = null;
-
-            elemento.addEventListener("input", function (e) {
-                const valor = e.target.value;
-
-                clearTimeout(timerId);
-
-                timerId = setTimeout(() => {
-                    dotNetRef.invokeMethodAsync("EventoTecleoBuscador", valor);
-                }, retraso);
-            });
-        }
-    };
-</script>
-
-<script>
-    window.toggleBodyScroll = (disable) => {
-        if (disable) {
-            document.body.classList.add('no-scroll');
-        } else {
-            document.body.classList.remove('no-scroll');
-        }
-    }
-</script>
-
-<script>
-    function MostrarTooltipJs(id) {
-        document.getElementById(id).style.display = 'block';
-    }
-
-    function OcultarTooltipJs(id) {
-        document.getElementById(id).style.display = 'none';
-    }
-
-    function ActualizarPosicionTooltip(clientX, clientY, id) {
-        var tooltip = document.getElementById(id);
-        if (!tooltip) return;
-
-        var tooltipRect = tooltip.getBoundingClientRect();
-        var offsetX = 15;
-        var offsetY = 15;
-
-        var left, top;
-
-        if (clientX > window.innerWidth / 2) {
-            left = clientX - tooltipRect.width - offsetX;
-        } else {
-            left = clientX + offsetX;
-        }
-
-        top = clientY + offsetY;
-
-        if (left < 0) left = offsetX;
-        if (left + tooltipRect.width > window.innerWidth) {
-            left = window.innerWidth - tooltipRect.width - offsetX;
-        }
-        if (top + tooltipRect.height > window.innerHeight) {
-            top = clientY - tooltipRect.height - offsetY;
-        }
-
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = top + 'px';
-    }
-</script>
-
 @if (enseñarAlerta == true)
 {
     <div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
@@ -113,297 +36,6 @@
         </div>
     </div>
 }
-
-<style>
-    .cabecera2 {
-        z-index: 9999;
-        position: sticky;
-        top: 0;
-        padding: 15px;
-        display: flex;
-        width: 100%;
-        background: radial-gradient(300px 150px at 10% 50%, rgba(0,32,51,0.35), transparent 70%), radial-gradient(300px 150px at 90% 50%, rgba(27,40,56,0.25), transparent 70%), linear-gradient(90deg, var(--fondoOscuro), var(--fondoMinimo) 35%, var(--fondoOscuro));
-        background-blend-mode: overlay, overlay, normal;
-        border-bottom: 2px solid var(--glaseadoCabeceraBorde);
-    }
-
-    .texto-logo {
-        font-size: 22px;
-        color: var(--colorTexto);
-        text-decoration: none;
-        padding-right: 20px;
-        flex-shrink: 0;
-        background-color: transparent; 
-        border: 0;
-    }
-
-        .texto-logo:hover {
-            color: var(--colorTextoHover);
-        }
-
-    .buscador-panel {
-        height: calc(100% - var(--alturaCabecera));
-        width: 100%;
-        left: 0;
-        top: 0;
-        overflow-x: auto;
-        position: fixed;
-        z-index: 1005;
-        margin-top: var(--alturaCabecera);
-        padding: 10px;
-        background-color: var(--fondoOscuroTransparente);
-    }
-
-    .boton-superior {
-        display: block;
-        padding: 0px 12px;
-        margin: 0px;
-        transition: transform .2s;
-        text-decoration: none;
-        background-color: transparent;
-        border: 0;
-        color: var(--colorTextoVisitado);
-    }
-
-        .boton-superior:hover {
-            transform: scale(1.01);
-            color: var(--colorEnlace);
-        }
-
-    @@media (max-width: 1100px) {
-        .texto-logo {
-            font-size: 18px;
-            padding-right: 10px;
-        }
-
-        .boton-superior {
-            float: none;
-        }
-
-            .boton-superior:hover {
-                transform: scale(1.005);
-                background-color: var(--fondoBotonHover);
-            }
-    }
-
-    .botones-superiores {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-
-    @@media (max-width: 1100px) {
-        .botones-superiores {
-            display: none;
-        }
-    }
-
-    .botones-superiores2 {
-        display: none;
-    }
-
-    @@media (max-width: 1100px) {
-        .botones-superiores2 {
-            display: flex;
-            margin-left: auto;
-        }
-    }
-
-    :root {
-        --glaseadoCabeceraBoton: rgba(0, 32, 51, 0.7);
-        --glaseadoCabeceraBorde: rgba(0, 255, 255, 0.15);
-        --colorBuscador: #85a6cf;
-    }
-
-    .menu-dropdown2 {
-        position: relative;
-        display: inline-block;
-    }
-
-    .menu-dropdown2::after {
-        content: "";
-        position: absolute;
-        top: 100%;
-        left: 0;
-        height: 20px;
-        width: 100%;
-    }
-
-    .menu-dropdown-contenido-centrado {
-        position: absolute;
-        top: 120%;
-        left: 50%;
-        transform: translate(-50%, -8px);
-        min-width: 200px;
-        padding: 8px;
-        backdrop-filter: blur(25px);
-        background: var(--glaseadoCabeceraBoton);
-        border-radius: 14px;
-        box-shadow: 0 20px 40px rgba(0,0,0,.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .2s ease, transform .2s ease;
-        border: 2px solid var(--glaseadoCabeceraBorde);
-    }
-
-    .menu-dropdown2:hover .menu-dropdown-contenido-centrado {
-        opacity: 1;
-        transform: translate(-50%, 0);
-        pointer-events: auto;
-    }
-
-    .menu-dropdown-contenido-centrado a {
-        display: block;
-        padding: 12px 16px;
-        border-radius: 10px;
-        text-decoration: none;
-    }
-
-        .menu-dropdown-contenido-centrado a:hover {
-            background: rgba(99, 102, 241,.15);
-        }
-
-    .menu-dropdown-contenido-derecha {
-        position: absolute;
-        top: 120%;
-        right: -15px;
-        transform: translateY(-8px);
-        min-width: 200px;
-        padding: 8px;
-        backdrop-filter: blur(25px);
-        background: var(--glaseadoCabeceraBoton);
-        border-radius: 14px;
-        box-shadow: 0 20px 40px rgba(0,0,0,.25);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity .2s ease, transform .2s ease;
-        border: 2px solid var(--glaseadoCabeceraBorde);
-    }
-
-    .menu-dropdown2:hover .menu-dropdown-contenido-derecha {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-
-    .menu-dropdown-contenido-derecha button {
-        display: block;
-        padding: 12px 16px;
-        border-radius: 10px;
-        text-decoration: none;
-    }
-
-        .menu-dropdown-contenido-derecha button:hover {
-            background: rgba(99, 102, 241, .15);
-        }
-
-    .resultados-busqueda {
-        opacity: 0;
-        transform: translateY(-8px);
-        transition: opacity 0.2s ease, transform 0.2s ease;
-        pointer-events: none;
-    }
-
-        .resultados-busqueda.mostrar {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-    .cargando-busqueda {
-        width: 24px;
-        height: 24px;
-        border: 3px solid var(--colorEnlace);
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotacionBusqueda 1s linear infinite;
-    }
-
-    .buscador-placeholder::placeholder {
-        color: var(--colorBuscador);
-    }
-
-    @@keyframes rotacionBusqueda {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .buscador-inactivo {
-        background-color: var(--fondoEntrada);
-        border: 2px solid var(--glaseadoCabeceraBorde);
-    }
-
-    .buscador-activo {
-        background-color: var(--fondoBotonPequeñoHover);
-        border: 2px solid var(--fondoBoton);
-    }
-
-    .pestaña-buscador {
-        padding: 10px 20px;
-        border: 1px solid var(--fondoBotonPequeño);
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.2s ease;
-        color: var(--colorTexto);
-        background-color: transparent;
-    }
-
-        .pestaña-buscador:not(.pestaña-activa):hover {
-            background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, transparent);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .pestaña-buscador.pestaña-activa {
-            background-color: var(--fondoBotonPequeño);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-            .pestaña-buscador.pestaña-activa:hover {
-                background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoSubsubcabecera));
-            }
-
-    .no-scroll {
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .svg-icono-rotante {
-        transition: transform 0.2s ease;
-    }
-
-    .menu-dropdown2:hover .svg-icono-rotante {
-        transform: rotate(180deg);
-    }
-
-    .boton-cabecera-deseados {
-        transition: all 0.3s ease;
-    }
-
-    a:hover .boton-cabecera-deseados {
-        transform: translateY(-3px);
-    }
-
-        a:hover .boton-cabecera-deseados > div:first-child {
-            animation: pulse 0.6s ease-in-out;
-        }
-
-    @@keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-
-        50% {
-            transform: scale(1.15);
-        }
-    }
-</style>
 
 <header class="cabecera2">
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm" style="padding: 0px; width: 100%;">
@@ -1303,6 +935,8 @@
         cts = new CancellationTokenSource();
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1372,8 +1006,14 @@
 
         if (primerRender == true)
         {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/Cabecera.razor.js");
+
             cabeceraReferencia = DotNetObjectReference.Create(this);
-            await JavaScript.InvokeVoidAsync("buscador.teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
+
+            if (moduloJs != null)
+            {
+                await moduloJs.InvokeVoidAsync("teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
+            }
 
             if (string.IsNullOrEmpty(Search) == false)
             {
@@ -1407,11 +1047,26 @@
                     StateHasChanged();
                 }
 
-                await JavaScript.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());
+                if (moduloJs != null)
+                {
+                    await moduloJs.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());                    
+                }
             }
         }
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
     }
 
     #region Botones Cabecera
@@ -1563,11 +1218,7 @@
 
         try
         {
-            await InvokeAsync(() =>
-            {
-                cargandoBusqueda = true;
-                StateHasChanged();
-            });
+            cargandoBusqueda = true;
 
             await Task.Delay(retraso, token);
 
@@ -1575,16 +1226,15 @@
 
             if (busquedaId == busquedaActualId && token.IsCancellationRequested == false)
             {
-                await InvokeAsync(async () =>
-                {
-                    List<Juego> resultados2 = resultados.juegos;
-                    cantidadExcluidos = resultados.excluidos;
+                List<Juego> resultados2 = resultados.juegos;
+                cantidadExcluidos = resultados.excluidos;
 
-                    ActualizarResultadosPorTipo(resultados2);
-                    ActivarPrimeraPestañaDisponible();
+                ActualizarResultadosPorTipo(resultados2);
+                ActivarPrimeraPestañaDisponible();
 
-                    await ActualizarScrollBody(resultados2.Any());
-                });
+                await ActualizarScrollBody(resultados2.Any());
+
+                await InvokeAsync(StateHasChanged);
             }
         }
         catch
@@ -1599,7 +1249,7 @@
             if (busquedaId == busquedaActualId)
             {
                 cargandoBusqueda = false;
-                StateHasChanged();
+                await InvokeAsync(StateHasChanged);
             }
         }
     }
@@ -1708,7 +1358,10 @@
 
     private async Task ActualizarScrollBody(bool desactivar)
     {
-        await JavaScript.InvokeVoidAsync("toggleBodyScroll", desactivar);
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("toggleBodyScroll", desactivar);
+        }
     }
 
     public void Dispose()
@@ -1768,7 +1421,11 @@
         }
 
         enseñarAlerta = true;
-        await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", textoEnlace);
+
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("copiarTexto", textoEnlace);
+        }
 
         cronometroContador = 0;
         cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));
@@ -1837,6 +1494,10 @@
         {
             return true;
         }
+        else if (enlaceTexto == "/wishlist")
+        {
+            return true;
+        }
         else if (enlaceTexto == "/historical-lows")
         {
             return true;
@@ -1874,17 +1535,26 @@
 
     private async Task MostrarTooltipJs(string id)
     {
-        await JavaScript.InvokeVoidAsync("MostrarTooltipJs", id);
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("mostrarTooltipJs", id);
+        }
     }
 
     private async Task OcultarTooltipJs(string id)
     {
-        await JavaScript.InvokeVoidAsync("OcultarTooltipJs", id);
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("ocultarTooltipJs", id);            
+        }
     }
 
     private async Task ActualizarPosicionTooltip(MouseEventArgs e, string id)
     {
-        await JavaScript.InvokeVoidAsync("ActualizarPosicionTooltip", e.ClientX, e.ClientY, id);
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("actualizarPosicionTooltip", e.ClientX, e.ClientY, id);
+        }
     }
 }
 

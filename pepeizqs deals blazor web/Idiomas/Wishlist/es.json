@@ -12,7 +12,7 @@
   "String9": "Reseñas (Cantidad)",
   "String10": "Nombre (A-Z)",
   "String11": "Mínimos históricos ({0})",
-  "String12": "Opciones",
+  "String12": "Opciones Deseados",
   "String13": "Nuevo",
   "String14": "Nombre (Z-A)",
   "String15": "Elegiendo 1 juego",
@@ -32,5 +32,6 @@
   "String30": "Se mostrarán los juegos de tu lista de deseados que tengan al menos el descuento mínimo indicado.",
   "String31": "No se mostrarán los juegos de tu lista de deseados que superen el precio máximo indicado.",
   "String32": "Fecha Detectado",
-  "String33": "Abrir Sincronización"
+  "String33": "Abrir Sincronización",
+  "String34": "RSS Feed"
 }

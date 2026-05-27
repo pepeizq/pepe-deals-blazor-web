@@ -12,7 +12,7 @@
   "String9": "Reviews (Quantity)",
   "String10": "Name (A-Z)",
   "String11": "Historical Lows ({0})",
-  "String12": "Options",
+  "String12": "Options Wishlist",
   "String13": "New",
   "String14": "Name (Z-A)",
   "String15": "Choosing 1 game",
@@ -32,5 +32,6 @@
   "String30": "Games on your wishlist that have at least the minimum discount indicated will be displayed.",
   "String31": "Games on your wishlist that exceed the maximum price indicated will not be displayed.",
   "String32": "Date Detected",
-  "String33": "Open Sync"
+  "String33": "Open Sync",
+  "String34": "RSS Feed"
 }

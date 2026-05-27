@@ -32,7 +32,7 @@ namespace Herramientas
 				return resultado;
 			}
 
-			List<int> ids = Herramientas.Listados.Generar(deseadosUsuario.SteamWishlist).Select(int.Parse).ToList();
+			List<int> ids = Listados.Generar(deseadosUsuario.SteamWishlist).Select(int.Parse).ToList();
 
 			if (ids.Count == 0)
 			{
@@ -127,7 +127,7 @@ namespace Herramientas
 				historico = juego.PrecioMinimosHistoricosUS.FirstOrDefault(h => h.DRM == drm);
 			}
 
-			if (historico != null && Herramientas.OfertaActiva.Verificar(historico) && ExisteEnActuales(historico, juego, drm, region))
+			if (historico != null && OfertaActiva.Verificar(historico) && ExisteEnActuales(historico, juego, drm, region))
 			{
 				nuevoDeseado = new JuegoDeseadoMostrar
 				{

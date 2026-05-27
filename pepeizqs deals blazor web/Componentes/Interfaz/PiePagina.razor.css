@@ -1,0 +1,18 @@
+* {
+    --colorEncabezadoPie: #e3eeff;
+}
+
+.pie2 {
+    background-color: color-mix(in srgb, var(--fondoOscuro) 80%, var(--fondoCuerpo));
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    border-top: 1px solid rgba(0,255,255,0.15);
+}
+
+.subir-arriba2 {
+    transition: transform 0.2s ease;
+}
+
+    .subir-arriba2:hover {
+        transform: scale(105%);
+    }

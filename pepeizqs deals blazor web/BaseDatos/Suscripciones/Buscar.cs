@@ -20,7 +20,6 @@ namespace BaseDatos.Suscripciones
 			string busqueda = $@"
 				SELECT {cantidadTexto}
 					sub.*,
-					j.*,
 					(
 						SELECT g.gratis
 						FROM gratis g
@@ -50,7 +49,8 @@ namespace BaseDatos.Suscripciones
 						WHERE s.juegoId = j.id
 						  AND s.FechaTermina < GETDATE()
 						FOR JSON PATH
-					) AS SuscripcionesPasados
+					) AS SuscripcionesPasados,
+				j.*
 				FROM (
 					SELECT *, suscripcion AS Tipo
 					FROM suscripciones

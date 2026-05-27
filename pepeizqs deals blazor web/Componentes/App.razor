@@ -28,6 +28,10 @@
         <link rel="dns-prefetch" href="@dominio">
     }
 
+    @* CSS en componentes razor *@
+    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" />
+
+    @* CSS globales *@
     <link rel="preload" as="style" href="@Assets["/css/bundle.css"]" />
     <link rel="stylesheet" href="@Assets["/css/bundle.css"]" media="screen" />
     <link rel="stylesheet" href="@Assets["/css/bundle.css"]" media="print" onload="this.media='all'" />

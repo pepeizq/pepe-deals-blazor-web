@@ -127,8 +127,8 @@ builder.Services.AddDbContextPool<pepeizqs_deals_webContext>(opciones => {
 		opciones2.CommandTimeout(30);
 		opciones2.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), new List<int>() { 18, 19 });
 	});
-	opciones.EnableSensitiveDataLogging();
-	opciones.EnableDetailedErrors();
+	//opciones.EnableSensitiveDataLogging();
+	//opciones.EnableDetailedErrors();
 });
 
 builder.Services.ConfigureApplicationCookie(opciones =>

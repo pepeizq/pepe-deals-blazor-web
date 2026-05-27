@@ -10,7 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Componentes\Secciones\Deseados.razor.js" />
     <None Remove="Idiomas\Boosteroid\pt.json~RF174ab52.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Componentes\Secciones\Deseados.razor.js" />
   </ItemGroup>
 
   <ItemGroup>

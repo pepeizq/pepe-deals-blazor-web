@@ -1,0 +1,47 @@
+.cjuego-titulo {
+    padding: 10px 20px;
+}
+
+.cjuego-fecha {
+    font-size: 14px;
+}
+
+.cjuego-descuento {
+    font-size: 16px;
+    padding: 10px 15px;
+    min-width: 65px;
+}
+
+.cjuego-precio {
+    font-size: 18px;
+    min-width: 110px;
+}
+
+@media (max-width: 800px) {
+    .cjuego-titulo {
+        padding: 5px 10px;
+    }
+
+    .cjuego-fecha {
+        font-size: 10px;
+    }
+
+    .cjuego-descuento {
+        font-size: 12px;
+        padding: 5px 8px;
+        min-width: 35px;
+    }
+
+    .cjuego-precio {
+        font-size: 12px;
+        min-width: 50px;
+    }
+}
+
+.boton-expandir {
+    transition: transform .2s;
+}
+
+    .boton-expandir:hover {
+        transform: scale(1.01);
+    }
