@@ -1,0 +1,9 @@
+.caja-jugadores {
+    display: flex;
+}
+
+@media(max-width: 900px) {
+    .caja-jugadores {
+        display: none;
+    }
+}

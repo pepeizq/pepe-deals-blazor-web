@@ -1,0 +1,19 @@
+export function enseñarTooltip(e, id) {
+	if (matchMedia('(pointer:fine)').matches) {
+		var x = e.clientX,
+			y = e.clientY;
+
+		var tooltip = document.getElementById(id);
+
+		if (tooltip) {
+			if (screen.width / 2 > x) {
+				tooltip.style.top = (y + 10) + 'px';
+				tooltip.style.left = (x + 20) + 'px';
+			}
+			else {
+				tooltip.style.top = (y - 10) + 'px';
+				tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
+			};
+		};
+	};
+};

@@ -129,207 +129,6 @@
             precioAltoJsonJuego="@precioAltoJson" fechaJsonJuego="@fechaJson" preciosCantidadJsonJuego="@preciosJson?.Count"/>
 }
 
-<script>
-    window.ChangeUrl = function (url) {
-        history.pushState(null, '', url);
-    }
-
-    function enseñarTooltip(e, id) {
-        var x = e.clientX,
-            y = e.clientY;
-
-        var tooltip = document.getElementById(id);
-
-        if (screen.width / 2 > x) {
-            tooltip.style.top = (y + 10) + 'px';
-            tooltip.style.left = (x + 20) + 'px';
-        }
-        else {
-            tooltip.style.top = (y - 10) + 'px';
-            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-        };
-    }
-
-    function moverScroll(id) {
-        const yOffset = -185;
-        const element = document.getElementById(id);
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-        window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-</script>
-
-<style>
-    :root {
-        --colorExcluido: rgba(132, 32, 41, 0.5);
-        --glaseadoFondo: rgba(45, 47, 54, 0.70);
-    }
-
-	.caja-juego-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-	}
-
-	.caja-juego-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		padding: 20px 30px;
-		border: 1px solid var(--fondoSubsubcabecera);
-	}
-
-    .boton-reseñas {
-        display: inline-block;
-    }
-
-    .caja-jugadores {
-        display: flex;
-    }
-
-    .caja-drm {
-        display: flex;
-    }
-
-    .caja-drm-tienda {
-         flex-wrap: wrap;
-    }
-
-    .juego-imagen-boton {
-        margin: 20px;
-        max-height: 40px;
-    }
-
-    .juego-descuento-precio {
-        display: flex;
-        align-items: center;
-    }
-
-    .juego-descuento {
-        font-size: 18px;
-        margin: 10px;
-        padding: 10px;
-        background-color: darkgreen;
-    }
-
-    .juego-precio {
-        font-size: 18px;
-        margin: 20px;
-    }
-
-    .juego-caja-espacio {
-        padding: 30px;
-    }
-
-    @@media(max-width: 900px) {
-        .boton-reseñas {
-            display: none;
-        }
-
-        .caja-jugadores {
-            display: none;
-        }
-
-        .caja-drm {
-            display: grid;
-        }
-
-        .caja-drm-tienda {
-            flex-wrap: inherit;
-        }
-
-        .juego-imagen-boton {
-            margin: 5px;
-            max-height: 25px;
-        }
-
-        .juego-hacetiempo {
-            display: none;
-        }
-
-        .juego-descuento {
-            font-size: 16px;
-            margin: 5px;
-            padding: 5px;
-        }
-
-        .juego-precio {
-            font-size: 16px;
-            margin: 10px;
-        }
-
-        .juego-caja-espacio {
-            padding: 20px;
-        }
-    }
-
-    .descripcion-datos {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    @@media(max-width: 1000px) {
-        .descripcion-datos {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .boton-expandir {
-        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-        background-color: var(--fondoBotonPequeño);
-    }
-
-    .boton-expandir:hover {
-        transform: scale(1.01);
-        background-color: var(--fondoBotonPequeñoHover);
-    }
-
-    .boton-expandir2 {
-        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .boton-expandir2:hover {
-        transform: scale(1.01);
-    }
-
-    .boton-historicos {
-        width: 100%;
-        padding: 10px;
-        background: transparent;
-        border: none;
-        color: var(--colorTexto);
-        text-align: left;
-        cursor: pointer;
-        border-radius: 2px;
-        transition: background 0.15s;
-    }
-
-    .boton-historicos:hover {
-        background: color-mix(in srgb, var(--fondoCodigo) 60%, transparent);
-    }
-
-    .boton-historicos.seleccionado {
-        background: var(--fondoCodigo);
-    }
-
-    .boton-historicos.seleccionado:hover {
-        background: var(--fondoCodigo);
-        filter: brightness(1.2);
-    }
-
-    .caja-juego-excluido {
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-        background-blend-mode: overlay;
-        border: 2px solid var(--glaseadoBorde);
-        width: fit-content;
-        backdrop-filter: blur(25px);
-    }
-
-    .svg-icono-rotante {
-        transition: transform 0.2s ease;
-    }
-
-    .boton-deseado:hover .svg-icono-rotante {
-        transform: rotate(180deg);
-    }
-</style>
-
 @if (juego != null)
 {
     if (usuarioAdmin == true)
@@ -450,7 +249,7 @@
 
                                                     if (drm.Id == JuegoDRM.DRMFree)
                                                     {
-                                                        <button onclick="moverScroll('@drm.Id')" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; text-align: center; padding: 7px;"><div style="font-weight: bold; font-size: 9px;">DRM Free</div></button>
+                                                        <button @onclick="@(e => MoverScrollJs(e, drm.Id.ToString()))" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; text-align: center; padding: 7px;"><div style="font-weight: bold; font-size: 9px;">DRM Free</div></button>
                                                     }
                                                     else
                                                     {
@@ -458,7 +257,7 @@
                                                         string imagenDRM1 = imagenDRM.Replace(".webp", "-sm.webp");
                                                         string imagenDRM2 = imagenDRM.Replace(".webp", "-md.webp");
 
-                                                        <button onclick="moverScroll('@drm.Id')" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; padding: 9px;">
+                                                        <button @onclick="@(e => MoverScrollJs(e, drm.Id.ToString()))" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; padding: 9px;">
                                                             <picture style="display: flex;">
                                                                 <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
                                                                 <img src="@imagenDRM" alt="@drm.Nombre" style="max-width: 100%; max-height: 100%;"/>
@@ -474,22 +273,22 @@
 
                             @if (juego.Bundles?.Count > 0)
                             {
-                                <button onclick="moverScroll('bundles')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Bundles", "Header")</button>
+                                <button @onclick="@(e => MoverScrollJs(e, "bundles"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Bundles", "Header")</button>
                             }
 
                             @if (juego.Gratis?.Count > 0)
                             {
-                                <button onclick="moverScroll('gratis')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Free", "Header")</button>
+                                <button @onclick="@(e => MoverScrollJs(e, "gratis"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Free", "Header")</button>
                             }
 
                             @if (juego.Suscripciones?.Count > 0)
                             {
-                                <button onclick="moverScroll('suscripciones')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Subscriptions", "Header")</button>
+                                <button @onclick="@(e => MoverScrollJs(e, "suscripciones"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@Herramientas.Idiomas.BuscarTexto(idioma, "Subscriptions", "Header")</button>
                             }
 
                             @if (dlcs?.Count > 0)
                             {
-                                <button onclick="moverScroll('dlcs')" class="boton" style="padding: 8px 10px; background: color-mix(in srgb, var(--fondoBotonPequeño), var(--fondoDlc) 70%); color: var(--colorTextoDlc); font-size: 16px; width: fit-content; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                <button @onclick="@(e => MoverScrollJs(e, "dlcs"))" class="boton" style="padding: 8px 10px; background: color-mix(in srgb, var(--fondoBotonPequeño), var(--fondoDlc) 70%); color: var(--colorTextoDlc); font-size: 16px; width: fit-content; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String34", "Game") (@dlcs.Count.ToString())
                                 </button>
                             }
@@ -499,7 +298,7 @@
                                 <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
                                     @if (juego.Caracteristicas?.AccesoAnticipado == true)
                                     {
-                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-early')">
+                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-early"))">
                                             <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String97", "Game")
                                             </div>
@@ -518,7 +317,7 @@
                                         {
                                             if (categoria == "54")
                                             {
-                                                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-vr')">
+                                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-vr"))">
                                                     <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                         @Herramientas.Idiomas.BuscarTexto(idioma, "String99", "Game")
                                                     </div>
@@ -537,7 +336,7 @@
                                     {
                                         if (juego.FreeToPlay.ToLower() == "true")
                                         {
-                                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-f2p')">
+                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-f2p"))">
                                                 <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String103", "Game")
                                                 </div>  
@@ -555,7 +354,7 @@
                                     {
                                         if (juego.MayorEdad.ToLower() == "true")
                                         {
-                                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-sex')">
+                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-sex"))">
                                                 <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoAlerta); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String105", "Game")
                                                 </div>   
@@ -571,7 +370,7 @@
 
                                     @if (juego.InteligenciaArtificial == true)
                                     {
-                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-ai')">
+                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-ai"))">
                                             <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String106", "Game")
                                             </div>
@@ -592,7 +391,7 @@
                                 {
                                     if (juego.MayorEdad.ToLower() == "true")
                                     {
-                                         <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
+                                        <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String105", "Game")
                                         </div>   
                                     }
@@ -626,7 +425,7 @@
                                     }
 
                                     <div style="margin-left: auto; margin-right: 5px;">
-                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-dlc')" style="width: fit-content;">
+                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-header-dlc"))" style="width: fit-content;">
                                             <a class="boton-pequeño" style="text-align: center; padding: 10px 30px; text-decoration: none; @fondoBotonDlc" href="@enlaceMaestro" target="_self" @onclick="(e => AbrirEnlace(e, enlaceMaestro, false))">
                                                 <div style="display: flex; flex-direction: column; gap: 10px;">
                                                     <div style="width: 100%; height: 30px; display: flex; justify-content: center;">
@@ -705,8 +504,8 @@
                                 {
                                     if (juego.Analisis.Cantidad.Length > 1)
                                     {
-                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-reviews')">
-                                            <button onclick="moverScroll('reviews')" class="boton-pequeño boton-reseñas" style="width: fit-content; padding: 0px; color: var(--colorTexto); background: color-mix(in srgb, var(--fondoSubsubcabecera) 33%, var(--fondoBotonPequeño));">
+                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-reviews"))">
+                                            <button @onclick="@(e => MoverScrollJs(e, "reviews"))" class="boton-pequeño boton-reseñas" style="width: fit-content; padding: 0px; color: var(--colorTexto); background: color-mix(in srgb, var(--fondoSubsubcabecera) 33%, var(--fondoBotonPequeño));">
                                                 <div style="padding: 10px; display: flex; flex-direction: column; gap: 10px;">
                                                     <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
                                                         @if (int.Parse(juego.Analisis.Porcentaje) > 74)
@@ -872,7 +671,7 @@
 
                                         @if (cargarComponentes == true)
                                         {
-                                            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-@drm.Id')" style="width: fit-content;">
+                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-wishlist-{drm.Id}"))" style="width: fit-content;">
                                                 <button @onclick="@(e => CambiarEstadoDeseado(e, !usuarioTieneDeseado, drm.Id))" class="boton-pequeño boton-deseado" style="width: fit-content; padding: 10px; transform: none; @fondoDeseado">
 									                <div style="fill: var(--colorTexto); width: 30px; height: 30px; display: flex;">
 										                @if (usuarioTieneDeseado == true)
@@ -910,8 +709,8 @@
                                 {
                                     if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && cargarComponentes == true)
                                     {
-                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-wishlist-@drm.Id')" style="width: fit-content;">
-                                            <button @onclick="(e => LogearEnseñar(e))" class="boton-pequeño boton-deseado" style="width: fit-content; padding: 10px; transform: none;">
+                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-wishlist-{drm.Id}"))" style="width: fit-content;">
+                                            <button @onclick="@(e => LogearEnseñar(e))" class="boton-pequeño boton-deseado" style="width: fit-content; padding: 10px; transform: none;">
 									            <div style="fill: var(--colorTexto); width: 30px; height: 30px; display: flex;">
 										            <svg class="svg-icono-rotante" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 												        <path d="M341.5 45.1C337.4 37.1 329.1 32 320.1 32C311.1 32 302.8 37.1 298.7 45.1L225.1 189.3L65.2 214.7C56.3 216.1 48.9 222.4 46.1 231C43.3 239.6 45.6 249 51.9 255.4L166.3 369.9L141.1 529.8C139.7 538.7 143.4 547.7 150.7 553C158 558.3 167.6 559.1 175.7 555L320.1 481.6L464.4 555C472.4 559.1 482.1 558.3 489.4 553C496.7 547.7 500.4 538.8 499 529.8L473.7 369.9L588.1 255.4C594.5 249 596.7 239.6 593.9 231C591.1 222.4 583.8 216.1 574.8 214.7L415 189.3L341.5 45.1z" />
@@ -1130,17 +929,17 @@
                                                 <div style="display: flex; flex-direction: column; gap: 10px;">
                                                     @if (BundlesComprobar(juego.Bundles, drm.Id) != null)
                                                     {
-                                                        <button onclick="moverScroll('bundles')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@bundlesPreparados.GetValueOrDefault(drm.Id.ToString())</button>
+                                                        <button @onclick="@(e => MoverScrollJs(e, "bundles"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@bundlesPreparados.GetValueOrDefault(drm.Id.ToString())</button>
                                                     }
 
                                                     @if (GratisComprobar(juego.Gratis, drm.Id) != null)
                                                     {
-                                                        <button onclick="moverScroll('gratis')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@GratisPreparar(drm.Id, idioma)</button>
+                                                        <button @onclick="@(e => MoverScrollJs(e, "gratis"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@GratisPreparar(drm.Id, idioma)</button>
                                                     }
 
                                                     @if (SuscripcionesComprobar(juego.Suscripciones, drm.Id) != null)
                                                     {
-                                                        <button onclick="moverScroll('suscripciones')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@SuscripcionesPreparar(drm.Id, idioma)</button>
+                                                        <button @onclick="@(e => MoverScrollJs(e, "suscripciones"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); font-size: 16px; width: fit-content;">@SuscripcionesPreparar(drm.Id, idioma)</button>
                                                     }
                                                 </div>
                                             }
@@ -1478,7 +1277,7 @@
                                                                     string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
                                                                     string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-geforcenow-@drm.Id.ToString()')" style="width: fit-content;">
+                                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-geforcenow-{drm.Id.ToString()}"))" style="width: fit-content;">
                                                                         <a href="/streaming/geforcenow/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                 <picture>
@@ -1511,7 +1310,7 @@
                                                                     string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
                                                                     string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-boosteroid-@drm.Id.ToString()')" style="width: fit-content;">
+                                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-boosteroid-{drm.Id.ToString()}"))" style="width: fit-content;">
                                                                         <a href="/streaming/boosteroid/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                  <picture>
@@ -1577,8 +1376,8 @@
 
                                                                         string imagenBandera = "/imagenes/banderas/" + idiomaEncontradoTexto + ".svg";
 
-                                                                        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-languages-@drm.Id')" style="width: fit-content;">
-                                                                            <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-languages-{drm.Id}"))" style="width: fit-content;">
+                                                                            <button @onclick="@(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                                 <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
                                                                                     <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language"  />
 
@@ -1713,7 +1512,7 @@
                                                             {
                                                                 string enlaceDemo = "https://store.steampowered.com/app/" + juego.Caracteristicas.DemoIdSteam.ToString();
 
-                                                                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-demosteam')" style="width: fit-content;">
+                                                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-demosteam"))" style="width: fit-content;">
                                                                     <a href="@Herramientas.EnlaceAcortador.Generar(enlaceDemo, APIs.Steam.Tienda.Generar().Id, usuarioPatreon, false)" target="_blank" class="boton-expandir" style="display: inline-flex; line-height: 34px; color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 12px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                         <div style="font-size: 14px;">
                                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String83", "Game")
@@ -1738,7 +1537,7 @@
                                             <div style="display: flex; flex-direction: column; gap: 15px; margin-left: auto;">
                                                 @if (HistoricoComprobar(usuarioRegion, drm.Id) == true)
                                                 {
-                                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-historical-@drm.Id.ToString()')" style="width: fit-content;">
+                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-historical-{drm.Id.ToString()}"))" style="width: fit-content;">
                                                         <button @onclick="@(() => HistoricoAbrirCerrar(drm.Id))" class="boton-pequeño" style="width: auto; min-width: 200px; text-align: center; font-size: 14px; padding: 10px 12px;">
                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String64", "Game")
                                                         </button>
@@ -2211,7 +2010,7 @@
 
                                         if (desarrollador.Id > 0)
                                         {
-                                            <button onclick="moverScroll('curator-@desarrollador.Id.ToString()')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); text-decoration: underline; font-size: 16px; width: fit-content; text-align: left;">@desarrollador.Nombre</button>
+                                            <button @onclick="@(e => MoverScrollJs(e, $"curator-{desarrollador.Id.ToString()}"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); text-decoration: underline; font-size: 16px; width: fit-content; text-align: left;">@desarrollador.Nombre</button>
                                         }
                                         else
                                         {
@@ -2248,7 +2047,7 @@
 
                                         if (editor.Id > 0)
                                         {
-                                            <button onclick="moverScroll('curator-@editor.Id.ToString()')" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); text-decoration: underline; font-size: 16px; width: fit-content;">@editor.Nombre</button>
+                                            <button @onclick="@(e => MoverScrollJs(e, $"curator-{editor.Id.ToString()}"))" class="boton" style="padding: 0px; background-color: transparent; color: var(--colorEnlace); text-decoration: underline; font-size: 16px; width: fit-content;">@editor.Nombre</button>
                                         }
                                         else
                                         {
@@ -2401,7 +2200,7 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-categories')">
+                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-categories"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2478,7 +2277,7 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-tags')">
+                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-tags"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2527,7 +2326,7 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-links')">
+                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-links"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2722,7 +2521,7 @@
                             </div>
 
                             <div style="margin-left: auto;">
-                                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-links2')">
+                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-links2"))">
                                     <div style="width: 24px; height: 24px;">
                                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                             <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -3996,19 +3795,23 @@
         #endregion
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Juego.razor.js");
+
             if (juego != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {	
                 string nombreParaEnlace = Herramientas.EnlaceAdaptador.Nombre(juego.Nombre);
  
-                if (string.IsNullOrEmpty(nombreParaEnlace) == false && nombreParaEnlace.Length > 0)
+                if (moduloJs != null && string.IsNullOrEmpty(nombreParaEnlace) == false && nombreParaEnlace.Length > 0)
                 {
                     if (string.IsNullOrEmpty(juegoNombre) == true || juegoNombre.Equals(nombreParaEnlace, StringComparison.OrdinalIgnoreCase) == false)
                     {
-                        await JavaScript.InvokeVoidAsync("ChangeUrl", $"/game/{juego.Id}/{nombreParaEnlace}/");
+                        await moduloJs.InvokeVoidAsync("cambiarEnlace", $"/game/{juego.Id}/{nombreParaEnlace}/");
                     }
                 }
             }
@@ -4098,6 +3901,19 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
+		}
+	}
+
 
     #region OnAfter
 
@@ -5371,4 +5187,20 @@
     }
 
     #endregion
+
+    private async Task MoverScrollJs(MouseEventArgs e, string id)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("moverScroll", id);
+		}
+	}
+
+    private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+		}
+	}
 }

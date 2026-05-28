@@ -1,0 +1,18 @@
+* {
+    --glaseadoBorde: #FFFFFF1A;
+}
+
+.caja-contacto-contenido {
+    background-color: var(--fondoSubsubcabecera);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+    border-radius: 20px;
+    border: 2px solid var(--glaseadoBorde);
+}
+
+.caja-contacto-titulo {
+    background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+    font-size: 18px;
+    padding: 20px 30px;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+}

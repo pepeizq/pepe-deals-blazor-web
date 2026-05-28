@@ -1,55 +1,8 @@
 ﻿@using Noticias
 
-<script>
-	function enseñarTooltip(e, id) {
-		var x = e.clientX,
-			y = e.clientY;
+@inject IJSRuntime JavaScript
 
-		var tooltip = document.getElementById(id);
-
-		if (screen.width / 2 > x) {
-			tooltip.style.top = (y + 10) + 'px';
-			tooltip.style.left = (x + 20) + 'px';
-		}
-		else {
-			tooltip.style.top = (y - 10) + 'px';
-			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-		};
-	}
-</script>
-
-<style>
-	.cnoticia-expandir {
-		transition: transform .2s;
-		box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
-		border: 1px solid var(--fondoBotonPequeño);
-		height: 100%;
-		width: 100%;
-		background-color: var(--fondoOscuro);
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-	}
-
-	.cnoticia-expandir:hover {
-		transform: scale(1.01);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.5),0px 0px 2px 0px rgba(0, 0, 0, 0.5);
-	}
-
-	.noticia-borrado .mensaje-alternativo {
-		display: none;
-	}
-
-	.noticia-borrado.img-error img {
-		display: none;
-	}
-
-	.noticia-borrado.img-error .mensaje-alternativo {
-        display: block;
-	}
-</style>
-
-<div @key="@noticia.Id" class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-news-@noticia.Id.ToString()')" style="width: 100%; display: flex; align-items: center; flex: 0 0 400px;">
+<div @key="@noticia.Id" class="tooltip-juego" @onmousemove="(e => EnseñarTooltipJs(e, idTooltip))" style="width: 100%; display: flex; align-items: center; flex: 0 0 400px;">
 	<a href="/news/@noticia.Id/@Herramientas.EnlaceAdaptador.Nombre(titulo)/" style="cursor: pointer; text-decoration: none; color: var(--colorTexto); height: 100%;">
 		<div class="cnoticia-expandir" title="@titulo">
 			<div style="display: flex; align-items: center; gap: 15px; background-color: var(--fondoBotonPequeño); padding: 15px 20px; width: 100%;">
@@ -141,10 +94,38 @@
 
 	private string titulo = string.Empty;
 	private string mensajeTiempo = string.Empty;
+    private string idTooltip => $"tooltip-news-{noticia?.Id.ToString()}";
+
+	private IJSObjectReference moduloJs;
 
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/CajaNoticia.razor.js");
+		}
+
 		titulo = Herramientas.Idiomas.ElegirTexto(idioma, noticia.TituloEn, noticia.TituloEs);
 		mensajeTiempo = Herramientas.Calculadora.DiferenciaTiempo(noticia.FechaEmpieza, idioma);
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
+		}
+	}
+
+	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+		}
 	}
 }

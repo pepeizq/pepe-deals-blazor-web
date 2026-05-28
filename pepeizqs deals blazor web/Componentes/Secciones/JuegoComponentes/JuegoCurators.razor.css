@@ -1,0 +1,10 @@
+.caja-juego-contenido {
+    background-color: var(--fondoSubsubcabecera);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+}
+
+.caja-juego-titulo {
+    background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
+    padding: 20px 30px;
+    border: 1px solid var(--fondoSubsubcabecera);
+}

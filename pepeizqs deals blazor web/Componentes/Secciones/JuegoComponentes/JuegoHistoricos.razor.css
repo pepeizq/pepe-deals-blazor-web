@@ -1,0 +1,29 @@
+.caja-juego-contenido {
+    background-color: var(--fondoSubsubcabecera);
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+}
+
+.boton-historicos {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--colorTexto);
+    text-align: left;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s;
+}
+
+    .boton-historicos:hover {
+        background: color-mix(in srgb, var(--fondoCodigo) 60%, transparent);
+    }
+
+    .boton-historicos.seleccionado {
+        background: var(--fondoCodigo);
+    }
+
+        .boton-historicos.seleccionado:hover {
+            background: var(--fondoCodigo);
+            filter: brightness(1.2);
+        }

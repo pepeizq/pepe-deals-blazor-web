@@ -29,7 +29,9 @@
     }
 
     @* CSS en componentes razor *@
-    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" />
+    <link rel="preload" as="style" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" />
+    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" media="screen" />
+    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" media="print" onload="this.media='all'" />
 
     @* CSS globales *@
     <link rel="preload" as="style" href="@Assets["/css/bundle.css"]" />
@@ -94,7 +96,6 @@
         <div id="reconnect-modal" style="display: none;"></div>
         <script src="@Assets["/_framework/blazor.web.js"]" autostart="false"></script>
         <script src="@Assets["/inicio.js"]"></script>
-        <script src="@Assets["/video.js"]"></script>
         <script src="@Assets["/push-notifications.js"]"></script>
         <script src="@Assets["/cookies.js"]"></script>
 

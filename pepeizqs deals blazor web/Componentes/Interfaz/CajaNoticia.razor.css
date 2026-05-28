@@ -1,0 +1,28 @@
+.cnoticia-expandir {
+    transition: transform .2s;
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
+    border: 1px solid var(--fondoBotonPequeño);
+    height: 100%;
+    width: 100%;
+    background-color: var(--fondoOscuro);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+    .cnoticia-expandir:hover {
+        transform: scale(1.01);
+        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.5),0px 0px 2px 0px rgba(0, 0, 0, 0.5);
+    }
+
+.noticia-borrado .mensaje-alternativo {
+    display: none;
+}
+
+.noticia-borrado.img-error img {
+    display: none;
+}
+
+.noticia-borrado.img-error .mensaje-alternativo {
+    display: block;
+}

@@ -463,7 +463,9 @@
 
                                 @if (EnseñarOpciones() == true)
                                 {
-                                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-header-options')">
+                                    string idTooltipOpciones = "tooltip-header-options";
+
+                                    <div class="tooltip-juego" @onmousemove="(e => EnseñarTooltipJs(e, idTooltipOpciones))">
                                         <button @onclick="AlternarOpciones" @onmouseenter="_ => usuarioEncimaOpciones = true" @onmouseleave="_ => usuarioEncimaOpciones = false" style="background: transparent; border: 0px; display: flex;">
                                             <div style="width: 22px; height: 22px;">
                                                 <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">
@@ -472,7 +474,7 @@
                                             </div>
                                         </button>
 
-                                        <div id="tooltip-header-options" class="tooltip-relleno">
+                                        <div id="@idTooltipOpciones" class="tooltip-relleno">
                                             <div style="margin: 5px 10px; max-width: 300px; font-size: 14px;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Header")
                                             </div>
@@ -1532,6 +1534,14 @@
     }
 
     #endregion
+
+    private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+        }
+    }
 
     private async Task MostrarTooltipJs(string id)
     {

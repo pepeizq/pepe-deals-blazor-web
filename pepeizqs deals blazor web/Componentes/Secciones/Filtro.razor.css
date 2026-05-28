@@ -1,0 +1,18 @@
+.caja-filtro-contenido {
+    background-color: var(--fondoSubsubcabecera);
+    border: 2px solid var(--fondoSubcabecera);
+    padding: 10px;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+}
+
+.boton-expandir {
+    transition: transform .2s;
+    filter: brightness(100%);
+    background-color: transparent;
+}
+
+    .boton-expandir:hover {
+        transform: scale(1.05);
+        filter: brightness(120%);
+        background-color: var(--fondoSubcabecera);
+    }

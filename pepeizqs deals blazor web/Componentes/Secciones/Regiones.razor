@@ -7,48 +7,6 @@
 
 <Titulo tipo="@Titulo.Tipo.Regiones" idioma="@idioma" dominio="@dominio"/>
 
-<style>
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(45, 47, 54, 0.70);
-	}
-
-	.caja-regiones-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-		border-radius: 20px;
-		border: 2px solid var(--glaseadoBorde);
-	}
-
-	.caja-regiones-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		font-size: 18px;
-		padding: 20px 30px;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-	}
-
-	.tabla-tiendas th,
-	.tabla-tiendas td {
-		padding: 10px 15px;
-	}
-
-	.tabla-tiendas tr:nth-child(even) {
-		background-color: rgba(0, 0, 0, 0.25);
-	}
-
-	.tabla-tiendas :is(th, td):nth-child(2),
-	.tabla-tiendas :is(th, td):nth-child(3) {
-		text-align: center;
-		vertical-align: middle;
-	}
-
-	.tabla-tiendas td:nth-child(2) > div,
-	.tabla-tiendas td:nth-child(3) > div {
-		margin: 0 auto;
-	}
-</style>
-
 <div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 40px; margin-top: 40px; margin-bottom: 40px;">
 	<div class="caja-regiones-contenido">
 		<div class="caja-regiones-titulo">

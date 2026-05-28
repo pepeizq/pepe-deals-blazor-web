@@ -99,111 +99,6 @@
 			keywords="@keywords" contenidoJsonBundles="@contenidoJson" />
 }
 
-<script>
-	function enseñarTooltip(e, id) {
-		var x = e.clientX,
-			y = e.clientY;
-
-		var tooltip = document.getElementById(id);
-
-		if (screen.width / 2 > x) {
-			tooltip.style.top = (y + 10) + 'px';
-			tooltip.style.left = (x + 20) + 'px';
-		}
-		else {
-			tooltip.style.top = (y - 10) + 'px';
-			tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-		};
-	}
-</script>
-
-<script>
-	function moverScroll(id) {
-		const yOffset = -90;
-		const element = document.getElementById(id);
-		const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-		window.scrollTo({ top: y, behavior: 'smooth' });
-	}
-</script>
-
-<script>
-	window.ChangeUrl = function (url) {
-		history.pushState(null, '', url);
-	}
-</script>
-
-<style>
-	.bundles-grid {
-		gap: 40px;
-	}
-
-	@@media (max-width: 800px) {
-		.bundles-grid {
-			gap: 20px;
-		}
-	}
-
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(45, 47, 54, 0.70);
-		--noResultados: rgba(132, 32, 41, 0.5);
-		--botonSeleccionado: rgba(13, 22, 33, 0.75);
-	}
-
-	.caja-bundles {
-		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-		background-blend-mode: overlay;
-		border-radius: 100px;
-		border: 2px solid var(--glaseadoBorde);
-		width: fit-content;
-		background-color: var(--fondoSubcabecera);
-		backdrop-filter: blur(25px);
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 5px;
-	}
-
-	.caja-bundles-animacion {
-		opacity: 0;
-		transition: all 0.5s ease, transform .2s ease;
-		pointer-events: none;
-		transform: scaleX(0);
-		transform-origin: left;
-		max-width: 0;
-	}
-
-		.caja-bundles-animacion.visible {
-			opacity: 1;
-			pointer-events: auto;
-			transform: scaleX(1);
-			max-width: fit-content;
-		}
-
-	.boton-bundles {
-		transition: backdrop-filter 0.2s ease;
-	}
-
-		.boton-bundles:hover {
-			backdrop-filter: brightness(50%);
-		}
-
-	.caja-archivo-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-		border: 1px solid var(--glaseadoBorde);
-		border-radius: 20px;
-	}
-
-	.caja-archivo-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		padding: 20px 30px;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-	}
-</style>
-
 @if (mostrarBundleSeleccionado == false)
 {
 	<div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
@@ -232,7 +127,7 @@
 
 		@if (mostrarArchivo == false)
 		{
-			<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-bundles-order')">
+			<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-bundles-order"))">
 				<button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px; margin-left: 35px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Bundle")">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -249,7 +144,7 @@
 			</div>
 		}
 		
-		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-bundles-archive')">
+		<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-bundles-archive"))">
 			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, true))" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, true) border: 0px; @(mostrarArchivo ? "margin-left: 35px;" : "margin-left: 25px;") padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Bundle")">
 				<div style="width: 24px; height: 24px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -346,9 +241,9 @@
 						if (bundlesAño.Count > 0)
 						{
 							<div>
-								<a onclick="moverScroll('pasado-@bundleTipo.ToString()')" class="boton-pequeño" style="color: var(--colorTexto); text-decoration: none; cursor: pointer; padding: 6px 10px;">
+								<a @onclick="@(e => MoverScrollJs(e, $"pasado-{bundleTipo.ToString()}"))" class="boton-pequeño" style="color: var(--colorTexto); text-decoration: none; cursor: pointer; padding: 6px 10px;">
 									<div style="display: flex; align-items: center; gap: 10px;">
-										<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(Bundles2.BundlesCargar.DevolverBundle(bundleTipo).ImagenIcono)" style="width: 22px; height: 22px;" alt="@Bundles2.BundlesCargar.DevolverBundle(bundleTipo).Tienda" />
+										<img src="@Bundles2.BundlesCargar.DevolverBundle(bundleTipo).ImagenIcono" style="width: 22px; height: 22px;" alt="@Bundles2.BundlesCargar.DevolverBundle(bundleTipo).Tienda" />
 
 										<div style="font-size: 14px;">
 											@bundlesAño.Count.ToString()
@@ -729,10 +624,14 @@ else
 		}
 	}
 
+	private IJSObjectReference moduloJs;
+
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
 		if (primerRender == true)
 		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Bundles.razor.js");
+
 			if (string.IsNullOrEmpty(añoSeleccionado) == true)
 			{
 				if (tipoSeleccionado != Bundles2.BundleTipo.Desconocido)
@@ -744,6 +643,18 @@ else
 			{
 				await CambiarTipo(tipoSeleccionado, true);
 			}
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
 		}
 	}
 
@@ -843,13 +754,16 @@ else
 			tipoSeleccionado = nuevoTipo;
 			bundlesActuales = await BaseDatos.Bundles.Buscar.Actuales(ordenamientoNumero2, nuevoTipo);
 
-			if (nuevoTipo != Bundles2.BundleTipo.Desconocido)
+			if (moduloJs != null)
 			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/" + nuevoTipo.ToString().ToLower() + "/");
-			}
-			else
-			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/");
+				if (nuevoTipo != Bundles2.BundleTipo.Desconocido)
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundles/" + nuevoTipo.ToString().ToLower() + "/");
+				}
+				else
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundles/");
+				}
 			}
 		}
 		else
@@ -858,12 +772,15 @@ else
 			{
 				añoSeleccionado = DateTime.Now.Year.ToString();
 			}
-	
+
 			bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
 
 			cargadoBundles = true;
 
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/archive/" + añoSeleccionado + "/");
+			if (moduloJs != null)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundles/archive/" + añoSeleccionado + "/");
+			}
 		}
 
 		await InvokeAsync(StateHasChanged);
@@ -903,7 +820,10 @@ else
 
 		bundlesPasados = await BaseDatos.Bundles.Buscar.Año(añoSeleccionado);
 
-		await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/archive/" + añoSeleccionado + "/");
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundles/archive/" + añoSeleccionado + "/");
+		}
 	}
 
 	private string MostrarFecha(DateTime fechaEmpieza, DateTime fechaTermina)
@@ -945,20 +865,42 @@ else
 
 		mostrarBundleSeleccionado = true;
 
-		await JavaScript.InvokeVoidAsync("moverScroll", "cuerpazo");
-		await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundle/" + bundleSeleccionado.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/");
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("moverScroll", "cuerpazo");
+			await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundle/" + bundleSeleccionado.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundleSeleccionado.Nombre) + "/");
+		}
 	}
 
 	private async void CerrarBundle(MouseEventArgs e)
 	{
 		mostrarBundleSeleccionado = false;
 
-		await JavaScript.InvokeVoidAsync("moverScroll", "cuerpazo");
-		await JavaScript.InvokeVoidAsync("ChangeUrl", "/bundles/");
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("moverScroll", "cuerpazo");
+			await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundles/");
+		}
 	}
 
 	private async void AbrirBundle(MouseEventArgs e, string enlace)
 	{
 		await JavaScript.InvokeVoidAsync("open", enlace, "_blank");
+	}
+
+	private async Task MoverScrollJs(MouseEventArgs e, string id)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("moverScroll", id);
+		}
+	}
+
+	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+		}
 	}
 }

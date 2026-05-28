@@ -1,7 +1,6 @@
 ﻿@using Juegos
 @using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
-@using pepeizqs_deals_web.Data
 
 @attribute [StreamRendering(true)]
 
@@ -195,7 +194,7 @@
                 curators = new List<global::BaseDatos.Curators.CuratorFicha>();
             }
 
-            lock (curators) // Thread-safe si hay concurrencia
+            lock (curators)
             {
                 if (curators.Any(c => c.Curator.Id == curator2.Id) == false)
                 {

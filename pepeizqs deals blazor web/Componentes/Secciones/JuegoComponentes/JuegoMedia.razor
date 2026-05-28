@@ -2,309 +2,6 @@
 
 @inject IJSRuntime JavaScript
 
-<style>
-    .pepe-video-contenedor {
-        width: fit-content;
-        height: fit-content;
-        background: #141414;
-        overflow: hidden;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.7);
-        position: relative;
-    }
-
-    #reproductor {
-        width: 100%;
-        display: block;
-        background: black;
-        cursor: pointer;
-    }
-
-    .video-controles {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 10px 20px;
-        display: flex;
-        flex-direction: column;
-        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .pepe-video-contenedor:hover .video-controles {
-        opacity: 1;
-    }
-
-    .controles-fila {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .control-boton {
-        background: var(--fondoBotonPequeño);
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
-        border: none;
-        color: var(--colorTexto);
-        padding: 6px 10px;
-        cursor: pointer;
-    }
-
-        .control-boton:hover {
-            background: var(--fondoCodigo);
-        }
-
-    .volumen-deslizador {
-        width: 100px;
-    }
-
-    .progreso-contenedor {
-        width: 100%;
-        background: rgba(255,255,255,0.2);
-        height: 6px;
-        margin-bottom: 6px;
-        cursor: pointer;
-        position: relative;
-    }
-
-    .progreso-barra {
-        height: 100%;
-        background: var(--fondoCodigo);
-        width: 0%;
-    }
-
-    .tiempo-mensaje {
-        color: var(--colorTexto);
-        font-size: 0.85rem;
-    }
-</style>
-
-<style>
-    .juego-galeria-contenedor {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .juego-galeria-imagenes {
-        display: none;
-    }
-
-    .juego-galeria-cursor {
-        cursor: pointer;
-    }
-
-    .juego-galeria-atras,
-    .juego-galeria-siguiente {
-        cursor: pointer;
-        position: absolute;
-        top: 40%;
-        width: auto;
-        padding: 8px 16px;
-        margin-top: -50px;
-        color: var(--colorTexto);
-        font-weight: bold;
-        font-size: 20px;
-        border-radius: 0px;
-        user-select: none;
-        text-decoration: none;
-        -webkit-user-select: none;
-    }
-
-    .juego-galeria-siguiente {
-        right: 0;
-        border-radius: 0px;
-    }
-
-        .juego-galeria-atras:hover,
-        .juego-galeria-siguiente:hover {
-            background-color: var(--fondoBotonPequeño);
-        }
-
-    .juego-galeria-numero {
-        color: var(--colorTexto);
-        font-size: 12px;
-        padding: 8px 12px;
-        position: absolute;
-        top: 0;
-        background-color: var(--fondoOscuro);
-        opacity: 0.4;
-    }
-
-    .juego-galeria-contenedor-texto {
-        text-align: center;
-        background-color: var(--fondoOscuro);
-        padding: 2px 16px;
-        color: white;
-    }
-
-    .juego-galeria-fila {
-        display: flex;
-        overflow: auto;
-        gap: 10px;
-        padding-bottom: 15px;
-    }
-
-        .juego-galeria-fila:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-    .juego-galeria-columna {
-        float: left;
-        width: 16.66%;
-        flex: 0 0 auto;
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
-    }
-
-    .juego-galeria-capturas {
-        opacity: 0.8;
-        aspect-ratio: 16 / 9;
-        object-fit: cover;
-    }
-
-        .juego-galeria-activo,
-        .juego-galeria-capturas:hover {
-            opacity: 1;
-        }
-</style>
-
-<script>
-    window.hlsPlayer = {
-        loadStream: function (url, dotNetHelper) {
-            const video = document.getElementById("reproductor");
-
-            if (video != null && url != null && dotNetHelper != null)
-            {
-                video.pause();
-
-                if (video._timeUpdateHandler) {
-                    video.removeEventListener("timeupdate", video._timeUpdateHandler);
-                    video._timeUpdateHandler = null;
-                }
-
-                if (window.hlsPlayer._hls) {
-                    try {
-                        window.hlsPlayer._hls.stopLoad();
-                        window.hlsPlayer._hls.detachMedia();
-                        window.hlsPlayer._hls.destroy();
-                    } catch (e) {
-                        console.warn("Error al destruir HLS:", e);
-                    }
-                    window.hlsPlayer._hls = null;
-                }
-
-                video.removeAttribute("src");
-                video.removeAttribute("poster");
-                video.currentTime = 0;
-
-                const lowerUrl = url.toLowerCase();
-                
-                if (lowerUrl.endsWith(".m3u8")) {
-                    if (typeof Hls !== "undefined" && Hls.isSupported()) {
-                        window.hlsPlayer._hls = new Hls({
-                            autoStartLoad: true,
-                            enableWorker: true,
-                            lowLatencyMode: false
-                        });
-                        window.hlsPlayer._hls.loadSource(url);
-                        window.hlsPlayer._hls.attachMedia(video);
-                    } else if (video.canPlayType("application/vnd.apple.mpegurl") !== "") {
-                        video.src = url;
-                    }
-                } else if (lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm")) {
-                    video.src = url;
-                }
-
-                video._timeUpdateHandler = function () {
-                    dotNetHelper.invokeMethodAsync(
-                        "ActualizarTiempo",
-                        video.currentTime,
-                        video.duration
-                    );
-                };
-
-                video.addEventListener("timeupdate", video._timeUpdateHandler);
-            }
-        },
-
-        playVideo: function() {
-            const video = document.getElementById("reproductor");
-
-            if (video != null)
-            {
-                video.play();
-            }
-        },
-
-        togglePlay: function() {
-            const video = document.getElementById("reproductor");
-
-            if (video != null)
-            {
-                if (video.paused) {
-                    video.play();
-                    return true;
-                } else {
-                    video.pause();
-                    return false;
-                }
-            }
-        },
-
-        toggleMute: function() {
-            const video = document.getElementById("reproductor");
-
-            if (video != null)
-            {
-                video.muted = !video.muted;
-                return video.muted;
-            }
-        },
-
-        setVolume: function(video, vol) {
-            video.volume = vol;
-        },
-
-        toggleFullScreen: function() {
-            const video = document.getElementById("reproductor");
-
-            if (video != null)
-            {
-                if (!document.fullscreenElement) {
-                    video.requestFullscreen();
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-        },
-
-        seek: function(clientX) {
-            const video = document.getElementById("reproductor");
-            if (!video) return;
-
-            if (!Number.isFinite(video.duration) || video.duration <= 0) {
-                return;
-            }
-
-            const rect = video.getBoundingClientRect();
-            if (rect.width <= 0) return;
-
-            let porcentaje = (clientX - rect.left) / rect.width;
-
-            porcentaje = Math.max(0, Math.min(1, porcentaje));
-
-            const tiempo = video.duration * porcentaje;
-            if (!Number.isFinite(tiempo)) return;
-
-            video.currentTime = tiempo;
-        }
-    };
-</script>
-
 @if (capturas?.Count > 0)
 {
     bool difuminar = false;
@@ -333,7 +30,7 @@
         {
             <div style="display: flex; justify-items: center; justify-content: center;">
                 <div class="pepe-video-contenedor">
-                    <video id="reproductor" style="width: 100%; height: calc(100vh - 190px); max-height: 900px;" @onclick="() => Reproducir()" @onplay="EjecutarVideo">
+                    <video id="reproductor" style="width: 100%; height: calc(100vh - 190px); max-height: 900px;" @onclick="() => AlternarPlay()" @onplay="EjecutarVideo">
                         <source src="@mediaMostrar" />
                     </video>
 
@@ -344,7 +41,7 @@
 
                         <div class="controles-fila">
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <button class="control-boton" @onclick="() => Reproducir()" title="Play">
+                                <button class="control-boton" @onclick="() => AlternarPlay()" title="Play">
                                     <div style="display: flex; width: 20px; height: 20px;">
                                         @if (estaReproduciendo == true)
                                         {
@@ -551,7 +248,7 @@
 
                     if (string.IsNullOrEmpty(mediaMostrarTipo) == false && javascriptListo == true)
                     {
-                        await JavaScript.InvokeVoidAsync("hlsPlayer.loadStream", mediaMostrar, DotNetObjectReference.Create(this));
+                        await Cargar(mediaMostrar);
                     }
                 }
             }
@@ -566,13 +263,32 @@
         }
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
             javascriptListo = true;
 
-            await JavaScript.InvokeVoidAsync("hlsPlayer.loadStream", mediaMostrar, DotNetObjectReference.Create(this));
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/juegocomponentes/JuegoMedia.razor.js");
+        
+            if (mediaMostrarPosicion == 99999 && string.IsNullOrEmpty(mediaMostrar) == false)
+            {
+                await Cargar(mediaMostrar);
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
         }
     }
 
@@ -653,8 +369,8 @@
 
             if (string.IsNullOrEmpty(mediaMostrarTipo) == false && javascriptListo == true)
             {
-                await JavaScript.InvokeVoidAsync("hlsPlayer.loadStream", mediaMostrar, DotNetObjectReference.Create(this));
-                await JavaScript.InvokeVoidAsync("hlsPlayer.playVideo");
+                await Cargar(mediaMostrar);
+                await ReproducirVideo();
                 estaReproduciendo = true;
             }
         }
@@ -686,44 +402,60 @@
         return Task.CompletedTask;
     }
 
-    private async Task Reproducir()
+    private async Task Cargar(string url)
     {
-        if (javascriptListo == true)
+        if (moduloJs != null)
         {
-            estaReproduciendo = await JavaScript.InvokeAsync<bool>("hlsPlayer.togglePlay");
+            await moduloJs.InvokeVoidAsync("loadStream", url, DotNetObjectReference.Create(this));
+        }
+    }
+
+    private async Task ReproducirVideo()
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("playVideo");
+        }
+    }
+
+    private async Task AlternarPlay()
+    {
+        if (moduloJs != null)
+        {
+            estaReproduciendo = await moduloJs.InvokeAsync<bool>("togglePlay");
         }
     }
 
     private async Task Mutear()
     {
-        if (javascriptListo == true)
+        if (moduloJs != null)
         {
-            estaMuteado = await JavaScript.InvokeAsync<bool>("hlsPlayer.toggleMute");
+            estaMuteado = await moduloJs.InvokeAsync<bool>("toggleMute");
         }
     }
 
     private async Task VolumenCambiar(ChangeEventArgs e)
     {
-        if (javascriptListo == true)
+        if (moduloJs != null)
         {
             volumen = Convert.ToDouble(e.Value);
-            await JavaScript.InvokeVoidAsync("hlsPlayer.setVolume", volumen);
+            await moduloJs.InvokeVoidAsync("setVolume", volumen);
         }
     }
 
     private async Task CambiarPantallaCompleta()
     {
-        if (javascriptListo == true)
+        if (moduloJs != null)
         {
-            await JavaScript.InvokeVoidAsync("hlsPlayer.toggleFullScreen");
+            await moduloJs.InvokeVoidAsync("toggleFullScreen");
         }
     }
 
     private async Task AdelantarAtrasarBarraVideo(MouseEventArgs e)
     {
-        if (javascriptListo == true)
+        if (moduloJs != null)
         {
-            await JavaScript.InvokeVoidAsync("hlsPlayer.seek", e.ClientX);
+            await moduloJs.InvokeVoidAsync("seek", e.ClientX);
         }
     }
 

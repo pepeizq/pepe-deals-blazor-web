@@ -2,64 +2,12 @@
 
 @using BaseDatos.Recompensas
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
-@using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject IConfiguration Configuracion
 
 <Titulo tipo="@Titulo.Tipo.Patreon" idioma="@idioma" dominio="@dominio"/>
-
-<style>
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(45, 47, 54, 0.70);
-		--noResultados: rgba(132, 32, 41, 0.5);
-		--botonSeleccionado: rgba(13, 22, 33, 0.75);
-	}
-
-	.caja-patreon {
-		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-		background-blend-mode: overlay;
-		border-radius: 100px;
-		border: 2px solid var(--glaseadoBorde);
-		width: fit-content;
-		background-color: var(--fondoSubcabecera);
-		backdrop-filter: blur(25px);
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 20px 40px;
-	}
-
-	.caja-patreon-imagen {
-		border: 1px solid var(--glaseadoBorde);
-		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-	}
-
-	.caja-patreon-animacion {
-		transform-origin: top;
-		transition: all 220ms cubic-bezier(.2,.8,.2,1);
-	}
-
-		.caja-patreon-animacion > div {
-			overflow: hidden;
-		}
-
-		.caja-patreon-animacion.cerrado {
-			opacity: 0;
-			transform: scaleY(0.95);
-			height: 0;
-			overflow: hidden;
-		}
-
-		.caja-patreon-animacion.abierto {
-			opacity: 1;
-			transform: scaleY(1);
-			height: auto;
-		}
-</style>
 
 <div>
 	<div class="caja-patreon" style="margin: 40px auto; display: flex; justify-content: center; max-width: 300px; border-radius: 20px;">

@@ -3,14 +3,6 @@
 
 @inject IJSRuntime JavaScript
 
-<script>
-    window.clipboardCopy = {
-        copyText: function(text) {
-            navigator.clipboard.writeText(text);
-        }
-    };
-</script>
-
 @if (enseñarAlerta == true)
 {
     <div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
@@ -306,6 +298,28 @@
         await OnPrecioFinalCalculado.InvokeAsync(precioFinal);
     }
 
+    private IJSObjectReference moduloJs;
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/CajaJuego.razor.js");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
     public static string SacarImagenTienda(string codigo)
     {
         return TiendasCargar.GenerarListado().Find(t => t.Id == codigo)?.Imagen300x80 ?? string.Empty;
@@ -427,7 +441,11 @@
         if (enseñarAlerta == false)
         {
             enseñarAlerta = true;
-            await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", texto);
+
+            if (moduloJs != null)
+            {
+                await moduloJs.InvokeVoidAsync("copiarTexto", texto);
+            }
 
             cronometroContador = 0;
             cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));

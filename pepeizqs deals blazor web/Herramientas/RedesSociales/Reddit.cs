@@ -759,15 +759,30 @@ namespace Herramientas.RedesSociales
 
                 foreach (var juego in juegos)
                 {
-					var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricos[0].Tienda);
-					string nombreTienda = tiendaJuego.Nombre;
+					if (region == TiendaRegion.Europa)
+					{
+						var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricos[0].Tienda);
+						string nombreTienda = tiendaJuego.Nombre;
 
-					if (juegosPorTienda.ContainsKey(nombreTienda) == false)
-                    {
-						juegosPorTienda[nombreTienda] = new List<Juego>();
+						if (juegosPorTienda.ContainsKey(nombreTienda) == false)
+						{
+							juegosPorTienda[nombreTienda] = new List<Juego>();
+						}
+
+						juegosPorTienda[nombreTienda].Add(juego);
 					}
+					else if (region == TiendaRegion.EstadosUnidos)
+					{
+						var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricosUS[0].Tienda);
+						string nombreTienda = tiendaJuego.Nombre;
 
-					juegosPorTienda[nombreTienda].Add(juego);
+						if (juegosPorTienda.ContainsKey(nombreTienda) == false)
+						{
+							juegosPorTienda[nombreTienda] = new List<Juego>();
+						}
+
+						juegosPorTienda[nombreTienda].Add(juego);
+					}
 				}
 
 				foreach (var juegosTienda in juegosPorTienda)

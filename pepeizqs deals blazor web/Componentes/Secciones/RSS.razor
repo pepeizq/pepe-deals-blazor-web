@@ -9,14 +9,6 @@
 
 <Titulo tipo="@Titulo.Tipo.RSS" idioma="@idioma" dominio="@dominio"/>
 
-<script>
-	window.clipboardCopy = {
-		copyText: function(text) {
-			navigator.clipboard.writeText(text);
-		}
-	};
-</script>
-
 @if (enseñarAlerta == true)
 {
 	<div style="width: fit-content; background-color: var(--fondoAlerta); color: var(--colorTexto); padding: 10px 15px; margin: 30px; top: var(--alturaCabecera); left: 0; position: fixed; z-index: 1001; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
@@ -35,28 +27,6 @@
 		</div>
 	</div>
 }
-
-<style>
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(45, 47, 54, 0.70);
-	}
-
-	.caja-rss-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-		border-radius: 20px;
-		border: 2px solid var(--glaseadoBorde);
-	}
-
-	.caja-rss-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		font-size: 18px;
-		padding: 20px 30px;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-	}
-</style>
 
 <div class="caja-rss-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
 	<div class="caja-rss-titulo">
@@ -203,6 +173,28 @@
 		}
 	}
 
+	private IJSObjectReference moduloJs;
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/RSS.razor.js");
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
+		}
+	}
+
 	#region Portapapeles
 
 	bool enseñarAlerta = false;
@@ -213,7 +205,11 @@
 	private async void CopiarAlClipboard(MouseEventArgs e, string texto)
 	{
 		enseñarAlerta = true;
-		await JavaScript.InvokeVoidAsync("clipboardCopy.copyText", texto);
+
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("copiarTexto", texto);
+		}
 
 		cronometroContador = 0;
 		cronometro = new PeriodicTimer(TimeSpan.FromSeconds(1));

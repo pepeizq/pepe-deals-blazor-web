@@ -1,0 +1,116 @@
+.cargando {
+    width: 48px;
+    height: 48px;
+    border: 5px solid var(--colorTexto);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotacion 1s linear infinite;
+}
+
+@keyframes rotacion {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+* {
+    --glaseadoBorde: #FFFFFF1A;
+    --glaseadoFondo: rgba(45, 47, 54, 0.70);
+    --noResultados: rgba(132, 32, 41, 0.5);
+    --botonSeleccionado: rgba(13, 22, 33, 0.75);
+    --glaseadoFondo2: rgba(0, 32, 51, 0.9);
+    --glaseadoBorde2: rgba(0, 255, 255, 0.10);
+}
+
+.caja-minimos {
+    box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
+    background-blend-mode: overlay;
+    border-radius: 100px;
+    border: 2px solid var(--glaseadoBorde);
+    width: fit-content;
+    background-color: var(--fondoSubcabecera);
+    backdrop-filter: blur(25px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 5px;
+}
+
+.caja-minimos-animacion {
+    opacity: 0;
+    transition: all 0.5s ease, transform .2s ease;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: left;
+    max-width: 0;
+}
+
+    .caja-minimos-animacion.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scaleX(1);
+        max-width: fit-content;
+    }
+
+.boton-minimos {
+    transition: backdrop-filter 0.2s ease;
+}
+
+    .boton-minimos:hover {
+        backdrop-filter: brightness(50%);
+    }
+
+.menu-dropdown2 {
+    position: relative;
+    display: inline-block;
+    z-index: 5000;
+}
+
+    .menu-dropdown2::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        height: 20px;
+        width: 100%;
+    }
+
+.menu-dropdown-contenido-centrado {
+    position: absolute;
+    top: 120%;
+    left: 50%;
+    transform: translate(-50%, -8px);
+    min-width: 200px;
+    padding: 8px;
+    background: var(--glaseadoFondo2);
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    border: 2px solid var(--glaseadoBorde2);
+    z-index: 1000;
+}
+
+.menu-dropdown2:hover .menu-dropdown-contenido-centrado {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+}
+
+.menu-dropdown-contenido-centrado a {
+    display: block;
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+    .menu-dropdown-contenido-centrado a:hover {
+        background: rgba(99, 102, 241,.15);
+    }

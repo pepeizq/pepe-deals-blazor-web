@@ -2,7 +2,6 @@
 
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
 @using Microsoft.JSInterop
 @using System.Text.Json
 @using pepeizqs_deals_web.Data
@@ -12,35 +11,6 @@
 @inject IJSRuntime JavaScript
 
 <Titulo tipo="@Titulo.Tipo.Filtro" idioma="@idioma" dominio="@dominio" idsFiltro="@ids"/>
-
-<script>
-	window.ChangeUrl = function (url) {
-		history.pushState(null, '', url);
-	}
-</script>
-
-<style>
-	.caja-filtro-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 10px;
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-	}
-</style>
-
-<style>
-	.boton-expandir {
-		transition: transform .2s;
-		filter: brightness(100%);
-		background-color: transparent;
-	}
-
-		.boton-expandir:hover {
-			transform: scale(1.05);
-			filter: brightness(120%);
-			background-color: var(--fondoSubcabecera);
-		}
-</style>
 
 @if (cargado == false)
 {
@@ -702,6 +672,28 @@ else
 		cargado = true;
 	}
 
+	private IJSObjectReference moduloJs;
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Filtro.razor.js");
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
+		}
+	}
+
 	private class FiltroItem
 	{
 		public string Id { get; set; }
@@ -757,15 +749,18 @@ else
 
 		resultadosGestor = await BaseDatos.Juegos.Buscar.Filtro(idsLista, 250);
 
-		if (string.IsNullOrEmpty(ids) == false)
+		if (moduloJs != null)
 		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/filter/" + ids + "/");
+			if (string.IsNullOrEmpty(ids) == false)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/filter/" + ids + "/");
+			}
+			else
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/filter/");
+			}
 		}
-		else
-		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/filter/");
-		}
-
+		
 		await InvokeAsync(StateHasChanged);
 	}
 

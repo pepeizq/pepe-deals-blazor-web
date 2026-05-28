@@ -11,93 +11,6 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-<style>
-	.caja-curator-contenido {
-		background: radial-gradient(farthest-corner at 0px 0px, var(--fondoSubcabecera) 0%, var(--fondoSubsubcabecera) 90%);
-		box-shadow: 1px 1px 5px rgba(0,0,0,.5);
-		border-radius: 20px;
-		display: flex;
-		align-items: start;
-		overflow: hidden;
-	}
-
-	@@media (max-width: 1000px) {
-		.caja-curator-contenido {
-			flex-direction: column;
-		}
-    
-			.caja-curator-contenido video {
-				max-width: 100%;
-			}
-	}
-
-	.pestaña-curator {
-		padding: 10px 20px;
-		border: 1px solid var(--fondoBotonPequeño);
-		cursor: pointer;
-		transition: all 0.2s ease;
-		color: var(--colorTexto);
-		background-color: transparent;
-	}
-
-		.pestaña-curator:not(.pestaña-activa):hover {
-			background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, transparent);
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		}
-
-		.pestaña-curator.pestaña-activa {
-			background-color: var(--fondoBotonPequeño);
-			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		}
-
-			.pestaña-curator.pestaña-activa:hover {
-				background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoSubsubcabecera));
-			}
-
-	.etiqueta-curator {
-		background-color: var(--fondoCuerpo);
-		transition: all 0.2s ease;
-	}
-
-		.etiqueta-curator:hover {
-			background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoCuerpo));
-		}
-</style>
-
-<script>
-	window.setupVideoAutoplay = function() {
-		setTimeout(() => {
-			const videos = document.querySelectorAll('.video-autoplay');
-
-			if (videos.length === 0) {
-				return;
-			}
-            
-			const observer = new IntersectionObserver((entries) => {
-				entries.forEach(entry => {
-					const video = entry.target;
-                    
-					if (entry.isIntersecting) {
-						const playPromise = video.play();
-                        
-						if (playPromise !== undefined) {
-							playPromise.catch(error => {
-								console.log("Autoplay bloqueado:", error);
-							});
-						}
-					} else {
-						video.pause();
-					}
-				});
-			}, {
-				threshold: 0.5
-			});
-
-			videos.forEach(video => observer.observe(video));
-		}, 100);
-	}
-</script>
-
 @if (curator != null)
 {
 	string titulo = curator.Nombre + " (Curator)";
@@ -988,11 +901,30 @@
 		}
 	}
 
+	private IJSObjectReference moduloJs;
+
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
 		if (primerRender == true)
 		{
-			await JavaScript.InvokeVoidAsync("setupVideoAutoplay");
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Curator.razor.js");
+
+			if (moduloJs != null)
+			{
+				await moduloJs.InvokeVoidAsync("cargarVideos");
+			}
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
 		}
 	}
 

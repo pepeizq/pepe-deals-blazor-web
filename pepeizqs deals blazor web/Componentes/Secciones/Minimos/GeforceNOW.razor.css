@@ -1,0 +1,44 @@
+* {
+    --glaseadoBorde: #FFFFFF1A;
+    --glaseadoFondo: rgba(118, 185, 0, 0.2);
+    --noResultados: rgba(132, 32, 41, 0.5);
+    --botonSeleccionado: rgba(13, 22, 33, 0.75);
+}
+
+.caja-geforcenow {
+    box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
+    background-blend-mode: overlay;
+    border-radius: 100px;
+    border: 2px solid var(--glaseadoBorde);
+    width: fit-content;
+    background-color: var(--glaseadoFondo);
+    backdrop-filter: blur(25px);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 5px;
+}
+
+.caja-geforcenow-animacion {
+    opacity: 0;
+    transition: all 0.5s ease, transform .2s ease;
+    pointer-events: none;
+    transform: scaleX(0);
+    transform-origin: left;
+    max-width: 0;
+}
+
+    .caja-geforcenow-animacion.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: scaleX(1);
+        max-width: fit-content;
+    }
+
+.boton-geforcenow {
+    transition: backdrop-filter 0.2s ease;
+}
+
+    .boton-geforcenow:hover {
+        backdrop-filter: brightness(50%);
+    }
