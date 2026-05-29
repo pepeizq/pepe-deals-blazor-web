@@ -1,5 +1,7 @@
 ﻿@page "/news/{id:int}/{nombreNoticia?}/"
 
+@implements IAsyncDisposable
+
 @using Bundles2
 @using Gratis2
 @using Herramientas.Bundles
@@ -378,7 +380,9 @@
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News"):
 					</div>
 
-					<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-news-clipboard"))">
+					<div class="tooltip-juego" id="trigger-news-clipboard1"
+						 @onmouseenter="@(() => ActivarTooltip("trigger-news-clipboard1", "tooltip-news-clipboard1"))"
+						 @onmouseleave="@(() => DesactivarTooltip("trigger-news-clipboard1"))">
 						<button @onclick="(e => CopiarAlClipboard(e, juegosGratisCache))" style="background: transparent; border: 0px;" title="Reddit">
 							<div style="width: 24px; height: 24px;">
 								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -403,7 +407,9 @@
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String10", "News"):
 					</div>
 
-					<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-news-clipboard"))">
+					<div class="tooltip-juego" id="trigger-news-clipboard2"
+						 @onmouseenter="@(() => ActivarTooltip("trigger-news-clipboard2", "tooltip-news-clipboard2"))"
+						 @onmouseleave="@(() => DesactivarTooltip("trigger-news-clipboard2"))">
 						<button @onclick="(e => CopiarAlClipboard(e, juegosSuscripcionesCache))" style="background: transparent; border: 0px;" title="Reddit">
 							<div style="width: 24px; height: 24px;">
 								<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -951,11 +957,19 @@
 
 	#endregion
 
-	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
 	{
 		if (moduloJs != null)
 		{
-			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
 		}
 	}
 }

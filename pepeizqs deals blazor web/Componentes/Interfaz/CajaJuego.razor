@@ -1,4 +1,6 @@
-﻿@using Juegos
+﻿@implements IAsyncDisposable
+
+@using Juegos
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using Tiendas2
@@ -242,15 +244,12 @@
 		idTooltip = idTooltip + "-" + idCurator.ToString();
 	}
 
-	if (string.IsNullOrEmpty(idTooltip) == false)
-	{
-		idTooltip = "tooltip-" + idTooltip;
-	}
-
 	Herramientas.ToolTipDatos tooltip = Herramientas.Tooltip.Generar(idioma, tipo, juego, drmUsar, usuarioConectado, usuarioTieneJuego, usuarioTieneDeseado, idBundle, tipoGratis, tipoSuscripcion);
 
-	<div class="tooltip-juego" @onmousemove="(e => EnseñarTooltipJs(e, idTooltip))" @onmouseenter="(e => MostrarTooltip(e))">
-		<div id="@idTooltip" class="tooltip-relleno">
+	<div class="tooltip-juego" id="trigger-@idTooltip" style="width: auto;"
+		 @onmouseenter="@(() => ActivarTooltip($"trigger-{idTooltip}", $"tooltip-{idTooltip}"))"
+		 @onmouseleave="@(() => DesactivarTooltip($"trigger-{idTooltip}"))">
+		<div id="tooltip-@idTooltip" class="tooltip-relleno">
 			@if (enseñarTooltip == true)
 			{
 				if (string.IsNullOrEmpty(tooltip.Video) == false)
@@ -1068,19 +1067,24 @@
 
 	bool enseñarTooltip = false;
 
-	private void MostrarTooltip(MouseEventArgs e)
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
 	{
 		if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 		{
 			enseñarTooltip = true;
-		}	
-    }
+		}
 
-	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
 	{
 		if (moduloJs != null)
 		{
-			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
 		}
 	}
 

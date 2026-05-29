@@ -1,6 +1,8 @@
 ﻿@page "/streaming/"
 @page "/streaming/{streamingSeleccionadoTexto}/"
 
+@implements IAsyncDisposable
+
 @using Juegos
 @using System.Text.Json
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -61,7 +63,9 @@ else
     {
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
-            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-streaming-show"))">
+            <div class="tooltip-juego" id="trigger-streaming-show"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-streaming-show", "tooltip-streaming-show"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-streaming-show"))">
                 <button @onclick="MostrarOcultarMostrar" style="background: transparent; border: 0px; margin-left: 30px; color: var(--colorTexto);">
                     @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Streaming")
                 </button>
@@ -74,7 +78,9 @@ else
             </div>
         }
 
-        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-streaming-order"))">
+        <div class="tooltip-juego" id="trigger-streaming-order"
+             @onmouseenter="@(() => ActivarTooltip("trigger-streaming-order", "tooltip-streaming-order"))"
+             @onmouseleave="@(() => DesactivarTooltip("trigger-streaming-order"))">
             <button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px; margin-left: 30px;">
                 <div style="width: 24px; height: 24px;">
                     <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -91,7 +97,9 @@ else
         </div>
 
         <div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px; margin-left: 30px; @anchoBuscador">
-            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-streaming-search"))">
+            <div class="tooltip-juego" id="trigger-streaming-search"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-streaming-search", "tooltip-streaming-search"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-streaming-search"))">
                 <button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;">
                     <div style="width: 24px; height: 24px;">
                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -348,6 +356,18 @@ else
         }
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
     private async Task StreamingAbrir(MouseEventArgs e, Streaming2.StreamingTipo streaming)
     {
         streamingSeleccionado = streaming;
@@ -564,11 +584,19 @@ else
 
     #endregion
 
-    private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+    private async Task ActivarTooltip(string triggerId, string tooltipId)
     {
         if (moduloJs != null)
         {
-            await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+            await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+        }
+    }
+
+    private async Task DesactivarTooltip(string triggerId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
         }
     }
 }

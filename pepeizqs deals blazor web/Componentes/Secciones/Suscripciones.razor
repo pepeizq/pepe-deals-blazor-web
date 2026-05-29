@@ -1,15 +1,12 @@
 ﻿@page "/subscriptions/"
 @page "/subscriptions/{suscripcionSeleccionadaTexto}/"
 
-@using APIs.Steam
+@implements IAsyncDisposable
+
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Components.Web.Virtualization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.VisualBasic
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 @using pepeizqs_deals_web.Data
-@using System.Text.Json
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
@@ -38,124 +35,6 @@ else
     }
 }
 
-<script>
-    function enseñarTooltip(e, id) {
-        var x = e.clientX,
-            y = e.clientY;
-
-        var tooltip = document.getElementById(id);
-
-        if (screen.width / 2 > x) {
-            tooltip.style.top = (y + 10) + 'px';
-            tooltip.style.left = (x + 20) + 'px';
-        }
-        else {
-            tooltip.style.top = (y - 10) + 'px';
-            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-        };
-    }
-</script>
-
-<script>
-    function moverScroll(id) {
-        const yOffset = -90;
-        const element = document.getElementById(id);
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-        window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-</script>
-
-<script>
-    window.ChangeUrl = function (url) {
-        history.pushState(null, '', url);
-    }
-</script>
-
-<style>
-    .suscripciones-grid {
-        gap: 30px;
-    }
-
-    .suscripcion-grid {
-        padding: 30px;
-        gap: 30px;
-    }
-
-    @@media (max-width: 800px) {
-        .suscripciones-grid {
-            gap: 15px;
-        }
-
-        .suscripcion-grid {
-            padding: 15px;
-            gap: 15px;
-        }
-    }
-</style>
-
-<style>
-    :root {
-        --glaseadoBorde: #FFFFFF1A;
-        --glaseadoFondo: rgba(45, 47, 54, 0.70);
-        --noResultados: rgba(132, 32, 41, 0.5);
-        --botonSeleccionado: rgba(13, 22, 33, 0.75);
-    }
-
-    .caja-suscripciones {
-        box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-        background-blend-mode: overlay;
-        border-radius: 100px;
-        border: 2px solid var(--glaseadoBorde);
-        width: fit-content;
-        background-color: @colorSuscripcion;
-        backdrop-filter: blur(25px);
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        padding: 5px;
-        flex-wrap: wrap;
-    }
-
-    .caja-suscripciones-animacion {
-        opacity: 0;
-        transition: all 0.5s ease, transform .2s ease;
-        pointer-events: none;
-        transform: scaleX(0);
-        transform-origin: left;
-        max-width: 0;
-    }
-
-        .caja-suscripciones-animacion.visible {
-            opacity: 1;
-            pointer-events: auto;
-            transform: scaleX(1);
-            max-width: fit-content;
-        }
-
-    .boton-suscripciones {
-        transition: backdrop-filter 0.2s ease;
-    }
-
-        .boton-suscripciones:hover {
-            backdrop-filter: brightness(50%);
-        }
-
-    .caja-archivo-contenido {
-        background-color: var(--fondoSubsubcabecera);
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-        border: 1px solid var(--glaseadoBorde);
-        border-radius: 20px;
-    }
-
-    .caja-archivo-titulo {
-        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-        padding: 20px 30px;
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
-    }
-</style>
-
 <div>
     @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
     {
@@ -164,7 +43,7 @@ else
 
     <div>
         <div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
-            <div class="caja-suscripciones">
+            <div class="caja-suscripciones" style="background-color: @colorSuscripcion">
                 <button @onclick="@(e => SuscripcionAbrir(e, Suscripciones2.SuscripcionTipo.Desconocido))" class="boton-suscripciones" style="@CambiarEstilo(Suscripciones2.SuscripcionTipo.Desconocido) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
                     <div>
                         <h1 style="font-size: 16px; margin: 0px;">
@@ -232,7 +111,9 @@ else
 
                 if (mostrarUltimas == false)
                 {
-                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-subscriptions-archive')">
+                    <div class="tooltip-juego" id="trigger-subscriptions-archive"
+                         @onmouseenter="@(() => ActivarTooltip("trigger-subscriptions-archive", "tooltip-subscriptions-archive"))"
+                         @onmouseleave="@(() => DesactivarTooltip("trigger-subscriptions-archive"))">
                         <button @onclick="@(e => CargarArchivo(e))" style="border: 0px; @(mostrarArchivo ? "background-color: var(--botonSeleccionado); margin-left: 30px" : "background-color: transparent; margin-left: 20px"); padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Subscriptions")">
                             <div style="width: 24px; height: 24px;">
                                 <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -265,7 +146,9 @@ else
                     </div>
                 }
 
-                <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-bundles-order')">
+                <div class="tooltip-juego" id="trigger-subscriptions-order"
+                     @onmouseenter="@(() => ActivarTooltip("trigger-subscriptions-order", "tooltip-subscriptions-order"))"
+                     @onmouseleave="@(() => DesactivarTooltip("trigger-subscriptions-order"))">                 
                     <button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Subscriptions")">
                         <div style="width: 24px; height: 24px;">
                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -274,7 +157,7 @@ else
                         </div>
                     </button>
 
-                    <div id="tooltip-bundles-order" class="tooltip-relleno">
+                    <div id="tooltip-subscriptions-order" class="tooltip-relleno">
                         <div style="margin: 8px; max-width: 300px; font-size: 14px;">
                             @Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Subscriptions")
                         </div>
@@ -282,7 +165,9 @@ else
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px; margin-left: 20px; @anchoBuscador">
-                    <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-subscriptions-search')">
+                    <div class="tooltip-juego" id="trigger-subscriptions-search"
+                         @onmouseenter="@(() => ActivarTooltip("trigger-subscriptions-search", "tooltip-subscriptions-search"))"
+                         @onmouseleave="@(() => DesactivarTooltip("trigger-subscriptions-search"))">
                         <button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Subscriptions")">
                             <div style="width: 24px; height: 24px;">
                                 <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -298,7 +183,7 @@ else
                         </div>
                     </div>
 
-                    <div class="caja-suscripciones caja-suscripciones-animacion @(mostrarBuscador ? "visible" : "")">
+                    <div class="caja-suscripciones caja-suscripciones-animacion @(mostrarBuscador ? "visible" : "")" style="background-color: @colorSuscripcion">
                         <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" @onclick="ClickBuscador" @onfocusout="PerderBuscador" class="entrada-texto" style="border-radius: inherit; color: var(--colorTexto); padding: 5px 15px; border: 0px; transition: background-color 1000ms linear; @fondoBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Subscriptions")" />
                     </div>
                 </div>
@@ -805,14 +690,30 @@ else
         }
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Suscripciones.razor.js");
+
             if (suscripcionSeleccionada != Suscripciones2.SuscripcionTipo.Desconocido)
             {
                 await CambiarEnlace(suscripcionSeleccionada);
             }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
         }
     }
 
@@ -834,7 +735,11 @@ else
             colorSuscripcion = "var(--fondoSubcabecera)";
 
             juegosActuales?.Clear();
-            await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/");
+
+            if (moduloJs != null)
+            {
+                await moduloJs.InvokeVoidAsync("cambiarEnlace", "/subscriptions/");
+            }
         }
     }
 
@@ -857,7 +762,10 @@ else
 
     private async Task CambiarEnlace(Suscripciones2.SuscripcionTipo suscripcion)
     {
-        await JavaScript.InvokeVoidAsync("ChangeUrl", $"/subscriptions/{Herramientas.EnlaceAdaptador.Nombre(suscripcion.ToString().ToLower())}/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", $"/subscriptions/{Herramientas.EnlaceAdaptador.Nombre(suscripcion.ToString().ToLower())}/");
+        }
     }
 
     private string CambiarEstilo(Suscripciones2.SuscripcionTipo suscripcion)
@@ -891,7 +799,11 @@ else
         mostrarArchivo = true;
         añoSeleccionado = DateTime.Now.Year.ToString();
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/archive/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/subscriptions/archive/");
+        }
+
         await GenerarArchivo();
     }
 
@@ -899,7 +811,10 @@ else
     {
         mostrarUltimas = true;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/subscriptions/last-added/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/subscriptions/last-added/");
+        }
 
         suscripcionesUltimas = await BaseDatos.Suscripciones.Buscar.UltimasAñadidas();
     }
@@ -998,4 +913,20 @@ else
     }
 
     #endregion
+
+    private async Task ActivarTooltip(string triggerId, string tooltipId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+        }
+    }
+
+    private async Task DesactivarTooltip(string triggerId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
+        }
+    }
 }

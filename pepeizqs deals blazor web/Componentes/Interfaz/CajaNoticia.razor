@@ -1,8 +1,12 @@
 ﻿@using Noticias
 
+@implements IAsyncDisposable
+
 @inject IJSRuntime JavaScript
 
-<div @key="@noticia.Id" class="tooltip-juego" @onmousemove="(e => EnseñarTooltipJs(e, idTooltip))" style="width: 100%; display: flex; align-items: center; flex: 0 0 400px;">
+<div @key="@noticia.Id" class="tooltip-juego" id="trigger-@idTooltip"
+	 @onmouseenter="@(() => ActivarTooltip($"trigger-{idTooltip}", $"tooltip-{idTooltip}"))"
+	 @onmouseleave="@(() => DesactivarTooltip($"trigger-{idTooltip}"))" style="width: 100%; display: flex; align-items: center; flex: 0 0 400px;">
 	<a href="/news/@noticia.Id/@Herramientas.EnlaceAdaptador.Nombre(titulo)/" style="cursor: pointer; text-decoration: none; color: var(--colorTexto); height: 100%;">
 		<div class="cnoticia-expandir" title="@titulo">
 			<div style="display: flex; align-items: center; gap: 15px; background-color: var(--fondoBotonPequeño); padding: 15px 20px; width: 100%;">
@@ -65,7 +69,7 @@
 		</div>
 	</a>
 
-	<div id="tooltip-news-@noticia.Id.ToString()" class="tooltip-relleno">
+	<div id="tooltip-@idTooltip" class="tooltip-relleno">
 		<div style="margin: 8px; max-width: 300px; font-size: 14px;">
 			@titulo
 		</div>
@@ -94,7 +98,7 @@
 
 	private string titulo = string.Empty;
 	private string mensajeTiempo = string.Empty;
-    private string idTooltip => $"tooltip-news-{noticia?.Id.ToString()}";
+    private string idTooltip => $"news-{noticia?.Id.ToString()}";
 
 	private IJSObjectReference moduloJs;
 
@@ -121,11 +125,19 @@
 		}
 	}
 
-	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
 	{
 		if (moduloJs != null)
 		{
-			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
 		}
 	}
 }

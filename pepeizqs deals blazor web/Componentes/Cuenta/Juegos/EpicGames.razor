@@ -1,6 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Components.Web
 @using System.Text
 @using System.Net.Http.Headers
 @using System.Text.Json.Serialization
@@ -9,64 +7,6 @@
 @using pepeizqs_deals_web.Data
 
 @inject NavigationManager NavManager
-
-<style>
-    .caja-cuenta-epic-contenido {
-        background-color: var(--fondoSubsubcabecera);
-        border: 2px solid var(--glaseadoBorde);
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-        border-radius: 20px;
-    }
-
-    .caja-cuenta-epic-titulo {
-        background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-        font-size: 18px;
-        padding: 20px 30px;
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
-    }
-</style>
-
-<style>
-    .cargando {
-        width: 48px;
-        height: 48px;
-        border: 5px solid var(--colorTexto);
-        border-bottom-color: transparent;
-        border-radius: 50%;
-        display: inline-block;
-        box-sizing: border-box;
-        animation: rotation 1s linear infinite;
-    }
-
-    @@keyframes rotation {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-</style>
-
-<script>
-    function enseñarTooltip(e, id) {
-        var x = e.clientX,
-            y = e.clientY;
-
-        var tooltip = document.getElementById(id);
-
-        if (screen.width / 2 > x) {
-            tooltip.style.top = (y + 10) + 'px';
-            tooltip.style.left = (x + 20) + 'px';
-        }
-        else {
-            tooltip.style.top = (y - 10) + 'px';
-            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-        };
-    }
-</script>
 
 @if (usuario != null)
 {

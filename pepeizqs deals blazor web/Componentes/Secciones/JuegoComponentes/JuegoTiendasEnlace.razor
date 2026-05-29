@@ -1,6 +1,8 @@
 ﻿@using Juegos
 @using Tiendas2
 
+@implements IAsyncDisposable
+
 @inject IJSRuntime JavaScript
 
 @if (enseñarAlerta == true)
@@ -217,7 +219,7 @@
             {
                 foreach (var juegoBundle in juegosBundle)
                 {
-                    bool usuarioTieneJuego = juegosUsuario.Steam.Any(js => js.Id == juegoBundle.IdSteam);
+                    bool usuarioTieneJuego = juegosUsuario.Steam?.Any(js => js.Id == juegoBundle.IdSteam) == true;
 
                     if (usuarioTieneJuego == true)
                     {

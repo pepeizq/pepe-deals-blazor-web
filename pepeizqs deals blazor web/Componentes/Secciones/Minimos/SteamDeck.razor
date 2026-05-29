@@ -488,7 +488,7 @@
 		{
 			if (ocultarJuegosUsuario == "checked" && excluirSteamIds?.Count == 0)
 			{
-				excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+				excluirSteamIds = juegosUsuario.Steam?.Select(j => j.Id).ToList();
 			}
 		}
 	}

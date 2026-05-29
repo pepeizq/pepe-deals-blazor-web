@@ -298,7 +298,9 @@
                                 <div style="margin-left: auto; display: flex; align-items: center; gap: 10px;">
                                     @if (juego.Caracteristicas?.AccesoAnticipado == true)
                                     {
-                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-early"))">
+                                        <div class="tooltip-juego" id="trigger-early"
+                                             @onmouseenter="@(() => ActivarTooltip("trigger-early", "tooltip-early"))"
+                                             @onmouseleave="@(() => DesactivarTooltip("trigger-early"))">
                                             <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String97", "Game")
                                             </div>
@@ -317,7 +319,9 @@
                                         {
                                             if (categoria == "54")
                                             {
-                                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-vr"))">
+                                                <div class="tooltip-juego" id="trigger-vr"
+                                                     @onmouseenter="@(() => ActivarTooltip("trigger-vr", "tooltip-vr"))"
+                                                     @onmouseleave="@(() => DesactivarTooltip("trigger-vr"))">
                                                     <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                         @Herramientas.Idiomas.BuscarTexto(idioma, "String99", "Game")
                                                     </div>
@@ -336,7 +340,9 @@
                                     {
                                         if (juego.FreeToPlay.ToLower() == "true")
                                         {
-                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-f2p"))">
+                                            <div class="tooltip-juego" id="trigger-f2p"
+                                                 @onmouseenter="@(() => ActivarTooltip("trigger-f2p", "tooltip-f2p"))"
+                                                 @onmouseleave="@(() => DesactivarTooltip("trigger-f2p"))">
                                                 <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String103", "Game")
                                                 </div>  
@@ -354,7 +360,9 @@
                                     {
                                         if (juego.MayorEdad.ToLower() == "true")
                                         {
-                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-sex"))">
+                                            <div class="tooltip-juego" id="trigger-sex"
+                                                 @onmouseenter="@(() => ActivarTooltip("trigger-sex", "tooltip-sex"))"
+                                                 @onmouseleave="@(() => DesactivarTooltip("trigger-sex"))">
                                                 <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoAlerta); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String105", "Game")
                                                 </div>   
@@ -370,7 +378,9 @@
 
                                     @if (juego.InteligenciaArtificial == true)
                                     {
-                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-ai"))">
+                                        <div class="tooltip-juego" id="trigger-ai"
+                                             @onmouseenter="@(() => ActivarTooltip("trigger-ai", "tooltip-ai"))"
+                                             @onmouseleave="@(() => DesactivarTooltip("trigger-ai"))">
                                             <div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoOscuro); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String106", "Game")
                                             </div>
@@ -425,7 +435,9 @@
                                     }
 
                                     <div style="margin-left: auto; margin-right: 5px;">
-                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-header-dlc"))" style="width: fit-content;">
+                                        <div class="tooltip-juego" id="trigger-header-dlc"
+                                             @onmouseenter="@(() => ActivarTooltip("trigger-header-dlc", "tooltip-header-dlc"))"
+                                             @onmouseleave="@(() => DesactivarTooltip("trigger-header-dlc"))">
                                             <a class="boton-pequeño" style="text-align: center; padding: 10px 30px; text-decoration: none; @fondoBotonDlc" href="@enlaceMaestro" target="_self" @onclick="(e => AbrirEnlace(e, enlaceMaestro, false))">
                                                 <div style="display: flex; flex-direction: column; gap: 10px;">
                                                     <div style="width: 100%; height: 30px; display: flex; justify-content: center;">
@@ -504,7 +516,9 @@
                                 {
                                     if (juego.Analisis.Cantidad.Length > 1)
                                     {
-                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-reviews"))">
+                                        <div class="tooltip-juego" id="trigger-reviews"
+                                             @onmouseenter="@(() => ActivarTooltip("trigger-reviews", "tooltip-reviews"))"
+                                             @onmouseleave="@(() => DesactivarTooltip("trigger-reviews"))">
                                             <button @onclick="@(e => MoverScrollJs(e, "reviews"))" class="boton-pequeño boton-reseñas" style="width: fit-content; padding: 0px; color: var(--colorTexto); background: color-mix(in srgb, var(--fondoSubsubcabecera) 33%, var(--fondoBotonPequeño));">
                                                 <div style="padding: 10px; display: flex; flex-direction: column; gap: 10px;">
                                                     <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
@@ -671,7 +685,9 @@
 
                                         @if (cargarComponentes == true)
                                         {
-                                            <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-wishlist-{drm.Id}"))" style="width: fit-content;">
+                                            <div class="tooltip-juego" id="trigger-wishlist-@drm.Id"
+                                                 @onmouseenter="@(() => ActivarTooltip($"trigger-wishlist-{drm.Id}", $"tooltip-wishlist-{drm.Id}"))"
+                                                 @onmouseleave="@(() => DesactivarTooltip($"trigger-wishlist-{drm.Id}"))">
                                                 <button @onclick="@(e => CambiarEstadoDeseado(e, !usuarioTieneDeseado, drm.Id))" class="boton-pequeño boton-deseado" style="width: fit-content; padding: 10px; transform: none; @fondoDeseado">
 									                <div style="fill: var(--colorTexto); width: 30px; height: 30px; display: flex;">
 										                @if (usuarioTieneDeseado == true)
@@ -709,7 +725,9 @@
                                 {
                                     if (Herramientas.Bots.UserAgentEsBot(userAgent) == false && cargarComponentes == true)
                                     {
-                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-wishlist-{drm.Id}"))" style="width: fit-content;">
+                                        <div class="tooltip-juego" id="trigger-wishlist-@drm.Id"
+                                             @onmouseenter="@(() => ActivarTooltip($"trigger-wishlist-{drm.Id}", $"tooltip-wishlist-{drm.Id}"))"
+                                             @onmouseleave="@(() => DesactivarTooltip($"trigger-wishlist-{drm.Id}"))">
                                             <button @onclick="@(e => LogearEnseñar(e))" class="boton-pequeño boton-deseado" style="width: fit-content; padding: 10px; transform: none;">
 									            <div style="fill: var(--colorTexto); width: 30px; height: 30px; display: flex;">
 										            <svg class="svg-icono-rotante" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -1277,7 +1295,9 @@
                                                                     string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
                                                                     string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-geforcenow-{drm.Id.ToString()}"))" style="width: fit-content;">
+                                                                    <div class="tooltip-juego" id="trigger-geforcenow-@drm.Id.ToString()"
+                                                                         @onmouseenter="@(() => ActivarTooltip($"trigger-geforcenow-{drm.Id.ToString()}", $"tooltip-geforcenow-{drm.Id.ToString()}"))"
+                                                                         @onmouseleave="@(() => DesactivarTooltip($"trigger-geforcenow-{drm.Id.ToString()}"))">
                                                                         <a href="/streaming/geforcenow/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                 <picture>
@@ -1310,7 +1330,9 @@
                                                                     string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
                                                                     string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-boosteroid-{drm.Id.ToString()}"))" style="width: fit-content;">
+                                                                    <div class="tooltip-juego" id="trigger-boosteroid-@drm.Id.ToString()"
+                                                                         @onmouseenter="@(() => ActivarTooltip($"trigger-boosteroid-{drm.Id.ToString()}", $"tooltip-boosteroid-{drm.Id.ToString()}"))"
+                                                                         @onmouseleave="@(() => DesactivarTooltip($"trigger-boosteroid-{drm.Id.ToString()}"))">
                                                                         <a href="/streaming/boosteroid/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                  <picture>
@@ -1376,7 +1398,9 @@
 
                                                                         string imagenBandera = "/imagenes/banderas/" + idiomaEncontradoTexto + ".svg";
 
-                                                                        <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-languages-{drm.Id}"))" style="width: fit-content;">
+                                                                        <div class="tooltip-juego" id="trigger-languages-@drm.Id.ToString()"
+                                                                             @onmouseenter="@(() => ActivarTooltip($"trigger-languages-{drm.Id.ToString()}", $"tooltip-languages-{drm.Id.ToString()}"))"
+                                                                             @onmouseleave="@(() => DesactivarTooltip($"trigger-languages-{drm.Id.ToString()}"))">
                                                                             <button @onclick="@(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                                 <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
                                                                                     <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language"  />
@@ -1512,7 +1536,9 @@
                                                             {
                                                                 string enlaceDemo = "https://store.steampowered.com/app/" + juego.Caracteristicas.DemoIdSteam.ToString();
 
-                                                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-demosteam"))" style="width: fit-content;">
+                                                                <div class="tooltip-juego" id="trigger-demosteam"
+                                                                     @onmouseenter="@(() => ActivarTooltip("trigger-demosteam", "tooltip-demosteam"))"
+                                                                     @onmouseleave="@(() => DesactivarTooltip("trigger-demosteam"))">
                                                                     <a href="@Herramientas.EnlaceAcortador.Generar(enlaceDemo, APIs.Steam.Tienda.Generar().Id, usuarioPatreon, false)" target="_blank" class="boton-expandir" style="display: inline-flex; line-height: 34px; color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 12px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                         <div style="font-size: 14px;">
                                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String83", "Game")
@@ -1537,7 +1563,9 @@
                                             <div style="display: flex; flex-direction: column; gap: 15px; margin-left: auto;">
                                                 @if (HistoricoComprobar(usuarioRegion, drm.Id) == true)
                                                 {
-                                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-historical-{drm.Id.ToString()}"))" style="width: fit-content;">
+                                                    <div class="tooltip-juego" id="trigger-historical-@drm.Id.ToString()"
+                                                         @onmouseenter="@(() => ActivarTooltip($"trigger-historical-{drm.Id.ToString()}", $"tooltip-historical-{drm.Id.ToString()}"))"
+                                                         @onmouseleave="@(() => DesactivarTooltip($"trigger-historical-{drm.Id.ToString()}"))">
                                                         <button @onclick="@(() => HistoricoAbrirCerrar(drm.Id))" class="boton-pequeño" style="width: auto; min-width: 200px; text-align: center; font-size: 14px; padding: 10px 12px;">
                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String64", "Game")
                                                         </button>
@@ -2200,7 +2228,9 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, $"tooltip-categories"))">
+                                    <div class="tooltip-juego" id="trigger-categories"
+                                         @onmouseenter="@(() => ActivarTooltip("trigger-categories", "tooltip-categories"))"
+                                         @onmouseleave="@(() => DesactivarTooltip("trigger-categories"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2277,7 +2307,9 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-tags"))">
+                                    <div class="tooltip-juego" id="trigger-tags"
+                                         @onmouseenter="@(() => ActivarTooltip("trigger-tags", "tooltip-tags"))"
+                                         @onmouseleave="@(() => DesactivarTooltip("trigger-tags"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2326,7 +2358,9 @@
                                 </div>
 
                                 <div style="margin-left: auto;">
-                                    <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-links"))">
+                                    <div class="tooltip-juego" id="trigger-links"
+                                         @onmouseenter="@(() => ActivarTooltip("trigger-links", "tooltip-links"))"
+                                         @onmouseleave="@(() => DesactivarTooltip("trigger-links"))">
                                         <div style="width: 24px; height: 24px;">
                                             <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                                 <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -2521,7 +2555,9 @@
                             </div>
 
                             <div style="margin-left: auto;">
-                                <div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-links2"))">
+                                <div class="tooltip-juego" id="trigger-links2"
+                                     @onmouseenter="@(() => ActivarTooltip("trigger-links2", "tooltip-links2"))"
+                                     @onmouseleave="@(() => DesactivarTooltip("trigger-links2"))">
                                     <div style="width: 24px; height: 24px;">
                                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
                                             <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
@@ -5196,11 +5232,19 @@
 		}
 	}
 
-    private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
 	{
 		if (moduloJs != null)
 		{
-			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
 		}
 	}
 }

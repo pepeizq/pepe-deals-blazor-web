@@ -1,9 +1,12 @@
 ﻿@page "/last-news"
 
+@implements IAsyncDisposable
+
 @using Microsoft.AspNetCore.Components.Web
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
 
 @inject IHttpContextAccessor Contexto
+@inject IJSRuntime JavaScript
 
 @{
 	string keywords = "news";
@@ -54,78 +57,6 @@
 	<Titulo tipo="@Titulo.Tipo.UltimasNoticias" idioma="@idioma" dominio="@dominio" keywords="@keywords" contenidoJsonUltimasNoticias="@jsonContenido"/>
 }
 
-<style>
-	.imagen-expandir {
-		transition: transform .2s;
-	}
-
-		.imagen-expandir:hover {
-			transform: scale(1.01);
-		}
-</style>
-
-<style>
-	:root {
-		--glaseadoBorde: #FFFFFF1A;
-		--glaseadoFondo: rgba(45, 47, 54, 0.70);
-		--botonSeleccionado: rgba(13, 22, 33, 0.75);
-	}
-
-	.caja-noticias {
-		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-		background-blend-mode: overlay;
-		border-radius: 100px;
-		border: 2px solid var(--glaseadoBorde);
-		width: fit-content;
-		background-color: var(--fondoSubcabecera);
-		backdrop-filter: blur(25px);
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 5px;
-	}
-
-	.caja-noticias-animacion {
-		opacity: 0;
-		transition: all 0.5s ease, transform .2s ease;
-		pointer-events: none;
-		transform: scaleX(0);
-		transform-origin: left;
-		max-width: 0;
-	}
-
-		.caja-noticias-animacion.visible {
-			opacity: 1;
-			pointer-events: auto;
-			transform: scaleX(1);
-			max-width: fit-content;
-		}
-
-	.boton-noticias {
-		transition: backdrop-filter 0.2s ease;
-	}
-
-		.boton-noticias:hover {
-			backdrop-filter: brightness(50%);
-		}
-</style>
-
-<style>
-	.caja-noticia-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-		border: 1px solid var(--glaseadoBorde);
-		border-radius: 20px;
-	}
-
-	.caja-archivo-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		padding: 20px 30px;
-		border-top-left-radius: inherit;
-		border-top-right-radius: inherit;
-	}
-</style>
-
 @if (noticiasMostrar?.Count > 0)
 {
 	<div style="display: flex; align-items: center; justify-content: center; margin-top: 40px; transition: transform 0.3s ease, opacity 0.3s ease; flex-wrap: wrap;">
@@ -152,7 +83,9 @@
 			}
 		</div>
 
-		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-news-archive')">
+		<div class="tooltip-juego" id="trigger-news-archive"
+			 @onmouseenter="@(() => ActivarTooltip($"trigger-news-archive", $"tooltip-news-archive"))"
+			 @onmouseleave="@(() => DesactivarTooltip($"trigger-news-archive"))">
 			<button @onclick="@(e => CambiarTipo(e, Noticias.NoticiaTipo.Desconocido, true))" style="@CambiarEstilo(Noticias.NoticiaTipo.Desconocido, true) border: 0px; @(mostrarArchivo ? "margin-left: 35px;" : "margin-left: 25px;") padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "LastNews")">
 				<div style="width: 24px; height: 24px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -388,6 +321,28 @@
 		años.Reverse();
 	}
 
+	private IJSObjectReference moduloJs;
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/juegocomponentes/JuegoCantidadTienenDesean.razor.js");
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
+		}
+	}
+
 	private Noticias.NoticiaTipo tipoSeleccionado = Noticias.NoticiaTipo.Desconocido;
 	private List<Noticias.NoticiaTipo> tiposActuales = new List<Noticias.NoticiaTipo>();
 	private bool mostrarArchivo = false;
@@ -439,5 +394,21 @@
 		añoSeleccionado = nuevoAño;
 
 		noticiasAntiguas = await BaseDatos.Noticias.Buscar.Año(añoSeleccionado);
+	}
+	
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
+		}
 	}
 }

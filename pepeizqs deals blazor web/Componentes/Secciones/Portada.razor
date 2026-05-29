@@ -1123,7 +1123,7 @@ else
 		{
 			if (ocultarJuegosUsuarioSteamDestacados == "checked" && excluirSteamIds?.Count == 0)
 			{
-				excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+				excluirSteamIds = juegosUsuario.Steam?.Select(j => j.Id).ToList();
 			}
 		}
 
@@ -1516,7 +1516,7 @@ else
 			{
 				if (ocultarJuegosUsuarioSteamMinimos == "checked" && excluirSteamIds?.Count == 0)
 				{
-					excluirSteamIds = juegosUsuario.Steam.Select(j => j.Id).ToList();
+					excluirSteamIds = juegosUsuario.Steam?.Select(j => j.Id).ToList();
 				}
 			}
 
@@ -1526,7 +1526,7 @@ else
 			{
 				if (ocultarJuegosUsuarioGogMinimos == "checked" && excluirGogIds?.Count == 0)
 				{
-					excluirGogIds = juegosUsuario.Gog.Select(j => j.Id).ToList();	
+					excluirGogIds = juegosUsuario.Gog?.Select(j => j.Id).ToList();	
 				}
 			}
 

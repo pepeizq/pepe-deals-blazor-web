@@ -979,20 +979,14 @@ namespace BaseDatos.Usuarios
 		{
 			try
 			{
-				string busqueda = "SELECT Id FROM AspNetUsers WHERE GogId=@GogId";
+				string busqueda = "SELECT Id FROM AspNetUsers WHERE GogId=@GogId AND Id!=@UsuarioId";
 
-				var ids = await Herramientas.BaseDatos.Select(async conexion =>
+				var resultado = await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryAsync(busqueda, new { GogId = idGog });
+					return await conexion.QueryFirstOrDefaultAsync<string>(busqueda, new { GogId = idGog, UsuarioId = idUsuario });
 				});
 
-				foreach (var id in ids)
-				{
-					if (id != idUsuario)
-					{
-						return true;
-					}
-				}
+				return resultado != null;
 			}
 			catch (Exception ex)
 			{

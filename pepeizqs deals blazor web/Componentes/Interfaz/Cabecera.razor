@@ -2,6 +2,8 @@
 
 @attribute [StreamRendering(true)]
 
+@implements IAsyncDisposable
+
 @using BaseDatos.Usuarios
 @using Juegos
 @using Microsoft.AspNetCore.Components
@@ -463,9 +465,9 @@
 
                                 @if (EnseñarOpciones() == true)
                                 {
-                                    string idTooltipOpciones = "tooltip-header-options";
-
-                                    <div class="tooltip-juego" @onmousemove="(e => EnseñarTooltipJs(e, idTooltipOpciones))">
+                                    <div class="tooltip-juego" id="trigger-header-options"
+                                        @onmouseenter="@(() => ActivarTooltip("trigger-header-options", "tooltip-header-options"))"
+                                        @onmouseleave="@(() => DesactivarTooltip("trigger-header-options"))">
                                         <button @onclick="AlternarOpciones" @onmouseenter="_ => usuarioEncimaOpciones = true" @onmouseleave="_ => usuarioEncimaOpciones = false" style="background: transparent; border: 0px; display: flex;">
                                             <div style="width: 22px; height: 22px;">
                                                 <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="transform: rotate(@(usuarioEncimaOpciones == true ? "180deg" : "0deg")); transition: transform 0.2s;">
@@ -474,7 +476,7 @@
                                             </div>
                                         </button>
 
-                                        <div id="@idTooltipOpciones" class="tooltip-relleno">
+                                        <div id="tooltip-header-options" class="tooltip-relleno">
                                             <div style="margin: 5px 10px; max-width: 300px; font-size: 14px;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Header")
                                             </div>
@@ -694,9 +696,9 @@
                                 }
 
                                 <button @onclick="(e => CopiarAlClipboard(e, enlaceClipboard))"
-                                        @onmouseenter="@(() => MostrarTooltipJs("tooltip-header-clipboard"))"
-                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltip(e, "tooltip-header-clipboard"))"
-                                        @onmouseleave="@(() => OcultarTooltipJs("tooltip-header-clipboard"))"
+                                        @onmouseenter="@(() => MostrarTooltipBuscador("tooltip-header-clipboard"))"
+                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltipBuscador(e, "tooltip-header-clipboard"))"
+                                        @onmouseleave="@(() => OcultarTooltipBuscador("tooltip-header-clipboard"))"
                                         style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
                                     <div style="width: 24px; height: 24px;">
                                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -706,9 +708,9 @@
                                 </button>
 
                                 <button @onclick="(e => LimpiarBusqueda(e))"
-                                        @onmouseenter="@(() => MostrarTooltipJs("tooltip-header-cleansearch"))"
-                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltip(e, "tooltip-header-cleansearch"))"
-                                        @onmouseleave="@(() => OcultarTooltipJs("tooltip-header-cleansearch"))"
+                                        @onmouseenter="@(() => MostrarTooltipBuscador("tooltip-header-cleansearch"))"
+                                        @onmousemove="@((MouseEventArgs e) => ActualizarPosicionTooltipBuscador(e, "tooltip-header-cleansearch"))"
+                                        @onmouseleave="@(() => OcultarTooltipBuscador("tooltip-header-cleansearch"))"
                                         style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
                                     <div style="width: 24px; height: 24px;">
                                         <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -1535,35 +1537,43 @@
 
     #endregion
 
-    private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+    private async Task ActivarTooltip(string triggerId, string tooltipId)
     {
         if (moduloJs != null)
         {
-            await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+            await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
         }
     }
 
-    private async Task MostrarTooltipJs(string id)
+    private async Task DesactivarTooltip(string triggerId)
     {
         if (moduloJs != null)
         {
-            await moduloJs.InvokeVoidAsync("mostrarTooltipJs", id);
+            await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
         }
     }
 
-    private async Task OcultarTooltipJs(string id)
+    private async Task MostrarTooltipBuscador(string id)
     {
         if (moduloJs != null)
         {
-            await moduloJs.InvokeVoidAsync("ocultarTooltipJs", id);            
+            await moduloJs.InvokeVoidAsync("mostrarTooltipBuscador", id);
         }
     }
 
-    private async Task ActualizarPosicionTooltip(MouseEventArgs e, string id)
+    private async Task OcultarTooltipBuscador(string id)
     {
         if (moduloJs != null)
         {
-            await moduloJs.InvokeVoidAsync("actualizarPosicionTooltip", e.ClientX, e.ClientY, id);
+            await moduloJs.InvokeVoidAsync("ocultarTooltipBuscador", id);
+        }
+    }
+
+    private async Task ActualizarPosicionTooltipBuscador(MouseEventArgs e, string id)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("actualizarPosicionTooltipBuscador", e.ClientX, e.ClientY, id);
         }
     }
 }

@@ -2,6 +2,8 @@
 @page "/bundles/{bundleSeleccionadoTexto}/"
 @page "/bundles/archive/{añoSeleccionado}/"
 
+@implements IAsyncDisposable
+
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -127,7 +129,9 @@
 
 		@if (mostrarArchivo == false)
 		{
-			<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-bundles-order"))">
+			<div class="tooltip-juego" id="trigger-bundles-order"
+				 @onmouseenter="@(() => ActivarTooltip("trigger-bundles-order", "tooltip-bundles-order"))"
+				 @onmouseleave="@(() => DesactivarTooltip("trigger-bundles-order"))">
 				<button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px; margin-left: 35px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String29", "Bundle")">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -144,7 +148,9 @@
 			</div>
 		}
 		
-		<div class="tooltip-juego" @onmousemove="@(e => EnseñarTooltipJs(e, "tooltip-bundles-archive"))">
+		<div class="tooltip-juego" id="trigger-bundles-archive"
+			 @onmouseenter="@(() => ActivarTooltip("trigger-bundles-archive", "tooltip-bundles-archive"))"
+			 @onmouseleave="@(() => DesactivarTooltip("trigger-bundles-archive"))">
 			<button @onclick="@(e => CambiarTipo(e, Bundles2.BundleTipo.Desconocido, true))" style="@CambiarEstilo(Bundles2.BundleTipo.Desconocido, true) border: 0px; @(mostrarArchivo ? "margin-left: 35px;" : "margin-left: 25px;") padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Bundle")">
 				<div style="width: 24px; height: 24px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -896,11 +902,19 @@ else
 		}
 	}
 
-	private async Task EnseñarTooltipJs(MouseEventArgs e, string id)
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
 	{
 		if (moduloJs != null)
 		{
-			await moduloJs.InvokeVoidAsync("enseñarTooltip", e, id);
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
 		}
 	}
 }

@@ -562,6 +562,7 @@ select {
     text-decoration: none;
     position: relative;
     display: flex;
+    width: fit-content;
 }
 
     .tooltip-juego .tooltip-relleno {
