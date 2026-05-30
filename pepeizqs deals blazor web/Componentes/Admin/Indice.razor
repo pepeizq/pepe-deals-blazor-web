@@ -2,48 +2,17 @@
 @page "/admin/{subpagina}/"
 
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @attribute [StreamRendering(true)]
 
+@implements IAsyncDisposable
+
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Data.SqlClient
 @using System.Diagnostics
-@using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject NavigationManager NavManager
 @inject IJSRuntime JavaScript
-
-<style>
-    .boton-pestañas {
-        color: var(--colorTexto);
-        background: transparent;
-        text-align: center;
-        border: 0;
-        width: 100%;
-        transition: transform .2s;
-        font-size: 17px;
-        padding: 10px 30px;
-    }
-
-    .boton-pestañas:hover {
-        color: var(--colorTextoHover);
-        transform: scale(1.01);
-    }
-</style>
-
-<style>
-    .caja-admin-indice {
-        background-color: var(--fondoSubsubcabecera);
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-    }
-</style>
-
-<script>
-    window.ChangeUrl = function (url) {
-        history.pushState(null, '', url);
-    }
-</script>
 
 @if (usuarioAdmin == true)
 {
@@ -239,17 +208,17 @@
             {
                 subpagina = subpaginaErrores;
             }
-            
+
             if (nuevosDuplicadosCantidad > 0)
             {
                 subpagina = subpaginaDuplicados;
             }
-            
+
             if (nuevosPendientesCantidad > 0)
             {
                 subpagina = subpaginaPendientes;
             }
-            
+
             if (nuevosDLCsCantidad > 0)
             {
                 subpagina = subpaginaDLCs;
@@ -271,11 +240,13 @@
         }
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
         if (primerRender == true)
         {
-            await JavaScript.InvokeVoidAsync("moverScroll", "cuerpazo");
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/cuenta/cuenta/Indice.razor.js");
 
             if (string.IsNullOrEmpty(subpagina) == true)
             {
@@ -353,6 +324,18 @@
         }
     }
 
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
     private string fondo = "background-color: var(--fondoBotonPequeño)";
     private string fondoAlerta = "background-color: var(--fondoAlerta)";
     private string fondoPeligro = "background-color: var(--fondoPeligro)";
@@ -403,7 +386,10 @@
         mostrarEnlaces = true;
         estiloEnlaces = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaEnlaces + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaEnlaces + "/");
+        }
     }
 
     #endregion
@@ -421,7 +407,10 @@
         mostrarDuplicados = true;
         estiloDuplicados = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaDuplicados + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaDuplicados + "/");
+        }
     }
 
     #endregion
@@ -440,7 +429,11 @@
         estiloErrores = fondo;
 
         nuevosErroresCantidad = await BaseDatos.Admin.Buscar.CantidadErrores();
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaErrores + "/");
+
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaErrores + "/");
+        }
     }
 
     #endregion
@@ -457,7 +450,10 @@
         mostrarTareas = true;
         estiloTareas = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaTareas + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaTareas + "/");
+        }
     }
 
     #endregion
@@ -474,7 +470,10 @@
         mostrarDivisas = true;
         estiloDivisas = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaDivisas + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaDivisas + "/");
+        }
     }
 
     #endregion
@@ -493,7 +492,11 @@
         estiloDLCs = fondo;
 
         nuevosDLCsCantidad = await BaseDatos.Juegos.Buscar.DLCsCantidad();
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaDLCs + "/");
+
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaDLCs + "/");
+        }
     }
 
     #endregion
@@ -512,7 +515,11 @@
         estiloPendientes = fondo;
 
         nuevosPendientesCantidad = await BaseDatos.Pendientes.Buscar.Cantidad();
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaPendientes + "/");
+
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaPendientes + "/");
+        }
     }
 
     #endregion
@@ -529,7 +536,10 @@
         mostrarJuegos = true;
         estiloJuegos = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaJuegos + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaJuegos + "/");
+        }
     }
 
     #endregion
@@ -546,7 +556,10 @@
         mostrarNoticias = true;
         estiloNoticias = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaNoticias + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaNoticias + "/");
+        }
     }
 
     #endregion
@@ -563,7 +576,10 @@
         mostrarBundles = true;
         estiloBundles = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaBundles + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaBundles + "/");
+        }
     }
 
     #endregion
@@ -580,7 +596,10 @@
         mostrarGratis = true;
         estiloGratis = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaGratis + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaGratis + "/");
+        }
     }
 
     #endregion
@@ -597,7 +616,10 @@
         mostrarSuscripciones = true;
         estiloSuscripciones = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaSuscripciones + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaSuscripciones + "/");
+        }
     }
 
     #endregion
@@ -614,7 +636,10 @@
         mostrarRecompensas = true;
         estiloRecompensas = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaRecompensas + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaRecompensas + "/");
+        }
     }
 
     #endregion
@@ -631,7 +656,10 @@
         mostrarCupones = true;
         estiloCupones = fondo;
 
-        await JavaScript.InvokeVoidAsync("ChangeUrl", "/admin/" + subpaginaCupones + "/");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaCupones + "/");
+        }
     }
 
     #endregion

@@ -4,3 +4,29 @@
     padding: 30px;
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
 }
+
+.admin-busqueda-juego-derecha {
+    width: 150px;
+    min-width: 150px;
+    padding-left: 30px;
+}
+
+.boton-pequeño-peligro {
+    color: var(--colorTexto);
+    background-color: var(--colorTextoPeligro);
+    display: inline-block;
+    user-select: none;
+    width: 100%;
+    padding: 6px;
+    text-align: center;
+    font-size: 16px;
+    border: 0px;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    filter: saturate(0.85);
+    text-decoration: none;
+}
+
+    .boton-pequeño-peligro:hover {
+        color: var(--colorTexto);
+        background-color: var(--colorTextoPeligroHover);
+    }

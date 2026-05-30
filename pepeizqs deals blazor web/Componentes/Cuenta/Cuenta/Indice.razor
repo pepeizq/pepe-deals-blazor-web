@@ -5,10 +5,10 @@
 
 @attribute [Authorize]
 
+@implements IAsyncDisposable
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using global::Juegos
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
@@ -22,96 +22,6 @@
     <PageTitle>@titulo</PageTitle>
 </HeadContent>
 
-<style>
-    .boton-pestañas {
-        color: var(--colorTexto);
-        fill: var(--colorTexto);
-        background-color: var(--fondoBotonPequeño);
-        border: 1px solid var(--fondoOscuro);
-        width: 100%;
-        transition: transform .2s;
-        font-size: 17px;
-        padding: 15px 20px;
-    }
-
-    .boton-pestañas:hover {
-        color: var(--colorTextoHover);
-        fill: var(--colorTextoHover);
-        transform: scale(1.01);
-    }
-
-    .grid-estructura {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-    }
-
-    @@media (max-width: 800px) {
-        .grid-estructura {
-            display: grid;
-            gap: 20px;
-        }
-    }
-
-    :root {
-        --glaseadoBorde: #FFFFFF1A;
-        --glaseadoFondo: rgba(45, 47, 54, 0.70);
-        --botonSeleccionado: rgba(13, 22, 33, 0.75);
-        --fondoCuentaBloque: #222e44;
-        --fondoPeligro2: rgba(132, 32, 41, 0.5);
-    }
-
-	.caja-cuenta-indice-contenido {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0 22px 34px 0 rgba(0, 0, 0, 0.25);
-        border: 2px solid var(--glaseadoBorde);
-        border-radius: 20px;
-	}
-
-    .caja-cuenta-indice-titulo {
-		background: color-mix(in srgb, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño));
-		font-size: 18px;
-		padding: 20px 30px;
-        border-top-left-radius: inherit;
-        border-top-right-radius: inherit;
-	}
-
-    .caja-cuenta-bloque {
-        background-color: var(--fondoCuentaBloque);
-        border-radius: 5px;
-        display: flex;
-        align-items: center; 
-        gap: 20px;
-        border: 1px solid var(--glaseadoBorde);
-        padding: 20px 30px;
-        justify-content: space-between;
-    }
-</style>
-
-<script>
-    function enseñarTooltip(e, id) {
-        var x = e.clientX,
-            y = e.clientY;
-
-        var tooltip = document.getElementById(id);
-
-        if (screen.width / 2 > x) {
-            tooltip.style.top = (y + 10) + 'px';
-            tooltip.style.left = (x + 20) + 'px';
-        }
-        else {
-            tooltip.style.top = (y - 10) + 'px';
-            tooltip.style.left = (x - 20 - tooltip.getBoundingClientRect().width) + 'px';
-        };
-    }
-</script>
-
-<script>
-    window.ChangeUrl = function (url) {
-        history.pushState(null, '', url);
-    }
-</script>
-
 @if (enseñarOpcion == false)
 {
     <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="margin-top: 40px; margin-bottom: 40px;">
@@ -120,7 +30,9 @@
 	    </div>
 
         <div class="grid-estructura" style="padding: 30px;">
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-mail')">
+            <div class="tooltip-juego" id="trigger-mail"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-mail", "tooltip-mail"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-mail"))" style="width: auto;">
                 <button @onclick="MostrarCorreo" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -142,7 +54,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-password')">
+            <div class="tooltip-juego" id="trigger-password"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-password", "tooltip-password"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-password"))" style="width: auto;">
                 <button @onclick="MostrarContraseña" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -164,7 +78,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-data')">
+            <div class="tooltip-juego" id="trigger-data"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-data", "tooltip-data"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-data"))" style="width: auto;">
                 <button @onclick="MostrarDatosPersonales" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -186,7 +102,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-language')">
+            <div class="tooltip-juego" id="trigger-language"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-language", "tooltip-language"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-language"))" style="width: auto;">
                 <button @onclick="MostrarIdioma" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -208,7 +126,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-keys')">
+            <div class="tooltip-juego" id="trigger-keys"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-keys", "tooltip-keys"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-keys"))" style="width: auto;">
                 <button @onclick="MostrarClaves" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -230,7 +150,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-notificationsmail')">
+            <div class="tooltip-juego" id="trigger-notificationsmail"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-notificationsmail", "tooltip-notificationsmail"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-notificationsmail"))" style="width: auto;">
                 <button @onclick="MostrarNotificacionesCorreo" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -252,7 +174,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-notificationspush')">
+            <div class="tooltip-juego" id="trigger-notificationspush"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-notificationspush", "tooltip-notificationspush"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-notificationspush"))" style="width: auto;">
                 <button @onclick="MostrarNotificacionesPush" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -274,7 +198,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-games')">
+            <div class="tooltip-juego" id="trigger-games"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-games", "tooltip-games"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-games"))" style="width: auto;">
                 <button @onclick="MostrarJuegos" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -296,7 +222,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-profile')">
+            <div class="tooltip-juego" id="trigger-profile"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-profile", "tooltip-profile"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-profile"))" style="width: auto;">
                 <button @onclick="MostrarPerfil" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -318,7 +246,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-mailpatreon')">
+            <div class="tooltip-juego" id="trigger-mailpatreon"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-mailpatreon", "tooltip-mailpatreon"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-mailpatreon"))" style="width: auto;">
                 <button @onclick="MostrarCorreoPatreon" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -340,7 +270,9 @@
                 </div>
             </div>
 
-            <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-excludegames')">
+            <div class="tooltip-juego" id="trigger-excludedgames"
+                 @onmouseenter="@(() => ActivarTooltip("trigger-excludedgames", "tooltip-excludedgames"))"
+                 @onmouseleave="@(() => DesactivarTooltip("trigger-excludedgames"))" style="width: auto;">
                 <button @onclick="MostrarJuegosExcluir" class="boton-pestañas">
                     <div style="display: flex; align-items: center; gap: 20px; text-align: left;">
                         <div style="width: 30px; height: 30px; display: flex;">
@@ -355,7 +287,7 @@
                     </div>
                 </button>
 
-                <div id="tooltip-excludegames" class="tooltip-relleno">
+                <div id="tooltip-excludedgames" class="tooltip-relleno">
                     <div style="margin: 8px; max-width: 300px; font-size: 14px;">
                         @Herramientas.Idiomas.BuscarTexto(idioma, "String40", "Account")
                     </div>
@@ -549,15 +481,37 @@ else
         }
     }
 
+    private IJSObjectReference moduloJs;
+
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
-        if (string.IsNullOrEmpty(seccion) == true)
+        if (primerRender == true)
         {
-            await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/");
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/cuenta/cuenta/Indice.razor.js");
         }
-        else
+
+        if (moduloJs != null)
         {
-            await JavaScript.InvokeVoidAsync("ChangeUrl", "/account/" + seccion + "/");
+            if (string.IsNullOrEmpty(seccion) == true)
+            {
+                await moduloJs.InvokeVoidAsync("cambiarEnlace", "/account/");
+            }
+            else
+            {
+                await moduloJs.InvokeVoidAsync("cambiarEnlace", "/account/" + seccion + "/");
+            }
+        }     
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
         }
     }
 
@@ -726,4 +680,20 @@ else
     }
 
     #endregion
+
+    private async Task ActivarTooltip(string triggerId, string tooltipId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+        }
+    }
+
+    private async Task DesactivarTooltip(string triggerId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
+        }
+    }
 }

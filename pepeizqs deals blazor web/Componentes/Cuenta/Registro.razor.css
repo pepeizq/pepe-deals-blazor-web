@@ -13,3 +13,7 @@
     border-top-right-radius: inherit;
     font-size: 20px;
 }
+
+.texto-peligro-entrada {
+    color: var(--colorTextoPeligro);
+}

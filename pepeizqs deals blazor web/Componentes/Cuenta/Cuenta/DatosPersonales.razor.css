@@ -1,0 +1,30 @@
+.caja-cuenta-bloque {
+    background-color: var(--fondoCuentaBloque);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--glaseadoBorde);
+    padding: 20px 30px;
+    justify-content: space-between;
+}
+
+.boton-peligro {
+    color: var(--colorTexto);
+    background-color: var(--fondoPeligro);
+    display: inline-block;
+    user-select: none;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    border: 0px;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    filter: saturate(0.85);
+    text-decoration: none;
+}
+
+    .boton-peligro:hover {
+        color: var(--colorTexto);
+        background-color: var(--colorTextoPeligroHover);
+    }

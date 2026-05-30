@@ -1,29 +1,6 @@
 ﻿@using Herramientas
 @using global::Juegos
 
-<style>
-	.cargando {
-		width: 48px;
-		height: 48px;
-		border: 5px solid var(--colorTexto);
-		border-bottom-color: transparent;
-		border-radius: 50%;
-		display: inline-block;
-		box-sizing: border-box;
-		animation: rotation 1s linear infinite;
-	}
-
-	@@keyframes rotation {
-		0% {
-			transform: rotate(0deg);
-		}
-
-		100% {
-			transform: rotate(360deg);
-		}
-	}
-</style>
-
 @if (cargado == false)
 {
 	<div style="min-height: 200px; display: flex; align-items: center; justify-content: space-around;">

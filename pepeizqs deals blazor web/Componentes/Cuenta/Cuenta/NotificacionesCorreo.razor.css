@@ -1,0 +1,10 @@
+.caja-cuenta-bloque {
+    background-color: var(--fondoCuentaBloque);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--glaseadoBorde);
+    padding: 20px 30px;
+    justify-content: space-between;
+}

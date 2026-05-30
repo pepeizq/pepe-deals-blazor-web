@@ -1,27 +1,8 @@
-﻿@using BaseDatos.Errores
+﻿@implements IAsyncDisposable
+
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.Data.SqlClient
 
 @inject IJSRuntime JavaScript
-
-<script>
-    function moverScroll(id) {
-        const yOffset = 0;
-        const element = document.getElementById(id);
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-        window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-</script>
-
-<style>
-    .caja-admin-errores {
-        background-color: var(--fondoSubsubcabecera);
-        border: 2px solid var(--fondoSubcabecera);
-        padding: 30px;
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-    }
-</style>
 
 <div class="caja-admin-errores">
     <button @onclick="@(e => LimpiarErrores(e))" class="boton-pequeño" style="text-align: center; width: fit-content; padding: 10px 40px;">Limpiar Todo</button>
@@ -100,6 +81,28 @@
          listaErrores = await BaseDatos.Errores.Buscar.Todos();
     }
 
+    private IJSObjectReference moduloJs;
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/admin/Errores.razor.js");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
     private void LimpiarErrores(MouseEventArgs e)
     {
         BaseDatos.Errores.Limpiar.Ejecutar();
@@ -112,6 +115,9 @@
     {
         errorSeleccionado = error;
 
-        await JavaScript.InvokeVoidAsync("moverScroll", "errorSeleccionado");
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("moverScroll", "errorSeleccionado");
+        }
     }
 }

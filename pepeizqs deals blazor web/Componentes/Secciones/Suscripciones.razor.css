@@ -77,3 +77,14 @@
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
 }
+.juego-fondo {
+    opacity: 0.3;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    z-index: -9999;
+}

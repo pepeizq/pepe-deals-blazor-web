@@ -8,7 +8,7 @@
 @if (usuario != null)
 {
     <div style="display: flex; flex-direction: column; gap: 30px;">
-        <div class="caja-diseño" style="padding: 30px;">
+        <div style="padding: 30px;">
             
             @if (puedeCambiarNombre == true)
             {
@@ -44,7 +44,7 @@
             }
         </div>
 
-        <div class="caja-diseño" style="display: flex; align-items: center; padding: 30px;">
+        <div style="display: flex; align-items: center; padding: 30px;">
             <div class="checkbox-caja">
                 <input type="checkbox" class="checkbox-interior" checked="@estadoPortada" @onchange="ClickearCambioPortada">
             </div>

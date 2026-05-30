@@ -16,7 +16,7 @@ namespace Herramientas
     {
         #region Noticias
 
-        [ResponseCache(Duration = 3000)]
+        [ResponseCache(Duration = 300)]
         [HttpGet("rss-en.xml")]
         public async Task<IActionResult> GenerarEnRSS()
         {
@@ -83,7 +83,7 @@ namespace Herramientas
             return null;
         }
 
-        [ResponseCache(Duration = 3000)]
+        [ResponseCache(Duration = 300)]
         [HttpGet("rss-es.xml")]
         public async Task<IActionResult> GenerarEsRSS()
         {
@@ -150,7 +150,7 @@ namespace Herramientas
             return null;
         }
 
-        [ResponseCache(Duration = 10, Location = ResponseCacheLocation.Any, NoStore = false)]
+        [ResponseCache(Duration = 300)]
         [HttpGet("news-rss")]
         public async Task<IActionResult> CogerNoticiasRSS()
         {
@@ -182,7 +182,7 @@ namespace Herramientas
 
         #endregion
 
-        [ResponseCache(Duration = 3000)]
+        [ResponseCache(Duration = 300)]
         [HttpGet("rss/{region2}/{drm}/{cantidadReseñas}")]
         public async Task<IActionResult> GenerarUltimasOfertas(string region2, string drm, int cantidadReseñas)
         {
@@ -293,9 +293,9 @@ namespace Herramientas
             return null;
         }
 
-        [ResponseCache(Duration = 30000)]
-        [HttpGet("rss/{region2}/{usuarioId}")]
-        public async Task<IActionResult> GenerarDeseados(string region2, string usuarioId)
+        [ResponseCache(Duration = 300)]
+        [HttpGet("rss/{region2}/{categoria2}/{usuarioId}.xml")]
+        public async Task<IActionResult> GenerarDeseados(string region2, string categoria2, string usuarioId)
         {
             TiendaRegion region = TiendaRegion.Europa;
 
@@ -321,7 +321,18 @@ namespace Herramientas
 
 				foreach (JuegoDeseadoMostrar juego in juegos)
 				{
-                    if (juego.Historico == true)
+                    bool mostrar = false;
+
+                    if (categoria2 == "1" && juego.Historico == true)
+					{
+						mostrar = true;
+					}
+					else if (categoria2 == "0")
+					{
+						mostrar = true;
+					}
+
+					if (mostrar == true)
                     {
 						string enlace = dominio + "/game/" + juego.Id.ToString() + "/" + EnlaceAdaptador.Nombre(juego.Nombre) + "/";
 

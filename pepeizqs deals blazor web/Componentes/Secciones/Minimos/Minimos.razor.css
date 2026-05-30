@@ -114,3 +114,42 @@
     .menu-dropdown-contenido-centrado a:hover {
         background: rgba(99, 102, 241,.15);
     }
+
+.texto-cabecera {
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+    .texto-cabecera:hover {
+        color: var(--colorTextoHover);
+    }
+
+    .texto-cabecera:visited {
+        color: var(--colorTextoVisitado);
+    }
+
+    .texto-cabecera:active {
+        color: var(--colorTextoActivo);
+    }
+
+.boton-superior {
+    display: block;
+    padding: 6px 12px;
+    margin: 0px;
+    transition: transform .2s;
+}
+
+    .boton-superior:hover {
+        transform: scale(1.01);
+    }
+
+@media (max-width: 800px) {
+    .boton-superior {
+        float: none;
+    }
+}

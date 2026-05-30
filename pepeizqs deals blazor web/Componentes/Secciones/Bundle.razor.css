@@ -16,7 +16,7 @@
     padding: 15px 30px;
 }
 
-@@media (max-width: 900px) {
+@media (max-width: 900px) {
     .bundle-tabla {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         grid-gap: 20px;
@@ -49,4 +49,16 @@
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);
+}
+
+.juego-fondo {
+    opacity: 0.3;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    z-index: -9999;
 }

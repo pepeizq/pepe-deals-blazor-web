@@ -55,7 +55,7 @@
 
 	<Titulo tipo="@Titulo.Tipo.Portada" idioma="@idioma" dominio="@dominio" contenidoJsonPortada="@contenidoJson"/>
 }
-	
+
 @if (juegosDestacadosMostrar?.Count > 0)
 {
 	var destacadoActual = juegosDestacadosMostrar[posicionMostrarDestacados];
@@ -69,7 +69,7 @@
 						@if (string.IsNullOrEmpty(videoDestacado) == false)
 						{
 							<div class="destacado-fondo">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="lazy">
+								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high">
 							</div>
 
 							<div class="destacado-video">
@@ -81,12 +81,12 @@
 						}
 						else
 						{
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high" loading="lazy">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Library_1920x620, 1314, 424)" style="width: 100%; aspect-ratio: 96/31;" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high">
 						}
 
 						<div style="background-image: linear-gradient(to bottom, rgba(255,0,0,0), @destacadoActual?.Color);" class="destacado-hueco">
 
-							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre" loading="lazy">
+							<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(destacadoActual?.Juego?.Imagenes?.Logo)" class="destacado-logo-medidas" alt="@destacadoActual?.Juego?.Nombre" fetchpriority="high">
 
 							<div style="display: flex; align-items: center; margin-bottom: 30px; color: var(--colorTexto); position: relative;">
 								@if (usuarioRegion == TiendaRegion.Europa && destacadoActual?.Juego?.PrecioMinimosHistoricos?.Count > 0 ||
@@ -298,6 +298,12 @@
 			</div>
 		</div>
 	}
+}
+else
+{
+	<div class="portada-espacio cuerpo-ancho">
+		<img src="/imagenes/otros/portada-placeholder.webp" style="width: 100%; aspect-ratio: 96/31;" fetchpriority="high" alt="Placeholder" />
+	</div>
 }
 
 @if (noticias?.Count > 0)

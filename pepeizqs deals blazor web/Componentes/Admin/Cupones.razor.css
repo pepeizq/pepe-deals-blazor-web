@@ -4,3 +4,25 @@
     padding: 30px;
     box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
 }
+
+.texto-cabecera {
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+    .texto-cabecera:hover {
+        color: var(--colorTextoHover);
+    }
+
+    .texto-cabecera:visited {
+        color: var(--colorTextoVisitado);
+    }
+
+    .texto-cabecera:active {
+        color: var(--colorTextoActivo);
+    }

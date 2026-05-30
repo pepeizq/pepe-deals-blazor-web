@@ -26,6 +26,10 @@
     flex-wrap: wrap;
 }
 
+.juego-caja-espacio {
+    padding: 30px;
+}
+
 @media(max-width: 900px) {
     .boton-reseñas {
         display: none;
@@ -37,6 +41,10 @@
 
     .caja-drm-tienda {
         flex-wrap: inherit;
+    }
+
+    .juego-caja-espacio {
+        padding: 20px;
     }
 }
 
@@ -83,3 +91,107 @@
 .boton-deseado:hover .svg-icono-rotante {
     transform: rotate(180deg);
 }
+
+.texto-cabecera {
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+    .texto-cabecera:hover {
+        color: var(--colorTextoHover);
+    }
+
+    .texto-cabecera:visited {
+        color: var(--colorTextoVisitado);
+    }
+
+    .texto-cabecera:active {
+        color: var(--colorTextoActivo);
+    }
+
+.juego-flexible-izquierda {
+    min-width: 200px;
+    max-width: 250px;
+}
+
+@media(max-width: 800px) {
+    .juego-flexible-izquierda {
+        min-width: 0px;
+        max-width: 0px;
+    }
+}
+
+.juego-imagen {
+    display: block;
+    max-width: 100%;
+}
+
+@media(max-width: 800px) {
+    .juego-imagen {
+        display: none;
+    }
+}
+
+.juego-cabecera {
+    background-color: var(--fondoOscuroTransparente);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.juego-fondo {
+    opacity: 0.3;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, transparent 100%);
+    z-index: -9999;
+}
+
+.juego-titulo {
+    font-size: 20px;
+    padding: 12px 20px;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@media(max-width: 800px) {
+    .juego-titulo {
+        padding: 5px;
+    }
+}
+
+.boton {
+    color: var(--colorTexto);
+    background-color: var(--fondoBoton);
+    display: inline-block;
+    user-select: none;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    font-size: 20px;
+    border: 0px;
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    filter: saturate(0.85);
+}
+
+    .boton:hover {
+        color: var(--colorTexto);
+        background-color: var(--fondoBotonHover);
+    }

@@ -1,27 +1,9 @@
-﻿@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.Data.SqlClient
+﻿@implements IAsyncDisposable
+
+@using Microsoft.AspNetCore.Components.Web
 @using System.Text.Json
 
 @inject IJSRuntime JavaScript
-
-<script>
-    function moverScroll(id) {
-        const yOffset = 0;
-        const element = document.getElementById(id);
-        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-
-        window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-</script>
-
-<style>
-    .caja-admin-juegos {
-        background-color: var(--fondoSubsubcabecera);
-        border: 2px solid var(--fondoSubcabecera);
-        padding: 30px;
-        box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-    }
-</style>
 
 <div class="caja-admin-juegos">
     <div class="perfil-flexible-centrado">
@@ -531,7 +513,27 @@ else
 
     #nullable disable
 
-    private SqlConnection conexion = new SqlConnection();
+    private IJSObjectReference moduloJs;
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/admin/Juegos.razor.js");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
 
     #region Añadir Precarga
 
@@ -562,7 +564,10 @@ else
             {
                 enlacePrecargaAñadir = null;
 
-                await JavaScript.InvokeVoidAsync("moverScroll", "caja-admin-añadir");
+                if (moduloJs != null)
+                {
+                    await moduloJs.InvokeVoidAsync("moverScroll", "caja-admin-añadir");
+                }
             }
         }
     }

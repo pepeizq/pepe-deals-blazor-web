@@ -1,0 +1,32 @@
+.caja-cuenta-bloque {
+    background-color: var(--fondoCuentaBloque);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--glaseadoBorde);
+    padding: 20px 30px;
+    justify-content: space-between;
+}
+
+.texto-cabecera {
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+    .texto-cabecera:hover {
+        color: var(--colorTextoHover);
+    }
+
+    .texto-cabecera:visited {
+        color: var(--colorTextoVisitado);
+    }
+
+    .texto-cabecera:active {
+        color: var(--colorTextoActivo);
+    }

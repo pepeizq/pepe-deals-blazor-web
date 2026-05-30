@@ -1,6 +1,7 @@
-﻿@using Microsoft.AspNetCore.Components.Web
+﻿@implements IAsyncDisposable
+
+@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc
 @using Microsoft.JSInterop
 @using System.Text
 @using System.Text.Json
@@ -72,20 +73,6 @@
     }
 </div>
 
-<script>
-    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-        const arrayBuffer = await contentStreamReference.arrayBuffer();
-        const blob = new Blob([arrayBuffer]);
-        const url = URL.createObjectURL(blob);
-        const anchorElement = document.createElement('a');
-        anchorElement.href = url;
-        anchorElement.download = fileName ?? '';
-        anchorElement.click();
-        anchorElement.remove();
-        URL.revokeObjectURL(url);
-    }
-</script>
-
 @code {
 
     #nullable disable
@@ -103,6 +90,28 @@
         enseñarAvisoBorrado2 = false;
     }
 
+    private IJSObjectReference moduloJs;
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/cuenta/cuenta/DatosPersonales.razor.js");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
     #region Descargar Datos
 
     private async Task DescargarDatos()
@@ -117,7 +126,10 @@
 
             using var streamRef = new DotNetStreamReference(stream: ficheroStream);
 
-            await JavaScript.InvokeVoidAsync("downloadFileFromStream", ficheroNombre, streamRef);
+            if (moduloJs != null)
+            {
+                await moduloJs.InvokeVoidAsync("downloadFileFromStream", ficheroNombre, streamRef);
+            }            
         }
     }
 

@@ -1,3 +1,16 @@
+.cabecera-poner {
+    display: flex;
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 30px;
+    gap: 20px;
+    max-width: var(--anchoCuerpo);
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .cabecera2 {
     z-index: 9999;
     position: sticky;
@@ -286,3 +299,25 @@ a:hover .boton-cabecera-deseados {
         transform: scale(1.15);
     }
 }
+
+.texto-cabecera {
+    font-size: var(--tamañoTexto);
+    color: var(--colorTexto);
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+    .texto-cabecera:hover {
+        color: var(--colorTextoHover);
+    }
+
+    .texto-cabecera:visited {
+        color: var(--colorTextoVisitado);
+    }
+
+    .texto-cabecera:active {
+        color: var(--colorTextoActivo);
+    }

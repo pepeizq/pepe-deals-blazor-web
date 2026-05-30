@@ -10,6 +10,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <style>
+        .cuerpo {
+            background-color: var(--fondoCuerpo);
+            color: var(--colorTexto);
+            font-family: 'Motiva Sans';
+            position: relative;
+            margin: 0px;
+        }
+
+        .cuerpo-ancho {
+            max-width: var(--anchoCuerpo);
+            margin-right: auto;
+            margin-left: auto;
+        }
+    </style>
+
     <base href="/" />
 
     <ResourcePreloader />
@@ -29,9 +45,10 @@
     }
 
     @* CSS en componentes razor *@
-    <link rel="preload" as="style" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" />
-    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" media="screen" />
-    <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" onload="this.rel='stylesheet'" />
+    <noscript>
+        <link rel="stylesheet" href="@Assets["pepeizqs_deals_blazor_web.styles.css"]" />
+    </noscript>
 
     @* CSS globales *@
     <link rel="preload" as="style" href="@Assets["/css/bundle.css"]" />
@@ -107,15 +124,6 @@
             }
         </script>
     }
-
-    <script>
-        function moverScroll(id) {
-            const element = document.getElementById(id);
-            const y = element.getBoundingClientRect().top;
-
-            window.scrollTo({ top: y, behavior: 'smooth' });
-        }
-    </script>
 </body>
 
 </html>

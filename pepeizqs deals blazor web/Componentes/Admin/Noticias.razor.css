@@ -1,0 +1,34 @@
+.caja-admin-noticias {
+    background-color: var(--fondoSubsubcabecera);
+    border: 2px solid var(--fondoSubcabecera);
+    padding: 30px;
+    box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
+}
+
+.perfil-espacio-top {
+    margin-top: 6px;
+}
+
+.opciones-combobox {
+    position: relative;
+    display: flex;
+    height: 45px;
+    border: 0px;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+    .opciones-combobox::after {
+        content: '\25BC';
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px 15px;
+        background-color: var(--fondoMinimo);
+        transition: .25s all ease;
+        pointer-events: none;
+    }
+
+    .opciones-combobox:hover::after {
+        color: var(--colorTextoOscuro);
+    }

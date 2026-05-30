@@ -12,7 +12,6 @@ using Microsoft.Extensions.FileProviders;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
-using SixLabors.ImageSharp;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
@@ -36,12 +35,12 @@ builder.Services.AddRequestDecompression();
 
 builder.Services.Configure<GzipCompressionProviderOptions>(opciones =>
 {
-	opciones.Level = CompressionLevel.Optimal;
+	opciones.Level = CompressionLevel.Fastest;
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(opciones =>
 {
-	opciones.Level = CompressionLevel.Optimal;
+	opciones.Level = CompressionLevel.Fastest;
 });
 
 #endregion
@@ -59,11 +58,7 @@ builder.Services.AddWebOptimizer(
 			TermSemicolons = true,
 			ColorNames = NUglify.Css.CssColor.Hex
 		},
-			"lib/bootstrap/dist/css/bootstrap-reboot.css",
-			"lib/bootstrap/dist/css/bootstrap-grid.css",
-			"lib/bootstrap/dist/css/bootstrap-utilities.css",
 			"css/maestro.css",
-			"css/cabecera_cuerpo_pie.css",
 			"css/resto.css"
 		);
 
@@ -77,7 +72,7 @@ builder.Services.AddWebOptimizer(
 			"lib/bootstrap/dist/js/bootstrap.bundle.min.js"
 		);
 
-		acciones.MinifyJsFiles("inicio.js", "video.js", "push-notifications.js");
+		acciones.MinifyJsFiles("inicio.js", "push-notifications.js");
 	});
 
 #endregion

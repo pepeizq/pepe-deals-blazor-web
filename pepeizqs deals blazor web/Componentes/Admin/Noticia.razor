@@ -1,19 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Data.SqlClient
-@using pepeizqs_deals_web.Data
 
 @inject Herramientas.NotificacionesPush Push
 @inject IConfiguration Configuracion
-
-<style>
-	.caja-admin-noticia {
-		background-color: var(--fondoSubsubcabecera);
-		border: 2px solid var(--fondoSubcabecera);
-		padding: 20px;
-		box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);
-	}
-</style>
 
 @if (noticia != null)
 {

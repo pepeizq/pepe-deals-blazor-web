@@ -66,3 +66,13 @@
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
 }
+
+.enlace-falso {
+    color: var(--colorEnlace);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+    .enlace-falso:hover {
+        color: var(--colorEnlaceHover);
+    }

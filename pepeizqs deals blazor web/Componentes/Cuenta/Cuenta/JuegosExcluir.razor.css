@@ -1,0 +1,10 @@
+.juego-imagen {
+    display: block;
+    max-width: 100%;
+}
+
+@media(max-width: 800px) {
+    .juego-imagen {
+        display: none;
+    }
+}
