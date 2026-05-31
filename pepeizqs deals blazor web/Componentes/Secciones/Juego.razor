@@ -249,7 +249,7 @@
 
                                                     if (drm.Id == JuegoDRM.DRMFree)
                                                     {
-                                                        <button @onclick="@(e => MoverScrollJs(e, drm.Id.ToString()))" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; text-align: center; padding: 7px;"><div style="font-weight: bold; font-size: 9px;">DRM Free</div></button>
+                                                        <button @onclick="@(e => MoverScrollJs(e, drm.Id.ToString()))" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; text-align: center; padding: 7px;"><div style="font-weight: bold; font-size: 9px; line-height: 14px;">DRM Free</div></button>
                                                     }
                                                     else
                                                     {
@@ -1302,8 +1302,7 @@
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                 <picture>
                                                                                     <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px;"
-                                                                                         loading="lazy" alt="Geforce NOW">
+                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px; display: block;" loading="lazy" alt="Geforce NOW">
                                                                                 </picture>
                                                                             </div>
                                                                         </a>
@@ -1337,8 +1336,7 @@
                                                                             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
                                                                                  <picture>
                                                                                     <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px;"
-                                                                                         loading="lazy" alt="Boosteroid">
+                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px; display: block;" loading="lazy" alt="Boosteroid">
                                                                                 </picture>
                                                                             </div>
                                                                         </a>
@@ -2527,7 +2525,7 @@
                                     {
                                         <a href="@enlace" target="_blank" class="boton-pequeño" title="Baidu" style="width: fit-content; padding: 10px;">
                                             <div>
-                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/baidu.webp")" alt="Baidu" style="width: 30px; height: 30px;" />
+                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/baidu.webp")" alt="Baidu" style="width: 30px; height: 30px; display: block;" />
                                             </div>
                                         </a>
                                     }
@@ -2535,7 +2533,7 @@
                                     {
                                         <a href="@enlace" target="_blank" class="boton-pequeño" title="REDnote" style="width: fit-content; padding: 10px;">
                                             <div>
-                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/rednote.webp")" alt="REDnote" style="width: 30px; height: 30px;" />
+                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/rednote.webp")" alt="REDnote" style="width: 30px; height: 30px; display: block;" />
                                             </div>
                                         </a>
                                     }
@@ -2584,7 +2582,7 @@
                                 <a class="boton-pequeño" title="SteamDB" href="@enlaceSteamDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamDB1 1x, @imagenSteamDB2 2x" type="image/webp">
-                                        <img src="@imagenSteamDB" style="width: 30px; height: 30px;" loading="lazy" alt="SteamDB">
+                                        <img src="@imagenSteamDB" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="SteamDB">
                                     </picture>
                                 </a>
 
@@ -2596,7 +2594,7 @@
                                 <a class="boton-pequeño" title="ProtonDB" href="@enlaceProtonDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenProtonDB1 1x, @imagenProtonDB2 2x" type="image/webp">
-                                        <img src="@imagenProtonDB" style="width: 30px; height: 30px;" loading="lazy" alt="ProtonDB"/>
+                                        <img src="@imagenProtonDB" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="ProtonDB"/>
                                     </picture>
                                 </a>
 
@@ -2608,7 +2606,7 @@
                                 <a class="boton-pequeño" title="PCGamingWiki" href="@enlacePCGamingWiki" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenPCGamingWiki1 1x, @imagenPCGamingWiki2 2x" type="image/webp">
-                                        <img src="@imagenPCGamingWiki" style="width: 30px; height: 30px;" loading="lazy" alt="PCGamingWiki"/>
+                                        <img src="@imagenPCGamingWiki" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="PCGamingWiki"/>
                                     </picture>
                                 </a>
                             }
@@ -2623,7 +2621,7 @@
                                 <a class="boton-pequeño" title="GogDB" href="@enlaceGogDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenGogDB1 1x, @imagenGogDB2 2x" type="image/webp">
-                                        <img src="@imagenGogDB" style="width: 30px; height: 30px;" loading="lazy" alt="GogDB"/>
+                                        <img src="@imagenGogDB" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="GogDB"/>
                                     </picture>
                                 </a>
                             }
@@ -2638,7 +2636,7 @@
                                 <a class="boton-pequeño" title="SteamGifts" href="@enlaceSteamGifts" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamGifts1 1x, @imagenSteamGifts2 2x" type="image/webp">
-                                        <img src="@imagenSteamGifts" style="width: 30px; height: 30px;" loading="lazy" alt="SteamGifts"/>
+                                        <img src="@imagenSteamGifts" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="SteamGifts"/>
                                     </picture>
                                 </a>
 
@@ -2650,7 +2648,7 @@
                                 <a class="boton-pequeño" title="SteamInputDB" href="@enlaceSteamInputDB" target="_blank" style="width: fit-content; padding: 10px;">
                                     <picture>
                                         <source srcset="@imagenSteamInputDB1 1x, @imagenSteamInputDB2 2x" type="image/webp">
-                                        <img src="@imagenSteamInputDB" style="width: 30px; height: 30px;" loading="lazy" alt="SteamInputDB" />
+                                        <img src="@imagenSteamInputDB" style="width: 30px; height: 30px; display: block;" loading="lazy" alt="SteamInputDB" />
                                     </picture>
                                 </a>
                             }

@@ -1,7 +1,3 @@
-export function cambiarEnlace(url) {
-    history.pushState(null, '', url);
-}
-
 export function activarTooltip(triggerId, tooltipId) {
     const element = document.getElementById(triggerId);
     if (!element || element._tooltipHandler) return;

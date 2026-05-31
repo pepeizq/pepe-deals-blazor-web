@@ -51,7 +51,7 @@
                                 <div style="position: absolute; top: calc(100% + 5px); left: 0; background: var(--fondoBotonPequeño); border: 1px solid var(--fondoCodigo); border-radius: 5px; padding: 5px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                                     @foreach (var año in años)
                                     {
-                                        <button @onclick="@(() => { CambiarAño(año); dropdownAbierto = false; })" class="boton-historicos @(año == añoGrafico ? "seleccionado" : "")">
+                                        <button @onclick="@(async () => { await CambiarAño(año); dropdownAbierto = false; })" class="boton-historicos @(año == añoGrafico ? "seleccionado" : "")">
                                             @año
                                         </button>
                                     }
@@ -86,7 +86,10 @@
             </div>
             
             <div style="padding: 10px; width: 100%; height: 100%;">
-                <JuegoHistoricosGrafico @key="@($"{drmGrafico}_{string.Join(",", añosMostrados)}")" dominio="@dominio" historicos="@historicosGrafico" drmGrafico="@drmGrafico" idioma="@idioma" usuarioRegion="@usuarioRegion" mostrarLabelsDuplicadas="@mostrarLabelsDuplicadas" />
+                @if (añosMostrados?.Count > 0)
+                {
+                    <JuegoHistoricosGrafico @key="@($"{drmGrafico}_{string.Join(",", añosMostrados)}")" dominio="@dominio" historicos="@historicosGrafico" drmGrafico="@drmGrafico" idioma="@idioma" usuarioRegion="@usuarioRegion" mostrarLabelsDuplicadas="@mostrarLabelsDuplicadas" />
+                }
             </div>
         </div>
     </div>

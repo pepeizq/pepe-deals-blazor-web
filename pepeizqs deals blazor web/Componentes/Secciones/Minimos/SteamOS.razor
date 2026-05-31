@@ -9,6 +9,7 @@
 @using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos
 
 @inject IHttpContextAccessor Contexto
+@inject IJSRuntime JavaScript
 @inject Servicios.Opciones ServicioOpciones
 
 <Titulo tipo="@Titulo.Tipo.SteamOS" idioma="@idioma" dominio="@dominio" />
@@ -37,7 +38,9 @@
 			</div>
 
 			<div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px; margin-left: 40px; @anchoBuscador">
-				<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-steamos-search')">
+				<div class="tooltip-juego" id="trigger-steamos-search"
+					@onmouseenter="@(() => ActivarTooltip("trigger-steamos-search", "tooltip-steamos-search"))"
+					@onmouseleave="@(() => DesactivarTooltip("trigger-steamos-search"))">
 					<button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;">
 						<div style="width: 24px; height: 24px;">
 							<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -454,6 +457,16 @@
 		await MostrarVerificados(true);
 	}
 
+	private IJSObjectReference moduloJs;
+
+	protected override async Task OnAfterRenderAsync(bool primerRender)
+	{
+		if (primerRender == true)
+		{
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/minimos/SteamOS.razor.js");
+		}
+	}
+
 	private async Task ExcluirDRMs()
 	{
 		if (string.IsNullOrEmpty(ocultarJuegosUsuario) == false)
@@ -807,4 +820,20 @@
 	}
 
 	#endregion
+
+	private async Task ActivarTooltip(string triggerId, string tooltipId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+		}
+	}
+
+	private async Task DesactivarTooltip(string triggerId)
+	{
+		if (moduloJs != null)
+		{
+			await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
+		}
+	}
 }

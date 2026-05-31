@@ -1,4 +1,6 @@
-﻿namespace Servicios
+﻿#nullable disable
+
+namespace Servicios
 {
 
 	public class Opciones

@@ -29,18 +29,18 @@ builder.Services.AddResponseCompression(opciones =>
 	opciones.Providers.Add<GzipCompressionProvider>();
 	opciones.EnableForHttps = true;
 	opciones.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-				new[] { "application/octet-stream", "application/rss+xml", "text/html", "text/css", "image/png", "image/x-icon", "text/javascript" });
+				new[] { "application/octet-stream", "application/rss+xml", "text/html", "text/css", "image/png", "image/x-icon", "text/javascript", "application/javascript" });
 });
 builder.Services.AddRequestDecompression();
 
 builder.Services.Configure<GzipCompressionProviderOptions>(opciones =>
 {
-	opciones.Level = CompressionLevel.Fastest;
+	opciones.Level = CompressionLevel.SmallestSize;
 });
 
 builder.Services.Configure<BrotliCompressionProviderOptions>(opciones =>
 {
-	opciones.Level = CompressionLevel.Fastest;
+	opciones.Level = CompressionLevel.Optimal;
 });
 
 #endregion
@@ -50,18 +50,6 @@ builder.Services.Configure<BrotliCompressionProviderOptions>(opciones =>
 builder.Services.AddWebOptimizer(
 	acciones => 
 	{
-		acciones.AddCssBundle("/css/bundle.css", new NUglify.Css.CssSettings
-		{
-			CommentMode = NUglify.Css.CssComment.None,
-			OutputMode = NUglify.OutputMode.SingleLine,
-			IgnoreAllErrors = true,
-			TermSemicolons = true,
-			ColorNames = NUglify.Css.CssColor.Hex
-		},
-			"css/maestro.css",
-			"css/resto.css"
-		);
-
 		var jsSettings = new WebOptimizer.Processors.JsSettings
 		{
 			GenerateSourceMap = false
@@ -415,9 +403,13 @@ app.UseStaticFiles(new StaticFileOptions
 {
 	OnPrepareResponse = contexto =>
 	{
-		string? ruta = contexto.File.Name.ToLowerInvariant();
+		string ruta = contexto.File.Name.ToLowerInvariant();
 
 		if (ruta.EndsWith(".js") || ruta.EndsWith(".css"))
+		{
+			contexto.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+		}
+		else if (ruta.EndsWith(".woff2") || ruta.EndsWith(".woff") || ruta.EndsWith(".ttf"))
 		{
 			contexto.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 		}
@@ -447,8 +439,8 @@ else
 	{
 		errorApp.Run(async contexto =>
 		{
-			IExceptionHandlerPathFeature? error1 = contexto.Features.Get<IExceptionHandlerPathFeature>();
-			Exception? error2 = error1?.Error;
+			IExceptionHandlerPathFeature error1 = contexto.Features.Get<IExceptionHandlerPathFeature>();
+			Exception error2 = error1?.Error;
 
 			if (error2?.Message != null && error2.Message.Contains("anti-forgery"))
 			{

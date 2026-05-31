@@ -1,12 +1,18 @@
-﻿@using Juegos
+﻿@attribute [StreamRendering(true)]
 
-@attribute [StreamRendering(true)]
+@implements IAsyncDisposable
+
+@using Juegos
+
+@inject IJSRuntime JavaScript
 
 @if (juego.CantidadJugadores != null && juego.Caracteristicas?.FechaLanzamientoSteam != null)
 {
     if (juego.CantidadJugadores.Cantidad > 0 && DateTime.Now > juego.Caracteristicas?.FechaLanzamientoSteam)
     {
-        <div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-players')">
+        <div class="tooltip-juego" id="trigger-players"
+            @onmouseenter="@(() => ActivarTooltip($"trigger-players", "tooltip-players"))"
+            @onmouseleave="@(() => DesactivarTooltip("trigger-players"))">
             <div class="caja-jugadores" style="padding: 10px; flex-direction: column; gap: 10px; min-height: 82px;">
                 <div style="font-size: 17px; text-align: center; line-height: 30px;">
                     @juego.CantidadJugadores.Cantidad.ToString("N0")
@@ -73,6 +79,44 @@
                     }
                 }
             }
+        }
+    }
+
+    private IJSObjectReference moduloJs;
+
+    protected override async Task OnAfterRenderAsync(bool primerRender)
+    {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/juegocomponentes/JuegoCantidadJugadores.razor.js");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
+    private async Task ActivarTooltip(string triggerId, string tooltipId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("activarTooltip", triggerId, tooltipId);
+        }
+    }
+
+    private async Task DesactivarTooltip(string triggerId)
+    {
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("desactivarTooltip", triggerId);
         }
     }
 }

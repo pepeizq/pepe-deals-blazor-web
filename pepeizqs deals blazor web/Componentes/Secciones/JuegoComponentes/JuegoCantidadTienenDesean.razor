@@ -20,7 +20,7 @@
                 <div class="tooltip-juego" id="trigger-howmanyhave-@drm.Id.ToString()"
                      @onmouseenter="@(() => ActivarTooltip($"trigger-howmanyhave-{drm.Id.ToString()}", $"tooltip-howmanyhave-{drm.Id.ToString()}"))"
                      @onmouseleave="@(() => DesactivarTooltip($"trigger-howmanyhave-{drm.Id.ToString()}"))">
-                    <div style="font-size: 14px; padding: 6px 10px; background-color: var(--fondoBien);">
+                    <div style="font-size: 14px; padding: 4px 10px; background-color: var(--fondoBien);">
                         @cuantosLoTienen.ToString()
                     </div>
 
@@ -37,7 +37,7 @@
                 <div class="tooltip-juego" id="trigger-howmanywish-@drm.Id.ToString()"
                      @onmouseenter="@(() => ActivarTooltip($"trigger-howmanywish-{drm.Id.ToString()}", $"tooltip-howmanywish-{drm.Id.ToString()}"))"
                      @onmouseleave="@(() => DesactivarTooltip($"trigger-howmanywish-{drm.Id.ToString()}"))">
-                    <div style="font-size: 14px; padding: 6px 10px; background-color: var(--fondoAlerta);">
+                    <div style="font-size: 14px; padding: 4px 10px; background-color: var(--fondoAlerta);">
                         @cuantosLoDesean.ToString()
                     </div>
 

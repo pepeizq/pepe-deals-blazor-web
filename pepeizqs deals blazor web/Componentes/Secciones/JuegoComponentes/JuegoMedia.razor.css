@@ -157,6 +157,7 @@
     opacity: 0.8;
     aspect-ratio: 16 / 9;
     object-fit: cover;
+    display: block;
 }
 
     .juego-galeria-activo,

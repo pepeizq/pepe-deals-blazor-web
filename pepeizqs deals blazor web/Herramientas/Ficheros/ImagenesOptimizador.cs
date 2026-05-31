@@ -57,7 +57,7 @@ namespace Herramientas
 							GenerarVariantes(archivo);
 							imagenesProcesadas += 1;
 						}
-						catch (Exception ex)
+						catch
 						{
 							
 						}
@@ -65,7 +65,7 @@ namespace Herramientas
 				}
 
 			}
-			catch (Exception ex)
+			catch 
 			{
 
 			}
