@@ -50,6 +50,8 @@ builder.Services.Configure<BrotliCompressionProviderOptions>(opciones =>
 builder.Services.AddWebOptimizer(
 	acciones => 
 	{
+		acciones.MinifyCssFiles();
+
 		var jsSettings = new WebOptimizer.Processors.JsSettings
 		{
 			GenerateSourceMap = false
@@ -395,6 +397,12 @@ app.UseResponseCompression();
 
 #endregion
 
+#region Optimizador
+
+app.UseWebOptimizer();
+
+#endregion
+
 #region Cache 
 
 app.UseResponseCaching();
@@ -507,12 +515,6 @@ app.MapRazorComponents<App>().AddInteractiveServerRenderMode(opciones =>
 {
 	opciones.DisableWebSocketCompression = false;
 });
-
-#region Optimizador
-
-app.UseWebOptimizer();
-
-#endregion
 
 #region CORS necesario para extension navegador web
 

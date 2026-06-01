@@ -116,7 +116,7 @@
 
 										@if (dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmJuego).ToString())
 										{
-											<div style="position: absolute; top: 40px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; min-width: 200px; overflow: hidden;">
+											<div style="position: absolute; top: 35px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; width: fit-content; overflow: hidden; display: flex; flex-direction: column;">
 												@if (juego.DeseadoImportado == false)
 												{
 													<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, juego, drmJuego); })"
@@ -139,7 +139,7 @@
 																}
 															</div>
 
-															<span style="color: var(--colorTexto);">
+															<span style="color: var(--colorTexto); font-size: 16px;">
 																@if (juego.Color == "var(--fondoAlerta)")
 																{
 																	@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
@@ -164,7 +164,7 @@
 															</svg>
 														</div>
 
-														<span style="color: var(--colorTexto);">
+														<span style="color: var(--colorTexto); font-size: 16px;">
 															@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Index")
 														</span>
 													</div>
@@ -464,6 +464,18 @@
 		if (primerRender == true)
 		{
 			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/minimos/SteamOS.razor.js");
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
+			{
+				await moduloJs.DisposeAsync();
+			}
+			catch { }
 		}
 	}
 

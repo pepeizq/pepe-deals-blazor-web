@@ -16,3 +16,22 @@
         background-color: var(--fondoBotonPequeñoHover);
         transform: scale(1.01);
     }
+
+.sub-subcabecera {
+    padding: 15px 0px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+    .sub-subcabecera {
+        padding: 15px 5px;
+    }
+}
+
+.subcabecera {
+    background-color: var(--fondoSubcabecera);
+}

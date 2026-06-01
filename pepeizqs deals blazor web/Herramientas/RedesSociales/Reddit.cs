@@ -715,7 +715,7 @@ namespace Herramientas.RedesSociales
             return texto;
         }
 
-        public static async Task PostearOfertasDia(IConfiguration configuracion, TiendaRegion region, List<Juego> juegos, JuegoDRM drm)
+        public static async Task<bool> PostearOfertasDia(IConfiguration configuracion, TiendaRegion region, List<Juego> juegos, JuegoDRM drm)
         {
             string cuenta = configuracion.GetValue<string>("Reddit:Cuenta");
             string contraseña = configuracion.GetValue<string>("Reddit:Contraseña");
@@ -848,13 +848,20 @@ namespace Herramientas.RedesSociales
 			{
 				try
 				{
-					await subreddit.SubmitTextPostAsync(titulo, texto);
+					var post = await subreddit.SubmitTextPostAsync(titulo, texto);
+
+					if (string.IsNullOrEmpty(post?.Id) == false)
+					{
+						return true;
+					}
 				}
 				catch (Exception ex)
 				{
 					global::BaseDatos.Errores.Insertar.Mensaje("Reddit Ofertas Dia", ex);
 				}
 			}
+
+			return false;
 		}
     }
 }

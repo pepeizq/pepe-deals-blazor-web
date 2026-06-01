@@ -64,3 +64,10 @@
         background-color: var(--fondoBotonPequeñoHover);
         transform: scale(1.01);
     }
+
+.perfil-flexible-centrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

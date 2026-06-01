@@ -30,3 +30,10 @@
         color: var(--colorTexto);
         background-color: var(--colorTextoPeligroHover);
     }
+
+.perfil-flexible-centrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

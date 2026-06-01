@@ -50,14 +50,24 @@ namespace Tareas
 
 							if (juegosDiaSteam?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaSteam, Juegos.JuegoDRM.Steam);
+								bool posteado = await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaSteam, Juegos.JuegoDRM.Steam);
+							
+								if (posteado == false)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales EU", "No se pudo postear las ofertas del día de Steam en Europa");
+								}
 							}
 
 							List<Juegos.Juego> juegosDiaGog = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.Europa, (int)Juegos.JuegoDRM.GOG);
 
 							if (juegosDiaGog?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaGog, Juegos.JuegoDRM.GOG);
+								bool posteado = await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.Europa, juegosDiaGog, Juegos.JuegoDRM.GOG);
+							
+								if (posteado == false)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales EU", "No se pudo postear las ofertas del día de GOG en Europa");
+								}
 							}
 
 							#endregion
@@ -75,14 +85,24 @@ namespace Tareas
 
 							if (juegosDiaSteamUS?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaSteamUS, Juegos.JuegoDRM.Steam);
+								bool posteado = await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaSteamUS, Juegos.JuegoDRM.Steam);
+							
+								if (posteado == false)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales US", "No se pudo postear las ofertas del día de Steam en Estados Unidos");
+								}
 							}
 
 							List<Juegos.Juego> juegosDiaGogUS = await BaseDatos.RedesSociales.Buscar.OfertasDelDia(TiendaRegion.EstadosUnidos, (int)Juegos.JuegoDRM.GOG);
 
 							if (juegosDiaGogUS?.Count > 3)
 							{
-								await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaGogUS, Juegos.JuegoDRM.GOG);
+								bool posteado = await Herramientas.RedesSociales.Reddit.PostearOfertasDia(_configuracion, TiendaRegion.EstadosUnidos, juegosDiaGogUS, Juegos.JuegoDRM.GOG);
+							
+								if (posteado == false)
+								{
+									BaseDatos.Errores.Insertar.Mensaje("Tarea - Redes Sociales US", "No se pudo postear las ofertas del día de GOG en Estados Unidos");
+								}
 							}
 
 							#endregion

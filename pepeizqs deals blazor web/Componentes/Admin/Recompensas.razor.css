@@ -29,3 +29,10 @@
     .entrada-texto:hover {
         border-bottom: 1px solid var(--colorEnlace);
     }
+
+.perfil-flexible-centrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}

@@ -56,7 +56,7 @@
     }
 
         .checkbox-caja .checkbox-interior::after {
-            background-color: var(--bs-gray-500);
+            background-color: var(--checkboxFalso);
             border-radius: 50%;
             content: "";
             height: 19px;

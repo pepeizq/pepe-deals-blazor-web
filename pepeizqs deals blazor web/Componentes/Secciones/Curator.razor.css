@@ -48,3 +48,22 @@
     .etiqueta-curator:hover {
         background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoCuerpo));
     }
+
+.sub-subcabecera {
+    padding: 15px 0px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 800px) {
+    .sub-subcabecera {
+        padding: 15px 5px;
+    }
+}
+
+.subcabecera {
+    background-color: var(--fondoSubcabecera);
+}

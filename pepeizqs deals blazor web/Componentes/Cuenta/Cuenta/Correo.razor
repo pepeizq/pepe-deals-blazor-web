@@ -24,14 +24,14 @@
                 <label class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Account")</label>
                 <input value="@correoDefecto" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "Mail2", "Account")" disabled />
 
-                <button @onclick="ClickearConfirmacionCorreo" class="btn btn-link" style="outline: none; border: 0; color: var(--colorTextoOscuro);">
+                <button @onclick="ClickearConfirmacionCorreo" style="outline: none; border: 0; color: var(--colorTextoOscuro);">
                     @Herramientas.Idiomas.BuscarTexto(idioma, "Mail3", "Account")
                 </button>
 
                 @if (correoConfirmadoEnviado == true)
                 {
                     <div class="alert alert-success alert-dismissible" style="margin-bottom: 0px; margin-top: 10px;" role="alert">
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                         @Herramientas.Idiomas.BuscarTexto(idioma, "Mail6", "Account")
                     </div>
                 }
@@ -51,7 +51,7 @@
             @if (correoCambioEnviado == true)
             {
                 <div class="alert alert-success alert-dismissible" style="margin-bottom: 0px;" role="alert">
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" data-bs-dismiss="alert" aria-label="Close"></button>
                     @Herramientas.Idiomas.BuscarTexto(idioma, "Mail7", "Account")
                 </div>
             }

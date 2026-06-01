@@ -303,6 +303,9 @@ else
 {
 	<div class="portada-espacio cuerpo-ancho">
 		<img src="/imagenes/otros/portada-placeholder.webp" style="width: 100%; aspect-ratio: 96/31;" fetchpriority="high" alt="Placeholder" />
+	
+		<div class="destacados-galeria-fila" style="visibility: hidden; min-height: 100px;">
+		</div>
 	</div>
 }
 
@@ -453,7 +456,7 @@ else
 
 									@if (dropdownAbierto == "minimos" + juego.Juego.Id.ToString() + "-" + ((int)drmJuego).ToString())
 									{
-										<div style="position: absolute; top: 35px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; min-width: 200px; overflow: hidden;">
+										<div style="position: absolute; top: 35px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; width: fit-content; overflow: hidden; display: flex; flex-direction: column;">
 											@if (juego.DeseadoImportado == false)
 											{
 												<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, juego, drmJuego); })"
@@ -476,7 +479,7 @@ else
 															}
 														</div>
 
-														<span style="color: var(--colorTexto);">
+														<span style="color: var(--colorTexto); font-size: 16px;">
 															@if (juego.Color == "var(--fondoAlerta)")
 															{
 																@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
@@ -501,7 +504,7 @@ else
 														</svg>
 													</div>
 
-													<span style="color: var(--colorTexto);">
+													<span style="color: var(--colorTexto); font-size: 16px;">
 														@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Index")
 													</span>
 												</div>
@@ -844,13 +847,13 @@ else
 											@if (drm.DRMId != JuegoDRM.DRMFree)
 											{
 												<div style="margin-left: 20px;">
-													<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px;" title="@nombreDRM" loading="lazy" />
+													<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(iconoDRM)" style="max-width: 24px; max-height: 24px; display: block;" title="@nombreDRM" loading="lazy" />
 												</div>
 											}
 											else
 											{
 												<div style="margin-left: 20px;">
-													<label style="font-size: 10px; max-width: 24px; text-align: center;">@nombreDRM</label>
+													<label style="font-size: 10px; max-width: 24px; text-align: center; display: block; line-height: 16px;">@nombreDRM</label>
 												</div>
 											}
 										</div>
@@ -893,7 +896,7 @@ else
 											</div>
 
 											<div style="margin-left: 15px;">
-												<label style="font-size: 14px;">@nombreCategoria</label>
+												<label style="font-size: 14px; display: block;">@nombreCategoria</label>
 											</div>
 										</div>
 									}

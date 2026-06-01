@@ -54,12 +54,7 @@ html {
     }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
 body {
-    font-family: inherit;
     margin-bottom: 60px;
 }
 
@@ -80,6 +75,10 @@ body {
 hr {
     margin: 15px 0px 15px 0px;
     color: rgba(0,0,0,0.25);
+}
+
+input[type="range"] {
+    cursor: pointer;
 }
 
 a {
@@ -141,13 +140,6 @@ button {
         transform: scale(1.01);
     }
 
-.perfil-flexible-centrado {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
-
 select {
     appearance: none;
     outline: 10px red;
@@ -159,6 +151,7 @@ select {
     background-color: var(--fondoEntrada);
     font-family: 'Motiva Sans';
     cursor: pointer;
+    font-size: 16px;
 }
 
     select::-ms-expand {
@@ -191,27 +184,6 @@ select {
     z-index: 1000000000000;
 }
 
-.cargando {
-    width: 48px;
-    height: 48px;
-    border: 5px solid var(--colorTexto);
-    border-bottom-color: transparent;
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: rotacion 1s linear infinite;
-}
-
-@keyframes rotacion {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
 .svg-icono {
     display: block;
     fill: var(--colorEnlace);
@@ -236,35 +208,3 @@ select {
         transform: scale(1.1);
         fill: var(--colorTextoHover);
     }
-
-.buscador-panel {
-    height: calc(100% - var(--alturaCabecera));
-    width: 100%;
-    left: 0;
-    top: 0;
-    overflow-x: auto;
-    position: fixed;
-    z-index: 1000;
-    margin-top: var(--alturaCabecera);
-    padding: 10px;
-    background-color: var(--fondoOscuroTransparente);
-}
-
-.subcabecera {
-    background-color: var(--fondoSubcabecera);
-}
-
-.sub-subcabecera {
-    padding: 15px 0px;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-@media (max-width: 800px) {
-    .sub-subcabecera {
-        padding: 15px 5px;
-    }
-}

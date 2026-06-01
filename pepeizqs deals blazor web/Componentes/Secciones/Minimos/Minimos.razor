@@ -194,7 +194,7 @@ else
 			<div class="menu-dropdown-contenido-centrado">
 				<a class="texto-cabecera boton-superior" href="/steamdeck" style="font-size: 15px;">
 					<div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-						<img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px;" alt="Steam Deck" />
+						<img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 20px; max-height: 20px; display: block;" alt="Steam Deck" />
 
 						<div>
 							Steam Deck
@@ -203,7 +203,7 @@ else
 				</a>
 				<a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
 					<div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
-						<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px;" alt="SteamOS" />
+						<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px; display: block;" alt="SteamOS" />
 
 						<div>
 							SteamOS
@@ -288,7 +288,7 @@ else
 
 									@if (dropdownAbierto == juego.Juego.Id.ToString() + "-" + ((int)drmJuego).ToString())
 									{
-										<div style="position: absolute; top: 40px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; min-width: 200px; overflow: hidden;">
+										<div style="position: absolute; top: 35px; left: 0; background-color: var(--fondo); border: 1px solid var(--fondoCodigo); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; width: fit-content; overflow: hidden; display: flex; flex-direction: column;">
 											@if (juego.DeseadoImportado == false)
 											{
 												<button @onclick="@(async e => { await CambiarEstadoDeseado(e, usuarioId, juego, drmJuego); })"
@@ -311,7 +311,7 @@ else
 															}
 														</div>
 
-														<span style="color: var(--colorTexto);">
+														<span style="color: var(--colorTexto); font-size: 16px;">
 															@if (juego.Color == "var(--fondoAlerta)")
 															{
 																@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
@@ -336,7 +336,7 @@ else
 														</svg>
 													</div>
 
-													<span style="color: var(--colorTexto);">
+													<span style="color: var(--colorTexto); font-size: 16px;">
 														@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Index")
 													</span>
 												</div>

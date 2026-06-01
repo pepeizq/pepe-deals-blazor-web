@@ -240,7 +240,7 @@
     }
 
         .checkbox-caja .checkbox-interior::after {
-            background-color: var(--bs-gray-500);
+            background-color: var(--checkboxFalso);
             border-radius: 50%;
             content: "";
             height: 19px;
@@ -328,4 +328,11 @@
     flex-flow: column nowrap;
     justify-content: center;
     align-items: center;
+}
+
+.perfil-flexible-centrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }

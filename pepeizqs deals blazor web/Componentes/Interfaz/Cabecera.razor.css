@@ -355,3 +355,23 @@ a:hover .boton-cabecera-deseados {
     .entrada-texto:hover {
         border-bottom: 1px solid var(--colorEnlace);
     }
+
+.buscador-panel {
+    height: calc(100% - var(--alturaCabecera));
+    width: 100%;
+    left: 0;
+    top: 0;
+    overflow-x: auto;
+    position: fixed;
+    z-index: 1000;
+    margin-top: var(--alturaCabecera);
+    padding: 10px;
+    background-color: var(--fondoOscuroTransparente);
+}
+
+.perfil-flexible-centrado {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
