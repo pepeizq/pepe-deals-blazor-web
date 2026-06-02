@@ -17,7 +17,7 @@
                         <button @onclick="@(e => ClickearJuegoGratis(e, juego.Id.ToString(), juego.Nombre, juego.Imagenes.Library_600x900, juego.Imagenes.Header_460x215))" class="boton-pequeño" style="text-align:center;">
                             <div class="perfil-flexible-centrado">
                                 <div style="width: 12%;">
-                                    <img src="@juego.Imagenes.Capsule_231x87" style="max-height:100%; max-width:100%;" />
+                                    <img src="@juego.Imagenes.Capsule_231x87" style="max-height:100%; max-width:100%; display: block;" />
                                 </div>
 
                                 <div style="width: 88%; padding-left: 15px; padding-right: 15px; text-align: left;">
@@ -37,7 +37,7 @@ else
     <div class="caja-admin-gratis">
         <div style="display: flex;">
             <div style="width: 15%;">
-                <img src="@imagenSeleccionadaGratis" style="max-height: 100%; max-width: 100%;" />
+                <img src="@imagenSeleccionadaGratis" style="max-height: 100%; max-width: 100%; display: block;" />
             </div>
 
             <div style="width: 85%; padding-left: 20px; padding-right: 20px;">

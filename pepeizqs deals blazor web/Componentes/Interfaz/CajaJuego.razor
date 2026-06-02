@@ -325,13 +325,13 @@
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							<div style="display: flex; margin-right: 20px;">
-								<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(JuegoDRM2.SacarImagen(drmUsar))" style="max-width: 20px; max-height: 20px;" alt="DRM" loading="lazy" />
+								<img src="@JuegoDRM2.SacarImagen(drmUsar)" style="max-width: 20px; max-height: 20px; display: block;" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" />
 							</div>
 
 							@if (string.IsNullOrEmpty(tooltip.ReviewsIcono) == false)
 							{
 								<div style="display: flex; margin-right: 20px;">
-									<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(tooltip.ReviewsIcono)" style="width: 20px; height: 20px;" alt="Reviews" loading="lazy" />
+									<img src="@tooltip.ReviewsIcono" style="width: 20px; height: 20px; display: block;" alt="Reviews" loading="lazy" />
 								</div>
 							}
 
@@ -631,12 +631,12 @@
 					}
 
 					<div style="text-align: center;">
-						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%;" alt="@juego.Nombre" loading="lazy" />
+						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 292, 136)" style="width: 100%; display: block;" alt="@juego.Nombre" loading="lazy" />
 					</div>
 
 					<div style="display: flex; align-items: center; flex-wrap: wrap;">
 						<div style="display: flex; align-items: center; gap: 15px; padding: 15px;">
-							<img src="@Juegos.JuegoDRM2.SacarImagen(drmBundle)" style="max-width: 20px; max-height: 20px;" alt="@Juegos.JuegoDRM2.DevolverDRM(drmBundle)" loading="lazy" />
+							<img src="@Juegos.JuegoDRM2.SacarImagen(drmBundle)" style="max-width: 20px; max-height: 20px; display: block;" alt="@Juegos.JuegoDRM2.DevolverDRM(drmBundle)" loading="lazy" />
 
 							@if (juego.Analisis != null)
 							{
@@ -644,17 +644,17 @@
 								{
 									if (int.Parse(juego.Analisis.Porcentaje) > 74)
 									{
-										<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Good" />
+										<img src="/imagenes/analisis/positivo3.svg" style="max-width: 22px; max-height: 22px; display: block;" loading="lazy" alt="Reviews Good" />
 									}
 
 									if (int.Parse(juego.Analisis.Porcentaje) > 49 && int.Parse(juego.Analisis.Porcentaje) < 75)
 									{
-										<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Meh" />
+										<img src="/imagenes/analisis/meh3.svg" style="max-width: 22px; max-height: 22px; display: block;" loading="lazy" alt="Reviews Meh" />
 									}
 
 									if (int.Parse(juego.Analisis.Porcentaje) < 50)
 									{
-										<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px;" loading="lazy" alt="Reviews Bad" />
+										<img src="/imagenes/analisis/negativo3.svg" style="max-width: 22px; max-height: 22px; display: block;" loading="lazy" alt="Reviews Bad" />
 									}
 								}
 							}
@@ -662,7 +662,7 @@
 
 						@if (añadirNuevo == true)
 						{
-							<div style="font-size: 14px; padding: 5px 10px; background-color: var(--fondoCodigo); width: fit-content; margin-left: auto; margin-right: 10px;">
+							<div style="font-size: 14px; padding: 5px 10px; background-color: rgba(255, 255, 255, 0.2); width: fit-content; margin-left: auto; margin-right: 10px;">
 								@Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Bundle")
 							</div>
 						}
