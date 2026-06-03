@@ -23,11 +23,11 @@
     <div class="caja-admin-tareas">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
             <button @onclick="(e => CambiarRegion(e, TiendaRegion.Europa))" class="boton-pequeño" style="padding: 5px 10px; width: fit-content; box-shadow: none; @(regionMostrar == TiendaRegion.Europa ? "" : "background-color: transparent;")">
-                <img src="/imagenes/banderas/europe.svg" style="width: 30px; height: 30px;" />
+                <img src="/imagenes/banderas/europe.svg" style="width: 30px; height: 30px; display: block;" />
             </button>
 
             <button @onclick="(e => CambiarRegion(e, TiendaRegion.EstadosUnidos))" class="boton-pequeño" style="padding: 5px 10px; width: fit-content; box-shadow: none; @(regionMostrar == TiendaRegion.EstadosUnidos ? "" : "background-color: transparent;")">
-                <img src="/imagenes/banderas/english.svg" style="width: 30px; height: 30px;" />
+                <img src="/imagenes/banderas/english.svg" style="width: 30px; height: 30px; display: block;" />
             </button>
         </div>
 

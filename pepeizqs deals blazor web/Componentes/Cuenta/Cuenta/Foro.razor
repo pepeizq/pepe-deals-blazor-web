@@ -8,11 +8,10 @@
 @if (usuario != null)
 {
     <div style="display: flex; flex-direction: column; gap: 30px;">
-        <div style="padding: 30px;">
-            
+        <div style="padding: 30px;">            
             @if (puedeCambiarNombre == true)
             {
-                <label class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountForum")</label>
+                <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountForum")</div>
                 <input @onchange="@(e => CambiarNombre(e))" value="@nombre" class="entrada-texto" autocomplete="email" aria-required="true" />
             }      
             else
@@ -25,7 +24,7 @@
                 }
             }
 
-            <label class="texto-info-entrada" style="margin-top: 20px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountForum")</label>
+            <div class="texto-info-entrada" style="margin-top: 20px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "AccountForum")</div>
             <input @onchange="@(e => CambiarAvatar(e))" value="@avatar" class="entrada-texto" autocomplete="email" aria-required="true" />
 
             <img src="@avatar" alt="Avatar" style="width: 60px; height: 60px; margin-top: 10px; margin-left: 10px;" />

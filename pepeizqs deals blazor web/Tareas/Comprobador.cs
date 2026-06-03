@@ -37,16 +37,7 @@ namespace Tareas
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.Zero;
 
-						if (tienda.Id == APIs._2Game.Tienda.Generar().Id)
-						{
-							siguienteComprobacion = TimeSpan.FromHours(4);
-
-							if (DateTime.Now.Hour == 19)
-							{
-								siguienteComprobacion = TimeSpan.FromHours(5);
-							}
-						}
-						else if (tienda.Id == APIs.Battlenet.Tienda.Generar().Id)
+						if (tienda.Id == APIs.Battlenet.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(3);
 
@@ -276,6 +267,15 @@ namespace Tareas
 							}
 						}
 						else if (tienda.Id == APIs.PlanetPlay.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(3);
+
+							if (DateTime.Now.Hour == 19)
+							{
+								siguienteComprobacion = TimeSpan.FromHours(4);
+							}
+						}
+						else if (tienda.Id == APIs.PlayerLand.Tienda.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(3);
 

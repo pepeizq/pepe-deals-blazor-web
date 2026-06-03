@@ -59,6 +59,7 @@ namespace APIs.JoyBuggy
                 html = html.Replace("g:sale_price", "sale_price");
                 html = html.Replace("g:price", "price");
 				html = html.Replace("g:availability", "availability");
+				html = html.Replace("g:delivery_time", "delivery_time");
 
 				XmlSerializer xml = new XmlSerializer(typeof(JoyBuggyCanal));
                 JoyBuggyCanal listaJuegos = null;
@@ -213,7 +214,7 @@ namespace APIs.JoyBuggy
         [XmlElement("Platform")]
         public string DRM { get; set; }
 
-		[XmlElement("availability")]
+		[XmlElement("delivery_time")]
 		public string Disponibilidad { get; set; }
 	}
 }

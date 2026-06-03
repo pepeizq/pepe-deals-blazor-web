@@ -5,7 +5,7 @@
 @if (idSeleccionadaSuscripciones == null)
 {
     <div class="caja-admin-suscripciones">
-        <label style="margin-bottom: 10px;">Buscador:</label>
+        <div style="margin-bottom: 10px;">Buscador:</div>
         <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" />
 
         @if (juegosBuscadorSuscripciones?.Count > 0)
@@ -14,13 +14,13 @@
                 @foreach (var juego in juegosBuscadorSuscripciones)
                 {
                     <div class="perfil-flexible-centrado perfil-espacio-top">
-                        <button @onclick="@(e => SeleccionarJuegoSuscripciones(e, juego.Id.ToString(), juego.Imagenes.Library_600x900, juego.Nombre, juego.Imagenes.Header_460x215))" class="boton-pequeño">
+                        <button @onclick="@(e => SeleccionarJuegoSuscripciones(e, juego.Id.ToString(), juego.Imagenes.Library_600x900, juego.Nombre, juego.Imagenes.Header_460x215))" class="boton-pequeño" style="padding: 2px;">
                             <div class="perfil-flexible-centrado">
-                                <div style="width: 12%;">
-                                    <img src="@juego.Imagenes.Capsule_231x87" style="max-height:100%; max-width:100%;" />
+                                <div style="width: 15%;">
+                                    <img src="@juego.Imagenes.Capsule_231x87" style="max-height: 100%; max-width: 100%; display: block;" />
                                 </div>
 
-                                <div style="width: 88%; padding-left: 15px; padding-right: 15px; text-align: left;">
+                                <div style="width: 85%; padding-left: 15px; padding-right: 15px; text-align: left;">
                                     @juego.Nombre<br />
                                     <span style="font-size: 13px;">@juego.Id.ToString()</span>
                                 </div>
@@ -37,14 +37,14 @@ else
     <div class="caja-admin-suscripciones">
         <div style="display: flex;">
             <div style="width: 15%;">
-                <img src="@imagenSeleccionadaSuscripciones" style="max-height: 100%; max-width: 100%;" />
+                <img src="@imagenSeleccionadaSuscripciones" style="max-height: 100%; max-width: 100%; display: block;" />
             </div>
 
             <div style="width: 85%; padding-left: 20px; padding-right: 20px;">
                 @nombreSeleccionadoSuscripciones
 
                 <div style="width: 33%; margin-top: 20px;">
-                    <label style="margin-bottom: 10px;">Suscripcion:</label>
+                    <div style="margin-bottom: 10px;">Suscripcion:</div>
                     <div class="opciones-combobox">
                         <select @onchange="@(e => CambiarTipoSuscripcion(e))">
                             @foreach (Suscripcion suscripcion in SuscripcionesCargar.GenerarListado())
@@ -59,7 +59,7 @@ else
                 </div>
 
                 <div style="width: 33%; margin-top: 20px;">
-                    <label style="margin-bottom: 10px;">DRM:</label>
+                    <div style="margin-bottom: 10px;">DRM:</div>
                     <div class="opciones-combobox">
                         <select @onchange="@(e => CambiarDRMSuscripciones(e))" value="@drmSeleccionadoSuscripciones">
                             @foreach (global::Juegos.DRM drm in global::Juegos.JuegoDRM2.GenerarListado())
@@ -71,17 +71,17 @@ else
                 </div>
 
                 <div style="margin-top: 20px;">
-                    <label style="margin-bottom: 10px;">Enlace:</label>
+                    <div style="margin-bottom: 10px;">Enlace:</div>
                     <input @onchange="@(e => CambiarEnlaceSuscripciones(e))" class="entrada-texto" value="@enlaceSeleccionadoSuscripciones">
                 </div>
 
                 <div style="margin-top: 20px;">
-                    <label style="margin-bottom: 10px;">Fecha Empieza:</label>
+                    <div style="margin-bottom: 10px;">Fecha Empieza:</div>
                     <input type="datetime-local" @onchange="@(e => CambiarFechaEmpiezaSuscripciones(e))" class="entrada-texto" style="width: 33%; min-width: 100px;" value="@fechaEmpiezaSeleccionadaSuscripciones">
                 </div>
 
                 <div style="margin-top: 20px;">
-                    <label style="margin-bottom: 10px;">Fecha Termina:</label>
+                    <div style="margin-bottom: 10px;">Fecha Termina:</div>
                     <input type="datetime-local" @onchange="@(e => CambiarFechaTerminaSuscripciones(e))" class="entrada-texto" style="width: 33%; min-width: 100px;" value="@fechaTerminaSeleccionadaSuscripciones">
                 </div>
             </div>
@@ -89,9 +89,9 @@ else
     </div>
 
     <div class="caja-admin-suscripciones" style="margin-top: 20px;">
-        <label style="margin-bottom: 10px;">Imagen Noticia:</label>
+        <div style="margin-bottom: 10px;">Imagen Noticia:</div>
         <input @onchange="@(e => CambiarImagenNoticiaSuscripciones(e))" class="entrada-texto" value="@imagenNoticiaSuscripciones">
-        <img src="@imagenNoticiaSuscripciones" style="max-width: 300px; max-height: 300px; margin-top: 10px;" />
+        <img src="@imagenNoticiaSuscripciones" style="max-width: 300px; max-height: 300px; margin-top: 10px; display: block;" />
     </div>
 
     <div class="caja-admin-suscripciones" style="margin-top: 20px;">

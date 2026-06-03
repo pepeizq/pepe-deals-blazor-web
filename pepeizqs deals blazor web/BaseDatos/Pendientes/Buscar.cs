@@ -67,7 +67,7 @@ namespace BaseDatos.Pendientes
 				if (tienda.Id != APIs.Steam.Tienda.Generar().Id &&
 					tienda.Id != APIs.Steam.Tienda.GenerarBundles().Id)
 				{
-					sentencias.Add($"SELECT COUNT(*) FROM tienda{tienda.Id} WHERE idJuegos = '0' AND descartado = 'no'");
+					sentencias.Add($"SELECT COUNT(*) FROM tienda{tienda.Id} WHERE (idJuegos = '0' AND descartado = 'no') OR (idJuegos IS NULL AND descartado IS NULL)");
 				}
 			}
 
@@ -117,154 +117,10 @@ namespace BaseDatos.Pendientes
 			return 0;
 		}
 
-		public static async Task<int> TiendasCantidad()
-        {
-			List<string> sentencias = new List<string>();
-
-			foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
-			{
-				if (tienda.Id != APIs.Steam.Tienda.Generar().Id && tienda.Id != APIs.Steam.Tienda.GenerarBundles().Id)
-				{
-					string tabla = $"tienda{tienda.Id}";
-					sentencias.Add($"SELECT COUNT(*) FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'");
-				}
-			}
-
-			if (sentencias.Count == 0)
-			{
-				return 0;
-			}
-
-			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
-
-			try
-			{
-				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return (await conexion.QueryAsync<int>(sql)).ToList();
-				});
-
-				return resultados.Sum();
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Tiendas Cantidad", ex);
-			}
-
-			return 0;
-		}
-
-		public static async Task<int> SuscripcionCantidad()
-		{
-			List<string> sentencias = new List<string>();
-
-			foreach (var suscripcion in Suscripciones2.SuscripcionesCargar.GenerarListado())
-			{
-				if (suscripcion.AdminPendientes == true)
-				{
-					string tabla = $"temporal{suscripcion.Id}";
-					sentencias.Add($"SELECT COUNT(*) FROM {tabla}");
-				}
-			}
-
-			if (sentencias.Count == 0)
-			{
-				return 0;
-			}
-
-			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
-
-			try
-			{
-				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return (await conexion.QueryAsync<int>(sql)).ToList();
-				});
-
-				return resultados.Sum();
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Suscripcion Cantidad", ex);
-			}
-
-			return 0;
-		}
-
-		public static async Task<int> StreamingCantidad()
-		{
-			List<string> sentencias = new List<string>();
-
-			foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
-			{
-				string tabla = $"streaming{streaming.Id}";
-				string where = "WHERE (idJuego IS NULL OR idJuego = '0') AND (descartado IS NULL OR descartado = 0)";
-
-				sentencias.Add($"SELECT COUNT(*) FROM {tabla} {where}");
-			}
-
-			if (sentencias.Count == 0)
-			{
-				return 0;
-			}
-
-			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
-
-			try
-			{
-				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return (await conexion.QueryAsync<int>(sql)).ToList();
-				});
-
-				return resultados.Sum();
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Streaming Cantidad", ex);
-			}
-
-			return 0;
-		}
-
-        public static async Task<int> PlataformaCantidad()
-        {
-			List<string> sentencias = new List<string>();
-
-			foreach (var plataforma in Plataformas2.PlataformasCargar.GenerarListado())
-			{
-				string tabla = $"temporal{plataforma.Id}juegos";
-				sentencias.Add($"SELECT COUNT(*) FROM {tabla}");
-			}
-
-			if (sentencias.Count == 0)
-			{
-				return 0;
-			}
-
-			string sql = string.Join(Environment.NewLine + "UNION ALL" + Environment.NewLine, sentencias) + " OPTION (MAXDOP 8);";
-
-			try
-			{
-				var resultados = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-					return (await conexion.QueryAsync<int>(sql)).ToList();
-				});
-
-				return resultados.Sum();
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Plataforma Cantidad", ex);
-			}
-
-			return 0;
-		}
-
 		public static async Task<List<Pendiente>> Tienda(string tiendaId)
         {
 			string tabla = $"tienda{tiendaId}";
-			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla} WHERE idJuegos = '0' AND descartado = 'no'";
+			string sql = $@"SELECT enlace, nombre, imagen FROM {tabla} WHERE (idJuegos = '0' AND descartado = 'no') OR (idJuegos IS NULL AND descartado IS NULL)";
 
 			try
 			{
@@ -365,7 +221,7 @@ namespace BaseDatos.Pendientes
 			{
 				return await Herramientas.BaseDatos.Select(async conexion =>
 				{
-					return await conexion.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM tienda{tiendaId} WHERE idJuegos='0' AND descartado='no'");
+					return await conexion.QueryFirstOrDefaultAsync<Pendiente>($"SELECT TOP 1 * FROM tienda{tiendaId} WHERE (idJuegos='0' AND descartado='no') OR (idJuegos IS NULL AND descartado IS NULL)");
 				});
 			}
 			catch (Exception ex)

@@ -34,6 +34,11 @@ namespace APIs.Stove
 			await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, 0);
 			int juegos2 = 0;
 
+			JsonSerializerOptions opciones = new JsonSerializerOptions
+			{
+				UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
+			};
+
 			var servicio = new ServiceCollection().AddHttpClient().BuildServiceProvider();
 			var factoria = servicio.GetRequiredService<IHttpClientFactory>();
 			HttpClient cliente = factoria.CreateClient();
@@ -53,7 +58,7 @@ namespace APIs.Stove
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
-					StoveRespuesta respuesta2 = JsonSerializer.Deserialize<StoveRespuesta>(html);
+					StoveRespuesta respuesta2 = JsonSerializer.Deserialize<StoveRespuesta>(html, opciones);
 
 					if (respuesta2 != null)
 					{
@@ -65,9 +70,14 @@ namespace APIs.Stove
 
 							foreach (var juego in respuesta2.Datos.Juegos)
 							{
-								int descuento = juego.Precio.Descuento;
+								int descuento = 0;
 
-								if (descuento > 0)
+								if (juego.Precio.Descuento.HasValue == true)
+								{
+									descuento = juego.Precio.Descuento.Value;
+								}
+
+								if (descuento > 0 && descuento < 100)
 								{
 									string nombre = WebUtility.HtmlDecode(juego.Nombre);
 
@@ -167,7 +177,7 @@ namespace APIs.Stove
 	public class StovePrecio
 	{
 		[JsonPropertyName("discount_rate")]
-		public int Descuento { get; set; }
+		public int? Descuento { get; set; }
 
 		[JsonPropertyName("original_price")]
 		public decimal PrecioBase { get; set; }

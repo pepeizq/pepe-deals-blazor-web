@@ -1,11 +1,11 @@
 ﻿@page "/compare/{ids?}/"
 
+@implements IAsyncDisposable
+
 @using Bundles2
 @using Gratis2
 @using Juegos
 @using Microsoft.AspNetCore.Components.Web
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.Data.SqlClient
 @using Microsoft.JSInterop
 @using Tiendas2
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
@@ -80,439 +80,40 @@
 	<Titulo tipo="@Titulo.Tipo.Comparador" idioma="@idioma" dominio="@dominio" keywords="@keywords"/>
 }
 
-<script>
-    window.ChangeUrl = function (url) {
-		history.pushState(null, '', url);
-    }
-</script>
+<div class="cuerpo-ancho" style="display: flex; flex-direction: column; gap: 40px; padding: 40px 0px;">
+	<div>
+		<div class="comparador-cabecera">
+			<div class="comparador-cabecera-contenido">
+				<h1 class="comparador-titulo">
+					@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Compare")
+				</h1>
 
-<style>
-	.comparador-header {
-		background-color: var(--fondoSubcabecera);
-		border-bottom: 1px solid var(--fondoSubsubcabecera);
-		margin-bottom: 30px;
-	}
-
-	.comparador-header-content {
-		margin: 0 auto;
-		padding: 20px 30px;
-		display: flex;
-		align-items: center;
-		gap: 30px;
-	}
-
-	.comparador-titulo {
-		font-size: 18px;
-		margin: 0;
-		color: var(--colorTexto);
-	}
-
-	.comparador-buscador {
-		margin-left: auto;
-		background-color: var(--buscadorSubcabecera);
-		border-radius: 8px;
-		padding: 0 12px;
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		transition: all 0.3s ease;
-		border: 2px solid transparent;
-		min-width: 300px;
-	}
-
-	.comparador-buscador:focus-within {
-		border-color: var(--colorTexto);
-		box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
-	}
-
-	.comparador-buscador input {
-		background-color: transparent;
-		border: none;
-		outline: none;
-		color: var(--colorTexto);
-		font-size: 14px;
-		padding: 12px 0;
-		flex: 1;
-	}
-
-	.comparador-buscador input::placeholder {
-		color: var(--colorTexto);
-		opacity: 0.6;
-	}
-
-	.comparador-buscador svg {
-		width: 18px;
-		height: 18px;
-		fill: var(--colorTexto);
-		opacity: 0.7;
-	}
-
-	.comparador-instrucciones {
-		background: linear-gradient(135deg, var(--fondoSubsubcabecera) 0%, var(--fondoOscuro) 100%);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		margin-bottom: 40px;
-	}
-
-	.comparador-instrucciones-content {
-		margin: 0 auto;
-		padding: 24px 30px;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		gap: 16px;
-		color: var(--colorTexto);
-		font-size: 15px;
-		opacity: 0.9;
-	}
-
-	.comparador-instrucciones svg {
-		width: 20px;
-		height: 20px;
-		fill: var(--colorTexto);
-		animation: bounce 2s infinite;
-	}
-
-	@@keyframes bounce {
-		0%, 100% { transform: translateY(0); }
-		50% { transform: translateY(-5px); }
-	}
-
-	.comparador-resultados {
-		margin: 40px auto;
-		padding: 0 30px;
-	}
-
-	.comparador-resultados-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-		gap: 20px;
-	}
-
-	.comparador-resultado-card {
-		background-color: var(--fondoBotonPequeño);
-		border: 2px solid transparent;
-		border-radius: 10px;
-		overflow: hidden;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		position: relative;
-		padding: 0px;
-	}
-
-	.comparador-resultado-card::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-		opacity: 0;
-		transition: opacity 0.3s ease;
-	}
-
-	.comparador-resultado-card:hover {
-		transform: translateY(-4px);
-		border-color: var(--colorTexto);
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-	}
-
-	.comparador-resultado-card:hover::before {
-		opacity: 1;
-	}
-
-	.comparador-resultado-card img {
-		width: 100%;
-		height: auto;
-		display: block;
-	}
-
-	.comparador-sticky-header {
-		position: sticky;
-		top: 70px;
-		z-index: 100;
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-		border-radius: 12px;
-		margin: 0 auto 30px;
-		overflow: hidden;
-	}
-
-	.comparador-sticky-content {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 16px 24px;
-	}
-
-	.comparador-btn-limpiar {
-		background: linear-gradient(135deg, var(--fondoOscuro) 0%, var(--fondoBotonPequeño) 100%);
-		border: 2px solid rgba(255, 255, 255, 0.1);
-		border-radius: 10px;
-		padding: 12px 20px;
-		color: var(--colorTexto);
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-size: 15px;
-		transition: all 0.3s ease;
-		white-space: nowrap;
-	}
-
-	.comparador-btn-limpiar:hover {
-		background: linear-gradient(135deg, var(--fondoBotonPequeño) 0%, var(--fondoOscuro) 100%);
-		border-color: var(--colorTexto);
-		transform: scale(1.02);
-	}
-
-	.comparador-btn-limpiar svg {
-		width: 20px;
-		height: 20px;
-		fill: var(--colorTexto);
-	}
-
-	.comparador-juego-mini {
-		border: 2px solid var(--fondoBotonPequeño);
-		border-radius: 8px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-	}
-
-	.comparador-juego-mini:hover {
-		border-color: var(--colorTexto);
-		transform: scale(1.05);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-	}
-
-	.comparador-juego-mini img {
-		display: block;
-		max-width: 100%;
-		height: 82px;
-	}
-
-	.comparador-seccion {
-		background-color: var(--fondoSubsubcabecera);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.28), 0 0 2px rgba(0, 0, 0, 0.24);
-		border-radius: 12px;
-		margin: 0 auto 30px;
-		overflow: hidden;
-	}
-
-	.comparador-seccion-titulo {
-		background: linear-gradient(135deg, var(--fondoSubcabecera) 45%, var(--fondoBotonPequeño) 100%);
-		padding: 20px 30px;
-		border-bottom: 1px solid var(--fondoSubsubcabecera);
-		font-size: 18px;
-		color: var(--colorTexto);
-	}
-
-	.comparador-seccion-contenido {
-		padding: 12px;
-	}
-
-	.comparador-fila {
-		display: flex;
-		align-items: center;
-		gap: 20px;
-		padding: 20px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-		transition: background-color 0.2s ease;
-	}
-
-	.comparador-fila:last-child {
-		border-bottom: none;
-	}
-
-	.comparador-fila:hover {
-		background-color: rgba(255, 255, 255, 0.02);
-	}
-
-	.comparador-fila-label {
-		display: flex;
-		align-items: center;
-		gap: 15px;
-		width: 100%;
-		min-width: 200px;
-		color: var(--colorTexto);
-	}
-
-	.comparador-fila-label img,
-	.comparador-fila-label svg {
-		width: 24px;
-		height: 24px;
-		flex-shrink: 0;
-	}
-
-	.comparador-fila-valor {
-		width: 33%;
-		text-align: center;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 10px;
-		color: var(--colorTexto);
-		font-size: 15px;
-	}
-
-	.comparador-fila-valor--vacio {
-		opacity: 0.4;
-	}
-
-	.comparador-analisis {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.comparador-analisis img {
-		width: 24px;
-		height: 24px;
-	}
-
-	.comparador-rating {
-		display: inline-block;
-		padding: 6px 12px;
-		background-color: rgba(255, 255, 255, 0.1);
-		border-radius: 6px;
-	}
-
-	.comparador-deck-icon {
-		width: 28px;
-		height: 28px;
-	}
-
-	.comparador-precio {
-		font-size: 16px;
-	}
-
-	.comparador-check {
-		width: 24px;
-		height: 24px;
-		fill: var(--colorTexto);
-	}
-
-	@@media (max-width: 1200px) {
-		.comparador-header-content,
-		.comparador-instrucciones-content,
-		.comparador-resultados,
-		.comparador-sticky-header,
-		.comparador-seccion {
-			padding-left: 20px;
-			padding-right: 20px;
-		}
-
-		.comparador-fila {
-			flex-wrap: wrap;
-		}
-
-		.comparador-fila-label {
-			width: 100%;
-			margin-bottom: 12px;
-		}
-
-		.comparador-fila-valor {
-			width: calc(50% - 10px);
-		}
-	}
-
-	@@media (max-width: 768px) {
-		.comparador-header-content {
-			flex-direction: column;
-			gap: 16px;
-		}
-
-		.comparador-buscador {
-			width: 100%;
-			margin-left: 0;
-		}
-
-		.comparador-resultados-grid {
-			grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-			gap: 12px;
-		}
-
-		.comparador-sticky-content {
-			flex-direction: column;
-			gap: 12px;
-		}
-
-		.comparador-btn-limpiar {
-			width: 100%;
-			justify-content: center;
-		}
-
-		.comparador-juegos-seleccionados {
-			width: 100%;
-			justify-content: flex-start;
-		}
-
-		.comparador-fila-valor {
-			width: 100%;
-		}
-
-		.comparador-seccion-titulo {
-			font-size: 16px;
-			padding: 16px 20px;
-		}
-	}
-
-	@@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(20px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.comparador-seccion {
-		animation: fadeInUp 0.4s ease-out;
-	}
-
-	.comparador-resultado-card {
-		animation: fadeInUp 0.3s ease-out backwards;
-	}
-
-	.comparador-resultado-card:nth-child(1) { animation-delay: 0.05s; }
-	.comparador-resultado-card:nth-child(2) { animation-delay: 0.1s; }
-	.comparador-resultado-card:nth-child(3) { animation-delay: 0.15s; }
-	.comparador-resultado-card:nth-child(4) { animation-delay: 0.2s; }
-	.comparador-resultado-card:nth-child(5) { animation-delay: 0.25s; }
-</style>
-
-<div class="cuerpo-ancho">
-	<div class="comparador-header">
-		<div class="comparador-header-content">
-			<h1 class="comparador-titulo">
-				@Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Compare")
-			</h1>
-
-			@if (id1 == 0 || id2 == 0 || id3 == 0 || id4 == 0)
-			{
-				<div class="comparador-buscador">
-					<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Compare")" />
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-						<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-					</svg>
-				</div>
-			}
-		</div>
-	</div>
-
-	@if (id1 == 0 && id2 == 0 && id3 == 0 && id4 == 0 && string.IsNullOrEmpty(textoBuscador) == true)
-	{
-		<div class="comparador-instrucciones">
-			<div class="comparador-instrucciones-content">
-				<span>@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Compare")</span>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-					<path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2 160 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-306.7L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"/>
-				</svg>
+				@if (id1 == 0 || id2 == 0 || id3 == 0 || id4 == 0)
+				{
+					<div class="comparador-buscador">
+						<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Compare")" />
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+							<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+						</svg>
+					</div>
+				}
 			</div>
 		</div>
-	}
+
+		@if (id1 == 0 && id2 == 0 && id3 == 0 && id4 == 0 && string.IsNullOrEmpty(textoBuscador) == true)
+		{
+			<div style="width: 100%; display: flex; justify-content: right; margin-top: 20px;">
+				<div class="comparador-instrucciones">
+					<div class="comparador-instrucciones-contenido">
+						<span>@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Compare")</span>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+							<path d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2 160 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-306.7L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z" />
+						</svg>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 
 	@if (string.IsNullOrEmpty(textoBuscador) == false)
 	{
@@ -523,7 +124,7 @@
 		else if (id3 == 0) posicion = 3;
 		else if (id4 == 0) posicion = 4;
 
-		<div class="comparador-resultados">
+		<div>
 			@if (resultadosBuscador?.Count > 0)
 			{
 				<div class="comparador-resultados-grid">
@@ -983,7 +584,15 @@
 										{
 											if (drmHistorico == minimo.DRM)
 											{
-												mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												if (usuarioRegion == TiendaRegion.Europa)
+												{
+													mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												}
+												else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+												{
+													mensaje = Herramientas.Precios.Dolar(minimo.Precio);
+												}
+												
 												break;
 											}
 										}
@@ -1001,7 +610,15 @@
 										{
 											if (drmHistorico == minimo.DRM)
 											{
-												mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												if (usuarioRegion == TiendaRegion.Europa)
+												{
+													mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												}
+												else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+												{
+													mensaje = Herramientas.Precios.Dolar(minimo.Precio);
+												}
+
 												break;
 											}
 										}
@@ -1019,7 +636,15 @@
 										{
 											if (drmHistorico == minimo.DRM)
 											{
-												mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												if (usuarioRegion == TiendaRegion.Europa)
+												{
+													mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												}
+												else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+												{
+													mensaje = Herramientas.Precios.Dolar(minimo.Precio);
+												}
+
 												break;
 											}
 										}
@@ -1037,7 +662,15 @@
 										{
 											if (drmHistorico == minimo.DRM)
 											{
-												mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												if (usuarioRegion == TiendaRegion.Europa)
+												{
+													mensaje = Herramientas.Precios.Euro(minimo.Precio);
+												}
+												else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+												{
+													mensaje = Herramientas.Precios.Dolar(minimo.Precio);
+												}
+
 												break;
 											}
 										}
@@ -1080,10 +713,21 @@
 												if (Herramientas.OfertaActiva.Verificar(oferta))
 												{
 													decimal tempPrecio = oferta.Precio;
-													if (oferta.Moneda != Herramientas.JuegoMoneda.Euro)
+
+													if (usuarioRegion == TiendaRegion.Europa)
 													{
-														tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
+														if (oferta.Moneda != Herramientas.JuegoMoneda.Euro)
+														{
+															tempPrecio = Herramientas.Divisas.CambioEuro(tempPrecio, oferta.Moneda);
+														}
 													}
+													else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+													{
+														if (oferta.Moneda != Herramientas.JuegoMoneda.Dolar)
+														{
+															tempPrecio = Herramientas.Divisas.CambioDolar(tempPrecio, oferta.Moneda);
+														}
+													}													
 
 													if (tempPrecio < minimoCantidad)
 													{
@@ -1096,7 +740,14 @@
 
 									if (minimoCantidad > 0 && minimoCantidad < 10000000)
 									{
-										mensaje = Herramientas.Precios.Euro(minimoCantidad);
+										if (usuarioRegion == TiendaRegion.Europa)
+										{
+											mensaje = Herramientas.Precios.Euro(minimoCantidad);
+										}
+										else if (usuarioRegion == TiendaRegion.EstadosUnidos)
+										{
+											mensaje = Herramientas.Precios.Dolar(minimoCantidad);
+										}
 									}
 
 									return mensaje;
@@ -1841,26 +1492,45 @@
 		}
 	}
 
+	private IJSObjectReference moduloJs;
+
 	protected override async Task OnAfterRenderAsync(bool primerRender)
 	{
 		if (primerRender == true)
 		{
-			if (id1 > 0 && id2 == 0 && id3 == 0 && id4 == 0)
+			moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/Comparador.razor.js");
+
+			if (moduloJs != null)
 			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "/");
+				if (id1 > 0 && id2 == 0 && id3 == 0 && id4 == 0)
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "/");
+				}
+				else if (id1 > 0 && id2 > 0 && id3 == 0 && id4 == 0)
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "/");
+				}
+				else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 == 0)
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "/");
+				}
+				else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 > 0)
+				{
+					await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "," + id4.ToString() + "/");
+				}
 			}
-			else if (id1 > 0 && id2 > 0 && id3 == 0 && id4 == 0)
+		}
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		if (moduloJs != null)
+		{
+			try
 			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "/");
+				await moduloJs.DisposeAsync();
 			}
-			else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 == 0)
-			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "/");
-			}
-			else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 > 0)
-			{
-				await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "," + id4.ToString() + "/");
-			}
+			catch { }
 		}
 	}
 
@@ -1978,7 +1648,7 @@
 			foreach (var gratis in juego.GratisActuales)
 			{
 				var tipo = Gratis2.GratisCargar.DevolverGratis(gratis.gratis).Tipo;
-				
+
 				if (gratisActuales.Contains(tipo) == false)
 				{
 					gratisActuales.Add(tipo);
@@ -2010,7 +1680,7 @@
 			foreach (var suscripcion in juego.SuscripcionesActuales)
 			{
 				var tipo = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.suscripcion).Id;
-				
+
 				if (suscripcionesActuales.Contains(tipo) == false)
 				{
 					suscripcionesActuales.Add(tipo);
@@ -2026,7 +1696,7 @@
 			foreach (var suscripcion in juego.SuscripcionesPasados)
 			{
 				var tipo = Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion.suscripcion).Id;
-				
+
 				if (suscripcionesAntiguas.Contains(tipo) == false)
 				{
 					suscripcionesAntiguas.Add(tipo);
@@ -2117,21 +1787,24 @@
 			ActualizarSuscripcionesAntiguas(juego4);
 		}
 
-		if (id1 > 0 && id2 == 0 && id3 == 0 && id4 == 0)
+		if (moduloJs != null)
 		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "/");
-		}
-		else if (id1 > 0 && id2 > 0 && id3 == 0 && id4 == 0)
-		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "/");
-		}
-		else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 == 0)
-		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "/");
-		}
-		else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 > 0)
-		{
-			await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "," + id4.ToString() + "/");
+			if (id1 > 0 && id2 == 0 && id3 == 0 && id4 == 0)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "/");
+			}
+			else if (id1 > 0 && id2 > 0 && id3 == 0 && id4 == 0)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "/");
+			}
+			else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 == 0)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "/");
+			}
+			else if (id1 > 0 && id2 > 0 && id3 > 0 && id4 > 0)
+			{
+				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/" + id1.ToString() + "," + id2.ToString() + "," + id3.ToString() + "," + id4.ToString() + "/");
+			}
 		}
 	}
 
@@ -2156,6 +1829,6 @@
 		suscripcionesActuales = new List<Suscripciones2.SuscripcionTipo>();
         suscripcionesAntiguas = new List<Suscripciones2.SuscripcionTipo>();
 
-		await JavaScript.InvokeVoidAsync("ChangeUrl", "/compare/");
+		await moduloJs.InvokeVoidAsync("cambiarEnlace", "/compare/");
 	}
 }

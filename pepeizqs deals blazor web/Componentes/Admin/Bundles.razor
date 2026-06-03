@@ -6,7 +6,7 @@
 
 <div class="caja-admin-bundles">
     <div>
-        <label style="margin-bottom: 10px;">Enlace:</label>
+        <div style="margin-bottom: 10px;">Enlace:</div>
         <input type="text" @bind-value="bundle.Enlace" @bind-value:event="oninput" @bind-value:after="TextoCambiaEnlace" class="entrada-texto" />
     </div>
 </div>
@@ -15,49 +15,48 @@
 {
     <div class="caja-admin-bundles" style="margin-top: 20px;">
         <div>
-            <label style="margin-bottom: 10px;">Nombre:</label>
+            <div style="margin-bottom: 10px;">Nombre:</div>
             <input @onchange="@(e => TextoCambiaNombre(e))" class="entrada-texto" value="@bundle.Nombre">
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Imagen Bundle:</label>
+            <div style="margin-bottom: 10px;">Imagen Bundle:</div>
             <input @onchange="@(e => TextoCambiaImagen(e))" class="entrada-texto" value="@bundle.Imagen">
-            <img src="@bundle.Imagen" style="max-width: 300px; max-height: 300px; margin-top: 10px;" />
+            <img src="@bundle.Imagen" style="max-width: 300px; max-height: 300px; margin-top: 10px; display: block;" />
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Imagen Noticia:</label>
+            <div style="margin-bottom: 10px;">Imagen Noticia:</div>
             <input @onchange="@(e => TextoCambiaImagenNoticia(e))" class="entrada-texto" value="@bundle.ImagenNoticia">
             <img src="@bundle.ImagenNoticia" style="max-width: 300px; max-height: 300px; margin-top: 10px;" />
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Fecha Empieza:</label><br />
-
+            <div style="margin-bottom: 10px;">Fecha Empieza:</div>
             <div style="display: flex; align-items: center;">
                 <input type="datetime-local" @onchange="@(e => CambiarFechaEmpieza(e))" class="entrada-texto" style="width: auto; min-width: 100px;" value="@bundle.FechaEmpieza.ToString("yyyy-MM-ddTHH:mm:ss")">
-                <label style="margin-left: 20px;">@bundle.FechaEmpieza.ToString("yyyy-MM-ddTHH:mm:ss")</label>
+                <div style="margin-left: 20px;">@bundle.FechaEmpieza.ToString("yyyy-MM-ddTHH:mm:ss")</div>
             </div>          
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Fecha Termina:</label><br />
+            <div style="margin-bottom: 10px;">Fecha Termina:</div>
 
             <div style="display: flex; align-items: center;">
                 <input type="datetime-local" @onchange="@(e => CambiarFechaTermina(e))" class="entrada-texto" style="width: auto; min-width: 100px;" value="@bundle.FechaTermina.ToString("yyyy-MM-ddTHH:mm:ss")">
-                <label style="margin-left: 20px;">@bundle.FechaTermina.ToString("yyyy-MM-ddTHH:mm:ss")</label>
+                <div style="margin-left: 20px;">@bundle.FechaTermina.ToString("yyyy-MM-ddTHH:mm:ss")</div>
             </div>
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Pick Up:</label>
+            <div style="margin-bottom: 10px;">Pick Up:</div>
             <div class="checkbox-caja">
                 <input type="checkbox" class="checkbox-interior" checked="@bundle.Pick" @onchange="@(e => CambiarPick(e))">
             </div>
         </div>
 
         <div style="margin-top: 20px;">
-            <label>Tiers:</label>
+            <div style="margin-bottom: 10px;">Tiers:</div>
 
             @if (bundle.Tiers?.Count > 0)
             {
@@ -97,18 +96,18 @@
         <div>
             @if (bundle.Juegos != null)
             {
-                <label style="margin-bottom: 10px;">Juegos IDs (@bundle.Juegos.Count.ToString()):</label>
+                <div style="margin-bottom: 10px;">Juegos IDs (@bundle.Juegos.Count.ToString()):</div>
             }
             else
             {
-                <label style="margin-bottom: 10px;">Juegos IDs:</label>
+                <div style="margin-bottom: 10px;">Juegos IDs:</div>
             }
             
             <textarea @oninput="TextoCambiaIDs" class="entrada-texto" rows="1" value="@juegosIds" />
         </div>
 
         <div style="margin-top: 20px;">
-            <label style="margin-bottom: 10px;">Juegos Buscador:</label>
+            <div style="margin-bottom: 10px;">Juegos Buscador:</div>
             <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" style="margin-bottom: 20px;" />
 
             @if (juegosBuscador?.Count > 0)
@@ -117,13 +116,13 @@
                     @foreach (var juego in juegosBuscador)
                     {
                         <div class="perfil-flexible-centrado perfil-espacio-top">
-                            <button @onclick="@(e => SeleccionarJuegoBuscador(e, juego.Id.ToString(), juego.Imagenes.Capsule_231x87, juego.Nombre))" class="boton-pequeño">
+                            <button @onclick="@(e => SeleccionarJuegoBuscador(e, juego.Id.ToString(), juego.Imagenes.Capsule_231x87, juego.Nombre))" class="boton-pequeño" style="padding: 2px;">
                                 <div class="perfil-flexible-centrado">
-                                    <div style="width: 12%;">
-                                        <img src="@juego.Imagenes.Capsule_231x87" style="max-height:100%; max-width:100%;" />
+                                    <div style="width: 15%;">
+                                        <img src="@juego.Imagenes.Capsule_231x87" style="max-height:100%; max-width:100%; display: block;" />
                                     </div>
 
-                                    <div style="width: 88%; padding-left: 15px; padding-right: 15px;">
+                                    <div style="width: 85%; padding-left: 15px; padding-right: 15px;">
                                         @juego.Nombre<br />
                                         <span style="font-size: 13px;">@juego.Id.ToString()</span>
                                     </div>
@@ -142,7 +141,7 @@
                         <hr />
                         <div class="perfil-flexible-centrado" style="margin-top: 10px;">
                             <div style="width: 20%;">
-                                <img src="@juego.Imagen" style="max-height:100%; max-width:100%;" />
+                                <img src="@juego.Imagen" style="max-height:100%; max-width:100%; display: block;" />
                             </div>
 
                             <div style="width: 80%; padding-left: 15px; padding-right: 15px;">
@@ -154,7 +153,7 @@
                                     @if (bundle.Pick == false)
                                     {
                                         <div style="display: flex; align-items: center; margin-right: 20px;">
-                                            <label style="margin-right: 10px;">Tier:</label>
+                                            <div style="margin-right: 10px;">Tier:</div>
                                             <div class="opciones-combobox" style="min-width: 100px;">
                                                 <select @onchange="@(e => CambiarTierJuego(e, juego))" value="@juego.Tier.Posicion">
                                                     @if (bundle.Tiers != null)
@@ -173,7 +172,7 @@
                                     }
 
                                     <div style="display: flex; align-items: center;">
-                                        <label style="margin-right: 10px;">DRM:</label>
+                                        <div style="margin-right: 10px;">DRM:</div>
                                         <div class="opciones-combobox" style="min-width: 100px;">
                                             <select @onchange="@(e => CambiarDRMJuego(e, juego))" value="@juego.DRM">
                                                 @foreach (global::Juegos.DRM drm in global::Juegos.JuegoDRM2.GenerarListado())
