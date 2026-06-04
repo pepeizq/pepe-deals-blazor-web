@@ -38,7 +38,7 @@ FROM(
 				BaseDatos.Errores.Insertar.Mensaje("Gratis Actuales", ex);
 			}
 
-			return new List<JuegoGratis>();
+			return null;
 		}
 
         public static async Task<List<JuegoGratis>> Año(string año)
@@ -65,7 +65,7 @@ ORDER BY sub.nombre DESC;
 				BaseDatos.Errores.Insertar.Mensaje("Gratis Año", ex);
 			}
 
-			return new List<JuegoGratis>();
+			return null;
 		}
 
 		public static async Task<JuegoGratis> UnJuego(string juegoId)
@@ -90,7 +90,7 @@ ORDER BY sub.ID DESC;";
 				BaseDatos.Errores.Insertar.Mensaje("Gratis Uno", ex);
 			}
 
-			return new JuegoGratis();
+			return null;
 		}
 
 		public static async Task<JuegoGratis> UnGratis(string id)
@@ -114,7 +114,7 @@ FROM (
 				BaseDatos.Errores.Insertar.Mensaje("Gratis Uno", ex);
 			}
 
-			return new JuegoGratis();
+			return null;
 		}
 
 		public static async Task<List<JuegoGratis>> Ultimos(int cantidad)
@@ -139,7 +139,7 @@ FROM (
 				BaseDatos.Errores.Insertar.Mensaje("Gratis Ultimos", ex);
 			}
 
-			return new List<JuegoGratis>();
+			return null;
 		}
     }
 }

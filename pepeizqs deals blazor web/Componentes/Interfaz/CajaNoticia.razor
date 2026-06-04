@@ -43,7 +43,7 @@
 						<div style="display: flex;">
 							<picture>
 								<source srcset="@icono1 1x, @icono2 2x" type="image/webp">
-								<img src="@icono" style="width: 18px; height: 18px; aspect-ratio: 1/1;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)" />
+								<img src="@icono" style="width: 18px; height: 18px; aspect-ratio: 1/1; display: block;" alt="@Noticias.NoticiasCargar.Traduccion(noticia.NoticiaTipo, idioma)" />
 							</picture>
 						</div>
 					}
@@ -62,7 +62,7 @@
 			</div>
 
 			<div class="noticia-borrado">
-				<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(noticia.Imagen)" onerror="this.closest('.noticia-borrado').classList.add('img-error')" style="width: 100%; height: 100%; object-fit: contain;" alt="@titulo" />
+				<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(noticia.Imagen)" onerror="this.closest('.noticia-borrado').classList.add('img-error')" style="width: 100%; height: 100%; object-fit: contain; display: block;" alt="@titulo" />
 			
 				<span class="mensaje-alternativo" style="padding: 20px; text-align: center;">@titulo</span>
 			</div>

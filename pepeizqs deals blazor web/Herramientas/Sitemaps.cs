@@ -85,7 +85,7 @@ namespace Herramientas
 				int i = 0;
 				while (i <= segmentacion)
 				{
-					sitemaps.Add("https://" + dominio + "/sitemap-news-en-" + i.ToString() + ".xml");
+					sitemaps.Add("https://" + dominio + "/sitemap-news-" + i.ToString() + ".xml");
 
 					i += 1;
 				}

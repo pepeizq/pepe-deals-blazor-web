@@ -76,6 +76,7 @@
                 <div class="caja-admin-indice">
                     <button class="boton-pestañas" @onclick="MostrarRecompensas" style="@estiloRecompensas;">Recompensas</button>
                     <button class="boton-pestañas" @onclick="MostrarCupones" style="@estiloCupones;">Cupones</button>
+                    <button class="boton-pestañas" @onclick="MostrarReddit" style="@estiloReddit;">Reddit</button>
                 </div>
             </div>
 
@@ -148,6 +149,11 @@
                 @if (mostrarCupones == true)
                 {
                     <Cupones/>
+                }
+
+                @if (mostrarReddit == true)
+                {
+                    <Reddit/>
                 }
             </div>
         </div>
@@ -310,6 +316,10 @@
                 {
                     MostrarCupones();
                 }
+                else if (subpagina == subpaginaReddit)
+                {
+                    MostrarReddit();
+                }
 
                 if (nuevosErroresCantidad == 0 && nuevosDuplicadosCantidad == 0 && nuevosPendientesCantidad == 0 && nuevosDLCsCantidad == 0)
                 {
@@ -357,6 +367,7 @@
         mostrarSuscripciones = false;
         mostrarRecompensas = false;
         mostrarCupones = false;
+        mostrarReddit = false;
 
         estiloEnlaces = null;
         estiloDuplicados = fondoAlerta;
@@ -372,6 +383,7 @@
         estiloSuscripciones = null;
         estiloRecompensas = null;
         estiloCupones = null;
+        estiloReddit = null;
     }
 
     #region Enlaces
@@ -659,6 +671,26 @@
         if (moduloJs != null)
         {
             await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaCupones + "/");
+        }
+    }
+
+    #endregion
+
+    #region Reddit
+
+    private bool mostrarReddit = false;
+    private string estiloReddit = null;
+    private string subpaginaReddit = "reddit";
+
+    private async void MostrarReddit()
+    {
+        CerrarPestañas();
+        mostrarReddit = true;
+        estiloReddit = fondo;
+
+        if (moduloJs != null)
+        {
+            await moduloJs.InvokeVoidAsync("cambiarEnlace", "/admin/" + subpaginaReddit + "/");
         }
     }
 

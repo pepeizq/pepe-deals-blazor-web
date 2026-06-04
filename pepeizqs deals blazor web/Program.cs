@@ -299,7 +299,7 @@ app.Use(async (contexto, siguiente) =>
 
 	HashSet<string> extensiones = new()
 	{
-		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", "/ads.txt", ".php", "/en/", "/es/", "/game"
+		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", "/ads.txt", ".php", "/en/", "/es/", "/game", "/.env"
 	};
 
 	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true)
@@ -635,6 +635,11 @@ app.MapGet("/sitemap-lastnews-es.xml", async (HttpContext http) =>
 });
 
 app.MapGet("/sitemap-news-{i:int}.xml", async (HttpContext http, int i) =>
+{
+	await Herramientas.Sitemaps.NoticiasIngles(http, i);
+});
+
+app.MapGet("/sitemap-news-en-{i:int}.xml", async (HttpContext http, int i) =>
 {
 	await Herramientas.Sitemaps.NoticiasIngles(http, i);
 });

@@ -761,7 +761,7 @@ namespace Herramientas.RedesSociales
                 {
 					if (region == TiendaRegion.Europa)
 					{
-						var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricos[0].Tienda);
+						Tienda tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricos[0].Tienda);
 						string nombreTienda = tiendaJuego.Nombre;
 
 						if (juegosPorTienda.ContainsKey(nombreTienda) == false)
@@ -773,7 +773,7 @@ namespace Herramientas.RedesSociales
 					}
 					else if (region == TiendaRegion.EstadosUnidos)
 					{
-						var tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricosUS[0].Tienda);
+						Tienda tiendaJuego = tiendas.FirstOrDefault(t => t.Id == juego.PrecioMinimosHistoricosUS[0].Tienda);
 						string nombreTienda = tiendaJuego.Nombre;
 
 						if (juegosPorTienda.ContainsKey(nombreTienda) == false)
