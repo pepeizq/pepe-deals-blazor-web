@@ -370,6 +370,155 @@ namespace Herramientas.Ficheros
 		}
 	}
 
+	public static class ConstructorReddit
+	{
+		public static async Task<CombinarImagenResultado> Imagen(List<string> imagenesEnlaces, float gradosRotacion = 5f)
+		{
+			try
+			{
+				int totalAncho = 1280;
+				int totalAltura = 720;
+
+				double rad = gradosRotacion * Math.PI / 180.0;
+				double cosT = Math.Cos(rad);
+				double sinT = Math.Sin(rad);
+
+				int columnas = (int)Math.Ceiling(Math.Sqrt(imagenesEnlaces.Count * (16.0 / 9.0)));
+				int filas = (int)Math.Ceiling((double)imagenesEnlaces.Count / columnas);
+
+				// El paso entre centros de covers = tamaño de celda del grid recto
+				double pasoX = (double)totalAncho / columnas;
+				double pasoY = (double)totalAltura / filas;
+
+				// Despejar coverAncho con ratio 2:3 tal que su bounding box rotado = (pasoX, pasoY)
+				// bbox_w = w·cos + h·sin = w·cos + 1.5w·sin = w·(cos + 1.5·sin) → w = pasoX / (cos + 1.5·sin)
+				// bbox_h = w·sin + h·cos = w·sin + 1.5w·cos = w·(sin + 1.5·cos) → w = pasoY / (sin + 1.5·cos)
+				// Tomamos el MÁXIMO: la cover es más grande que la celda, sus esquinas solapan con vecinas
+				double wDesdePasoX = pasoX / (cosT + 1.5 * sinT);
+				double wDesdePasoY = pasoY / (sinT + 1.5 * cosT);
+				int coverAncho = (int)Math.Ceiling(Math.Max(wDesdePasoX, wDesdePasoY));
+				int coverAltura = (int)Math.Ceiling(coverAncho * 1.5);
+
+				// Canvas cuadrado para rotar sin recortar esquinas
+				int canvasRot = (int)Math.Ceiling(Math.Sqrt(coverAncho * coverAncho + coverAltura * coverAltura));
+
+				// Descarga de imágenes
+				var imagenes = new List<Image>();
+				using var httpClient = new HttpClient();
+
+				foreach (string enlace in imagenesEnlaces)
+				{
+					try
+					{
+						var response = await httpClient.GetAsync(enlace);
+						response.EnsureSuccessStatusCode();
+						var stream = await response.Content.ReadAsStreamAsync();
+						imagenes.Add(Image.Load(stream));
+					}
+					catch (Exception ex)
+					{
+						return new CombinarImagenResultado
+						{
+							Exito = false,
+							ErrorMensaje = $"Error al descargar imagen de {enlace}: {ex.Message}",
+							RequestMalo = true
+						};
+					}
+				}
+
+				if (imagenes.Count == 0)
+					return new CombinarImagenResultado
+					{
+						Exito = false,
+						ErrorMensaje = "No se pudieron descargar las imágenes",
+						RequestMalo = true
+					};
+
+				int margen = (int)(Math.Max(totalAncho, totalAltura) * 0.3);
+				int canvasIntermedioAncho = totalAncho + margen * 2;
+				int canvasIntermedioAltura = totalAltura + margen * 2;
+
+				using var intermedio = new Image<Rgba32>(canvasIntermedioAncho, canvasIntermedioAltura, new Rgba32(0, 0, 0, 0));
+
+				int indice = 0;
+				for (int fila = 0; fila < filas && indice < imagenes.Count; fila++)
+				{
+					for (int col = 0; col < columnas && indice < imagenes.Count; col++, indice++)
+					{
+						// Centro de esta celda en el canvas intermedio — grid recto, sin zigzag
+						int centroCoverX = margen + (int)Math.Round(col * pasoX + pasoX / 2);
+						int centroCoverY = margen + (int)Math.Round(fila * pasoY + pasoY / 2);
+
+						using var coverRedimensionada = imagenes[indice].Clone(ctx =>
+							ctx.Resize(coverAncho, coverAltura)
+						);
+
+						using var canvasRotado = new Image<Rgba32>(canvasRot, canvasRot, new Rgba32(0, 0, 0, 0));
+						canvasRotado.Mutate(ctx =>
+						{
+							int offsetX = (canvasRot - coverAncho) / 2;
+							int offsetY = (canvasRot - coverAltura) / 2;
+							ctx.DrawImage(coverRedimensionada, new Point(offsetX, offsetY), 1f);
+							ctx.Rotate(gradosRotacion);
+						});
+
+						int drawX = centroCoverX - canvasRot / 2;
+						int drawY = centroCoverY - canvasRot / 2;
+
+						intermedio.Mutate(ctx =>
+							ctx.DrawImage(canvasRotado, new Point(drawX, drawY), 1f)
+						);
+					}
+				}
+
+				// Recortar región 16:9 central
+				using var imagenFinal = new Image<Rgba32>(totalAncho, totalAltura, new Rgba32(0, 0, 0, 0));
+				using var recortado = intermedio.Clone(ctx =>
+					ctx.Crop(new Rectangle(margen, margen, totalAncho, totalAltura))
+				);
+				imagenFinal.Mutate(ctx => ctx.DrawImage(recortado, new Point(0, 0), 1f));
+
+				string nombreFichero = $"{Guid.NewGuid()}.png";
+				string rutaDirectorio = Path.Combine(AppContext.BaseDirectory, "imagenes", "portadas");
+
+				if (!Directory.Exists(rutaDirectorio))
+					Directory.CreateDirectory(rutaDirectorio);
+
+				try
+				{
+					await imagenFinal.SaveAsPngAsync(Path.Combine(rutaDirectorio, nombreFichero));
+
+					foreach (var img in imagenes)
+						img.Dispose();
+
+					return new CombinarImagenResultado
+					{
+						Exito = true,
+						DirectorioFichero = $"/imagenes/portadas/{nombreFichero}"
+					};
+				}
+				catch (Exception ex)
+				{
+					return new CombinarImagenResultado
+					{
+						Exito = false,
+						ErrorMensaje = $"Error al guardar la imagen: {ex.Message}",
+						RequestMalo = false
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				return new CombinarImagenResultado
+				{
+					Exito = false,
+					ErrorMensaje = $"Error al construir portada: {ex.Message}",
+					RequestMalo = false
+				};
+			}
+		}
+	}
+
 	public class CombinarImagenResultado
 	{
 		public bool Exito { get; set; }

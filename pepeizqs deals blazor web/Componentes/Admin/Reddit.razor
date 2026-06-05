@@ -7,6 +7,13 @@
         <button @onclick="@(e => GenerarPost(e))" class="boton-pequeño" style="text-align: center; width: fit-content; padding: 10px 40px; font-size: 18px;">Generar Post</button>
     </div>
 
+    @if (string.IsNullOrEmpty(imagen) == false)
+    {
+        <img src="@imagen" alt="Imagen del post" />
+
+        <a href="@imagen" target="_blank">Ver imagen en tamaño completo</a>
+    }
+
     @if (string.IsNullOrEmpty(post) == false)
     {
         <div class="caja-admin-reddit">
@@ -36,9 +43,14 @@
 
     private string post = null;
     private string comentario = null;
+    private string imagen = null;
 
     private async Task GenerarPost(MouseEventArgs e)
     {
+        post = string.Empty;
+        comentario = string.Empty;
+        imagen = string.Empty;
+
         TiendaRegion region = TiendaRegion.EstadosUnidos;
 
         #region Ofertas
@@ -81,13 +93,41 @@
                     post = post + "* [" + oferta.Nombre + " • " + oferta.PrecioMinimosHistoricosUS[0].Descuento.ToString() + "% • " + precio + "](" + oferta.PrecioMinimosHistoricosUS[0].Enlace + ") (" + Tiendas2.TiendasCargar.DevolverTienda(oferta.PrecioMinimosHistoricosUS[0].Tienda).Nombre + ")" + codigo + Environment.NewLine;
                 }
             }
+
+            try
+            {
+                var imagen2 = await Herramientas.Ficheros.ConstructorReddit.Imagen(ofertasSemana.OrderByDescending(o => int.Parse(o.Analisis.Cantidad.Replace(",", ""))).Where(o => o.Imagenes.Library_600x900 != null).Take(18).Select(o => o.Imagenes.Library_600x900).ToList());
+
+                if (imagen2.Exito == true)
+                {
+                    imagen = imagen2.DirectorioFichero;
+                }
+            }
+            catch (Exception ex)
+            {
+                BaseDatos.Errores.Insertar.Mensaje("Error al generar imagen", ex, false);
+            }
+        }
+
+        #endregion
+
+        #region Bundles
+
+        List<Bundles2.Bundle> bundlesSemana = await BaseDatos.RedesSociales.Buscar.BundlesUltimaSemana();
+
+        if (bundlesSemana?.Count > 0)
+        {
+            foreach (var bundle in bundlesSemana)
+            {
+                comentario = comentario + "* [" + bundle.Nombre + "](" + bundle.Enlace + ")" + Environment.NewLine;
+            }
         }
 
         #endregion
 
         #region Gratis
 
-        var gratisSemana = await BaseDatos.RedesSociales.Buscar.GratisUltimaSemana();
+        List<global::Juegos.JuegoGratis> gratisSemana = await BaseDatos.RedesSociales.Buscar.GratisUltimaSemana();
 
         if (gratisSemana?.Count > 0)
         {

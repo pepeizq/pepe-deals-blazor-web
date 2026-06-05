@@ -43,6 +43,7 @@
 
 .boton-deseados {
     transition: backdrop-filter 0.2s ease;
+    font-size: 16px;
 }
 
     .boton-deseados:hover {

@@ -326,8 +326,9 @@ CROSS APPLY (
 ) ids
 JOIN juegos j ON j.id = ids.numero
 WHERE t.enlace = @Enlace
-  AND t.descartado = 'no'
-  AND ids.numero IS NOT NULL;
+  AND (t.descartado = 'no' OR t.descartado IS NULL)
+  AND ids.numero IS NOT NULL
+  AND ids.numero != 0;
 ";
 
 			List<dynamic> resultados = new List<dynamic>();
@@ -560,8 +561,9 @@ WHERE t.enlace = @Enlace
 						) ids
 						JOIN juegos j ON j.id = ids.numero
 						WHERE t.enlace IN ({placeholders})
-						  AND t.descartado = 'no'
-						  AND ids.numero IS NOT NULL;
+						    AND (t.descartado = 'no' OR t.descartado IS NULL)
+							AND ids.numero IS NOT NULL
+							AND ids.numero != 0
 						";
 
 					DynamicParameters parametros = new DynamicParameters();

@@ -477,10 +477,10 @@
 						<img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215)" loading="lazy" decoding="async" style="width: 100%; height: 100%; display: block;" alt="@juego.Nombre" />
 					</div>
 
-					<div class="cjuego-titulo" style="width: 100%; display: flex; flex-flow: column wrap;">
+					<div class="cjuego-titulo" style="width: 100%; display: flex; flex-flow: column wrap; gap: 10px;">
 						<div class="minimo-fuente">@juego.Nombre</div>
 
-						<div style="margin-top: 15px; display: flex; align-items: center; gap: 10px;">
+						<div style="display: flex; align-items: center; gap: 10px;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
 							{
 								string iconoDRM = JuegoDRM2.SacarImagen(drmUsar);
@@ -489,7 +489,7 @@
 
 								<picture style="display: flex;">
 									<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
-									<img src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" decoding="async" style="width: 18px; height: 18px;" />
+									<img src="@iconoDRM" alt="@JuegoDRM2.DevolverDRM(drmUsar)" loading="lazy" decoding="async" style="width: 18px; height: 18px; display: block;" />
 								</picture>
 
 								string iconoTienda1 = iconoTienda.Replace(".webp", "-sm.webp");
@@ -497,7 +497,7 @@
 
 								<picture style="display: flex;">
 									<source srcset="@iconoTienda1 1x, @iconoTienda2 2x" type="image/webp">
-									<img src="@iconoTienda" alt="Store" loading="lazy" decoding="async" style="width: 18px; height: 18px;" />
+									<img src="@iconoTienda" alt="Store" loading="lazy" decoding="async" style="width: 18px; height: 18px; display: block;" />
 								</picture>
 							}
 

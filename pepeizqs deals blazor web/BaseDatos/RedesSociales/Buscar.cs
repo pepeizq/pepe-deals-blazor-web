@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using Bundles2;
 using Dapper;
 using Juegos;
 using Tiendas2;
@@ -48,8 +49,9 @@ namespace BaseDatos.RedesSociales
 			string seccionMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
 
-			string busqueda = $@"SELECT TOP 100 j.idMaestra, j.nombre, j.{precioMinimosHistoricos}, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') AS DRM, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
+			string busqueda = $@"SELECT TOP 250 j.idMaestra, j.nombre, j.{precioMinimosHistoricos}, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') AS DRM, j.analisis, j.imagenes, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
 				WHERE JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = @drm
+				AND tipo = 0
 				AND CAST(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS date) >= CAST(DATEADD(day, -7, GETDATE()) AS date)
 				";
 
@@ -71,8 +73,28 @@ namespace BaseDatos.RedesSociales
 				}
 				catch (Exception ex)
 				{
-					BaseDatos.Errores.Insertar.Mensaje("Redes Sociales Ofertas Dia " + drm.ToString(), ex);
+					BaseDatos.Errores.Insertar.Mensaje("Redes Sociales Ofertas Ultima Semana " + drm.ToString(), ex);
 				}
+			}
+
+			return null;
+		}
+
+		public static async Task<List<Bundle>> BundlesUltimaSemana()
+		{
+			string busqueda = @"SELECT * FROM bundles WHERE (GETDATE() BETWEEN fechaEmpieza AND fechaTermina) AND fechaEmpieza >= CAST(DATEADD(day, -7, GETDATE()) AS date)
+								ORDER BY nombre";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<Bundle>(busqueda)).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Redes Sociales Bundles Ultima Semana", ex);
 			}
 
 			return null;
