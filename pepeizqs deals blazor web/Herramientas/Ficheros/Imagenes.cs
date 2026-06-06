@@ -386,23 +386,16 @@ namespace Herramientas.Ficheros
 				int columnas = (int)Math.Ceiling(Math.Sqrt(imagenesEnlaces.Count * (16.0 / 9.0)));
 				int filas = (int)Math.Ceiling((double)imagenesEnlaces.Count / columnas);
 
-				// El paso entre centros de covers = tamaño de celda del grid recto
 				double pasoX = (double)totalAncho / columnas;
 				double pasoY = (double)totalAltura / filas;
 
-				// Despejar coverAncho con ratio 2:3 tal que su bounding box rotado = (pasoX, pasoY)
-				// bbox_w = w·cos + h·sin = w·cos + 1.5w·sin = w·(cos + 1.5·sin) → w = pasoX / (cos + 1.5·sin)
-				// bbox_h = w·sin + h·cos = w·sin + 1.5w·cos = w·(sin + 1.5·cos) → w = pasoY / (sin + 1.5·cos)
-				// Tomamos el MÁXIMO: la cover es más grande que la celda, sus esquinas solapan con vecinas
 				double wDesdePasoX = pasoX / (cosT + 1.5 * sinT);
 				double wDesdePasoY = pasoY / (sinT + 1.5 * cosT);
 				int coverAncho = (int)Math.Ceiling(Math.Max(wDesdePasoX, wDesdePasoY));
 				int coverAltura = (int)Math.Ceiling(coverAncho * 1.5);
 
-				// Canvas cuadrado para rotar sin recortar esquinas
 				int canvasRot = (int)Math.Ceiling(Math.Sqrt(coverAncho * coverAncho + coverAltura * coverAltura));
 
-				// Descarga de imágenes
 				var imagenes = new List<Image>();
 				using var httpClient = new HttpClient();
 
@@ -445,7 +438,6 @@ namespace Herramientas.Ficheros
 				{
 					for (int col = 0; col < columnas && indice < imagenes.Count; col++, indice++)
 					{
-						// Centro de esta celda en el canvas intermedio — grid recto, sin zigzag
 						int centroCoverX = margen + (int)Math.Round(col * pasoX + pasoX / 2);
 						int centroCoverY = margen + (int)Math.Round(fila * pasoY + pasoY / 2);
 
@@ -471,7 +463,6 @@ namespace Herramientas.Ficheros
 					}
 				}
 
-				// Recortar región 16:9 central
 				using var imagenFinal = new Image<Rgba32>(totalAncho, totalAltura, new Rgba32(0, 0, 0, 0));
 				using var recortado = intermedio.Clone(ctx =>
 					ctx.Crop(new Rectangle(margen, margen, totalAncho, totalAltura))

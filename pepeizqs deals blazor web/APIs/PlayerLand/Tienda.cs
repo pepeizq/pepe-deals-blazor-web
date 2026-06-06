@@ -23,7 +23,7 @@ namespace APIs.PlayerLand
 				Color = "#beb2f1",
 				AdminEnseñar = true,
 				AdminInteractuar = true,
-				Regiones = new List<TiendaRegion> { TiendaRegion.Europa }
+				Regiones = new List<TiendaRegion> { TiendaRegion.Europa, TiendaRegion.EstadosUnidos }
 			};
 
 			return tienda;

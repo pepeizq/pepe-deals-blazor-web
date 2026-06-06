@@ -622,6 +622,10 @@ namespace Tareas
 						{
 							siguienteComprobacion = TimeSpan.FromHours(6);
 						}
+						else if (tienda.Id == APIs.PlayerLand.Tienda.Generar().Id)
+						{
+							siguienteComprobacion = TimeSpan.FromHours(6);
+						}
 
 						if (DateTime.Now.Hour == 18 || DateTime.Now.Hour == 19)
 						{

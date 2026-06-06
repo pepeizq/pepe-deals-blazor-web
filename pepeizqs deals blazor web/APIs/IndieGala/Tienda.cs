@@ -152,7 +152,7 @@ namespace APIs.IndieGala
 
 								if (string.IsNullOrEmpty(paisesRestringidos) == false)
 								{
-									List<string> listaPaisesRestringidos = paisesRestringidos.Split(',').ToList();
+									List<string> listaPaisesRestringidos = paisesRestringidos.Split(',').Select(p => p.Trim()).ToList();
 
 									foreach (string pais in listaPaisesRestringidos)
 									{
@@ -163,7 +163,7 @@ namespace APIs.IndieGala
 										}
 										else if (region == TiendaRegion.EstadosUnidos && pais.ToLower() == "us")
 										{
-											buscar = true;
+											buscar = false;
 											break;
 										}
 									}
@@ -171,7 +171,7 @@ namespace APIs.IndieGala
 
 								if (buscar == true && string.IsNullOrEmpty(paisesStockAprobados) == false)
 								{
-									List<string> listaPaisesAprobados = paisesStockAprobados.Split(',').ToList();
+									List<string> listaPaisesAprobados = paisesStockAprobados.Split(',').Select(p => p.Trim()).ToList();
 
 									bool encontrado = listaPaisesAprobados.Any(pais =>
 										(region == TiendaRegion.Europa && pais.ToLower() == "es") ||
@@ -186,7 +186,7 @@ namespace APIs.IndieGala
 
 								if (buscar == true && string.IsNullOrEmpty(paisesAprobados) == false)
 								{
-									List<string> listaPaisesAprobados = paisesAprobados.Split(',').ToList();
+									List<string> listaPaisesAprobados = paisesAprobados.Split(',').Select(p => p.Trim()).ToList();
 
 									bool encontrado = listaPaisesAprobados.Any(pais =>
 										(region == TiendaRegion.Europa && pais.ToLower() == "es") ||

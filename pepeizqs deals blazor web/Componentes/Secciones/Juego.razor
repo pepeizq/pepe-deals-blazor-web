@@ -849,7 +849,7 @@
 
                                 @if (string.IsNullOrEmpty(mensajeMinimoDRM) == false || BundlesComprobar(juego.Bundles, drm.Id) != null || GratisComprobar(juego.Gratis, drm.Id) != null || SuscripcionesComprobar(juego.Suscripciones, drm.Id) != null)
                                 {
-                                    <div class="caja-drm" style="text-align: left; padding: 20px; align-items: center; gap: 30px; background: color-mix(in srgb, var(--fondoSubsubcabecera) 65%, var(--fondoBotonPequeño)); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
+                                    <div class="caja-drm" style="text-align: left; padding: 20px; align-items: center; gap: 30px; background: rgba(0, 0, 0, .2); box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.5),0px 0px 1px 0px rgba(0, 0, 0, 0.5);">
                                         @if (drm.Id == JuegoDRM.DRMFree)
                                         {
                                             <div style="max-width: 45px; text-align: center;">DRM Free</div>
