@@ -455,10 +455,10 @@
 														<img src="@imagen" style="height: 100%; width: 100%; display: block;" loading="lazy" />
 													</div>
 
-													<div style="width: 100%; padding: 5px 20px;">
-														<div style="margin-top: 5px;">@juego.Nombre</div>
+													<div style="width: 100%; padding: 5px 20px; display: flex; flex-direction: column; justify-content: center; gap: 10px;">
+														<div>@juego.Nombre</div>
 
-														<div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+														<div style="display: flex; align-items: center; gap: 10px;">
 															<picture style="width: 20px; height: 20px; display: flex;">
 																<source srcset="@iconoDRM1 1x, @iconoDRM2 2x" type="image/webp">
 																<img src="@iconoDRM" alt="@Juegos.JuegoDRM2.DevolverDRM(juego.DRM)" loading="lazy" decoding="async" style="width: 20px; height: 20px; display: block;" />

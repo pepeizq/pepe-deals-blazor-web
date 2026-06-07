@@ -96,7 +96,7 @@
 
             try
             {
-                var imagen2 = await Herramientas.Ficheros.ConstructorReddit.Imagen(ofertasSemana.OrderByDescending(o => int.Parse(o.Analisis.Cantidad.Replace(",", ""))).Where(o => o.Imagenes.Library_600x900 != null).Take(18).Select(o => o.Imagenes.Library_600x900).ToList());
+                var imagen2 = await Herramientas.Ficheros.ConstructorReddit.Imagen(ofertasSemana.OrderByDescending(o => int.Parse(o.Analisis.Cantidad.Replace(",", ""))).Where(o => o.Imagenes.Library_600x900 != null && o.PrecioMinimosHistoricosUS[0].Tienda != "steambundles").Take(18).Select(o => o.Imagenes.Library_600x900).ToList());
 
                 if (imagen2.Exito == true)
                 {

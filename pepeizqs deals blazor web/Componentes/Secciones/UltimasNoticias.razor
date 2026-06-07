@@ -4,6 +4,7 @@
 
 @using Microsoft.AspNetCore.Components.Web
 @using pepeizqs_deals_blazor_web.Componentes.Interfaz
+@using Tiendas2
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
@@ -110,7 +111,7 @@
 	</div>
 
 	<div style="margin: 30px;">
-		<RedesSociales idioma="@idioma" />
+		<RedesSociales region="@usuarioRegion" idioma="@idioma" />
 	</div>
 
 	@if (mostrarArchivo == false)
@@ -123,7 +124,7 @@
 				<div class="caja-noticia-contenido" style="padding: 30px; display: flex; align-items: center; gap: 30px;">
 					<div class="noticias-borrado" style="width: 50%;">
 						<a href="/news/@noticiaMostrar.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(Herramientas.Idiomas.ElegirTexto(idioma, noticiaMostrar.TituloEn, noticiaMostrar.TituloEs))/">
-							<img src="@noticiaMostrar.Imagen" onerror="this.closest('.noticias-borrado').remove();" class="imagen-expandir" style="width: 100%; height: 100%; border: 1px solid var(--fondoBotonPequeño);" alt="@noticiaTitulo" />
+							<img src="@noticiaMostrar.Imagen" onerror="this.closest('.noticias-borrado').remove();" class="imagen-expandir" style="width: 100%; height: 100%; display: block; border: 1px solid var(--fondoBotonPequeño);" alt="@noticiaTitulo" />
 						</a>
 					</div>
 
@@ -273,6 +274,8 @@
 	private string userAgent = null;
 	private string dominio = null;
 
+	private TiendaRegion usuarioRegion = TiendaRegion.Europa;
+
 	private List<string> fechas = new List<string>();
 	[PersistentState] public List<Noticias.Noticia> noticiasMostrar { get; set; }
 	[PersistentState] public List<Noticias.Noticia> noticiasAntiguas { get; set; }
@@ -287,10 +290,17 @@
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
         dominio = datos.Dominio;
+		usuarioRegion = datos.Region;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
-			idioma = await BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
+			Task<int> tareaRegion = BaseDatos.Usuarios.Buscar.OpcionInt(usuarioId, "Currency");
+
+			await Task.WhenAll(tareaIdioma, tareaRegion);
+
+			idioma = tareaIdioma.Result;
+			usuarioRegion = (TiendaRegion)tareaRegion.Result;
 		}
 
 		//--------------------------------------------------------------------

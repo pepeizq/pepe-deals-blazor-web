@@ -51,6 +51,7 @@ namespace BaseDatos.RedesSociales
 
 			string busqueda = $@"SELECT TOP 250 j.idMaestra, j.nombre, j.{precioMinimosHistoricos}, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') AS DRM, j.analisis, j.imagenes, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
 				WHERE JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = @drm
+				AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0
 				AND tipo = 0
 				AND CAST(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS date) >= CAST(DATEADD(day, -7, GETDATE()) AS date)
 				";

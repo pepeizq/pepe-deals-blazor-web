@@ -1,4 +1,6 @@
-﻿@inject IConfiguration Configuracion
+﻿@using Tiendas2
+
+@inject IConfiguration Configuracion
 
 <div style="display: flex; align-items: center; justify-content: center; text-align: center; gap: 15px; flex-wrap: wrap;">
     <div>
@@ -45,6 +47,9 @@
     [Parameter]
     public string idioma { get; set; }
 
+    [Parameter]
+    public TiendaRegion region { get; set; } = TiendaRegion.Europa;
+
     private string telegram = string.Empty;
     private string steam = string.Empty;
     private string rss = string.Empty;
@@ -57,6 +62,14 @@
         steam = Configuracion.GetValue<string>("RedesSociales:Steam");
         rss = "/rss";
         bluesky = Configuracion.GetValue<string>("RedesSociales:Bluesky");
-        reddit = Configuracion.GetValue<string>("RedesSociales:Reddit");
+
+        if (region == TiendaRegion.Europa)
+        {
+            reddit = Configuracion.GetValue<string>("RedesSociales:Reddit");
+        }
+        else if (region == TiendaRegion.EstadosUnidos)
+        {
+            reddit = Configuracion.GetValue<string>("RedesSociales:RedditUS");
+        }
     }
 }
