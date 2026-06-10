@@ -25,11 +25,16 @@
 
 @if (juego != null)
 {
-    string descripcion = string.Empty; 
+    string descripcion = juego.Caracteristicas.Descripcion; 
     
-    if (juego.Caracteristicas?.Descripcion?.Length > 150)
+    if (juego.Caracteristicas?.Descripcion?.Length >= 150)
     {
         descripcion = juego.Caracteristicas.Descripcion;
+    }
+
+    if (string.IsNullOrEmpty(descripcion) == true && string.IsNullOrEmpty(juego.DescripcionSEO) == false)
+    {
+        descripcion = juego.DescripcionSEO;
     }
 
     if (string.IsNullOrEmpty(descripcion) == true)
