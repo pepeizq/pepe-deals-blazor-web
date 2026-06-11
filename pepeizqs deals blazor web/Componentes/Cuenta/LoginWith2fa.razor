@@ -1,4 +1,4 @@
-﻿@page "/Account/LoginWith2fa"
+﻿@page "/account/login2fa"
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
@@ -14,7 +14,6 @@
 
 <h1>Two-factor authentication</h1>
 <hr />
-<StatusMessage Message="@message" />
 <p>Your login is protected with an authenticator app. Enter your authenticator code below.</p>
 <div class="row">
     <div class="col-md-4">
@@ -60,8 +59,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        user = await SignInManager.GetTwoFactorAuthenticationUserAsync() ??
-            throw new InvalidOperationException("Unable to load two-factor authentication user.");
+        user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+
+        if (user == null)
+        {
+            RedirectManager.RedirectTo("/account/login");
+        }
     }
 
     private async Task OnValidSubmitAsync()

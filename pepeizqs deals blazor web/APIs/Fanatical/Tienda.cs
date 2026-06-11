@@ -61,7 +61,7 @@ namespace APIs.Fanatical
 						UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement
 					};
 
-					int tamanioTanda = 500;
+					int tamañoTanda = 500;
 					int totalLineas = lineas.Length;
 					int totalProcesado = 0;
 
@@ -72,9 +72,9 @@ namespace APIs.Fanatical
 						arranque = 0;
 					}
 
-					for (int i = arranque; i < lineas.Length; i += tamanioTanda)
+					for (int i = arranque; i < lineas.Length; i += tamañoTanda)
 					{
-						var tanda = lineas.Skip(i).Take(tamanioTanda);
+						var tanda = lineas.Skip(i).Take(tamañoTanda);
 						string tandaJson = "[" + string.Join(",", tanda.Where(l => !string.IsNullOrWhiteSpace(l))) + "]";
 
 						List<FanaticalJuego> juegos = null;
@@ -96,9 +96,9 @@ namespace APIs.Fanatical
 							await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
 						}
 
-						totalProcesado += tamanioTanda;
+						totalProcesado += tamañoTanda;
 
-						int proximaTanda = i + tamanioTanda;
+						int proximaTanda = i + tamañoTanda;
 
 						if (proximaTanda >= totalLineas)
 						{
@@ -145,11 +145,6 @@ namespace APIs.Fanatical
 					}
 				}
 
-				if (juego.Disponible == false)
-				{
-					autorizar = false;
-				}
-
 				if (autorizar == true)
 				{
 					string descuentoTexto = juego.Descuento?.ToString();
@@ -170,7 +165,7 @@ namespace APIs.Fanatical
 						}
 						catch { }
 
-						if (descuento > 0)
+						if (descuento > 0 && juego.Disponible == true)
 						{
 							string nombre = WebUtility.HtmlDecode(juego.Nombre);
 							string imagen = juego.Imagen;
@@ -243,7 +238,6 @@ namespace APIs.Fanatical
 				}
 			}
 
-			// ✅ DEVOLVER EL NÚMERO DE OFERTAS PROCESADAS
 			int ofertasProcessadas = ofertas.Count;
 
 			ofertas.Clear();

@@ -124,3 +124,19 @@
     background-color: var(--fondoBotonHover);
     cursor: pointer;
 }
+
+.opciones-panel {
+    overflow-x: auto;
+    z-index: 10001;
+    padding: 10px;
+    background-color: var(--fondoOpcionesTransparente);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}

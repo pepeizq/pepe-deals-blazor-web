@@ -163,6 +163,11 @@
             {
                 RedirectManager.RedirectTo("/");
             }
+            else if (resultado.RequiresTwoFactor == true)
+            {
+                string returnUrlSafe = ReturnUrl ?? "/";
+                RedirectManager.RedirectTo($"/account/login2fa?rememberMe={Input.RememberMe}&returnUrl={Uri.EscapeDataString(returnUrlSafe)}");
+            }
             else
             {
                 mensajeError = Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Login");

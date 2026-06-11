@@ -1,0 +1,31 @@
+.caja-cuenta-bloque {
+    background-color: var(--fondoCuentaBloque);
+    border-radius: 5px;
+    border: 1px solid var(--glaseadoBorde);
+    padding: 20px 30px;
+}
+
+::deep .entrada-texto {
+    padding: 5px 10px;
+    background-color: var(--fondoEntrada);
+    border: 0px;
+    color: var(--colorTexto);
+    display: block;
+    width: 100%;
+    min-width: 100%;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--fondoEntrada);
+    font-size: 16px;
+}
+
+    ::deep .entrada-texto::placeholder {
+        font-size: 14px;
+    }
+
+    ::deep .entrada-texto:focus {
+        outline: none;
+    }
+
+    ::deep .entrada-texto:hover {
+        border-bottom: 1px solid var(--colorEnlace);
+    }
