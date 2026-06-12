@@ -5,80 +5,120 @@
 @using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
+@inject IHttpContextAccessor Contexto
 @inject SignInManager<Usuario> SignInManager
 @inject UserManager<Usuario> UserManager
 @inject IdentityRedirectManager RedirectManager
 @inject ILogger<LoginWith2fa> Logger
 
-<PageTitle>Two-factor authentication</PageTitle>
+@{
+    string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Login") + " • pepe's deals";
+    string enlace = "https://" + dominio + "/login";
+    string imagen = "https://" + dominio + "/logo/logoentrada.webp";
+}
 
-<h1>Two-factor authentication</h1>
-<hr />
-<p>Your login is protected with an authenticator app. Enter your authenticator code below.</p>
-<div class="row">
-    <div class="col-md-4">
-        <EditForm Model="Input" FormName="login-with-2fa" OnValidSubmit="OnValidSubmitAsync" method="post">
-            <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
-            <input type="hidden" name="RememberMe" value="@RememberMe" />
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
-            <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.TwoFactorCode" id="Input.TwoFactorCode" class="form-control" autocomplete="off" />
-                <label for="Input.TwoFactorCode" class="form-label">Authenticator code</label>
-                <ValidationMessage For="() => Input.TwoFactorCode" class="text-danger" />
+<HeadContent>
+    <PageTitle>@titulo</PageTitle>
+
+    <meta name="og:title" content="@titulo" />
+    <meta name="og:url" content="@enlace" />
+    <meta name="og:image" content="@imagen" />
+    <meta name="og:site_name" content="pepe's deals" />
+    <meta name="og:type" content="website" />
+    <meta name="robots" content="index, follow" />
+</HeadContent>
+
+<div class="caja-login-contenido" style="margin: 40px auto;">
+    <EditForm Model="Input" FormName="login-with-2fa" OnValidSubmit="OnValidSubmitAsync" method="post" style="border-top-left-radius: inherit; border-top-right-radius: inherit; margin: 0;">
+        <DataAnnotationsValidator />
+        <div class="caja-login-titulo">
+            @Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Login")
+        </div>
+
+        <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+        <input type="hidden" name="RememberMe" value="@RememberMe" />
+
+        <div style="padding: 30px 40px 40px 40px;">
+            <ValidationSummary class="texto-peligro-entrada" role="alert" />
+
+            <div style="margin-bottom: 20px;">
+                <div for="Input.TwoFactorCode" style="margin-bottom: 5px; margin-left: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Login")</div>
+                <InputText @bind-Value="Input.TwoFactorCode" id="Input.TwoFactorCode" class="entrada-texto" autocomplete="off" />
+
+                <ValidationMessage For="() => Input.TwoFactorCode" class="texto-peligro-entrada" />
             </div>
-            <div class="checkbox mb-3">
-                <label for="remember-machine" class="form-label">
-                    <InputCheckbox @bind-Value="Input.RememberMachine" />
-                    Remember this machine
-                </label>
+
+            <div style="margin: 30px 0px 20px 0px;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="checkbox-caja">
+                        <InputCheckbox @bind-Value="Input.RememberMachine" class="checkbox-interior" />
+                    </div>
+
+                    <div style="cursor: pointer;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String14", "Login")
+                    </div>
+                </div>
             </div>
+
             <div>
-                <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                <button id="login-submit" type="submit" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Login")
+                </button>
             </div>
-        </EditForm>
-    </div>
+        </div>
+    </EditForm>
 </div>
-<p>
-    Don't have access to your authenticator device? You can
-    <a href="Account/LoginWithRecoveryCode?ReturnUrl=@ReturnUrl">log in with a recovery code</a>.
-</p>
+
+<Accesos idioma="@idioma" mostrarLogin="false" mostrarContraseñaOlvidada="false" mostrarRegistro="false" mostrarLoginRecuperacion="true"/>
 
 @code {
-    private string? message;
-    private Usuario user = default!;
 
+    #nullable disable
+
+    private string idioma = "en";
+    private string userAgent = null;
+    private string dominio = null;
+
+    private Usuario usuario = default!;
+
+    #pragma warning disable BL0008
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+    #pragma warning restore BL0008
 
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    private string ReturnUrl { get; set; }
 
     [SupplyParameterFromQuery]
     private bool RememberMe { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        user = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+        Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+        idioma = datos.Idioma;
+        userAgent = datos.UserAgent;
+        dominio = datos.Dominio;
 
-        if (user == null)
+        usuario = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+
+        if (usuario == null)
         {
-            RedirectManager.RedirectTo("/account/login");
+            RedirectManager.RedirectTo("/");
         }
     }
 
     private async Task OnValidSubmitAsync()
     {
         var authenticatorCode = Input.TwoFactorCode!.Replace(" ", string.Empty).Replace("-", string.Empty);
-        var result = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, RememberMe, Input.RememberMachine);
-        var userId = await UserManager.GetUserIdAsync(user);
+        var resultado = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, RememberMe, Input.RememberMachine);
+        var userId = await UserManager.GetUserIdAsync(usuario);
 
-        if (result.Succeeded)
+        if (resultado.Succeeded)
         {
             Logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", userId);
             RedirectManager.RedirectTo(ReturnUrl);
         }
-        else if (result.IsLockedOut)
+        else if (resultado.IsLockedOut)
         {
             Logger.LogWarning("User with ID '{UserId}' account locked out.", userId);
             RedirectManager.RedirectTo("Account/Lockout");
@@ -86,7 +126,6 @@
         else
         {
             Logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", userId);
-            message = "Error: Invalid authenticator code.";
         }
     }
 
@@ -96,7 +135,7 @@
         [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Text)]
         [Display(Name = "Authenticator code")]
-        public string? TwoFactorCode { get; set; }
+        public string TwoFactorCode { get; set; }
 
         [Display(Name = "Remember this machine")]
         public bool RememberMachine { get; set; }

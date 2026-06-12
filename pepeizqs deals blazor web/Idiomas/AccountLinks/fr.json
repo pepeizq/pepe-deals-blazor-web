@@ -1,5 +1,6 @@
 {
   "String1": "Vous avez oublié votre mot de passe ?",
   "String2": "Enregistrez un nouveau compte",
-  "String3": "Connectez-vous avec un compte"
+  "String3": "Connectez-vous avec un compte",
+  "String4": "Connectez-vous avec un code de récupération"
 }

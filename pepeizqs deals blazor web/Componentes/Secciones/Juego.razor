@@ -25,7 +25,7 @@
 
 @if (juego != null)
 {
-    string descripcion = juego.Caracteristicas.Descripcion; 
+    string descripcion = string.Empty; 
     
     if (juego.Caracteristicas?.Descripcion?.Length >= 150)
     {
@@ -1901,13 +1901,13 @@
                                     <a class="juego-boton-pequeño" href="@enlaceSuscripcion" target="_blank" rel="nofollow" style="font-size: 17px; padding: 20px 25px; margin-top: 10px; margin-bottom: 10px; cursor: pointer; display: inline-block; width: 100%; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                         <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                             <div style="margin-right: 15px;">
-                                                <img src="@suscripcionUsar.ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout;" alt="Subscription"  />
+                                                <img src="@suscripcionUsar.ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout; display: block;" alt="Subscription"  />
                                             </div>
 
                                             <div style="margin-right: 30px;">
                                                 <picture>
                                                     <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                    <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(suscripcion2.DRM)"/>
+                                                    <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; display: block;" alt="@JuegoDRM2.DevolverDRM(suscripcion2.DRM)"/>
                                                 </picture>
                                             </div>
 
@@ -1976,11 +1976,11 @@
 
                                             <div style="display: flex; align-items: center; gap: 30px; font-size: 16px; padding: 15px 5px; flex-wrap: wrap;">
                                                 <div style="display: flex; align-items: center; gap: 15px;">
-                                                    <img src="@SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout;" alt="@SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).Nombre">
+                                                    <img src="@SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).ImagenIcono" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; contain: layout; display: block;" alt="@SuscripcionesCargar.DevolverSuscripcion(suscripcion2.Tipo).Nombre">
 
                                                     <picture>
                                                         <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                        <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1;" alt="@JuegoDRM2.DevolverDRM(suscripcion2.DRM)"/>
+                                                        <img src="@imagenDRM" style="max-width: 22px; max-height: 22px; aspect-ratio: 1/1; display: block;" alt="@JuegoDRM2.DevolverDRM(suscripcion2.DRM)"/>
                                                     </picture>
                                                 </div>
 

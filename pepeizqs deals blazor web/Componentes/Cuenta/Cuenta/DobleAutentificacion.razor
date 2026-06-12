@@ -4,30 +4,41 @@
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Net.Codecrete.QrCodeGenerator
-@using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
 @inject UserManager<Usuario> UserManager
 @inject IHttpContextAccessor Contexto
-@inject UsuarioAcceso UserAccessor
 @inject UrlEncoder UrlEncoder
-@inject IdentityRedirectManager RedirectManager
-@inject ILogger<DobleAutentificacion> Logger
 
-@if (recoveryCodes is not null)
+@if (usuario?.TwoFactorEnabled == true)
 {
-    if (recoveryCodes?.ToArray()?.Count() > 0)
-    {
-        foreach (var recoveryCode in recoveryCodes.ToArray())
+    <div style="padding: 30px; display: flex; flex-direction: column; gap: 30px;">
+        @if (recoveryCodes is not null)
         {
-            <div>
-                <code>@recoveryCode</code>
-            </div>
+            if (recoveryCodes?.ToArray()?.Count() > 0)
+            {
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div>
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "AccountAuthenticator")
+                    </div>
+                    
+                    @foreach (var recoveryCode in recoveryCodes.ToArray())
+                    {
+                        <div>
+                            <code>@recoveryCode</code>
+                        </div>
+                    }
+                </div>
+            }
         }
-    }
 
-
-    @* <ShowRecoveryCodes RecoveryCodes="recoveryCodes.ToArray()" StatusMessage="@message" /> *@
+        <form @formname="disable-2fa" @onsubmit="DesactivarDobleAutentificacion" method="post">
+            <AntiforgeryToken />
+            <button class="boton-pequeño" style="width: fit-content; padding: 10px 15px;" type="submit">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountAuthenticator")
+            </button>
+        </form>
+    </div>
 }
 else
 {
@@ -65,7 +76,7 @@ else
                         </a>
                     </div>
                 </div>
-                
+
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <div>
                         Microsoft Authenticator
@@ -107,13 +118,13 @@ else
                 @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountAuthenticator")
             </div>
 
-            <EditForm Model="Input" FormName="send-code" OnValidSubmit="OnValidSubmitAsync" method="post">
+            <EditForm Model="Input" FormName="send-code" OnValidSubmit="ActivarDobleAutentificacion" method="post">
                 <DataAnnotationsValidator />
                 <div>
                     <InputText @bind-Value="Input.Code" id="Input.Code" class="entrada-texto" autocomplete="off" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "AccountAuthenticator")" />
                 </div>
 
-                <button type="submit" class="boton-pequeño" style="width: fit-content; margin-top: 10px; padding: 10px 15px;">
+                <button type="submit" class="boton-pequeño" style="width: fit-content; margin-top: 15px; padding: 10px 15px;">
                     @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "AccountAuthenticator")
                 </button>
             </EditForm>
@@ -157,7 +168,7 @@ else
         await LoadSharedKeyAndQrCodeUriAsync(usuario);
     }
 
-    private async Task OnValidSubmitAsync()
+    private async Task ActivarDobleAutentificacion()
     {
         mensajeError = string.Empty;
 
@@ -233,5 +244,10 @@ else
         [DataType(DataType.Text)]
         [Display(Name = "Verification Code")]
         public string Code { get; set; } = "";
+    }
+
+    private async Task DesactivarDobleAutentificacion()
+    {
+        await UserManager.SetTwoFactorEnabledAsync(usuario, false);
     }
 }

@@ -400,6 +400,7 @@ namespace Juegos
 					"unknown",
 					"video-download",
 					"voucher",
+					"wargaming",
 					"website",
 					"xbox-anywhere",
 					"xbox-live-cross-gen",

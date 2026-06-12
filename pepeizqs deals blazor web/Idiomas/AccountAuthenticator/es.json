@@ -5,5 +5,7 @@
   "String4": "3. Después de escanear el código QR, recibirás un código que debes introducir a continuación:",
   "String5": "El código de verificación no es válido",
   "String6": "Introduce el código",
-  "String7": "Verificar"
+  "String7": "Verificar",
+  "String8": "Desactivar doble autentificación",
+  "String9": "Códigos de recuperación. Estos códigos nunca volverán a ser mostrados, guardarlos fuera de la web:"
 }

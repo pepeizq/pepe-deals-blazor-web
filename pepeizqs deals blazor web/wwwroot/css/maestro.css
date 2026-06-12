@@ -54,13 +54,6 @@ html {
     }
 }
 
-@font-face {
-    font-family: 'Motiva Sans';
-    src: url('/fuente/MotivaSansRegular.woff2') format('woff2');
-    font-style: normal;
-    font-display: swap;
-}
-
 *, *::before, *::after {
     font-family: inherit;
     font-weight: inherit;

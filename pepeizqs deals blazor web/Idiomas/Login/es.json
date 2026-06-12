@@ -9,5 +9,9 @@
   "String7": "Iniciar sesión",
   "String8": "El inicio de usuarios está caído, contacta con admin@pepeizqdeals.com.",
   "String9": "No se ha podido iniciar un usuario con ese correo y contraseña.",
-  "String10": "Tu cuenta ha sido registrada con éxito, puedes iniciar sesión ahora."
+  "String10": "Tu cuenta ha sido registrada con éxito, puedes iniciar sesión ahora.",
+  "String11": "Iniciar sesión con doble autentificación",
+  "String12": "Introduce el código de doble autentificación",
+  "String13": "Código",
+  "String14": "Recordar este dispositivo"
 }

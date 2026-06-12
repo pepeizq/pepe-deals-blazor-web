@@ -27,6 +27,13 @@
                 @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "AccountLinks")
             </button>
         }
+
+        @if (mostrarLoginRecuperacion == true)
+        {
+            <button @onclick="@(e => AbrirLoginRecuperacion(e))" class="boton-accesos">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountLinks")
+            </button>
+        }
     </div>
 </div>
 
@@ -46,6 +53,9 @@
     [Parameter]
     public bool mostrarContraseñaOlvidada { get; set; } = true;
 
+    [Parameter]
+    public bool mostrarLoginRecuperacion { get; set; } = false;
+
     private void AbrirLogin(MouseEventArgs e)
     {
         NavManager.NavigateTo("/account/login/", true, false);
@@ -59,5 +69,10 @@
     private void AbrirContraseñaOlvidada(MouseEventArgs e)
     {
         NavManager.NavigateTo("/account/forgot-password/", true, false);
+    }
+
+    private void AbrirLoginRecuperacion(MouseEventArgs e)
+    {
+        NavManager.NavigateTo("/account/login-recovery/", true, false);
     }
 }

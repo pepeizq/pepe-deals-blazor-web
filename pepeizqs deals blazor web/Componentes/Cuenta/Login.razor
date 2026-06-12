@@ -29,7 +29,6 @@
     <meta name="og:site_name" content="pepe's deals" />
     <meta name="og:type" content="website" />
     <meta name="robots" content="index, follow" />
-
 </HeadContent>
 
 @if (string.IsNullOrEmpty(mensajeError) == false)
@@ -57,14 +56,14 @@
             <ValidationSummary class="texto-peligro-entrada" role="alert" />
 
             <div style="margin-bottom: 20px;">
-                <label for="Input.Email" class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Login")</label>
+                <div for="Input.Email" style="margin-bottom: 5px; margin-left: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Login")</div>
                 <InputText @bind-Value="Input.Email" id="Input.Email" class="entrada-texto" autocomplete="username" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Login")" />
 
                 <ValidationMessage For="() => Input.Email" class="texto-peligro-entrada" />
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label for="Input.Password" class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Login")</label>
+                <div for="Input.Password" style="margin-bottom: 5px; margin-left: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Login")</div>
                 <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="entrada-texto" autocomplete="current-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Login")" />
 
                 <ValidationMessage For="() => Input.Password" class="texto-peligro-entrada" />
@@ -106,9 +105,6 @@
     private string dominio = null;
 
     private string mensajeError = string.Empty;
-
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; }
