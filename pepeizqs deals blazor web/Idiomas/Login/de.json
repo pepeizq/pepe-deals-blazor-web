@@ -7,7 +7,15 @@
   "String5": "Passwort",
   "String6": "Erinnere dich an mich?",
   "String7": "Einloggen",
-  "String8": "Die Benutzeranmeldung ist nicht mehr in admin@pepeizqdeals.com.",
+  "String8": "Die Benutzeranmeldung ist nicht mehr in admin@pepe.deals.",
   "String9": "Ein Benutzer konnte nicht mit dieser E-Mail und Passwort angemeldet werden.",
-  "String10": "Ihr Konto wurde erfolgreich registriert, Sie können sich jetzt anmelden.""
+  "String10": "Ihr Konto wurde erfolgreich registriert, Sie können sich jetzt anmelden.",
+  "String11": "Melden Sie sich mit der Zwei-Faktor-Authentifizierung an",
+  "String12": "Geben Sie den Zwei-Faktor-Authentifizierungscode ein",
+  "String13": "Code",
+  "String14": "Denken Sie an dieses Gerät",
+  "String15": "Überprüfung des Wiederherstellungscodes",
+  "String16": "Geben Sie den Wiederherstellungscode ein",
+  "String17": "Wiederherstellungscode",
+  "String18": "Sie haben die Anmeldung mit einem Wiederherstellungscode angefordert. Diese Anmeldung wird erst gespeichert, wenn Sie bei der Anmeldung einen Authentifizierungs-App-Code angeben oder 2FA deaktivieren und sich erneut anmelden."
 }

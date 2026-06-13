@@ -7,5 +7,8 @@
   "String6": "Enter the code",
   "String7": "Verify",
   "String8": "Disable two-factor authentication",
-  "String9": "Recovery codes. These codes will never be displayed again, save them off the web:"
+  "String9": "Recovery codes. These codes will never be displayed again, save them off the web:",
+  "String10": "Reset two-factor authentication",
+  "String11": "This process disables 2FA until you verify your authenticator app. If you do not complete your authenticator app configuration you may lose access to your account.",
+  "String12": "Completely disable the use of two-factor authentication on your account."
 }

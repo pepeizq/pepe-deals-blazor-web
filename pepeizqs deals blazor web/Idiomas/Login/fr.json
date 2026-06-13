@@ -7,7 +7,15 @@
   "String5": "mot de passe",
   "String6": "Souviens-toi de moi?",
   "String7": "Se connecter",
-  "String8": "La connexion de l'utilisateur est en baisse, veuillez contacter admin@pepeizqdeals.com.",
+  "String8": "La connexion de l'utilisateur est en baisse, veuillez contacter admin@pepe.deals.",
   "String9": "Un utilisateur n'a pas pu être connecté à cet e-mail et à cet mot de passe.",
-  "String10": "Votre compte a été enregistré avec succès, vous pouvez vous connecter maintenant."
+  "String10": "Votre compte a été enregistré avec succès, vous pouvez vous connecter maintenant.",
+  "String11": "Connectez-vous avec l'authentification à deux facteurs",
+  "String12": "Entrez le code d'authentification à deux facteurs",
+  "String13": "Code",
+  "String14": "Mémoriser cet appareil",
+  "String15": "Vérification du code de récupération",
+  "String16": "Entrez le code de récupération",
+  "String17": "Code de récupération",
+  "String18": "Vous avez demandé à vous connecter avec un code de récupération. Cette connexion ne sera pas mémorisée jusqu'à ce que vous fournissiez un code d'application d'authentification lors de la connexion ou que vous désactiviez 2FA et que vous vous reconnectiez."
 }

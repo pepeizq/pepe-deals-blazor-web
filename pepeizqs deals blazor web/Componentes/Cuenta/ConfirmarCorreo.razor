@@ -3,12 +3,11 @@
 @using System.Text
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject UserManager<Usuario> UserManager
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavManager
 
 <PageTitle>@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "ConfirmPassword")</PageTitle>
 
@@ -44,7 +43,7 @@
 
         if (UserId is null || Code is null)
         {
-            RedirectManager.RedirectTo("");
+            NavManager.NavigateTo("/", true);
         }
 
         Usuario usuario = await UserManager.FindByIdAsync(UserId);

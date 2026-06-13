@@ -7,11 +7,15 @@
   "String5": "contraseña",
   "String6": "¿Recordar sesión?",
   "String7": "Iniciar sesión",
-  "String8": "El inicio de usuarios está caído, contacta con admin@pepeizqdeals.com.",
+  "String8": "El inicio de usuarios está caído, contacta con admin@pepe.deals.",
   "String9": "No se ha podido iniciar un usuario con ese correo y contraseña.",
   "String10": "Tu cuenta ha sido registrada con éxito, puedes iniciar sesión ahora.",
   "String11": "Iniciar sesión con doble autentificación",
   "String12": "Introduce el código de doble autentificación",
   "String13": "Código",
-  "String14": "Recordar este dispositivo"
+  "String14": "Recordar este dispositivo",
+  "String15": "Verificación del código de recuperación",
+  "String16": "Introduce el código de recuperación",
+  "String17": "Código de recuperación",
+  "String18": "Has solicitado iniciar sesión con un código de recuperación. Este inicio de sesión no se recordará hasta que proporciones un código de la aplicación autentificadora al iniciar sesión o desactives la autentificación de dos factores y vuelvas a iniciar sesión."
 }

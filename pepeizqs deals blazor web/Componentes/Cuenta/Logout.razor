@@ -4,9 +4,8 @@
 
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@using pepeizqs_deals_blazor_web.Componentes.Account
 
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavManager
 
 <PageTitle>Log Out</PageTitle>
 
@@ -23,7 +22,7 @@
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
             await HttpContext.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
 
-            RedirectManager.RedirectTo("/");
+            NavManager.NavigateTo("/", true);
         }
     }
 }

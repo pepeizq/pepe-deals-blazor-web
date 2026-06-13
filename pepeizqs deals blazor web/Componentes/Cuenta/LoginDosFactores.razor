@@ -1,15 +1,15 @@
 ﻿@page "/account/login2fa"
 
+@attribute [ExcludeFromInteractiveRouting]
+
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
-@using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject SignInManager<Usuario> SignInManager
 @inject UserManager<Usuario> UserManager
-@inject IdentityRedirectManager RedirectManager
-@inject ILogger<LoginWith2fa> Logger
+@inject NavigationManager NavManager
 
 @{
     string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Login") + " • pepe's deals";
@@ -99,33 +99,25 @@
         userAgent = datos.UserAgent;
         dominio = datos.Dominio;
 
-        usuario = await SignInManager.GetTwoFactorAuthenticationUserAsync();
-
-        if (usuario == null)
+        if (Contexto.HttpContext != null)
         {
-            RedirectManager.RedirectTo("/");
+            usuario = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (usuario == null)
+            {
+                NavManager.NavigateTo("/", true);
+            }
         }
     }
 
     private async Task OnValidSubmitAsync()
     {
-        var authenticatorCode = Input.TwoFactorCode!.Replace(" ", string.Empty).Replace("-", string.Empty);
-        var resultado = await SignInManager.TwoFactorAuthenticatorSignInAsync(authenticatorCode, RememberMe, Input.RememberMachine);
-        var userId = await UserManager.GetUserIdAsync(usuario);
+        string codigo = Input.TwoFactorCode!.Replace(" ", string.Empty).Replace("-", string.Empty);
+        SignInResult resultado = await SignInManager.TwoFactorAuthenticatorSignInAsync(codigo, RememberMe, Input.RememberMachine);
 
-        if (resultado.Succeeded)
+        if (resultado.Succeeded == true)
         {
-            Logger.LogInformation("User with ID '{UserId}' logged in with 2fa.", userId);
-            RedirectManager.RedirectTo(ReturnUrl);
-        }
-        else if (resultado.IsLockedOut)
-        {
-            Logger.LogWarning("User with ID '{UserId}' account locked out.", userId);
-            RedirectManager.RedirectTo("Account/Lockout");
-        }
-        else
-        {
-            Logger.LogWarning("Invalid authenticator code entered for user with ID '{UserId}'.", userId);
+            NavManager.NavigateTo(ReturnUrl, true);
         }
     }
 

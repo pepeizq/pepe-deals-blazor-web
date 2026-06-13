@@ -6,6 +6,9 @@
   "String5": "El código de verificación no es válido",
   "String6": "Introduce el código",
   "String7": "Verificar",
-  "String8": "Desactivar doble autentificación",
-  "String9": "Códigos de recuperación. Estos códigos nunca volverán a ser mostrados, guardarlos fuera de la web:"
+  "String8": "Desactivar autentificación de dos factores",
+  "String9": "Códigos de recuperación. Estos códigos nunca volverán a ser mostrados, guardarlos fuera de la web:",
+  "String10": "Restablecer autentificación de dos factores",
+  "String11": "Este proceso desactiva la autentificación de dos factores hasta que verifiques tu app de autentificación. Si no completas la configuración de tu app de autentificación, es posible que pierdas el acceso a tu cuenta.",
+  "String12": "Desactiva completamente el uso de la autentificación de dos factores en tu cuenta."
 }

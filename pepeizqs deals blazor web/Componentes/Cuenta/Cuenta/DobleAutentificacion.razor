@@ -7,6 +7,7 @@
 @using pepeizqs_deals_web.Data
 
 @inject UserManager<Usuario> UserManager
+@inject SignInManager<Usuario> SignInManager
 @inject IHttpContextAccessor Contexto
 @inject UrlEncoder UrlEncoder
 
@@ -32,12 +33,31 @@
             }
         }
 
-        <form @formname="disable-2fa" @onsubmit="DesactivarDobleAutentificacion" method="post">
-            <AntiforgeryToken />
-            <button class="boton-pequeño" style="width: fit-content; padding: 10px 15px;" type="submit">
-                @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountAuthenticator")
-            </button>
-        </form>
+        <div class="caja-cuenta-bloque">
+            <form @formname="disable-2fa" @onsubmit="DesactivarDobleAutentificacion" method="post">
+                <AntiforgeryToken />
+                <button class="boton-pequeño" style="width: fit-content; padding: 10px 15px;" type="submit">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "AccountAuthenticator")
+                </button>
+
+                <div style="margin-top: 20px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String12", "AccountAuthenticator")
+                </div>
+            </form>
+        </div>
+
+        <div class="caja-cuenta-bloque">
+            <form @formname="reset-authenticator" @onsubmit="ResetearDobleAutentificacion" method="post">
+                <AntiforgeryToken />
+                <button class="boton-pequeño" style="width: fit-content; padding: 10px 15px;" type="submit">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "AccountAuthenticator")
+                </button>
+
+                <div style="margin-top: 20px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "AccountAuthenticator")
+                </div>
+            </form>
+        </div>
     </div>
 }
 else
@@ -249,5 +269,13 @@ else
     private async Task DesactivarDobleAutentificacion()
     {
         await UserManager.SetTwoFactorEnabledAsync(usuario, false);
+    }
+
+    private async Task ResetearDobleAutentificacion()
+    {
+        await UserManager.SetTwoFactorEnabledAsync(usuario, false);
+        await UserManager.ResetAuthenticatorKeyAsync(usuario);
+
+        await SignInManager.RefreshSignInAsync(usuario);
     }
 }

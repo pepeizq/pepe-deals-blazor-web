@@ -503,11 +503,11 @@
                                     <div style="display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 15px;">
                                         @if (usuarioRegion == TiendaRegion.Europa)
                                         {
-                                            <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header")" />
+                                            <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px; display: block;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header")" />
                                         }
                                         else if (usuarioRegion == TiendaRegion.EstadosUnidos)
                                         {
-                                            <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header")" />
+                                            <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px; display: block;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header")" />
                                         }
 
                                         <div style="max-width: 10px;">
@@ -518,7 +518,7 @@
                                     </div>
 
                                     <div class="menu-dropdown-contenido-derecha">
-                                        <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
+                                        <button class="boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
                                             <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
                                                 @if (usuarioRegion == TiendaRegion.Europa)
                                                 {
@@ -529,7 +529,7 @@
                                                     </div>
                                                 }
 
-                                                <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header")" />
+                                                <img src="/imagenes/banderas/europe.svg" style="width: 20px; height: 20px; display: block;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header")" />
 
                                                 <div>
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Header") (€)
@@ -537,7 +537,7 @@
                                             </div>
                                         </button>
 
-                                        <button class="texto-cabecera boton-superior" @onclick="(e => CambiarDivisa(e, 1))" style="font-size: 15px; width: 100%; text-align: right;">
+                                        <button class="boton-superior" @onclick="(e => CambiarDivisa(e, 1))" style="font-size: 15px; width: 100%; text-align: right;">
                                             <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
                                                 @if (usuarioRegion == TiendaRegion.EstadosUnidos)
                                                 {
@@ -548,7 +548,7 @@
                                                     </div>
                                                 }
 
-                                                <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header")" />
+                                                <img src="/imagenes/banderas/english.svg" style="width: 20px; height: 20px; display: block;" loading="lazy" alt="@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header")" />
 
                                                 <div>
                                                     @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Header") ($)

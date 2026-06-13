@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
 using pepeizqs_deals_blazor_web.Componentes;
-using pepeizqs_deals_blazor_web.Componentes.Account;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
 using System.Text;
@@ -88,12 +87,12 @@ builder.Services.AddRazorComponents(opciones =>
 builder.Services.AddSignalR(opciones =>
 {
 	opciones.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+	opciones.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+	opciones.HandshakeTimeout = TimeSpan.FromSeconds(30);
+	opciones.KeepAliveInterval = TimeSpan.FromSeconds(15);
 });
 
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<UsuarioAcceso>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-//builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 builder.Services.AddAuthentication(opciones =>
 {
@@ -142,7 +141,7 @@ builder.Services.AddIdentityCore<Usuario>(opciones =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IEmailSender<Usuario>, IdentityNoOpEmailSender>();
+builder.Services.AddSingleton<IEmailSender<Usuario>, Herramientas.Correos.IdentityNoOpEmailSender>();
 
 #region Servicios
 

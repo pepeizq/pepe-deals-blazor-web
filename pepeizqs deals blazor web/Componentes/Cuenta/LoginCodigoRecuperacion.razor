@@ -1,0 +1,111 @@
+﻿@page "/account/login-recovery"
+
+@attribute [ExcludeFromInteractiveRouting]
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using pepeizqs_deals_web.Data
+
+@inject IHttpContextAccessor Contexto
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+@inject NavigationManager NavManager
+
+@{
+    string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "String15", "Login") + " • pepe's deals";
+    string enlace = "https://" + dominio + "/login";
+    string imagen = "https://" + dominio + "/logo/logoentrada.webp";
+}
+
+<HeadContent>
+    <PageTitle>@titulo</PageTitle>
+
+    <meta name="og:title" content="@titulo" />
+    <meta name="og:url" content="@enlace" />
+    <meta name="og:image" content="@imagen" />
+    <meta name="og:site_name" content="pepe's deals" />
+    <meta name="og:type" content="website" />
+    <meta name="robots" content="index, follow" />
+</HeadContent>
+
+<div class="caja-login-contenido" style="margin: 40px auto;">
+    <EditForm Model="Input" FormName="login-with-recovery-code" OnValidSubmit="OnValidSubmitAsync" method="post" style="border-top-left-radius: inherit; border-top-right-radius: inherit; margin: 0;">
+        <DataAnnotationsValidator />
+
+        <div class="caja-login-titulo">
+            @Herramientas.Idiomas.BuscarTexto(idioma, "String16", "Login")
+        </div>
+
+        <div style="padding: 30px 40px 40px 40px;">
+            <ValidationSummary class="texto-peligro-entrada" role="alert" />
+
+            <div style="margin-bottom: 20px;">
+                <div for="Input.RecoveryCode" style="margin-bottom: 5px; margin-left: 10px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String17", "Login")</div>
+                <InputText @bind-Value="Input.RecoveryCode" id="Input.RecoveryCode" class="entrada-texto" autocomplete="off" />
+
+                <ValidationMessage For="() => Input.RecoveryCode" class="texto-peligro-entrada" />
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button id="login-submit" type="submit" class="boton-pequeño" style="text-align: center; font-size: 20px; padding: 15px 20px;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Login")
+                </button>
+            </div>
+
+            <div style="background-color: var(--fondoPeligro); padding: 10px; border-radius: 5px;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "String18", "Login")
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    #nullable disable
+
+    private string idioma = "en";
+    private string userAgent = null;
+    private string dominio = null;
+
+    private Usuario usuario = default!;
+
+    #pragma warning disable BL0008
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+    #pragma warning restore BL0008
+
+    [SupplyParameterFromQuery]
+    private string ReturnUrl { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
+        idioma = datos.Idioma;
+        userAgent = datos.UserAgent;
+        dominio = datos.Dominio;
+
+        if (Contexto.HttpContext != null)
+        {
+            usuario = await SignInManager.GetTwoFactorAuthenticationUserAsync();
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        string codigo = Input.RecoveryCode.Replace(" ", string.Empty);
+        SignInResult resultado = await SignInManager.TwoFactorRecoveryCodeSignInAsync(codigo);
+
+        if (resultado.Succeeded == true)
+        {
+            NavManager.NavigateTo(ReturnUrl, true);
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "Recovery Code")]
+        public string RecoveryCode { get; set; } = "";
+    }
+}

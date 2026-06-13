@@ -3,13 +3,12 @@
 @using System.Text
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject UserManager<Usuario> UserManager
 @inject SignInManager<Usuario> SignInManager
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavManager
 
 <PageTitle>@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "ConfirmPassword")</PageTitle>
 
@@ -48,7 +47,7 @@
 
         if (UserId is null || Email is null || Code is null)
         {
-            RedirectManager.RedirectToWithStatus("account/login", "Error: Invalid email change confirmation link.", HttpContext);
+            NavManager.NavigateTo("account/login", true);
         }
 
         var user = await UserManager.FindByIdAsync(UserId);

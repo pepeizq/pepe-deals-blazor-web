@@ -5,13 +5,11 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
 @using Microsoft.AspNetCore.Identity
-@using pepeizqs_deals_blazor_web.Componentes.Account
 @using pepeizqs_deals_web.Data
 
 @inject IHttpContextAccessor Contexto
 @inject SignInManager<Usuario> SignInManager
 @inject NavigationManager NavigationManager
-@inject IdentityRedirectManager RedirectManager
 @inject NavigationManager NavManager
 
 @{
@@ -157,12 +155,12 @@
         {
             if (resultado.Succeeded == true)
             {
-                RedirectManager.RedirectTo("/");
+                NavManager.NavigateTo("/", true);
             }
             else if (resultado.RequiresTwoFactor == true)
             {
                 string returnUrlSafe = ReturnUrl ?? "/";
-                RedirectManager.RedirectTo($"/account/login2fa?rememberMe={Input.RememberMe}&returnUrl={Uri.EscapeDataString(returnUrlSafe)}");
+                NavManager.NavigateTo($"/account/login2fa?rememberMe={Input.RememberMe}&returnUrl={Uri.EscapeDataString(returnUrlSafe)}", true);
             }
             else
             {

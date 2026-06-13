@@ -7,11 +7,15 @@
   "String5": "password",
   "String6": "Remember me?",
   "String7": "Log in",
-  "String8": "User login is down, please contact admin@pepeizqdeals.com.",
+  "String8": "User login is down, please contact admin@pepe.deals.",
   "String9": "A user could not be logged in with that email and password.",
   "String10": "Your account has been successfully registered, you can log in now.",
   "String11": "Log in with two-factor authentication",
   "String12": "Enter the two-factor authentication code",
   "String13": "Code",
-  "String14": "Remember this device"
+  "String14": "Remember this device",
+  "String15": "Recovery code verification",
+  "String16": "Enter the recovery code",
+  "String17": "Recovery code",
+  "String18": "You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again."
 }

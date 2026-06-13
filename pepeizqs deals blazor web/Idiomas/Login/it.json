@@ -7,7 +7,15 @@
   "String5": "password",
   "String6": "Ricordati di me?",
   "String7": "Login",
-  "String8": "L'accesso all'utente è in calo, contattare admin@pepeizqdeals.com.",
+  "String8": "L'accesso all'utente è in calo, contattare admin@pepe.deals.",
   "String9": "Non è stato possibile effettuare l'accesso a un utente con quell'e-mail e password.",
-  "String10": "Il tuo account è stato registrato con successo, puoi accedere ora."
+  "String10": "Il tuo account è stato registrato con successo, puoi accedere ora.",
+  "String11": "Accedi con l'autenticazione a due fattori",
+  "String12": "Inserisci il codice di autenticazione a due fattori",
+  "String13": "Codice",
+  "String14": "Ricorda questo dispositivo",
+  "String15": "Verifica del codice di ripristino",
+  "String16": "Inserisci il codice di ripristino",
+  "String17": "Codice di ripristino",
+  "String18": "Hai richiesto di accedere con un codice di ripristino. Questo accesso non verrà ricordato finché non fornirai un codice dell'app di autenticazione al momento dell'accesso o disabiliterai 2FA ed eseguirai nuovamente l'accesso."
 }
