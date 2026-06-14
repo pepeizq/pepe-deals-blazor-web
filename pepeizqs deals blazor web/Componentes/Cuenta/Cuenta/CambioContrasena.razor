@@ -9,6 +9,8 @@
 {
     <div style="padding: 30px">
         <div style="margin-bottom: 20px;">
+            <input type="text" style="display:none" /> @*Cebo del autocompletado para navegadores*@
+
             <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword1", "Account")</div>
             <input value="@contraseñaActual" @onchange="@(e => CambiarActualContraseña(e))" type="password" class="entrada-texto" autocomplete="current-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword2", "Account")" />
         </div>

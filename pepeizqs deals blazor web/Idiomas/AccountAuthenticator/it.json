@@ -1,0 +1,14 @@
+{
+  "String1": "Per utilizzare un'app di autenticazione, procedi nel seguente modo:",
+  "String2": "1. Scarica un'app di autenticazione sul tuo smartphone:",
+  "String3": "2. Scansiona questo codice QR con la tua app di autenticazione:",
+  "String4": "3. Dopo aver scansionato il codice QR, riceverai un codice che dovrai inserire di seguito:",
+  "String5": "Il codice di verifica non è valido",
+  "String6": "Inserisci il codice",
+  "String7": "Verificare",
+  "String8": "Disabilita l'autenticazione a due fattori",
+  "String9": "Codici di ripristino. ",
+  "String10": "Reimposta l'autenticazione a due fattori",
+  "String11": "Questo processo disabilita 2FA finché non verifichi la tua app di autenticazione. Se non completi la configurazione dell'app di autenticazione potresti perdere l'accesso al tuo account.",
+  "String12": "Disabilita completamente l'uso dell'autenticazione a due fattori sul tuo account."
+}

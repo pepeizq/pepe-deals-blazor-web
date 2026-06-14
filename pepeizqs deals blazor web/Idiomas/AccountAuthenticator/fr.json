@@ -1,0 +1,14 @@
+{
+  "String1": "Pour utiliser une application d'authentification, suivez les étapes suivantes :",
+  "String2": "1. Téléchargez une application d'authentification sur votre smartphone :",
+  "String3": "2. Scannez ce QR code avec votre application d'authentification :",
+  "String4": "3. Après avoir scanné le code QR, vous recevrez un code que vous devrez saisir ci-dessous :",
+  "String5": "Le code de vérification n'est pas valide",
+  "String6": "Entrez le code",
+  "String7": "Vérifier",
+  "String8": "Désactiver l'authentification à deux facteurs",
+  "String9": "Codes de récupération. ",
+  "String10": "Réinitialiser l'authentification à deux facteurs",
+  "String11": "Ce processus désactive 2FA jusqu'à ce que vous vérifiiez votre application d'authentification. Si vous ne terminez pas la configuration de votre application d'authentification, vous risquez de perdre l'accès à votre compte.",
+  "String12": "Désactivez complètement l'utilisation de l'authentification à deux facteurs sur votre compte."
+}

@@ -1,0 +1,14 @@
+{
+  "String1": "Para usar um aplicativo autenticador, siga as seguintes etapas:",
+  "String2": "1. Baixe um aplicativo de autenticação em seu smartphone:",
+  "String3": "2. Digitalize este código QR com seu aplicativo de autenticação:",
+  "String4": "3. Após escanear o código QR, você receberá um código que deverá inserir abaixo:",
+  "String5": "O código de verificação é inválido",
+  "String6": "Digite o código",
+  "String7": "Verificar",
+  "String8": "Desative a autenticação de dois fatores",
+  "String9": "Códigos de recuperação. ",
+  "String10": "Redefinir a autenticação de dois fatores",
+  "String11": "Este processo desativa o 2FA até que você verifique seu aplicativo autenticador. Se você não concluir a configuração do aplicativo autenticador, poderá perder o acesso à sua conta.",
+  "String12": "Desative completamente o uso da autenticação de dois fatores em sua conta."
+}

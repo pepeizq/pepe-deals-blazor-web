@@ -77,7 +77,7 @@ else
                             if (suscripcion.UsuarioPuedeAbrir == true && suscripcion.Id != Suscripciones2.SuscripcionTipo.Desconocido && esHija == false)
                             {
                                 <button @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" class="boton-suscripciones" style="@CambiarEstilo(suscripcion.Id) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                                    <img src="@suscripcion.ImagenIcono" style="width: 20px; height: 20px;" alt="@suscripcion.Nombre" />
+                                    <img src="@suscripcion.ImagenIcono" style="width: 20px; height: 20px; display: block;" alt="@suscripcion.Nombre" />
                                 </button>
                             }
                         }
@@ -86,7 +86,7 @@ else
                             if (suscripcionSeleccionada == suscripcion.Id)
                             {
                                 <button @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" class="boton-suscripciones" style="@CambiarEstilo(suscripcion.Id) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; gap: 10px; color: var(--colorTexto); border-radius: inherit;">
-                                    <img src="@suscripcion.ImagenIcono" style="width: 20px; height: 20px;" alt="@suscripcion.Nombre" />
+                                    <img src="@suscripcion.ImagenIcono" style="width: 20px; height: 20px; display: block;" alt="@suscripcion.Nombre" />
 
                                     <div>
                                         @suscripcion.Nombre
@@ -266,7 +266,7 @@ else
                                 {
                                     <button @onclick="@(e => SuscripcionAbrir(e, suscripcion.Id))" class="boton-pequeño suscripcion-grid" style="display: flex; align-items: center; gap: 20px; justify-content: space-evenly;">
                                         <div style="width: 200px; height: 70px; display: flex; justify-content: center;">
-                                            <img src="@suscripcion.ImagenLogo" alt="@suscripcion.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                            <img src="@suscripcion.ImagenLogo" alt="@suscripcion.Nombre" style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;" />
                                         </div>
 
                                         @if (suscripcion.Precio > 0)
@@ -377,7 +377,7 @@ else
                                         <div>
                                             <div style="display: flex; align-items: center; gap: 15px;">
                                                 <div>
-                                                    <img src="@grupoElegido.Elegido.ImagenIcono" style="width: 24px; height: 24px;" />
+                                                    <img src="@grupoElegido.Elegido.ImagenIcono" style="width: 24px; height: 24px; display: block;" />
                                                 </div>
 
                                                 <div>
@@ -459,7 +459,7 @@ else
                                 <div>
                                     <a onclick="moverScroll('pasado-@suscripcionPasada.Tipo.Id.ToString()')" class="boton-pequeño" style="color: var(--colorTexto); text-decoration: none; cursor: pointer; padding: 6px 10px;">
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <img src="@suscripcionPasada.Tipo.ImagenIcono" style="width: 22px; height: 22px;" alt="@suscripcionPasada.Tipo.Nombre" />
+                                            <img src="@suscripcionPasada.Tipo.ImagenIcono" style="width: 22px; height: 22px; display: block;" alt="@suscripcionPasada.Tipo.Nombre" />
 
                                             <div style="font-size: 14px;">
                                                 @suscripcionAño.Count.ToString()
@@ -492,7 +492,7 @@ else
                         {
                             <div class="caja-archivo-contenido">
                                 <div id="pasado-@suscripcionPasada.Tipo.Id.ToString()" class="caja-archivo-titulo">
-                                    <img src="@suscripcionPasada.Tipo.ImagenLogo" alt="@suscripcionPasada.Tipo.Nombre" style="max-width: 150px; max-height: 70px; object-fit: contain;" />
+                                    <img src="@suscripcionPasada.Tipo.ImagenLogo" alt="@suscripcionPasada.Tipo.Nombre" style="max-width: 150px; max-height: 70px; object-fit: contain; display: block;" />
                                 </div>
 
                                 <div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; justify-content: flex-start;">
