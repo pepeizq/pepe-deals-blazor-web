@@ -1,8 +1,6 @@
 ﻿@page "/account/"
 @page "/account/{seccion}/"
 
-@rendermode @(new InteractiveServerRenderMode(prerender: false))
-
 @attribute [Authorize]
 
 @implements IAsyncDisposable
@@ -14,12 +12,8 @@
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
 
-@{
-    string titulo = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Account") + " • pepe's deals";
-}
-
 <HeadContent>
-    <PageTitle>@titulo</PageTitle>
+    <PageTitle>@tituloNavegador</PageTitle>
 </HeadContent>
 
 @if (enseñarOpcion == false)
@@ -324,7 +318,7 @@ else
 {
     <div class="caja-cuenta-indice-contenido cuerpo-ancho" style="width: 100%; margin: 40px auto;">
         <div style="display: flex; align-items: center; gap: 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño)); border-top-left-radius: inherit; border-top-right-radius: inherit; overflow: hidden;">
-            <button class="boton-pequeño" @onclick="ClickearCerrarPestaña" style="width: fit-content; padding: 18px 25px; border-top-left-radius: inherit; box-shadow: none;">
+            <button @onclick="ClickearCerrarPestaña" @onmouseenter="_ => usuarioEncimaCerrar = true" @onmouseleave="_ => usuarioEncimaCerrar = false" style="@(usuarioEncimaCerrar == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") width: fit-content; padding: 18px 25px; border-top-left-radius: inherit; box-shadow: none; border: 0;">
                 <div style="max-width: 24px; max-height: 24px;">
                     <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
@@ -408,6 +402,9 @@ else
 
     #nullable disable
 
+    [PersistentState]
+    public string tituloNavegador { get; set; }
+
     private string idioma = "en";
     private string usuarioId = null;
     private string userAgent = null;
@@ -420,6 +417,7 @@ else
 
     private Usuario opcionesCuenta = null;
 
+    private bool usuarioEncimaCerrar = false;
     private bool enseñarOpcion = false;
     private string tituloOpcion = string.Empty;
 
@@ -447,72 +445,26 @@ else
 
             if (string.IsNullOrEmpty(seccion) == false)
             {
-                if (seccion == "email")
+                switch (seccion)
                 {
-                    MostrarCorreo();
-                }
-
-                if (seccion == "password")
-                {
-                    MostrarContraseña();
-                }
-
-                if (seccion == "data")
-                {
-                    MostrarDatosPersonales();
-                }
-
-                if (seccion == "language")
-                {
-                    MostrarIdioma();
-                }
-
-                if (seccion == "keys")
-                {
-                    MostrarClaves();
-                }
-
-                if (seccion == "forum")
-                {
-                    MostrarForo();
-                }
-
-                if (seccion == "games")
-                {
-                    MostrarJuegos();
-                }
-
-                if (seccion == "profile")
-                {
-                    MostrarPerfil();
-                }
-
-                if (seccion == "notifications-email")
-                {
-                    MostrarNotificacionesCorreo();
-                }
-
-                if (seccion == "notifications-push")
-                {
-                    MostrarNotificacionesPush();
-                }
-
-                if (seccion == "mail-patreon")
-                {
-                    MostrarCorreoPatreon();
-                }
-
-                if (seccion == "excluded-games")
-                {
-                    MostrarJuegosExcluir();
-                }
-
-                if (seccion == "authenticator")
-                {
-                    MostrarDobleAutentificacion();
+                    case "email": MostrarCorreo(); break;
+                    case "password": MostrarContraseña(); break;
+                    case "data": MostrarDatosPersonales(); break;
+                    case "language": MostrarIdioma(); break;
+                    case "keys": MostrarClaves(); break;
+                    case "forum": MostrarForo(); break;
+                    case "games": MostrarJuegos(); break;
+                    case "profile": MostrarPerfil(); break;
+                    case "notifications-email": MostrarNotificacionesCorreo(); break;
+                    case "notifications-push": MostrarNotificacionesPush(); break;
+                    case "mail-patreon": MostrarCorreoPatreon(); break;
+                    case "excluded-games": MostrarJuegosExcluir(); break;
+                    case "authenticator": MostrarDobleAutentificacion(); break;
                 }
             }
         }
+
+        tituloNavegador ??= Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Account") + " • pepe's deals";
     }
 
     private IJSObjectReference moduloJs;
@@ -571,6 +523,7 @@ else
     private async void ClickearCerrarPestaña()
     {
         tituloOpcion = string.Empty;
+        tituloNavegador = Herramientas.Idiomas.BuscarTexto(idioma, "Title", "Account") + " • pepe's deals";
         enseñarOpcion = false;
 
         seccion = string.Empty;
@@ -584,6 +537,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarCorreo = true;
         seccion = "email";
@@ -595,6 +549,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarContraseña = true;
         seccion = "password";
@@ -606,6 +561,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarDatosPersonales = true;
         seccion = "data";
@@ -617,6 +573,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String24", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarIdioma = true;
         seccion = "language";
@@ -628,6 +585,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarClaves = true;
         seccion = "keys";
@@ -639,6 +597,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String26", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarForo = true;
         seccion = "forum";
@@ -650,6 +609,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String35", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarJuegos = true;
         seccion = "games";
@@ -661,6 +621,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String33", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarPerfil = true;
         seccion = "profile";
@@ -676,6 +637,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarNotificacionesCorreo = true;
         seccion = "notifications-email";
@@ -687,6 +649,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String21", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarNotificacionesPush = true;
         seccion = "notifications-push";
@@ -698,6 +661,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String37", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarCorreoPatreon = true;
         seccion = "mail-patreon";
@@ -709,6 +673,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String39", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarJuegosExcluir = true;
         seccion = "excluded-games";
@@ -720,6 +685,7 @@ else
     {
         CerrarPestañas();
         tituloOpcion = Herramientas.Idiomas.BuscarTexto(idioma, "String41", "Account");
+        tituloNavegador = tituloOpcion + " • pepe's deals";
         enseñarOpcion = true;
         mostrarDobleAutentificacion = true;
         seccion = "authenticator";

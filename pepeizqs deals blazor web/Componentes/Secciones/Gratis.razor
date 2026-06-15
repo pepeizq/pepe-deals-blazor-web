@@ -166,7 +166,7 @@
                 if (tipo != Gratis2.GratisTipo.Desconocido)
                 {
                     <button @onclick="@(e => CambiarTipo(e, tipo, false))" class="boton-gratis" style="@CambiarEstilo(tipo, false) border: 0px; height: 50px; padding: 15px 25px; display: inline-flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                        <img src="@Gratis2.GratisCargar.DevolverGratis(tipo).ImagenIcono" style="width: 20px; height: 20px;" alt="@Gratis2.GratisCargar.DevolverGratis(tipo).Nombre" />
+                        <img src="@Gratis2.GratisCargar.DevolverGratis(tipo).ImagenIcono" style="width: 20px; height: 20px; display: block;" alt="@Gratis2.GratisCargar.DevolverGratis(tipo).Nombre" />
                     </button>
                 }
             }
@@ -286,7 +286,7 @@ else
                         <div>
                             <a @onclick="@(e => MoverScrollJs(e, $"pasado-{gratisPasado.Tipo.Nombre}"))" class="boton-pequeño" style="color: var(--colorTexto); text-decoration: none; cursor: pointer; padding: 6px 10px;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="@gratisPasado.Tipo.ImagenIcono" style="width: 22px; height: 22px;" alt="@gratisPasado.Tipo.Nombre" />
+                                    <img src="@gratisPasado.Tipo.ImagenIcono" style="width: 22px; height: 22px; display: block;" alt="@gratisPasado.Tipo.Nombre" />
 
                                     <div style="font-size: 14px;">
                                         @gratisAño.Count.ToString()
@@ -319,7 +319,7 @@ else
                 {
                     <div class="caja-archivo-contenido">
                         <div id="pasado-@gratisPasado.Tipo.Nombre" class="caja-archivo-titulo">
-                            <img src="@gratisPasado.Tipo.ImagenLogo" alt="@gratisPasado.Tipo.Nombre" style="max-width: 150px; max-height: 70px; object-fit: contain;" />
+                            <img src="@gratisPasado.Tipo.ImagenLogo" alt="@gratisPasado.Tipo.Nombre" style="max-width: 150px; max-height: 70px; object-fit: contain; display: block;" />
                         </div>
 
                         <div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; justify-content: flex-start;">

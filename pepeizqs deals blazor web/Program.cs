@@ -301,7 +301,7 @@ app.Use(async (contexto, siguiente) =>
 		"/.svg", "/.png", "/.jpg", "/.webp", "/.gif", "/ads.txt", ".php", "/en/", "/es/", "/game", "/.env"
 	};
 
-	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true)
+	if (extensiones.Any(ext => ruta.EndsWith(ext)) == true || ruta.Contains("./") == true || ruta.Contains("/wp-admin/") == true)
 	{
 		contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 		contexto.Response.Headers.Location = "/";
@@ -362,9 +362,7 @@ app.Use(async (contexto, siguiente) =>
 		await siguiente();
 
 		// Evitar peticiones a recursos que no existen despues de enviar una peticion
-		if (contexto.Response.StatusCode == 404 && (ruta.Contains("/imagenes/") == true || ruta.StartsWith("/lib/") == true ||
-													ruta.StartsWith("/css/") == true || ruta.StartsWith("/js/") == true ||
-													(ruta == "/news" && contexto.Request.Query.ContainsKey("id") == true)))
+		if (contexto.Response.StatusCode == 404 && contexto.Response.HasStarted == false)
 		{
 			contexto.Response.StatusCode = StatusCodes.Status301MovedPermanently;
 			contexto.Response.Headers.Location = "/";
