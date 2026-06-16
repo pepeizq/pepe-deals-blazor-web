@@ -15,7 +15,6 @@
 using Dapper;
 using Herramientas;
 using Juegos;
-using Microsoft.Data.SqlClient;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -60,6 +59,7 @@ namespace APIs.EA
 			"bejeweled-3",
 			"bejeweled-twist",
 			"burnout-paradise-remastered",
+			"college-football-27",
 			"command-and-conquer-4-tiberian-twilight",
 			"command-and-conquer-red-alert-3",
 			"command-and-conquer-remastered",
@@ -103,6 +103,7 @@ namespace APIs.EA
 			"madden-nfl-24",
 			"madden-nfl-25",
 			"madden-nfl-26",
+			"madden-nfl-27",
 			"magic-carpet",
 			"mass-effect",
 			"mass-effect-2",
@@ -183,6 +184,7 @@ namespace APIs.EA
 			"wing-commander-3-heart-of-the-tiger",
 			"wrc-24",
 			"zau",
+			"zero-company",
 			"zumas-revenge"
 		};
 

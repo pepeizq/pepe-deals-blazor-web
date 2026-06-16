@@ -4,26 +4,33 @@ export function copiarTexto(text) {
     }
 }
 
-export function teclearBusqueda(elemento, dotNetRef, retraso) {
-    let timerId = null;
+export function teclearBusqueda(inputEl, dotnetRef, delay) {
+    let timer;
+    inputEl.addEventListener('input', (e) => {
+        clearTimeout(timer);
 
-    if (!elemento) return;
+        mostrarSpinner(true);
 
-    elemento.addEventListener("input", function (e) {
-        const valor = e.target.value;
-        clearTimeout(timerId);
-
-        timerId = setTimeout(() => {
-            dotNetRef.invokeMethodAsync("EventoTecleoBuscador", valor);
-        }, retraso);
+        timer = setTimeout(async () => {
+            await dotnetRef.invokeMethodAsync('EventoTecleoBuscador', e.target.value);
+            mostrarSpinner(false); 
+        }, delay);
     });
+}
+
+function mostrarSpinner(visible) {
+    const spinner = document.getElementById('spinner-buscador');
+    const icono = document.getElementById('icono-buscador');
+
+    if (spinner) spinner.style.display = visible ? 'flex' : 'none';
+    if (icono) icono.style.display = visible ? 'none' : 'block';
 }
 
 export function toggleBodyScroll(disable) {
     if (disable) {
-        document.body.classList.add('overflow-hidden');
+        document.body.classList.add('no-scroll');
     } else {
-        document.body.classList.remove('overflow-hidden');
+        document.body.classList.remove('no-scroll');
     }
 }
 

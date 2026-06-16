@@ -197,3 +197,9 @@ select {
         transform: scale(1.1);
         fill: var(--colorTextoHover);
     }
+
+/*Ocultar scrollbar en buscador*/
+.no-scroll {
+    overflow: hidden;
+    height: 100%;
+}

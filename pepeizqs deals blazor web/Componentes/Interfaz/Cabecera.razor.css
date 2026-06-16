@@ -37,19 +37,6 @@
         color: var(--colorTextoHover);
     }
 
-.buscador-panel {
-    height: calc(100% - var(--alturaCabecera));
-    width: 100%;
-    left: 0;
-    top: 0;
-    overflow-x: auto;
-    position: fixed;
-    z-index: 1005;
-    margin-top: var(--alturaCabecera);
-    padding: 10px;
-    background-color: var(--fondoOscuroTransparente);
-}
-
 .boton-superior {
     display: block;
     padding: 0px 12px;
@@ -266,18 +253,13 @@
     }
 
     .pestaña-buscador.pestaña-activa {
-        background-color: var(--fondoBotonPequeño);
+        background-color: rgba(255,255,255,0.1);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
         .pestaña-buscador.pestaña-activa:hover {
             background-color: color-mix(in srgb, var(--fondoBotonPequeño) 90%, var(--fondoSubsubcabecera));
         }
-
-.no-scroll {
-    overflow: hidden;
-    height: 100%;
-}
 
 .svg-icono-rotante {
     transition: transform 0.2s ease;
@@ -355,19 +337,6 @@ a:hover .boton-cabecera-deseados {
     .entrada-texto:hover {
         border-bottom: 1px solid var(--colorEnlace);
     }
-
-.buscador-panel {
-    height: calc(100% - var(--alturaCabecera));
-    width: 100%;
-    left: 0;
-    top: 0;
-    overflow-x: auto;
-    position: fixed;
-    z-index: 1000;
-    margin-top: var(--alturaCabecera);
-    padding: 10px;
-    background-color: var(--fondoOscuroTransparente);
-}
 
 .perfil-flexible-centrado {
     display: flex;
