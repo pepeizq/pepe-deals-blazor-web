@@ -811,37 +811,29 @@
 
     private async Task AñadirResultados()
     {
-        List<string> lista = new List<string>();
-        string[] datosPartidos = idsPendiente.Split(',');
-        lista.AddRange(datosPartidos);
-
-        if (seleccionados == null)
+        if (string.IsNullOrEmpty(idsPendiente) == true || idsPendiente == "0")
         {
-            seleccionados = new List<global::Juegos.Juego>();
+            seleccionados.Clear();
+            return;
         }
 
-        if (lista?.Count > 0)
+        HashSet<int> idsDeseados = idsPendiente.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(id => int.TryParse(id.Trim(), out int n) ? n : -1)
+                        .Where(n => n > 0)
+                        .ToHashSet();
+
+        seleccionados.RemoveAll(j => idsDeseados.Contains(j.Id) == false);
+
+        HashSet<int> idsYaEnLista = seleccionados.Select(j => j.Id).ToHashSet();
+        List<int> idsFaltantes = idsDeseados.Where(id => !idsYaEnLista.Contains(id)).ToList();
+
+        foreach (int id in idsFaltantes)
         {
-            var idsJuegos = new HashSet<int>();
+            global::Juegos.Juego juego = await BaseDatos.Juegos.Buscar.UnJuegoReducido(id);
 
-            if (seleccionados.Count > 0)
+            if (juego != null)
             {
-                idsJuegos = new HashSet<int>(seleccionados?.Select(j => j.Id) ?? []);
-            }
-
-            var noExistentes = lista.Where(id => idsJuegos.Contains(int.Parse(id)) == false).ToList();
-
-            if (noExistentes?.Count > 0)
-            {
-                foreach (var noExiste in noExistentes)
-                {
-                    var juegoAñadir = await BaseDatos.Juegos.Buscar.UnJuegoReducido(int.Parse(noExiste));
-
-                    if (juegoAñadir != null)
-                    {
-                        seleccionados.Add(juegoAñadir);
-                    }
-                }
+                seleccionados.Add(juego);
             }
         }
     }

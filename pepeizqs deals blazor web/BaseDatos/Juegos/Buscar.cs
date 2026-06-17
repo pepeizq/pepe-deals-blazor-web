@@ -375,7 +375,7 @@ WHERE id=@id AND j.tipo=0";
 				return null;
 			}
 
-			var idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
+			List<int> idsBaseDatos = ids.Select(j => int.Parse(j)).ToList();
 
 			string sqlBuscar = @"SELECT 
 					j.id, j.nombre, j.imagenes, 

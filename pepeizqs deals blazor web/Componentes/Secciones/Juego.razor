@@ -192,13 +192,13 @@
                         if (difuminar == false)
                         {
                             <div class="juego-flexible-izquierda">
-                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 250, 116)" class="juego-imagen" alt="@juego.Nombre" fetchpriority="high" loading="eager" style="contain: layout; aspect-ratio: 460 / 215; object-fit: cover;"/>
+                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 250, 116)" class="juego-imagen" alt="@juego.Nombre" fetchpriority="high" loading="eager" style="contain: layout; aspect-ratio: 460 / 215; object-fit: cover; display: block;"/>
                             </div>
                         }
                         else
                         {
                             <div class="juego-flexible-izquierda" style="overflow: hidden;">
-                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 250, 116)" class="juego-imagen" style="filter: blur(10px); contain: layout; aspect-ratio: 460 / 215; object-fit: cover;" alt="@juego.Nombre" fetchpriority="high" loading="eager" />
+                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(juego.Imagenes.Header_460x215, 250, 116)" class="juego-imagen" style="filter: blur(10px); contain: layout; aspect-ratio: 460 / 215; object-fit: cover; display: block;" alt="@juego.Nombre" fetchpriority="high" loading="eager" />
                             </div>
                         }
                     }
@@ -265,7 +265,7 @@
                                                         <button @onclick="@(e => MoverScrollJs(e, drm.Id.ToString()))" class="boton-pequeño" style="@fondoBotonDRM width: 40px; height: 40px; padding: 9px;">
                                                             <picture style="display: flex;">
                                                                 <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                                                <img src="@imagenDRM" alt="@drm.Nombre" style="max-width: 100%; max-height: 100%;"/>
+                                                                <img src="@imagenDRM" alt="@drm.Nombre" style="max-width: 100%; max-height: 100%; display: block;"/>
                                                             </picture>
                                                         </button>
                                                     }
@@ -529,17 +529,17 @@
                                                     <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
                                                         @if (int.Parse(juego.Analisis.Porcentaje) > 74)
                                                         {
-                                                            <img src="/imagenes/analisis/positivo3.svg" style="width: 30px; height: 30px;" alt="Reviews"  />
+                                                            <img src="/imagenes/analisis/positivo3.svg" style="width: 30px; height: 30px; display: block;" alt="Reviews"  />
                                                         }
 
                                                         @if (int.Parse(juego.Analisis.Porcentaje) > 49 && int.Parse(juego.Analisis.Porcentaje) < 75)
                                                         {
-                                                            <img src="/imagenes/analisis/meh3.svg" style="width: 30px; height: 30px;" alt="Reviews"  />
+                                                            <img src="/imagenes/analisis/meh3.svg" style="width: 30px; height: 30px; display: block;" alt="Reviews"  />
                                                         }
 
                                                         @if (int.Parse(juego.Analisis.Porcentaje) < 50)
                                                         {
-                                                            <img src="/imagenes/analisis/negativo3.svg" style="width: 30px; height: 30px;" alt="Reviews"  />
+                                                            <img src="/imagenes/analisis/negativo3.svg" style="width: 30px; height: 30px; display: block;" alt="Reviews"  />
                                                         }
 
                                                         <div style="font-size: 17px;">
@@ -1091,7 +1091,7 @@
                                                                                     if (categoria == "29" && enseñarOpcionesSteamCromos == true)
                                                                                     {
                                                                                         <div title="@Herramientas.Idiomas.BuscarTexto(idioma, "String133", "Game")">
-                                                                                            <img style="max-height: 20px;" src="/imagenes/categorias/29-2.webp" alt="29" loading="lazy">
+                                                                                            <img style="max-height: 20px; display: block;" src="/imagenes/categorias/29-2.webp" alt="29" loading="lazy">
                                                                                         </div>
                                                                                     }
                                                                                 }
@@ -1134,7 +1134,7 @@
                                                                     if ((juego.GalaxyGOG.Logros == true && enseñarOpcionesGogLogros == true) || (juego.GalaxyGOG.GuardadoNube == true && enseñarOpcionesGogGuardadoNube == true))
                                                                     {
                                                                         <div style="display: flex; align-items: center; gap: 8px; height: 20px; margin: 0px 5px;">
-                                                                            <img src="/imagenes/otros/goggalaxy2.webp" title="GOG Galaxy" style="width: 20px; height: 20px;"  />
+                                                                            <img src="/imagenes/otros/goggalaxy2.webp" title="GOG Galaxy" style="width: 20px; height: 20px; display: block;"  />
 
                                                                             @if (juego.GalaxyGOG.Logros == true && enseñarOpcionesGogLogros == true)
                                                                             {
@@ -1155,7 +1155,7 @@
                                                                     if (juego.GalaxyGOG.Preservacion == true && enseñarOpcionesGogPreservacion == true)
                                                                     {
                                                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px;" title="@Herramientas.Idiomas.BuscarTexto(idioma, "String77", "Game")">
-                                                                            <img src="/imagenes/otros/gogpreserved.webp" style="max-width: 22px; max-height: 22px; aspect-ratio: 1 / 1; contain: layout;"  />
+                                                                            <img src="/imagenes/otros/gogpreserved.webp" style="max-width: 22px; max-height: 22px; aspect-ratio: 1 / 1; contain: layout; display: block;" />
                                                                         </div>
                                                                     }
                                                                 }
@@ -1406,7 +1406,7 @@
                                                                              @onmouseleave="@(() => DesactivarTooltip($"trigger-languages-{drm.Id.ToString()}"))">
                                                                             <button @onclick="@(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                                 <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
-                                                                                    <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language"  />
+                                                                                    <img src="@imagenBandera" style="max-width: 20px; max-height: 20px; display: block;" alt="Language"  />
 
                                                                                     <div style="font-size: 14px;">
                                                                                         @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
@@ -1490,7 +1490,7 @@
 
                                                                 <button @onclick="(e => IdiomasEnseñar(e, drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 22px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
                                                                     <div style="display: flex; align-items: center; gap: 10px; flex-direction: row; justify-content: center;">
-                                                                        <img src="@imagenBandera" style="max-width: 20px; max-height: 20px;" alt="Language" />
+                                                                        <img src="@imagenBandera" style="max-width: 20px; max-height: 20px; display: block;" alt="Language" />
 
                                                                         <div style="font-size: 14px;">
                                                                             @Herramientas.Idiomas.BuscarTexto(idioma, "String91", "Game")
@@ -2112,7 +2112,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <picture>
                                             <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1;" alt="Steam"/>
+                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1; display: block;" alt="Steam"/>
                                         </picture>
 
                                         @if (DateTime.Today < juego.Caracteristicas.FechaLanzamientoSteam)
@@ -2135,7 +2135,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <picture>
                                             <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1;" alt="GOG"/>
+                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1; display: block;" alt="GOG"/>
                                         </picture>
                                         
                                         @if (DateTime.Today < juego.GalaxyGOG?.FechaLanzamiento)
@@ -2169,7 +2169,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <picture>
                                             <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1;" alt="Steam"/>
+                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1; display: block;" alt="Steam"/>
                                         </picture>
 
                                         <label>@juego.UltimaActualizacionSteam.Value.Day/@juego.UltimaActualizacionSteam.Value.Month/@juego.UltimaActualizacionSteam.Value.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.UltimaActualizacionSteam.Value, idioma, 0))</label>
@@ -2185,7 +2185,7 @@
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <picture>
                                             <source srcset="@imagenDRM1 1x, @imagenDRM2 2x" type="image/webp">
-                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1;" alt="GOG" />
+                                            <img src="@imagenDRM" style="max-width: 20px; max-height: 20px; aspect-ratio: 1/1; display: block;" alt="GOG" />
                                         </picture>
 
                                         <label>@juego.UltimaActualizacionGOG.Value.Day/@juego.UltimaActualizacionGOG.Value.Month/@juego.UltimaActualizacionGOG.Value.Year (@Herramientas.Calculadora.DiferenciaTiempo(juego.UltimaActualizacionGOG.Value, idioma, 0))</label>
@@ -2261,7 +2261,7 @@
 
                                         <a href="/filter/@idCategoria/" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none;">
                                             <div style="display: flex; align-items: center; gap: 10px; padding: 5px 10px; height: 100%;">
-                                                <img style="width: 26px; height: 16px;" src="@imagenCategoria" alt="@categoria" loading="lazy"/>
+                                                <img style="width: 26px; height: 16px; display: block;" src="@imagenCategoria" alt="@categoria" loading="lazy"/>
 
                                                 <div style="width: 100%; font-size: 14px;">@cadenaCategoria</div>
                                             </div>
@@ -2530,7 +2530,7 @@
                                     {
                                         <a href="@enlace" target="_blank" class="boton-pequeño" title="Baidu" style="width: fit-content; padding: 10px;">
                                             <div>
-                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/baidu.webp")" alt="Baidu" style="width: 30px; height: 30px; display: block;" />
+                                                <img src="/imagenes/otros/baidu.webp" alt="Baidu" style="width: 30px; height: 30px; display: block;" />
                                             </div>
                                         </a>
                                     }
@@ -2538,7 +2538,7 @@
                                     {
                                         <a href="@enlace" target="_blank" class="boton-pequeño" title="REDnote" style="width: fit-content; padding: 10px;">
                                             <div>
-                                                <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno("/imagenes/otros/rednote.webp")" alt="REDnote" style="width: 30px; height: 30px; display: block;" />
+                                                <img src="/imagenes/otros/rednote.webp" alt="REDnote" style="width: 30px; height: 30px; display: block;" />
                                             </div>
                                         </a>
                                     }
@@ -2730,7 +2730,7 @@
                             <div style="display: flex; align-items: center; flex-direction: row;">
                                 <a href="@enlaceBundleSeleccionado" style="width: auto;" target="_blank">
                                     <div style="height: 60px; padding-left: 40px; padding-right: 20px;">
-                                        <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda" style="height: 100%;" alt="@bundleSeleccionado.Nombre"  />
+                                        <img src="@Bundles2.BundlesCargar.DevolverBundle(bundleSeleccionado.BundleTipo).ImagenTienda" style="height: 100%; display: block;" alt="@bundleSeleccionado.Nombre"  />
                                     </div>
                                 </a>
 
@@ -2981,7 +2981,7 @@
 
                                         if (string.IsNullOrEmpty(Herramientas.Idiomas.EncontrarIdiomaImagen(idioma.Idioma)) == false)
                                         {
-                                            <img src="@Herramientas.Ficheros.Imagenes.ServidorExterno(imagenIdioma)" style="max-width: 25px; max-height: 25px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);"  />
+                                            <img src="@imagenIdioma" style="max-width: 25px; max-height: 25px; display: block; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);"  />
                                         }
                                         else
                                         {

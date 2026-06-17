@@ -131,7 +131,7 @@
 					@foreach (var juego in resultadosBuscador)
 					{
 						<button @onclick="@(e => ClickearIdJuego(e, juego.Id.ToString(), posicion))" class="comparador-resultado-card">
-							<img src="@juego.Imagenes.Library_600x900" alt="@juego.Nombre" />
+							<img src="@juego.Imagenes.Library_600x900" alt="@juego.Nombre" style="display: block;"/>
 						</button>
 					}
 				</div>
@@ -164,7 +164,7 @@
 						<div style="width: 33%; display: flex; justify-content: center;">
 							<div class="comparador-juego-mini">
 								<a href="/game/@juego1.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego1.Nombre)/">
-									<img src="@juego1.Imagenes.Header_460x215" alt="@juego1.Nombre" />
+									<img src="@juego1.Imagenes.Header_460x215" alt="@juego1.Nombre" style="display: block;" />
 								</a>
 							</div>
 						</div>
@@ -175,7 +175,7 @@
 						<div style="width: 33%; display: flex; justify-content: center;">
 							<div class="comparador-juego-mini">
 								<a href="/game/@juego2.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego2.Nombre)/">
-									<img src="@juego2.Imagenes.Header_460x215" alt="@juego2.Nombre" />
+									<img src="@juego2.Imagenes.Header_460x215" alt="@juego2.Nombre" style="display: block;" />
 								</a>
 							</div>
 						</div>
@@ -186,7 +186,7 @@
 						<div style="width: 33%; display: flex; justify-content: center;">
 							<div class="comparador-juego-mini">
 								<a href="/game/@juego3.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego3.Nombre)/">
-									<img src="@juego3.Imagenes.Header_460x215" alt="@juego3.Nombre" />
+									<img src="@juego3.Imagenes.Header_460x215" alt="@juego3.Nombre" style="display: block;" />
 								</a>
 							</div>
 						</div>
@@ -197,7 +197,7 @@
 						<div style="width: 33%; display: flex; justify-content: center;">
 							<div class="comparador-juego-mini">
 								<a href="/game/@juego4.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego4.Nombre)/">
-									<img src="@juego4.Imagenes.Header_460x215" alt="@juego4.Nombre" />
+									<img src="@juego4.Imagenes.Header_460x215" alt="@juego4.Nombre" style="display: block;" />
 								</a>
 							</div>
 						</div>
@@ -209,7 +209,7 @@
 				<div class="comparador-seccion-contenido">
 					<div class="comparador-fila">
 						<div class="comparador-fila-label">
-							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)"/>
+							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="display: block;" />
 							<span>@Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Compare")</span>
 						</div>
 
@@ -221,15 +221,15 @@
 									<div class="comparador-analisis">
 										@if (int.Parse(juego1.Analisis.Porcentaje) > 74)
 										{
-											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" />
+											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" style="display: block;" />
 										}
 										else if (int.Parse(juego1.Analisis.Porcentaje) > 49)
 										{
-											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" />
+											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" style="display: block;" />
 										}
 										else
 										{
-											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" />
+											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" style="display: block;" />
 										}
 										<span>@juego1.Analisis.Porcentaje%</span>
 									</div>
@@ -249,15 +249,15 @@
 									<div class="comparador-analisis">
 										@if (int.Parse(juego2.Analisis.Porcentaje) > 74)
 										{
-											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" />
+											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" style="display: block;" />
 										}
 										else if (int.Parse(juego2.Analisis.Porcentaje) > 49)
 										{
-											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" />
+											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" style="display: block;" />
 										}
 										else
 										{
-											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" />
+											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" style="display: block;" />
 										}
 										<span>@juego2.Analisis.Porcentaje%</span>
 									</div>
@@ -277,15 +277,15 @@
 									<div class="comparador-analisis">
 										@if (int.Parse(juego3.Analisis.Porcentaje) > 74)
 										{
-											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" />
+											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" style="display: block;" />
 										}
 										else if (int.Parse(juego3.Analisis.Porcentaje) > 49)
 										{
-											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" />
+											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" style="display: block;"/>
 										}
 										else
 										{
-											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" />
+											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" style="display: block;" />
 										}
 										<span>@juego3.Analisis.Porcentaje%</span>
 									</div>
@@ -305,15 +305,15 @@
 									<div class="comparador-analisis">
 										@if (int.Parse(juego4.Analisis.Porcentaje) > 74)
 										{
-											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" />
+											<img src="/imagenes/analisis/positivo3.svg" alt="Positive" style="display: block;" />
 										}
 										else if (int.Parse(juego4.Analisis.Porcentaje) > 49)
 										{
-											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" />
+											<img src="/imagenes/analisis/meh3.svg" alt="Mixed" style="display: block;" />
 										}
 										else
 										{
-											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" />
+											<img src="/imagenes/analisis/negativo3.svg" alt="Negative" style="display: block;" />
 										}
 										<span>@juego4.Analisis.Porcentaje%</span>
 									</div>
@@ -328,7 +328,7 @@
 
 					<div class="comparador-fila">
 						<div class="comparador-fila-label">
-							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)"/>
+							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="display: block;"/>
 							<span>@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Compare")</span>
 						</div>
 
@@ -391,7 +391,7 @@
 
 					<div class="comparador-fila">
 						<div class="comparador-fila-label">
-							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)"/>
+							<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="display: block;" />
 							<span>@Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Compare")</span>
 						</div>
 
@@ -571,7 +571,7 @@
 					{
 						<div class="comparador-fila">
 							<div class="comparador-fila-label">
-								<img src="@Juegos.JuegoDRM2.SacarImagen(drmHistorico)" />
+								<img src="@Juegos.JuegoDRM2.SacarImagen(drmHistorico)" style="display: block;" />
 								<span>@Juegos.JuegoDRM2.DevolverDRM(drmHistorico)</span>
 							</div>
 
@@ -693,7 +693,7 @@
 					{
 						<div class="comparador-fila">
 							<div class="comparador-fila-label">
-								<img src="@Juegos.JuegoDRM2.SacarImagen(drmActual)" />
+								<img src="@Juegos.JuegoDRM2.SacarImagen(drmActual)" style="display: block;" />
 								<span>@Juegos.JuegoDRM2.DevolverDRM(drmActual)</span>
 							</div>
 
@@ -802,7 +802,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle).ImagenIcono" />
+									<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle).ImagenIcono" style="display: block;" />
 									<span>@Bundles2.BundlesCargar.DevolverBundle(bundle).Tienda</span>
 								</div>
 
@@ -889,7 +889,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle).ImagenIcono" />
+									<img src="@Bundles2.BundlesCargar.DevolverBundle(bundle).ImagenIcono" style="display: block;" />
 									<span>@Bundles2.BundlesCargar.DevolverBundle(bundle).Tienda</span>
 								</div>
 
@@ -976,7 +976,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Gratis2.GratisCargar.DevolverGratis(gratis).ImagenIcono" />
+									<img src="@Gratis2.GratisCargar.DevolverGratis(gratis).ImagenIcono" style="display: block;" />
 									<span>@Gratis2.GratisCargar.DevolverGratis(gratis).Nombre</span>
 								</div>
 
@@ -1063,7 +1063,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Gratis2.GratisCargar.DevolverGratis(gratis).ImagenIcono" />
+									<img src="@Gratis2.GratisCargar.DevolverGratis(gratis).ImagenIcono" style="display: block;" />
 									<span>@Gratis2.GratisCargar.DevolverGratis(gratis).Nombre</span>
 								</div>
 
@@ -1150,7 +1150,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).ImagenIcono" />
+									<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).ImagenIcono" style="display: block;" />
 									<span>@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).Nombre</span>
 								</div>
 
@@ -1237,7 +1237,7 @@
 						{
 							<div class="comparador-fila">
 								<div class="comparador-fila-label">
-									<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).ImagenIcono" />
+									<img src="@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).ImagenIcono" style="display: block;" />
 									<span>@Suscripciones2.SuscripcionesCargar.DevolverSuscripcion(suscripcion).Nombre</span>
 								</div>
 
