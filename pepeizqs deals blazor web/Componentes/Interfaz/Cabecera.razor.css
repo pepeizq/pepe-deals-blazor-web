@@ -127,6 +127,7 @@
     pointer-events: none;
     transition: opacity .2s ease, transform .2s ease;
     border: 2px solid var(--glaseadoCabeceraBorde);
+    z-index: 100000000000;
 }
 
 .menu-dropdown2:hover .menu-dropdown-contenido-centrado {
@@ -166,6 +167,7 @@
     transition: opacity .2s ease, transform .2s ease;
     border: 2px solid var(--glaseadoCabeceraBorde);
     color: var(--colorTexto);
+    z-index: 100000000000;
 }
 
 .menu-dropdown2:hover .menu-dropdown-contenido-derecha {

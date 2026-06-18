@@ -1,5 +1,9 @@
 ﻿#nullable disable
 
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
+
 namespace Herramientas.Correos
 {
 	public static class Enviar
@@ -16,25 +20,22 @@ namespace Herramientas.Correos
 				string host = configuracion.GetValue<string>("WebmasterDeals:CorreoBot");
 				string contraseña = configuracion.GetValue<string>("WebmasterDeals:CorreoBotContraseña");
 
-				System.Net.Mail.MailMessage mensaje = new System.Net.Mail.MailMessage();
-				mensaje.From = new System.Net.Mail.MailAddress(correoDesde, "pepe's deals");
-				mensaje.To.Add(correoHacia);
-				mensaje.Subject = titulo;
-				mensaje.Body = html;
-				mensaje.IsBodyHtml = true;
+				MimeMessage mimeMessage = new MimeMessage();
+				mimeMessage.From.Add(new MailboxAddress("pepe's deals", correoDesde));
+				mimeMessage.To.Add(MailboxAddress.Parse(correoHacia));
+				mimeMessage.Subject = titulo;
+				mimeMessage.Body = new TextPart("html") { Text = html };
 
-				System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient();
-				cliente.Host = host;
+				using SmtpClient smtpMailKit = new SmtpClient();
 
 				if (correoDesde.ToLower().Contains("gmail.com") == true)
 				{
-					cliente.Port = 587;
-					cliente.Credentials = new System.Net.NetworkCredential(correoDesde, contraseña);
-					cliente.EnableSsl = true;
-
 					try
 					{
-						await cliente.SendMailAsync(mensaje);
+						await smtpMailKit.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+						await smtpMailKit.AuthenticateAsync(correoDesde, contraseña);
+						await smtpMailKit.SendAsync(mimeMessage);
+						await smtpMailKit.DisconnectAsync(true);
 						return true;
 					}
 					catch (Exception ex)
@@ -50,13 +51,12 @@ namespace Herramientas.Correos
 				}
 				else
 				{
-					cliente.Port = 8889;
-					cliente.Credentials = new System.Net.NetworkCredential(correoDesde, contraseña);
-					cliente.EnableSsl = false;
-
 					try
 					{
-						await cliente.SendMailAsync(mensaje);
+						await smtpMailKit.ConnectAsync(host, 8889, SecureSocketOptions.None);
+						await smtpMailKit.AuthenticateAsync(correoDesde, contraseña);
+						await smtpMailKit.SendAsync(mimeMessage);
+						await smtpMailKit.DisconnectAsync(true);
 						return true;
 					}
 					catch (Exception ex)

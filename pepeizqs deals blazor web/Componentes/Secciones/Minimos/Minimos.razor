@@ -42,7 +42,9 @@ else
 			</button>
 		</div>
 
-		<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-lows-order')">
+		<div class="tooltip-juego" id="trigger-lows-order"
+			 @onmouseenter="@(() => ActivarTooltip("trigger-lows-order", "tooltip-lows-order"))"
+			 @onmouseleave="@(() => DesactivarTooltip("trigger-lows-order"))">
 			<button @onclick="MostrarOcultarOrdenar" style="background: transparent; border: 0px; margin-left: 30px;">
 				<div style="width: 24px; height: 24px;">
 					<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -59,7 +61,9 @@ else
 		</div>
 
 		<div style="display: flex; align-items: center; gap: 25px; max-width: 500px; height: 45px; margin-left: 25px; @anchoBuscador">
-			<div class="tooltip-juego" onmousemove="enseñarTooltip(event, 'tooltip-lows-search')">
+			<div class="tooltip-juego" id="trigger-lows-search"
+				 @onmouseenter="@(() => ActivarTooltip("trigger-lows-search", "tooltip-lows-search"))"
+				 @onmouseleave="@(() => DesactivarTooltip("trigger-lows-search"))">
 				<button @onclick="MostrarOcultarBuscador" style="background: transparent; border: 0px;">
 					<div style="width: 24px; height: 24px;">
 						<svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -972,11 +976,22 @@ else
 			usuarioRegion = (TiendaRegion)tareaRegion.Result;
 			opciones = tareaUsuario.Result;
 
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			if (juegosUsuarioIndex == null)
+			{
+				juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+				excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
+			}
 
+			if (deseadosImportadosIndex == null)
+			{
+				deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			}
+
+			if (deseadosWebIndex == null)
+			{
+				deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			}
+			
 			if (opciones != null)
 			{
 				if (opciones.Currency.HasValue == true)

@@ -86,6 +86,25 @@ namespace BaseDatos.Bundles
 			return null;
 		}
 
+		public static async Task<List<Bundle>> VariosBundles(int[] ids)
+		{
+			string busqueda = "SELECT * FROM Bundles WHERE Id IN @Ids";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return (await conexion.QueryAsync<Bundle>(busqueda, new { Ids = ids })).ToList();
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Bundle Varios", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<List<Bundle>> Ultimos(int cantidad)
         {
 			string busqueda = "SELECT TOP " + cantidad.ToString() + " * FROM bundles ORDER BY id DESC";

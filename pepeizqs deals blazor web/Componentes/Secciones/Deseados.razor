@@ -720,16 +720,18 @@
 			Task<string> tareaIdioma = BaseDatos.Usuarios.Buscar.IdiomaSobreescribir(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<Usuario> tareaUsuario = (opciones != null) ? Task.FromResult(opciones) : BaseDatos.Usuarios.Buscar.OpcionesDeseados(usuarioId);
+			Task<List<JuegoDeseadoMostrar>> tareaDeseados = (deseadosGestor != null) ? Task.FromResult(deseadosGestor) : Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
 			Task<List<Bundles2.Bundle>> tareaBundles = (bundlesActuales != null) ? Task.FromResult(bundlesActuales) : BaseDatos.Bundles.Buscar.Actuales();
 			Task<List<JuegoSuscripcion>> tareaSuscripciones = (suscripcionesActuales != null) ? Task.FromResult(suscripcionesActuales) : BaseDatos.Suscripciones.Buscar.Actuales();
 
-			await Task.WhenAll(tareaIdioma, tareaPatreon, tareaUsuario, tareaBundles, tareaSuscripciones);
+			await Task.WhenAll(tareaIdioma, tareaPatreon, tareaUsuario, tareaDeseados, tareaBundles, tareaSuscripciones);
 
 			idioma = tareaIdioma.Result;
 			usuarioPatreon = Herramientas.Patreon.VerificarActivo(tareaPatreon.Result);
 			opciones = tareaUsuario.Result;
-			bundlesActuales ??= tareaBundles.Result;
-			suscripcionesActuales ??= tareaSuscripciones.Result;
+			deseadosGestor = tareaDeseados.Result;
+			bundlesActuales = tareaBundles.Result;
+			suscripcionesActuales = tareaSuscripciones.Result;
 
 			if (string.IsNullOrEmpty(perfilUsuarioId) == true)
 			{
@@ -745,14 +747,12 @@
 			{
 				pestañaMostrar = (int)opciones.WishlistPosition.Value;
 			}
-            else
-            {
-                pestañaMostrar = 1;
-            }
+			else
+			{
+				pestañaMostrar = 1;
+			}
 
 			await CambiarPestañaFondo(pestañaMostrar);
-
-			deseadosGestor ??= await Herramientas.Deseados.LeerJuegos(usuarioRegion, usuarioId);
 
 			if (deseadosGestor?.Count > 0)
 			{
@@ -855,15 +855,15 @@
 
 		if (bundlesCargar.Count > 0)
 		{
-			var idsArray = bundlesCargar.ToArray();
-			var tareasBundle = idsArray.Select(bundleId => BaseDatos.Bundles.Buscar.UnBundle(bundleId)).ToList();
-			var resultados = await Task.WhenAll(tareasBundle);
+			int[] idsSinCache = bundlesCargar.Where(id => bundlesCache.ContainsKey(id) == false).ToArray();
 
-			for (int i = 0; i < idsArray.Length; i++)
+			if (idsSinCache.Length > 0)
 			{
-				if (resultados[i] != null)
+				List<Bundles2.Bundle> resultados = await BaseDatos.Bundles.Buscar.VariosBundles(idsSinCache);
+
+				foreach (var bundle in resultados)
 				{
-					bundlesCache[idsArray[i]] = resultados[i];
+					bundlesCache[bundle.Id] = bundle;
 				}
 			}
 		}
@@ -934,7 +934,7 @@
 				ultimaVisita = datos2.UltimaVisita ?? DateTime.Now;
 				datos2.Cantidad = 0;
 				datos2.UltimaVisita = DateTime.Now;
-                datos2.Juegos = null;
+				datos2.Juegos = null;
 				await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datos2), usuarioId);
 			}
 		}
@@ -1050,12 +1050,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
 
 				deseadosBundles = deseadosBundles?.OrderByDescending(x => int.Parse(x.ReseñasPorcentaje ??= "0")).ThenBy(x => x.Nombre).ToList();
@@ -1082,12 +1078,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
 
 				deseadosBundles = deseadosBundles?.OrderByDescending(x => int.Parse(x.ReseñasCantidad ??= "0")).ThenBy(x => x.Nombre).ToList();
@@ -1114,12 +1106,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderBy(x => x.Nombre).ToList();
 
 				deseadosBundles = deseadosBundles?.OrderBy(x => x.Nombre).ToList();
@@ -1146,12 +1134,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Nombre).ToList();
 
 				deseadosBundles = deseadosBundles?.OrderByDescending(x => x.Nombre).ToList();
@@ -1178,12 +1162,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderBy(x => x.Precio.Precio).ThenBy(x => x.Nombre).ToList();
 			}
 
@@ -1207,12 +1187,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Precio.Descuento).ThenBy(x => x.Nombre).ToList();
 			}
 
@@ -1236,12 +1212,8 @@
 
 			if (deseadosGestor.Count > 0)
 			{
-				deseadosOfertas.Clear();
-				deseadosOfertas = Filtros(false);
+				(deseadosOfertas, deseadosHistoricos) = FiltrosDoble();
 				deseadosOfertas = deseadosOfertas?.OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
-
-				deseadosHistoricos.Clear();
-				deseadosHistoricos = Filtros(true);
 				deseadosHistoricos = deseadosHistoricos?.OrderByDescending(x => x.Precio.FechaDetectado).ThenBy(x => x.Nombre).ToList();
 			}
 
@@ -1341,6 +1313,43 @@
 		{
 			await BaseDatos.Usuarios.Actualizar.Opcion("WishlistOption3", descuentoMinimo, usuarioId);
 		}
+	}
+
+	private (List<JuegoDeseadoMostrar> ofertas, List<JuegoDeseadoMostrar> historicos) FiltrosDoble()
+	{
+		mostrarOrdenar = false;
+
+		List<JuegoDeseadoMostrar> ofertas = new List<JuegoDeseadoMostrar>();
+		List<JuegoDeseadoMostrar> historicos = new List<JuegoDeseadoMostrar>();
+
+		string textoBuscadorLimpio = string.IsNullOrEmpty(textoBuscador) ? null : Herramientas.Buscador.LimpiarNombre(textoBuscador, true);
+
+		foreach (JuegoDeseadoMostrar juego in deseadosGestor)
+		{
+			if (textoBuscadorLimpio != null && Herramientas.Buscador.LimpiarNombre(juego.Nombre, true).Contains(textoBuscadorLimpio) == false)
+			{
+				continue;
+			}
+			
+			if (juego.Precio.Descuento < descuentoMinimo) 
+			{
+				continue;
+			}
+
+			if (juego.Precio.Precio > (decimal)precioMaximo) 
+			{
+				continue;
+			}
+
+			ofertas.Add(juego);
+
+			if (juego.Historico == true)
+			{
+				historicos.Add(juego);
+			}
+		}
+
+		return (ofertas, historicos);
 	}
 
 	private List<JuegoDeseadoMostrar> Filtros(bool historico)

@@ -67,7 +67,7 @@
 	private string idioma = "en";
 	private string usuarioId = null;
 	private string userAgent = null;
-    private string dominio = null;
+	private string dominio = null;
 
 	[PersistentState] public Herramientas.UsuarioListadosJuegos juegosUsuario { get; set; }
 	[PersistentState] public Herramientas.UsuarioJuegosIndex juegosUsuarioIndex { get; set; }
@@ -84,7 +84,7 @@
 		idioma = datos.Idioma;
 		usuarioId = datos.UsuarioId;
 		userAgent = datos.UserAgent;
-        dominio = datos.Dominio;
+		dominio = datos.Dominio;
 
 		if (string.IsNullOrEmpty(usuarioId) == false)
 		{
@@ -98,9 +98,20 @@
 			juegosUsuario = tareaJuegos.Result;
 			deseadosUsuario = tareaDeseados.Result;
 
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			if (juegosUsuarioIndex == null)
+			{
+				juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+			}
+
+			if (deseadosImportadosIndex == null)
+			{
+				deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			}
+
+			if (deseadosWebIndex == null)
+			{
+				deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			}
 		}
 
 		juegosMostrar ??= await Buscar.Ultimos("juegos", 500);

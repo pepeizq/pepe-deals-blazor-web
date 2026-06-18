@@ -970,11 +970,22 @@ else
 			usuarioAdmin = tareaAdmin.Result;
 			usuarioRegion = (TiendaRegion)tareaRegion.Result;
 
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			if (juegosUsuarioIndex == null)
+			{
+				juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+				excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
+			}
 
+			if (deseadosImportadosIndex == null)
+			{
+				deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			}
+
+			if (deseadosWebIndex == null)
+			{
+				deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			}
+			
 			opciones = tareaOpciones.Result;
 
 			if (opciones != null)

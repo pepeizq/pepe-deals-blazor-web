@@ -446,7 +446,7 @@ else
 			Task<Usuario> tareaDeseados = BaseDatos.Usuarios.Buscar.DeseadosTiene(usuarioId);
 			Task<DateTime?> tareaPatreon = BaseDatos.Usuarios.Buscar.FechaPatreon(usuarioId);
 			Task<bool> tareaAdmin = BaseDatos.Usuarios.Buscar.RolDios(usuarioId);
-            Task<Usuario> tareaOpciones = BaseDatos.Usuarios.Buscar.OpcionesPatreon(usuarioId);
+			Task<Usuario> tareaOpciones = BaseDatos.Usuarios.Buscar.OpcionesPatreon(usuarioId);
 
 			await Task.WhenAll(tareaIdioma, tareaJuegos, tareaDeseados, tareaPatreon, tareaAdmin, tareaOpciones);
 
@@ -457,14 +457,28 @@ else
 			usuarioAdmin = tareaAdmin.Result;
 			opciones = tareaOpciones.Result;
 
-			juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-			deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-			deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			if (juegosUsuarioIndex == null)
+			{
+				juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+			}
+
+			if (deseadosImportadosIndex == null)
+			{
+				deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+			}
+
+			if (deseadosWebIndex == null)
+			{
+				deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+			}
 
 			if (opciones != null)
 			{
-				entradas = await BaseDatos.Recompensas.Historial.Leer(usuarioId);
-
+				if (entradas == null)
+				{
+					entradas = await BaseDatos.Recompensas.Historial.Leer(usuarioId);
+				}
+				
 				if (usuarioAdmin == true)
 				{
 					usuarioPatreon = true;

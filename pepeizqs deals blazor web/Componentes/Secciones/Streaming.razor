@@ -358,9 +358,20 @@ else
             juegosUsuario = tareaJuegos.Result;
             deseadosUsuario = tareaDeseados.Result;
 
-            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+            if (juegosUsuarioIndex == null)
+            {
+                juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+            }
+
+            if (deseadosImportadosIndex == null)
+            {
+                deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            }
+
+            if (deseadosWebIndex == null)
+            {
+                deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+            }
         }
 
         if (string.IsNullOrEmpty(streamingSeleccionadoTexto) == false)

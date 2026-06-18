@@ -900,11 +900,22 @@
             usuarioAdmin = tareaAdmin.Result;
             opcionesCabecera = tareaUsuario.Result;
 
-            juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-            excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
-            deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
-            deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+            if (juegosUsuarioIndex == null)
+            {
+                juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
+                excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
+            }
 
+            if (deseadosImportadosIndex == null)
+            {
+                deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
+            }
+
+            if (deseadosWebIndex == null)
+            {
+                deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
+            }
+            
             if (opcionesCabecera != null)
             {
                 usuarioRegion = (TiendaRegion)opcionesCabecera.Currency;
@@ -984,13 +995,6 @@
             }
         }    
 
-        enlace = NavManager.Uri;
-
-        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
-        {
-            mostrarDropdown = false;
-        }
-
         if (primerRender == true)
         {
             moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/Cabecera.razor.js");
@@ -1045,6 +1049,13 @@
     //Para que el NavManager coja los cambios de enlace
     private void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
+        enlace = NavManager.Uri;
+
+        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
+        {
+            mostrarDropdown = false;
+        }
+
         InvokeAsync(StateHasChanged);
     }
 
