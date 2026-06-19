@@ -1,3 +1,10 @@
+.caja-perfil-contenido {
+    background-color: var(--fondoCuentaBloque);
+    border: 1px solid var(--glaseadoBorde);
+    padding: 30px;
+    border-radius: 5px;
+}
+
 .entrada-texto {
     padding: 5px 10px;
     background-color: var(--fondoEntrada);

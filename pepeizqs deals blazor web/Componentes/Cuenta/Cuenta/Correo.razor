@@ -10,21 +10,29 @@
 
 @if (usuario != null)
 {
-    <div style="padding: 30px">
+    <div style="padding: 30px; display: flex; flex-direction: column; gap: 10px;">
         @if (correoConfirmado == true)
         {
-            <div class="input-group" style="margin-bottom: 25px;">
-                <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Account")</div>
+            <div style="display: flex; align-items: center; gap: 20px; background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+                <div style="font-size: 14px; min-width: 150px; text-align: right; flex-shrink: 0;">
+                    @Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Account")
+                </div>
+
                 <input value="@correoDefecto" class="entrada-texto" disabled />
             </div>
         }
         else
         {
-            <div style="margin-bottom: 25px;">
-                <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Account")</div>
-                <input value="@correoDefecto" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "Mail2", "Account")" disabled />
+            <div style="background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 14px; min-width: 150px; text-align: right; flex-shrink: 0;">
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "Mail1", "Account")
+                    </div>
 
-                <button @onclick="ClickearConfirmacionCorreo" style="outline: none; border: 0; color: var(--colorTextoOscuro);">
+                    <input value="@correoDefecto" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "Mail2", "Account")" disabled />
+                </div>
+
+                <button @onclick="ClickearConfirmacionCorreo" style="outline: none; border: 0; color: var(--colorTextoOscuro); margin-top: 10px;">
                     @Herramientas.Idiomas.BuscarTexto(idioma, "Mail3", "Account")
                 </button>
 
@@ -38,13 +46,16 @@
             </div>
         }
 
-        <div style="margin-bottom: 30px;">
-            <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "Mail4", "Account")</div>
+        <div style="display: flex; align-items: center; gap: 20px; background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+            <div style="font-size: 14px; min-width: 150px; text-align: right; flex-shrink: 0;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "Mail4", "Account")
+            </div>
+
             <input @onchange="@(e => CambiarNuevoCorreo(e))" value="@correoNuevo" class="entrada-texto" autocomplete="email" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "Mail2", "Account")" />
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <button @onclick="ClickearCambioCorreo" class="boton-pequeño" style="font-size: 18px; width: fit-content; padding: 12px 20px;">
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 10px;">
+            <button @onclick="ClickearCambioCorreo" class="boton-pequeño" style="width: fit-content; padding: 12px 20px;">
                 @Herramientas.Idiomas.BuscarTexto(idioma, "Mail5", "Account")
             </button> 
 

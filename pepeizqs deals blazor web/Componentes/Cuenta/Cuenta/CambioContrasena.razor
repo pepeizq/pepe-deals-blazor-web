@@ -7,40 +7,53 @@
 
 @if (usuario != null)
 {
-    <div style="padding: 30px">
-        <div style="margin-bottom: 20px;">
+    <div style="padding: 30px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 20px; background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
             <input type="text" style="display:none" /> @*Cebo del autocompletado para navegadores*@
 
-            <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword1", "Account")</div>
+            <div style="font-size: 14px; min-width: 200px; text-align: right; flex-shrink: 0;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword1", "Account")
+            </div>
+
             <input value="@contraseñaActual" @onchange="@(e => CambiarActualContraseña(e))" type="password" class="entrada-texto" autocomplete="current-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword2", "Account")" />
         </div>
 
-        <div style="margin-bottom: 20px;">
-            <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword3", "Account")</div>
-            <input value="@contraseñaNueva1" @onchange="@(e => CambiarNuevaContraseña1(e))" type="password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword4", "Account")" />
+        <div style="display: flex; align-items: center; gap: 20px; background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+            <div style="font-size: 14px; min-width: 200px; text-align: right; flex-shrink: 0;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword3", "Account")
+            </div>
 
-            @if (string.IsNullOrEmpty(mensajeAviso1) == false)
-            {
-                <div class="alert alert-danger alert-dismissible" style="margin-bottom: 0px; margin-top: 20px;" role="alert">
-                    @mensajeAviso1
-                </div>
-            }
+            <div style="width: 100%;">
+                <input value="@contraseñaNueva1" @onchange="@(e => CambiarNuevaContraseña1(e))" type="password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword4", "Account")" />
+
+                @if (string.IsNullOrEmpty(mensajeAviso1) == false)
+                {
+                    <div style="background-color: var(--fondoPeligro); padding: 15px 20px; margin-top: 15px;">
+                        @mensajeAviso1
+                    </div>
+                }
+            </div>
         </div>
 
-        <div style="margin-bottom: 30px;">
-            <div class="texto-info-entrada">@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword5", "Account")</div>
-            <input value="@contraseñaNueva2" @onchange="@(e => CambiarNuevaContraseña2(e))" type="password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword6", "Account")" />
+        <div style="display: flex; align-items: center; gap: 20px; background-color: var(--fondoCuentaBloque); padding: 20px; border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+            <div style="font-size: 14px; min-width: 200px; text-align: right; flex-shrink: 0;">
+                @Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword5", "Account")
+            </div>
 
-            @if (string.IsNullOrEmpty(mensajeAviso2) == false)
-            {
-                <div class="alert alert-danger alert-dismissible" style="margin-bottom: 0px; margin-top: 20px;" role="alert">
-                    @mensajeAviso2
-                </div>
-            }
+            <div style="width: 100%;">
+                <input value="@contraseñaNueva2" @onchange="@(e => CambiarNuevaContraseña2(e))" type="password" class="entrada-texto" autocomplete="new-password" aria-required="true" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword6", "Account")" />
+
+                @if (string.IsNullOrEmpty(mensajeAviso2) == false)
+                {
+                    <div style="background-color: var(--fondoPeligro); padding: 15px 20px; margin-top: 15px;">
+                        @mensajeAviso2
+                    </div>
+                }
+            </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-            <button @onclick="ClickearCambiarContraseña" class="boton-pequeño" style="font-size: 18px; width: fit-content; padding: 12px 20px;">
+        <div style="display: flex; flex-direction: column; gap: 20px; margin-top: 10px;">
+            <button @onclick="ClickearCambiarContraseña" class="boton-pequeño" style="width: fit-content; padding: 12px 20px;">
                 @Herramientas.Idiomas.BuscarTexto(idioma, "ChangePassword7", "Account")
             </button>
 

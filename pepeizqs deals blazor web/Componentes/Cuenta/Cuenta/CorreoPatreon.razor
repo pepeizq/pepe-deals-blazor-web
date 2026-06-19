@@ -5,18 +5,18 @@
 @inject UserManager<Usuario> UserManager
 @inject IHttpContextAccessor Contexto
 
-<div style="display: flex; flex-direction: column; gap: 10px; padding: 30px;">
-	<label style="margin-left: 5px; margin-bottom: 5px;">
+<div style="display: flex; flex-direction: column; gap: 20px; padding: 30px; margin: 30px; background-color: var(--fondoCuentaBloque); border-radius: 5px; border: 1px solid var(--glaseadoBorde);">
+	<div style="font-size: 14px;">
 		@Herramientas.Idiomas.BuscarTexto(idioma, "String14", "PatreonStore")
-	</label>
+	</div>
 
 	<input value="@correoAlternativo" @onchange="@(e => CambiarCorreo(e))" class="entrada-texto" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String15", "PatreonStore")" />
 
 	@if (string.IsNullOrEmpty(correoAlternativo) == false && correoUsado == true)
 	{
-		<label style="margin-left: 5px; font-size: 14px;">
+		<div style="font-size: 14px;">
 			@Herramientas.Idiomas.BuscarTexto(idioma, "String16", "PatreonStore")
-		</label>
+		</div>
 	}
 </div>
 

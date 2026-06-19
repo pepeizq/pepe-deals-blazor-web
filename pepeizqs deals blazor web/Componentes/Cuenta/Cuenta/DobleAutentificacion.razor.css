@@ -2,7 +2,7 @@
     background-color: var(--fondoCuentaBloque);
     border-radius: 5px;
     border: 1px solid var(--glaseadoBorde);
-    padding: 20px 30px;
+    padding: 30px;
 }
 
 ::deep .entrada-texto {

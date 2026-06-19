@@ -11,7 +11,7 @@ else
 {
 	if (juegos != null)
 	{
-		if (juegos.Steam == null && juegos.Gog == null && juegos.Amazon == null && juegos.Epic == null && juegos.Ubisoft == null && 
+		if (juegos.Steam == null && juegos.Gog == null && juegos.Amazon == null && juegos.Epic == null && juegos.Ubisoft == null &&
 			juegos.Ea == null)
 		{
 			<div style="background-color: var(--fondoPeligro); padding: 15px 20px; margin: 40px auto;">
@@ -21,62 +21,62 @@ else
 		else
 		{
 			<div class="subcabecera" style="@fondoCabecera">
-				<div style="display: flex; align-items: center; gap: 15px; flex-flow: wrap; padding: 10px 20px; background-color: rgba(0,0,0,0.15);">
+				<div style="display: flex; align-items: center; gap: 5px; flex-flow: wrap; padding: 10px 20px; background-color: rgba(0,0,0,0.25);">
 					<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.NoEspecificado) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.NoEspecificado))">
 						@Herramientas.Idiomas.BuscarTexto(idioma, "String27", "AccountGames")
 					</button>
 
-					@if (juegos.Steam != null && juegos.Steam.Count > 0)
+					@if (juegos.Steam?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.Steam) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.Steam))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Steam.Count.ToString())
 						</button>
 					}
 
-					@if (juegos.Gog != null && juegos.Gog.Count > 0)
+					@if (juegos.Gog?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.GOG) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.GOG))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.GOG)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.GOG)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Gog.Count.ToString())
 						</button>
 					}
 
-					@if (juegos.Amazon != null && juegos.Amazon.Count > 0)
+					@if (juegos.Amazon?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.Amazon) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.Amazon))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Amazon)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Amazon)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Amazon.Count.ToString())
 						</button>
 					}
 
-					@if (juegos.Epic != null && juegos.Epic.Count > 0)
+					@if (juegos.Epic?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.Epic) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.Epic))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Epic)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Epic)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Epic.Count.ToString())
 						</button>
 					}
 
-					@if (juegos.Ubisoft != null && juegos.Ubisoft.Count > 0)
+					@if (juegos.Ubisoft?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.Ubisoft) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.Ubisoft))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Ubisoft)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.Ubisoft)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Ubisoft.Count.ToString())
 						</button>
 					}
 
-					@if (juegos.Ea != null && juegos.Ea.Count > 0)
+					@if (juegos.Ea?.Count > 0)
 					{
 						<button class="boton-pequeño" style="@CambiarEstilo(JuegoDRM.EA) width: fit-content; padding: 8px 16px; border-radius: 5px; display: flex; align-items: center; gap: 10px; box-shadow: none;" @onclick="@(e => ListadoAbrir(e, JuegoDRM.EA))">
-							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.EA)" style="max-width: 20px; max-height: 20px; object-fit: cover;" />
+							<img src="@JuegoDRM2.SacarImagen(JuegoDRM.EA)" style="max-width: 20px; max-height: 20px; object-fit: cover; display: block;" />
 							(@juegos.Ea.Count.ToString())
 						</button>
 					}
 
 					<div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 10px;">
 						<div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
-							<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" @bind-value:after="TextoCambiaBuscador" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Wishlist")" />
+							<input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Wishlist")" />
 
 							<div style="max-width: 16px;">
 								<svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -89,59 +89,13 @@ else
 			</div>
 
 			<div style="max-width: 1000px; margin: 20px auto;">
-				@{
-					List<JuegoUsuario> listaMostrar = new List<JuegoUsuario>();
-
-					foreach (var juego in listaGestor)
-					{
-						bool mostrarDRM = false;
-						bool mostrarBuscador = false;
-
-						if (drmSeleccionado == JuegoDRM.NoEspecificado)
-						{
-							mostrarDRM = true;
-						}
-						else
-						{
-							if (juego.DRMs != null && juego.DRMs.Count > 0)
-							{
-								foreach (var drm in juego.DRMs)
-								{
-									if (drm.DRM == drmSeleccionado)
-									{
-										mostrarDRM = true;
-										break;
-									}
-								}
-							}
-						}
-
-						if (string.IsNullOrEmpty(textoBuscador) == false)
-						{
-							if (Herramientas.Buscador.LimpiarNombre(juego.Nombre).IndexOf(Herramientas.Buscador.LimpiarNombre(textoBuscador)) >= 0)
-							{
-								mostrarBuscador = true;
-							}
-						}
-						else
-						{
-							mostrarBuscador = true;
-						}
-
-						if (mostrarDRM == true && mostrarBuscador == true)
-						{
-							listaMostrar.Add(juego);
-						}
-					}
-				}
-
-				<Virtualize Context="juego" Items="listaMostrar">
+				<Virtualize Context="juego" Items="listaFiltrada" ItemSize="70">
 					<ItemContent>
 						<div style="margin: 20px 0px; display: flex; align-items: center; position: relative;">
-							<a class="boton-pequeño" style="background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoOscuro)); padding: 2px;" href="/game/@juego.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego.Nombre)/" target="_blank">
+							<a class="boton-pequeño" style="padding: 1px;" href="/game/@juego.Id.ToString()/@Herramientas.EnlaceAdaptador.Nombre(juego.Nombre)/" target="_blank">
 								<div style="display: flex; align-items: center; justify-content: center; flex-direction: row;">
 									<div>
-										<img src="@juego.Imagen" style="height: 100%; width: 100%; min-width: 186px; max-height: 70px; object-fit: cover;" />
+										<img src="@juego.Imagen" style="height: 100%; width: 100%; min-width: 186px; max-height: 70px; object-fit: cover; display: block;" />
 									</div>
 
 									<div style="width: 100%; padding: 5px 20px;">
@@ -191,32 +145,32 @@ else
 
 @code {
 
-    #nullable disable
+#nullable disable
 
-    [Parameter]
-    public string idioma { get; set; }
+	[Parameter]
+	public string idioma { get; set; }
 
-    [Parameter]
-    public string usuarioId { get; set; }
+	[Parameter]
+	public string usuarioId { get; set; }
 
-    [Parameter]
-    public string fondoCabecera { get; set; }
+	[Parameter]
+	public string fondoCabecera { get; set; }
 
-    private UsuarioListadosJuegos juegos = null;
-    private JuegoDRM drmSeleccionado = JuegoDRM.NoEspecificado;
+	private UsuarioListadosJuegos juegos = null;
+	private JuegoDRM drmSeleccionado = JuegoDRM.NoEspecificado;
 
-    private List<JuegoUsuario> listaGestor = new List<JuegoUsuario>();
+	private List<JuegoUsuario> listaGestor = new List<JuegoUsuario>();
 
-    private bool cargado = false;
+	private bool cargado = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (string.IsNullOrEmpty(usuarioId) == false)
-        {
-            juegos = await Herramientas.UsuarioJuegos.Cargar(usuarioId);
+	protected override async Task OnInitializedAsync()
+	{
+		if (string.IsNullOrEmpty(usuarioId) == false)
+		{
+			juegos = await Herramientas.UsuarioJuegos.Cargar(usuarioId);
 
-            if (juegos != null)
-            {
+			if (juegos != null)
+			{
 				List<Task> tareasBusqueda = new List<Task>();
 
 				if (juegos.Steam?.Count > 0)
@@ -257,40 +211,47 @@ else
 				OrdenarResultados();
 
 				cargado = true;
-            }
-        }
-    }
+			}
+		}
+	}
 
-    #region Inicio
+	#region Inicio
 
-    private async Task ProcesarPlataformaSteam(List<APIs.Steam.SteamUsuarioJuego> juegosSteam)
-    {
-        List<string> idsSteam = juegosSteam.Select(juego => juego.Id.ToString()).ToList();
-        listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Steam, idsSteam);
+	private async Task ProcesarPlataformaSteam(List<APIs.Steam.SteamUsuarioJuego> juegosSteam)
+	{
+		List<string> idsSteam = juegosSteam.Select(juego => juego.Id.ToString()).ToList();
+		List<JuegoUsuario> listaLocal = new List<JuegoUsuario>();
+		listaLocal = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaLocal, JuegoDRM.Steam, idsSteam);
 
-        var diccSteam = juegosSteam.ToDictionary(j => j.Id.ToString());
+		var diccSteam = juegosSteam.ToDictionary(j => j.Id.ToString());
 
-        foreach (var juegoMostrar in listaGestor)
-        {
-            foreach (var drm in juegoMostrar.DRMs.Where(d => d.DRM == JuegoDRM.Steam))
-            {
-                if (diccSteam.TryGetValue(drm.Id, out var juegoSteam))
-                {
-                    drm.JugadoTiempo = juegoSteam.TiempoJugadoEnMinutos;
-                    drm.JugadoUltimaVez = juegoSteam.TiempoJugadoUltimaVez;
-                }
-            }
-        }
-    }
+		foreach (var juegoMostrar in listaLocal)
+		{
+			foreach (var drm in juegoMostrar.DRMs.Where(d => d.DRM == JuegoDRM.Steam))
+			{
+				if (diccSteam.TryGetValue(drm.Id, out var juegoSteam))
+				{
+					drm.JugadoTiempo = juegoSteam.TiempoJugadoEnMinutos;
+					drm.JugadoUltimaVez = juegoSteam.TiempoJugadoUltimaVez;
+				}
+			}
+		}
 
-    private async Task ProcesarPlataformaGog(List<APIs.GOG.GOGUsuarioJuego> juegosGog)
-    {
+		lock (listaGestor)
+		{
+			listaGestor.AddRange(listaLocal);
+		}
+	}
+
+	private async Task ProcesarPlataformaGog(List<APIs.GOG.GOGUsuarioJuego> juegosGog)
+	{
 		List<string> idsGog = juegosGog.Select(juego => juego.Id.ToString()).ToList();
-		listaGestor = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.GOG, idsGog);
+		List<JuegoUsuario> listaLocal = new List<JuegoUsuario>();
+		listaLocal = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaLocal, JuegoDRM.GOG, idsGog);
 
 		var diccGog = juegosGog.ToDictionary(j => j.Id.ToString());
 
-		foreach (var juegoMostrar in listaGestor)
+		foreach (var juegoMostrar in listaLocal)
 		{
 			foreach (var drm in juegoMostrar.DRMs.Where(d => d.DRM == JuegoDRM.GOG))
 			{
@@ -301,11 +262,16 @@ else
 				}
 			}
 		}
+
+		lock (listaGestor)
+		{
+			listaGestor.AddRange(listaLocal);
+		}
 	}
 
 	private void OrdenarResultados()
 	{
-		if (listaGestor.Count == 0) 
+		if (listaGestor.Count == 0)
 		{
 			return;
 		}
@@ -354,12 +320,16 @@ else
 		}
 	}
 
-    private string textoBuscador = string.Empty;
+	private string textoBuscador = string.Empty;
 
-	private void TextoCambiaBuscador()
+	private List<JuegoUsuario> listaFiltrada => listaGestor.Where(juego =>
 	{
-		
-	}
+		bool pasaDRM = drmSeleccionado == JuegoDRM.NoEspecificado || juego.DRMs?.Any(d => d.DRM == drmSeleccionado) == true;
+
+		bool pasaBuscador = string.IsNullOrEmpty(textoBuscador) == true || Herramientas.Buscador.LimpiarNombre(juego.Nombre).Contains(Herramientas.Buscador.LimpiarNombre(textoBuscador)) == true;
+
+		return pasaDRM && pasaBuscador;
+	}).ToList();
 
 	public class JuegoUsuario
 	{
@@ -371,9 +341,9 @@ else
 
 	public class JuegoUsuarioDRM
 	{
-        public JuegoDRM DRM { get; set; }
-        public string Id { get; set; }
-        public int JugadoTiempo { get; set; }
-        public int JugadoUltimaVez { get; set; }
+		public JuegoDRM DRM { get; set; }
+		public string Id { get; set; }
+		public int JugadoTiempo { get; set; }
+		public int JugadoUltimaVez { get; set; }
 	}
 }

@@ -1,8 +1,3 @@
-.texto-info-entrada {
-    margin-left: 10px;
-    margin-bottom: 5px;
-}
-
 .entrada-texto {
     padding: 5px 10px;
     background-color: var(--fondoEntrada);
@@ -10,7 +5,7 @@
     color: var(--colorTexto);
     display: block;
     width: 100%;
-    min-width: 100%;
+    min-width: fit-content;
     vertical-align: middle;
     border-bottom: 1px solid var(--fondoEntrada);
     font-size: 16px;
