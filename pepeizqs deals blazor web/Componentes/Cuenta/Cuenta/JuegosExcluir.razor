@@ -4,8 +4,22 @@
 }
 else if (juegosExcluidos?.Count > 0)
 {
+    <div style="display: flex; align-items: center; gap: 5px; flex-flow: wrap; padding: 10px 20px; background-color: rgba(0,0,0,0.25);">
+        <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 10px;">
+            <div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
+                <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Wishlist")" />
+
+                <div style="max-width: 16px;">
+                    <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+        
     <div style="display: flex; flex-direction: column; gap: 20px; padding: 0px 20px;">
-        <Virtualize Context="juego" Items="juegosExcluidos" ItemSize="87" OverscanCount="3">
+        <Virtualize Context="juego" Items="juegosFiltrados" ItemSize="87" OverscanCount="3">
             <ItemContent>
                 <div style="display: flex; align-items: center; gap: 20px; background-color: rgba(0,0,0,0.15); justify-content: space-between;">
                     <a href="/game/@juego.Id.ToString()" target="_blank" style="text-decoration: none; color: var(--colorTexto);">
@@ -67,4 +81,13 @@ else if (juegosExcluidos?.Count > 0)
 
         await ActualizarJuegosExcluidos();
     }
+
+    private string textoBuscador = string.Empty;
+
+    private List<global::Juegos.Juego> juegosFiltrados => juegosExcluidos.Where(juego =>
+    {
+        bool pasaBuscador = string.IsNullOrEmpty(textoBuscador) == true || Herramientas.Buscador.LimpiarNombre(juego.Nombre).Contains(Herramientas.Buscador.LimpiarNombre(textoBuscador)) == true;
+
+        return pasaBuscador;
+    }).ToList();
 }

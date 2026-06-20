@@ -145,7 +145,7 @@ else
 
 @code {
 
-#nullable disable
+	#nullable disable
 
 	[Parameter]
 	public string idioma { get; set; }
@@ -185,22 +185,22 @@ else
 
 				if (juegos.Amazon?.Count > 0)
 				{
-					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Amazon, juegos.Amazon));
+					tareasBusqueda.Add(ProcesarOtrasPlataformas(JuegoDRM.Amazon, juegos.Amazon));
 				}
 
 				if (juegos.Epic?.Count > 0)
 				{
-					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Epic, juegos.Epic));
+					tareasBusqueda.Add(ProcesarOtrasPlataformas(JuegoDRM.Epic, juegos.Epic));
 				}
 
 				if (juegos.Ubisoft?.Count > 0)
 				{
-					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.Ubisoft, juegos.Ubisoft));
+					tareasBusqueda.Add(ProcesarOtrasPlataformas(JuegoDRM.Ubisoft, juegos.Ubisoft));
 				}
 
 				if (juegos.Ea?.Count > 0)
 				{
-					tareasBusqueda.Add(global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaGestor, JuegoDRM.EA, juegos.Ea));
+					tareasBusqueda.Add(ProcesarOtrasPlataformas(JuegoDRM.EA, juegos.Ea));
 				}
 
 				if (tareasBusqueda.Count > 0)
@@ -262,6 +262,17 @@ else
 				}
 			}
 		}
+
+		lock (listaGestor)
+		{
+			listaGestor.AddRange(listaLocal);
+		}
+	}
+
+	private async Task ProcesarOtrasPlataformas(JuegoDRM drm, List<string> ids)
+	{
+		List<JuegoUsuario> listaLocal = new List<JuegoUsuario>();
+		listaLocal = await global::BaseDatos.Juegos.Buscar.MultiplesJuegosUsuario(listaLocal, drm, ids);
 
 		lock (listaGestor)
 		{

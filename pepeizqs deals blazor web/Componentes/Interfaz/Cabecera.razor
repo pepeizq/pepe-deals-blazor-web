@@ -937,6 +937,67 @@
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
+        if (primerRender == true)
+        {
+            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/Cabecera.razor.js");
+
+            cabeceraReferencia = DotNetObjectReference.Create(this);
+
+            if (moduloJs != null)
+            {
+                await moduloJs.InvokeVoidAsync("teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
+            }
+
+            if (string.IsNullOrEmpty(Search) == false)
+            {
+                textoBuscador = Search;
+
+                buscadorActivo = true;
+                cargandoBusqueda = true;
+
+                try
+                {
+                    var resultados = await BaseDatos.Juegos.Buscar.Nombre3(usuarioRegion, textoBuscador, resultadosMaximos, 10, 10, excluirJuegosIds);
+
+                    if (resultados.juegos?.Count > 0)
+                    {
+                        List<Juego> resultados2 = resultados.juegos;
+                        cantidadExcluidos = resultados.excluidos;
+
+                        ActualizarResultadosPorTipo(resultados2);
+                        ActivarPrimeraPestañaDisponible();
+
+                        await ActualizarScrollBody(resultados2.Any());
+                    }
+                }
+                catch
+                {
+                    LimpiarTodasLasPestañas();
+                }
+                finally
+                {
+                    cargandoBusqueda = false;
+                    StateHasChanged();
+                }
+
+                if (moduloJs != null)
+                {
+                    await moduloJs.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());                    
+                }
+            }
+        }
+    }
+
+    //Para que el NavManager coja los cambios de enlace
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        enlace = NavManager.Uri;
+
+        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
+        {
+            mostrarDropdown = false;
+        }
+
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
             Usuario deseadosCabecera = await BaseDatos.Usuarios.Buscar.OpcionesCabeceraDeseados(usuarioId);
@@ -993,70 +1054,9 @@
                     }
                 }
             }
-        }    
-
-        if (primerRender == true)
-        {
-            moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/interfaz/Cabecera.razor.js");
-
-            cabeceraReferencia = DotNetObjectReference.Create(this);
-
-            if (moduloJs != null)
-            {
-                await moduloJs.InvokeVoidAsync("teclearBusqueda", inputBuscador, cabeceraReferencia, 200);
-            }
-
-            if (string.IsNullOrEmpty(Search) == false)
-            {
-                textoBuscador = Search;
-
-                buscadorActivo = true;
-                cargandoBusqueda = true;
-
-                try
-                {
-                    var resultados = await BaseDatos.Juegos.Buscar.Nombre3(usuarioRegion, textoBuscador, resultadosMaximos, 10, 10, excluirJuegosIds);
-
-                    if (resultados.juegos?.Count > 0)
-                    {
-                        List<Juego> resultados2 = resultados.juegos;
-                        cantidadExcluidos = resultados.excluidos;
-
-                        ActualizarResultadosPorTipo(resultados2);
-                        ActivarPrimeraPestañaDisponible();
-
-                        await ActualizarScrollBody(resultados2.Any());
-                    }
-                }
-                catch
-                {
-                    LimpiarTodasLasPestañas();
-                }
-                finally
-                {
-                    cargandoBusqueda = false;
-                    StateHasChanged();
-                }
-
-                if (moduloJs != null)
-                {
-                    await moduloJs.InvokeVoidAsync("toggleBodyScroll", resultadosMostrar.Any());                    
-                }
-            }
-        }
-    }
-
-    //Para que el NavManager coja los cambios de enlace
-    private void OnLocationChanged(object sender, LocationChangedEventArgs e)
-    {
-        enlace = NavManager.Uri;
-
-        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
-        {
-            mostrarDropdown = false;
         }
 
-        InvokeAsync(StateHasChanged);
+        await InvokeAsync(StateHasChanged);
     }
 
     public async ValueTask DisposeAsync()
