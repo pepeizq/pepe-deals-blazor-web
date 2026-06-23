@@ -26,7 +26,7 @@
   "String26": "Wenn Sie die tragbare Version von PlayNite haben, müssen Sie die Datei '{0}' im Ordner '{1}' laden.",
   "String27": "Alle",
   "String28": "{0} Stunden",
-  "String29": "Sie haben keine Spiele auf Ihrem Konto geladen.",
+  "String29": "Auf Ihrem Konto sind keine Spiele geladen. Synchronisieren Sie es mit Spieleplattformen wie Steam oder GOG, damit die Website Ihnen zeigen kann, welche Spiele Sie haben oder möchten.",
   "String30": "Optionen",
   "String31": "Synchronisieren Sie Ihre Spiele",
   "String32": "Wenn Sie nicht möchten, dass die Website Ihre Spiele liest, deaktivieren Sie die Option.",
@@ -42,5 +42,6 @@
   "String42": "Desynchronisieren und alles löschen",
   "String43": "Wenn Sie diese Option auswählen, werden alle in Ihrem Konto gespeicherten {0}-Daten gelöscht.",
   "String45": "Login von {0} öffnen",
-  "String46": "Wenn Sie diese Methode zum Laden Ihrer Spiele verwenden, liest die Website nur die Spiele von Ihrem Konto. Sie können zur Sicherheit den Quellcode überprüfen."
+  "String46": "Wenn Sie diese Methode zum Laden Ihrer Spiele verwenden, liest die Website nur die Spiele von Ihrem Konto. Sie können zur Sicherheit den Quellcode überprüfen.",
+  "String47": "Synchronisierung öffnen"
 }

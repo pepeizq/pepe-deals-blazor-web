@@ -5,9 +5,13 @@
 else if (juegosExcluidos?.Count > 0)
 {
     <div style="display: flex; align-items: center; gap: 5px; flex-flow: wrap; padding: 10px 20px; background-color: rgba(0,0,0,0.25);">
+        <div style="font-size: 14px;">
+            @string.Format(@Herramientas.Idiomas.BuscarTexto(idioma, "String3", "AccountGamesExcluded"), juegosExcluidos?.Count)
+        </div>
+
         <div style="margin-left: auto; display: flex; justify-content: right; align-items: center; gap: 10px;">
             <div style="background-color: var(--buscadorSubcabecera); padding-right: 10px; display: flex; align-items: center; gap: 10px;">
-                <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Wishlist")" />
+                <input type="text" @bind-value="textoBuscador" @bind-value:event="oninput" class="entrada-texto" style="background-color: transparent; min-width: 50%; font-size: 14px; padding: 8px 10px;" placeholder="@Herramientas.Idiomas.BuscarTexto(idioma, "String4", "AccountGamesExcluded")" />
 
                 <div style="max-width: 16px;">
                     <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">

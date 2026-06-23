@@ -26,7 +26,7 @@
   "String26": "Si tenéis la versión portable de Playnite, debéis cargar el fichero '{0}' ubicado en la carpeta '{1}'.",
   "String27": "Todos",
   "String28": "{0} horas",
-  "String29": "No tienes ningún juego cargado en tu cuenta.",
+  "String29": "No tienes ningún juego cargado en tu cuenta. Sincroniza con plataformas de juegos como Steam o GOG para que la web te pueda enseñar que juegos tienes o deseas.",
   "String30": "Opciones",
   "String31": "Sincronizar tus juegos",
   "String32": "Si no quieres que la web lea tus juegos desactiva la opción.",
@@ -42,5 +42,6 @@
   "String42": "Desincronizar y borrar todo",
   "String43": "Si pulsas esta opción se borraran todos los datos de {0} que hay guardados en tu cuenta.",
   "String45": "Abrir login de {0}",
-  "String46": "Si usas este método para cargar tus juegos la web solo leerá los juegos de tu cuenta, puedes consultar el código fuente para asegurarte."
+  "String46": "Si usas este método para cargar tus juegos la web solo leerá los juegos de tu cuenta, puedes consultar el código fuente para asegurarte.",
+  "String47": "Abrir sincronización"
 }

@@ -1,4 +1,6 @@
 {
   "String1": "No hay juegos excluidos en tu cuenta",
-  "String2": "Quitar exclusión"
+  "String2": "Quitar exclusión",
+  "String3": "{0} juegos excluidos",
+  "String4": "Buscar"
 }
