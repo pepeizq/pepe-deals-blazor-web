@@ -209,12 +209,12 @@
 
     private async Task ProcesarSteamCuenta(Usuario usuario, TimeSpan tiempoActualizar, string usuarioId)
     {
-        if (string.IsNullOrEmpty(usuario.SteamAccount) == true || string.IsNullOrEmpty(usuario.SteamAccountLastCheck) == true)
+        if (string.IsNullOrEmpty(usuario.SteamId) == true)
         {   
             return;
         }
 
-        bool tiempoExcedido = string.IsNullOrEmpty(usuario.SteamAccountLastCheck) || Convert.ToDateTime(usuario.SteamAccountLastCheck) + tiempoActualizar > DateTime.Now;
+        bool tiempoExcedido = string.IsNullOrEmpty(usuario.SteamAccountLastCheck) || Convert.ToDateTime(usuario.SteamAccountLastCheck) + tiempoActualizar < DateTime.Now;
 
         if (tiempoExcedido == true)
         {
@@ -224,12 +224,12 @@
 
     private async Task ProcesarGogCuenta(Usuario usuario, TimeSpan tiempoActualizar, string usuarioId)
     {
-        if (string.IsNullOrEmpty(usuario.GogAccount) == true || usuario.GogAccountLastCheck == null)
+        if (string.IsNullOrEmpty(usuario.GogId) == true)
         {
             return;
         }
 
-        bool tiempoExcedido = usuario.GogAccountLastCheck + tiempoActualizar > DateTime.Now;
+        bool tiempoExcedido = usuario.GogAccountLastCheck + tiempoActualizar < DateTime.Now;
 
         if (tiempoExcedido == true)
         {

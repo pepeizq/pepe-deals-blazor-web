@@ -17,5 +17,7 @@
   "String15": "Verifica del codice di ripristino",
   "String16": "Inserisci il codice di ripristino",
   "String17": "Codice di ripristino",
-  "String18": "Hai richiesto di accedere con un codice di ripristino. Questo accesso non verrà ricordato finché non fornirai un codice dell'app di autenticazione al momento dell'accesso o disabiliterai 2FA ed eseguirai nuovamente l'accesso."
+  "String18": "Hai richiesto di accedere con un codice di ripristino. Questo accesso non verrà ricordato finché non fornirai un codice dell'app di autenticazione al momento dell'accesso o disabiliterai 2FA ed eseguirai nuovamente l'accesso.",
+  "String19": "Accedi con Steam",
+  "String20": "L'accesso a Steam non funziona al momento, ma puoi accedere con il tuo nome utente e password."
 }

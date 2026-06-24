@@ -1,5 +1,7 @@
 ﻿using ApexCharts;
+using AspNet.Security.OpenId.Steam;
 using Herramientas;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -94,10 +97,25 @@ builder.Services.AddSignalR(opciones =>
 
 builder.Services.AddCascadingAuthenticationState();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
+	options.IdleTimeout = TimeSpan.FromMinutes(10);
+});
+
 builder.Services.AddAuthentication(opciones =>
 {
 	opciones.DefaultScheme = IdentityConstants.ApplicationScheme;
 	opciones.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+}).AddSteam(opciones =>
+{
+	opciones.ApplicationKey = builder.Configuration["SteamAPI:Key"];
+	opciones.CallbackPath = "/signin-steam";
+	opciones.CorrelationCookie.SameSite = SameSiteMode.Lax;
+	opciones.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+	opciones.CorrelationCookie.HttpOnly = true;
 }).AddIdentityCookies();
 
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -484,10 +502,10 @@ else
 	app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
+app.UseSession(); //Para login de Steam
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseHttpsRedirection();
 
 app.MapStaticAssets();
 
@@ -803,6 +821,66 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 	});
 
 	return Results.Content(json, "application/manifest+json");
+});
+
+#endregion
+
+#region Login Steam
+
+app.MapGet("/login-steam", async (HttpContext contexto, string returnUrl) =>
+{
+	await contexto.ChallengeAsync(SteamAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties
+	{
+		RedirectUri = $"/login-steam/callback?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}"
+	});
+});
+
+app.MapGet("/login-steam/callback", async (HttpContext contexto, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, string returnUrl) =>
+{
+	var resultado = await contexto.AuthenticateAsync(IdentityConstants.ExternalScheme);
+
+	if (resultado.Succeeded == false)
+	{
+		return Results.Redirect("/account/login?steam1=true");
+	}
+
+	var steamId64 = resultado.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value.Split('/').Last();
+
+	if (steamId64 == null)
+	{
+		return Results.Redirect("/account/login?steam2=true");
+	}
+		
+	if (contexto.User.Identity?.IsAuthenticated == true)
+	{
+		Usuario usuarioActual = await usuarioManager.GetUserAsync(contexto.User);
+
+		if (usuarioActual != null)
+		{
+			usuarioActual.SteamId = steamId64;
+			var resultado2 = await usuarioManager.UpdateAsync(usuarioActual);
+
+			if (resultado2.Succeeded == true)
+			{
+				return Results.Redirect("/account/sync/steam/?success=true");
+			}
+			else
+			{
+				return Results.Redirect("/account/sync/steam/?success=false");
+			}
+		}
+	}
+
+	Usuario usuario = await usuarioManager.Users.FirstOrDefaultAsync(u => u.SteamId == steamId64);
+
+	if (usuario != null)
+	{
+		await signInManager.SignInAsync(usuario, isPersistent: true);
+		return Results.Redirect(returnUrl ?? "/");
+	}
+
+	contexto.Session.SetString("PendingSteamId", steamId64);
+	return Results.Redirect($"/account/register");
 });
 
 #endregion

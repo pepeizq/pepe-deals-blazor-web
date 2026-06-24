@@ -17,5 +17,7 @@
   "String15": "Recovery code verification",
   "String16": "Enter the recovery code",
   "String17": "Recovery code",
-  "String18": "You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again."
+  "String18": "You have requested to log in with a recovery code. This login will not be remembered until you provide an authenticator app code at log in or disable 2FA and log in again.",
+  "String19": "Log in with Steam",
+  "String20": "Steam login is not working right now, but you can log in with your username and password."
 }

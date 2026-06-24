@@ -10,17 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="APIs\EA\Tienda.cs~RF3c3f001.TMP" />
-    <None Remove="Componentes\Admin\q4w51v0k.yvf~" />
-    <None Remove="Componentes\Secciones\Deseados.razor.js" />
-    <None Remove="Idiomas\Boosteroid\pt.json~RF174ab52.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Componentes\Secciones\Deseados.razor.js" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="AspNet.Security.OpenId" Version="10.0.0" />
+    <PackageReference Include="AspNet.Security.OpenId.Steam" Version="10.0.0" />
     <PackageReference Include="Blazor-ApexCharts" Version="6.1.0" />
     <PackageReference Include="czf.RedditSharp" Version="3.0.0" />
     <PackageReference Include="Dapper" Version="2.1.79" />
@@ -30,15 +21,12 @@
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.9" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.9" />
-    <PackageReference Include="Mscc.GenerativeAI" Version="3.1.0" />
     <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Patreon.Net" Version="1.0.3" />

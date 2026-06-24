@@ -1,7 +1,7 @@
 {
   "String1": "o seu nome",
   "String2": "Você pode sincronizar seus jogos {0} e a lista de desejos à web, simplesmente adicionando um link à sua conta. Não terá de fazer mais nada, pois a atualização será automática a cada 7 dias (ou 1 dia se contribuir para o Patreon).",
-  "String3": "Suas permissões de conta {0} devem ser assim.",
+  "String3": "As permissões da sua conta {0} devem ser definidas desta forma para que o site possa ler seus jogos e sua lista de desejos.",
   "String4": "Esse usuário {0} já está associado a outra conta registrada.",
   "String5": "Atualizar",
   "String7": "Última importação",
@@ -43,5 +43,6 @@
   "String43": "Se você selecionar esta opção, todos os {0} dados salvos em sua conta serão excluídos.",
   "String45": "Abra o login de {0}",
   "String46": "Se você usar este método para carregar seus jogos, o site só lerá os jogos da sua conta, você pode verificar o código-fonte para ter certeza.",
-  "String47": "Sincronização aberta"
+  "String47": "Sincronização aberta",
+  "String48": "Uma conta Steam foi vinculada à conta do seu site"
 }

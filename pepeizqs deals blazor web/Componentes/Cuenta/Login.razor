@@ -29,6 +29,13 @@
     <meta name="robots" content="index, follow" />
 </HeadContent>
 
+@if (steam1 == true || steam2 == true)
+{
+    <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center; max-width: 600px;">
+        @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Login")
+    </div>
+}
+
 @if (string.IsNullOrEmpty(mensajeError) == false)
 {
     <div style="margin: 40px auto 0px auto; background-color: var(--fondoPeligro); padding: 15px 20px; text-align: center; max-width: 600px;">
@@ -91,6 +98,18 @@
     </EditForm>
 </div>
 
+<div class="caja-login-contenido" style="margin: 40px auto;">
+    <div class="caja-login-titulo">
+        @Herramientas.Idiomas.BuscarTexto(idioma, "String19", "Login")
+    </div>
+
+    <div style="display: flex; justify-content: center; padding: 20px;">
+        <a href="/login-steam" style="text-decoration: none;">
+            <img src="/imagenes/otros/loginsteam_1.webp" style="display: block;" />
+        </a>
+    </div>
+</div>
+
 <Accesos idioma="@idioma" mostrarLogin="false" />
 
 @code {
@@ -112,6 +131,12 @@
 
     [SupplyParameterFromQuery]
     private string code { get; set; }
+
+    [SupplyParameterFromQuery]
+    private bool steam1 { get; set; }
+
+    [SupplyParameterFromQuery]
+    private bool steam2 { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

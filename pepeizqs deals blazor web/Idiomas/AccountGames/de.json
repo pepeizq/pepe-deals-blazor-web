@@ -1,7 +1,7 @@
 {
   "String1": "ihr Name",
   "String2": "Sie können Ihre {0}-Spiele und Ihre Wunschliste mit dem Web synchronisieren, indem Sie einfach einen Link zu Ihrem Konto hinzufügen. Sie müssen nichts weiter tun, da die Aktualisierung alle 7 Tage (oder alle 1 Tag, wenn Sie auf Patreon beitragen) automatisch erfolgt.",
-  "String3": "Ihre {0}-Kontoberechtigungen müssen so sein.",
+  "String3": "Die Berechtigungen Ihres {0}-Kontos müssen auf diese Weise festgelegt werden, damit die Website Ihre Spiele und Wunschliste lesen kann.",
   "String4": "Dieser {0}-Benutzer ist bereits einem anderen registrierten Konto zugeordnet.",
   "String5": "Aktualisieren",
   "String7": "Letzter Import",
@@ -43,5 +43,6 @@
   "String43": "Wenn Sie diese Option auswählen, werden alle in Ihrem Konto gespeicherten {0}-Daten gelöscht.",
   "String45": "Login von {0} öffnen",
   "String46": "Wenn Sie diese Methode zum Laden Ihrer Spiele verwenden, liest die Website nur die Spiele von Ihrem Konto. Sie können zur Sicherheit den Quellcode überprüfen.",
-  "String47": "Synchronisierung öffnen"
+  "String47": "Synchronisierung öffnen",
+  "String48": "Ein Steam-Konto wurde mit Ihrem Website-Konto verknüpft"
 }

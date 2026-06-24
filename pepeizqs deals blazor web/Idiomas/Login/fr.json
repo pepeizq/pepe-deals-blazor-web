@@ -17,5 +17,7 @@
   "String15": "Vérification du code de récupération",
   "String16": "Entrez le code de récupération",
   "String17": "Code de récupération",
-  "String18": "Vous avez demandé à vous connecter avec un code de récupération. Cette connexion ne sera pas mémorisée jusqu'à ce que vous fournissiez un code d'application d'authentification lors de la connexion ou que vous désactiviez 2FA et que vous vous reconnectiez."
+  "String18": "Vous avez demandé à vous connecter avec un code de récupération. Cette connexion ne sera pas mémorisée jusqu'à ce que vous fournissiez un code d'application d'authentification lors de la connexion ou que vous désactiviez 2FA et que vous vous reconnectiez.",
+  "String19": "Connectez-vous avec Steam",
+  "String20": "La connexion Steam ne fonctionne pas pour le moment, mais vous pouvez vous connecter avec votre nom d'utilisateur et votre mot de passe."
 }

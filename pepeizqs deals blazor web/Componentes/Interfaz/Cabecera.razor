@@ -468,16 +468,8 @@
                         </Authorized>
                         <NotAuthorized>
                             <div style="display: flex; align-items: center; gap: 20px; margin-left: auto;">
-                                <a href="/account/login" class="boton-superior" style="padding: 0px; text-align: left; border: 0; margin: 0px; font-size: 14px;">
-                                    <div style="@GenerarEstilo("/account/login")">
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "Login", "Header")
-                                    </div>
-                                </a>
-
-                                <a href="/account/register" class="boton-superior" style="padding: 0px; text-align: left; border: 0; margin: 0px; font-size: 14px;">
-                                    <div style="@GenerarEstilo("/account/register")">
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "Register", "Header")
-                                    </div>
+                                <a href="/login-steam" style="text-decoration: none; display: flex; justify-content: right;">
+                                    <img src="/imagenes/otros/loginsteam_1.webp" style="display: block; width: 85%;" />
                                 </a>
 
                                 <div class="menu-dropdown2">
@@ -499,6 +491,21 @@
                                     </div>
 
                                     <div class="menu-dropdown-contenido-derecha">
+                                        @{
+                                            string enlaceLogin = "/account/login";
+                                            string enlaceRegistro = "/account/register";
+                                        }
+
+                                        <button @onclick="(e => AbrirEnlace(e, enlaceLogin, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: right;">
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "Login", "Header")
+                                        </button>
+
+                                        <button @onclick="(e => AbrirEnlace(e, enlaceRegistro, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: right;">
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "Register", "Header")
+                                        </button>
+
+                                        <hr style="margin: 5px 0px; border-top: var(--glaseadoCabeceraBorde) solid; opacity: 0.6;" />
+
                                         <button class="boton-superior" @onclick="(e => CambiarDivisa(e, 0))" style="font-size: 15px; width: 100%; text-align: right;">
                                             <div style="display: flex; align-items: center; gap: 10px; justify-content: right;">
                                                 @if (usuarioRegion == TiendaRegion.Europa)

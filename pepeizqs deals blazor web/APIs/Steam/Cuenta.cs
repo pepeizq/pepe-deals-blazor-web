@@ -83,7 +83,24 @@ namespace APIs.Steam
             return null;
         }
 
-        public static async Task<SteamUsuario> CargarDatos(string enlace)
+        public static async Task<SteamCuentaAPI> CargarCuenta(string id64)
+        {
+			string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamids=" + id64);
+
+            if (string.IsNullOrEmpty(html) == false)
+            {
+                SteamCuentaAPI cuenta = JsonSerializer.Deserialize<SteamCuentaAPI>(html);
+
+                if (cuenta != null)
+                {
+                    return cuenta;
+                }
+            }
+
+            return null;
+		}
+
+		public static async Task<SteamUsuario> CargarDatos(string enlace)
         {
             SteamCuentaID64 nuevaCuenta = await CargarID64(enlace);
 

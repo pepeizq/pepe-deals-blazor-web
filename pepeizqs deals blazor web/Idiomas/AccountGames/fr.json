@@ -1,7 +1,7 @@
 {
   "String1": "ton nom",
   "String2": "Vous pouvez synchroniser vos jeux {0} et votre liste de souhaits sur le Web en ajoutant simplement un lien vers votre compte. Vous n'aurez rien d'autre à faire puisqu'il sera automatiquement mis à jour tous les 7 jours (ou 1 jour si vous contribuez sur Patreon).",
-  "String3": "Vos autorisations de compte {0} doivent être comme ceci.",
+  "String3": "Les autorisations de votre compte {0} doivent être définies de cette façon pour que le site Web puisse lire vos jeux et votre liste de souhaits.",
   "String4": "Cet utilisateur {0} est déjà associé à un autre compte enregistré.",
   "String5": "Rafraîchir",
   "String7": "Dernière importation",
@@ -43,5 +43,6 @@
   "String43": "Si vous sélectionnez cette option, toutes les {0} données enregistrées sur votre compte seront supprimées.",
   "String45": "Ouvrir la connexion de {0}",
   "String46": "Si vous utilisez cette méthode pour charger vos jeux, le site Web lira uniquement les jeux de votre compte, vous pouvez vérifier le code source pour en être sûr.",
-  "String47": "Synchronisation ouverte"
+  "String47": "Synchronisation ouverte",
+  "String48": "Un compte Steam a été lié à votre compte de site Web"
 }

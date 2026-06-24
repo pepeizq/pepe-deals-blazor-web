@@ -1,7 +1,7 @@
 {
   "String1": "your name",
   "String2": "You can sync your {0} games and wishlist to the web by simply adding a link to your account. You won't have to do anything else since it will automatically update every 7 days (or 1 day if you contribute on Patreon).",
-  "String3": "Your {0} account permissions must be like this.",
+  "String3": "Your {0} account permissions must be set this way for the website to be able to read your games and wishlist.",
   "String4": "That {0} user is already associated with another registered account.",
   "String5": "Refresh",
   "String7": "Last import",
@@ -43,5 +43,6 @@
   "String43": "If you select this option, all {0} data saved to your account will be deleted.",
   "String45": "Open login of {0}",
   "String46": "If you use this method to load your games, the website will only read the games from your account; you can check the source code to be sure.",
-  "String47": "Open sync"
+  "String47": "Open sync",
+  "String48": "A Steam account has been linked to your website account"
 }

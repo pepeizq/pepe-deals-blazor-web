@@ -17,5 +17,7 @@
   "String15": "Überprüfung des Wiederherstellungscodes",
   "String16": "Geben Sie den Wiederherstellungscode ein",
   "String17": "Wiederherstellungscode",
-  "String18": "Sie haben die Anmeldung mit einem Wiederherstellungscode angefordert. Diese Anmeldung wird erst gespeichert, wenn Sie bei der Anmeldung einen Authentifizierungs-App-Code angeben oder 2FA deaktivieren und sich erneut anmelden."
+  "String18": "Sie haben die Anmeldung mit einem Wiederherstellungscode angefordert. Diese Anmeldung wird erst gespeichert, wenn Sie bei der Anmeldung einen Authentifizierungs-App-Code angeben oder 2FA deaktivieren und sich erneut anmelden.",
+  "String19": "Melden Sie sich mit Steam an",
+  "String20": "Die Steam-Anmeldung funktioniert derzeit nicht, Sie können sich jedoch mit Ihrem Benutzernamen und Passwort anmelden."
 }

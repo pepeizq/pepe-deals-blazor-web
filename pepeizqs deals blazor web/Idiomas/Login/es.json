@@ -17,5 +17,7 @@
   "String15": "Verificación del código de recuperación",
   "String16": "Introduce el código de recuperación",
   "String17": "Código de recuperación",
-  "String18": "Has solicitado iniciar sesión con un código de recuperación. Este inicio de sesión no se recordará hasta que proporciones un código de la aplicación autentificadora al iniciar sesión o desactives la autentificación de dos factores y vuelvas a iniciar sesión."
+  "String18": "Has solicitado iniciar sesión con un código de recuperación. Este inicio de sesión no se recordará hasta que proporciones un código de la aplicación autentificadora al iniciar sesión o desactives la autentificación de dos factores y vuelvas a iniciar sesión.",
+  "String19": "Iniciar sesión con Steam",
+  "String20": "El login de Steam no funciona ahora mismo, pero puedes logear con tu usuario y contraseña."
 }
