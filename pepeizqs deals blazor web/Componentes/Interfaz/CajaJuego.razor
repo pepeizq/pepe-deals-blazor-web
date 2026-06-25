@@ -181,7 +181,7 @@
 	string fondoColor = "background-color: var(--fondoBotonPequeño);";
 	string fondoDescuento = "background-color: darkgreen;";
 
-	if (juegosUsuarioIndex?.EstaVacia == false)
+	if (juegosUsuarioIndex?.EstaVacia == false && string.IsNullOrEmpty(color) == true)
 	{
 		usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
 

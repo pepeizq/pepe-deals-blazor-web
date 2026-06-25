@@ -7,5 +7,9 @@
   "String5": "contraseña",
   "String6": "Confirmar Contraseña",
   "String7": "Registrar Cuenta",
-  "String8": "La contraseña y la contraseña de confirmación no coinciden."
+  "String8": "La contraseña y la contraseña de confirmación no coinciden.",
+  "String9": "Al registrar una cuenta en la web se añadirán los siguientes campos de Steam:",
+  "String10": "ID64",
+  "String11": "Nombre",
+  "String12": "Avatar"
 }

@@ -65,7 +65,33 @@
 
                 @if (string.IsNullOrEmpty(steamId64Pendiente) == false)
                 {
+                    <div style="background-color: var(--fondoAlerta); padding: 15px 20px; font-size: 14px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                        <div>
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Register")
+                        </div>
 
+                        <div>
+                            • @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Register"): @steamId64Pendiente
+                        </div>
+
+                        @if (string.IsNullOrEmpty(steamNicknamePendiente) == false)
+                        {
+                            <div>
+                                • @Herramientas.Idiomas.BuscarTexto(idioma, "String11", "Register"): @steamNicknamePendiente
+                            </div>
+                        }
+
+                        @if (string.IsNullOrEmpty(steamAvatarPendiente) == false)
+                        {
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div>
+                                    • @Herramientas.Idiomas.BuscarTexto(idioma, "String12", "Register"):
+                                </div>
+
+                                <img src="@steamAvatarPendiente" style="width: 24px; height: 24px; display: block;" alt="@steamAvatarPendiente" title="@steamAvatarPendiente"/>
+                            </div>
+                        }
+                    </div>
                 }
 
                 @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
@@ -149,18 +175,24 @@
         if (string.IsNullOrEmpty(steamId64Pendiente) == false)
         {
             usuario.SteamId = steamId64Pendiente;
-            usuario.Nickname = steamNicknamePendiente;
-            usuario.Avatar = steamAvatarPendiente;
-            
+
+            if (string.IsNullOrEmpty(steamNicknamePendiente) == false)
+            {
+                usuario.Nickname = steamNicknamePendiente;
+            }
+
+            if (string.IsNullOrEmpty(steamAvatarPendiente) == false)
+            {
+                usuario.Avatar = steamAvatarPendiente;
+            }
+
             await UserManager.UpdateAsync(usuario);
         }
 
-        var userId = await UserManager.GetUserIdAsync(usuario);
-        var code = await UserManager.GenerateEmailConfirmationTokenAsync(usuario);
+        string userId = await UserManager.GetUserIdAsync(usuario);
+        string code = await UserManager.GenerateEmailConfirmationTokenAsync(usuario);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        var callbackUrl = NavManager.GetUriWithQueryParameters(
-            NavManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
-            new Dictionary<string, object> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+        string callbackUrl = NavManager.GetUriWithQueryParameters(NavManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri, new Dictionary<string, object> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
 
         await EmailSender.SendConfirmationLinkAsync(usuario, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 

@@ -4,6 +4,7 @@
   "String3": "Tus permisos en tu cuenta de {0} deben estar así para que la web sea capaz de leer tus juegos y deseados.",
   "String4": "Ese usuario de {0} ya está asociado a otra cuenta registrada.",
   "String5": "Actualizar",
+  "String6": "Puedes sincronizar con la web los juegos y deseados que tengas en {0} simplemente sincronizando tu cuenta. No tendrás que volver a hacer nada más dado que se actualizará automáticamente cada 7 días (o 1 día si contribuyes en Patreon).",
   "String7": "Última importación",
   "String8": "{0} juegos",
   "String9": "{0} deseados",

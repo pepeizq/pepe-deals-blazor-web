@@ -7,5 +7,9 @@
   "String5": "Passwort",
   "String6": "Passwort bestätigen",
   "String7": "Registrieren",
-  "String8": "Das Passwort und das Bestätigungspasswort stimmen nicht überein."
+  "String8": "Das Passwort und das Bestätigungspasswort stimmen nicht überein.",
+  "String9": "Wenn Sie ein Konto auf der Website registrieren, werden die folgenden Steam-Felder hinzugefügt:",
+  "String10": "ID64",
+  "String11": "Spitzname",
+  "String12": "Avatar"
 }

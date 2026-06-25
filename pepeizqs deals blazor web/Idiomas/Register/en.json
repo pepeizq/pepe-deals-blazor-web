@@ -7,5 +7,9 @@
   "String5": "password",
   "String6": "Confirm Password",
   "String7": "Register",
-  "String8": "The password and confirmation password do not match."
+  "String8": "The password and confirmation password do not match.",
+  "String9": "When you register an account on the website, the following Steam fields will be added:",
+  "String10": "ID64",
+  "String11": "Nickname",
+  "String12": "Avatar"
 }

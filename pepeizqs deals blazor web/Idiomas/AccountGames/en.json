@@ -4,6 +4,7 @@
   "String3": "Your {0} account permissions must be set this way for the website to be able to read your games and wishlist.",
   "String4": "That {0} user is already associated with another registered account.",
   "String5": "Refresh",
+  "String6": "You can sync your {0} games and wishlist to the web by syncing your account. You won't have to do anything else since it will automatically update every 7 days (or 1 day if you contribute on Patreon).",
   "String7": "Last import",
   "String8": "{0} games",
   "String9": "{0} wishlist",

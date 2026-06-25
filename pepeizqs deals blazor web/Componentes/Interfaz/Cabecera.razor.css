@@ -59,6 +59,10 @@
         padding-right: 10px;
     }
 
+    .cabecera-poner {
+        padding: 0px 10px;
+    }
+
     .boton-superior {
         float: none;
     }
@@ -69,24 +73,24 @@
         }
 }
 
-.botones-superiores {
+.botones-escritorio {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
 @media (max-width: 1100px) {
-    .botones-superiores {
+    .botones-escritorio {
         display: none;
     }
 }
 
-.botones-superiores2 {
+.botones-movil {
     display: none;
 }
 
 @media (max-width: 1100px) {
-    .botones-superiores2 {
+    .botones-movil {
         display: flex;
         margin-left: auto;
     }

@@ -4,6 +4,7 @@
   "String3": "Die Berechtigungen Ihres {0}-Kontos müssen auf diese Weise festgelegt werden, damit die Website Ihre Spiele und Wunschliste lesen kann.",
   "String4": "Dieser {0}-Benutzer ist bereits einem anderen registrierten Konto zugeordnet.",
   "String5": "Aktualisieren",
+  "String6": "Sie können Ihre {0}-Spiele und Ihre Wunschliste mit dem Web synchronisieren, indem Sie Ihr Konto synchronisieren. Sie müssen nichts weiter tun, da es alle 7 Tage automatisch aktualisiert wird (oder 1 Tag, wenn Sie auf Patreon beitragen).",
   "String7": "Letzter Import",
   "String8": "{0} Spiele",
   "String9": "{0} Wunschliste",

@@ -13,7 +13,7 @@
 
 .boton-pequeño-peligro {
     color: var(--colorTexto);
-    background-color: var(--colorTextoPeligro);
+    background-color: var(--fondoPeligro);
     display: inline-block;
     user-select: none;
     width: 100%;

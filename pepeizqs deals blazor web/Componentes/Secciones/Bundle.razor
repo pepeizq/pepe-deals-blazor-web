@@ -753,7 +753,7 @@
 							juego.Imagen = juego.Juego.Imagenes.Header_460x215;
 						}
 
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego.Juego) == true)
+						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego.Juego, juego.DRM) == true)
 						{
 							juego.Color = "var(--fondoBien)";
 						}

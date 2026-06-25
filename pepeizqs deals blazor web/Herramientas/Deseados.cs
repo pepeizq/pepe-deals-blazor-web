@@ -286,7 +286,7 @@ namespace Herramientas
 
 		public static bool ComprobarSiEstaWeb(UsuarioDeseadosWebIndex deseados, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado, bool usarIdMaestra = false)
 		{
-			if (deseados == null)
+			if (deseados == null || juego == null)
 			{
 				return false;
 			}

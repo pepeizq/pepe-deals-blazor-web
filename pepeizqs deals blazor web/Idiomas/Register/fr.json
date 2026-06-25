@@ -7,5 +7,9 @@
   "String5": "mot de passe",
   "String6": "Confirmez le mot de passe",
   "String7": "Registre",
-  "String8": "Le mot de passe et le mot de passe de confirmation ne correspondent pas."
+  "String8": "Le mot de passe et le mot de passe de confirmation ne correspondent pas.",
+  "String9": "Lorsque vous créez un compte sur le site Web, les champs Steam suivants seront ajoutés:",
+  "String10": "ID64",
+  "String11": "Surnom",
+  "String12": "Avatar"
 }

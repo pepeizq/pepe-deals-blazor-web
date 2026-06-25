@@ -4,6 +4,7 @@
   "String3": "As permissões da sua conta {0} devem ser definidas desta forma para que o site possa ler seus jogos e sua lista de desejos.",
   "String4": "Esse usuário {0} já está associado a outra conta registrada.",
   "String5": "Atualizar",
+  "String6": "Você pode sincronizar seus {0} jogos e lista de desejos com a web sincronizando sua conta. Você não precisará fazer mais nada, pois ela será atualizada automaticamente a cada 7 dias (ou 1 dia se você contribuir no Patreon).",
   "String7": "Última importação",
   "String8": "{0} jogos",
   "String9": "{0} lista de desejos",

@@ -80,7 +80,7 @@
                     </div>
                 }
 
-                <div class="botones-superiores">
+                <div class="botones-escritorio">
                     @if (string.IsNullOrEmpty(usuarioId) == false)
                     {
                         <div class="menu-dropdown2">
@@ -550,7 +550,7 @@
                     </AuthorizeView>
                 </div>
 
-                <div class="botones-superiores2" style="cursor: pointer;" @onclick="(e => MostrarPanel(e))">
+                <div class="botones-movil" style="cursor: pointer;" @onclick="(e => MostrarPanel(e))">
                     <div>
                         <div style="width: 18px; height: 18px; margin-left: 10px;">
                             @if (mostrarPanel == false)
@@ -580,40 +580,60 @@
                                             textoBuscador = "(" + deseadosCantidad.ToString() + ") " + textoDeseados;
                                         }
 
-                                        <a class="texto-cabecera boton-superior" href="/wishlist" style="font-size: 15px;">
+                                        <a class="boton-superior" href="/wishlist" style="font-size: 15px;">
                                             @textoDeseados
                                         </a>
                                     }
 
-                                    <a class="texto-cabecera boton-superior" href="/historical-lows" style="font-size: 15px;">
-                                        @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
-                                    </a>
-
-                                    <a class="texto-cabecera boton-superior" href="/bundles" style="font-size: 15px;">
+                                    <a class="boton-superior" href="/bundles" style="font-size: 15px;">
                                         @Herramientas.Idiomas.BuscarTexto(idioma, "Bundles", "Header")
                                     </a>
 
-                                    <a class="texto-cabecera boton-superior" href="/free" style="font-size: 15px;">
+                                    <a class="boton-superior" href="/free" style="font-size: 15px;">
                                         @Herramientas.Idiomas.BuscarTexto(idioma, "Free", "Header")
                                     </a>
 
-                                    <a class="texto-cabecera boton-superior" href="/subscriptions" style="font-size: 15px;">
+                                    <a class="boton-superior" href="/subscriptions" style="font-size: 15px;">
                                         @Herramientas.Idiomas.BuscarTexto(idioma, "Subscriptions", "Header")
                                     </a>
 
-                                    <a class="texto-cabecera boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" style="font-size: 15px;">
+                                    <a class="boton-superior" href="https://pepeizqapps.com/extension/pepeizq-deals" target="_blank" style="font-size: 15px;">
                                         @Herramientas.Idiomas.BuscarTexto(idioma, "String10", "Footer")
                                     </a>
 
                                     @if (usuarioPatreon == false)
                                     {
-                                        <a class="texto-cabecera boton-superior" href="@enlacePatreon" target="_blank" style="font-size: 15px;">
+                                        <a class="boton-superior" href="@enlacePatreon" target="_blank" style="font-size: 15px;">
                                             Patreon
                                         </a>
                                     }
                                 </div>
 
-                                <hr />
+                                <hr style="margin: 10px 0px; opacity: 0.6;" />
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                                    <a class="boton-superior" href="/historical-lows" style="font-size: 15px;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "HistoricalLows", "Header")
+                                    </a>
+
+                                    <a class="boton-superior" href="/steamdeck" style="font-size: 15px;">
+                                        Steam Deck
+                                    </a>
+
+                                    <a class="boton-superior" href="/steamos" style="font-size: 15px;">
+                                        SteamOS
+                                    </a>
+
+                                    <a class="boton-superior" href="/geforcenow" style="font-size: 15px;">
+                                        Geforce NOW
+                                    </a>
+
+                                    <a class="boton-superior" href="/boosteroid" style="font-size: 15px;">
+                                        Boosteroid
+                                    </a>
+                                </div>
+                                    
+                                <hr style="margin: 10px 0px; opacity: 0.6;" />
 
                                 <AuthorizeView>
                                     <Authorized>
@@ -621,11 +641,24 @@
                                             @{
                                                 string enlaceCuenta = "/account";
                                                 string enlaceDeslogear = "/account/logout";
+                                                string enlaceSincronizarCuenta = "/account/sync/";
+                                                string enlacePatreonCuenta = "/account/patreon-store/";
                                             }
 
                                             <button @onclick="(e => AbrirEnlace(e, enlaceCuenta, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: left; overflow: hidden;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "Account", "Header")
                                             </button>
+
+                                            <button @onclick="(e => AbrirEnlace(e, enlaceSincronizarCuenta, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: left; overflow: hidden;">
+                                                @Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Header")
+                                            </button>
+
+                                            @if (usuarioPatreon == true || usuarioAdmin == true)
+                                            {
+                                                <button @onclick="(e => AbrirEnlace(e, enlacePatreonCuenta, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: left; overflow: hidden;">
+                                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Header")
+                                                </button>
+                                            }
 
                                             <button @onclick="(e => AbrirEnlace(e, enlaceDeslogear, false))" class="boton-superior" style="font-size: 15px; width: 100%; text-align: left; overflow: hidden;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "Logout", "Header")
@@ -634,11 +667,11 @@
                                     </Authorized>
                                     <NotAuthorized>
                                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
-                                            <a class="texto-cabecera boton-superior" href="/account/login" target="_blank" style="font-size: 15px;">
+                                            <a class="boton-superior" href="/account/login" target="_blank" style="font-size: 15px;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "Login", "Header")
                                             </a>
 
-                                            <a class="texto-cabecera boton-superior" href="/account/register" target="_blank" style="font-size: 15px;">
+                                            <a class="boton-superior" href="/account/register" target="_blank" style="font-size: 15px;">
                                                 @Herramientas.Idiomas.BuscarTexto(idioma, "Register", "Header")
                                             </a>
                                         </div>
