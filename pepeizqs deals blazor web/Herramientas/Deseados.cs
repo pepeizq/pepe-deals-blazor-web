@@ -253,37 +253,6 @@ namespace Herramientas
 			deseado.ReseñasCantidad = analisis?.Cantidad?.Replace(",", null) ?? "0";
 		}
 
-		public static bool ComprobarSiEstaImportado(UsuarioDeseadosImportadosIndex deseados, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado, bool usarIdMaestra = false)
-		{
-			if (deseados == null)
-			{
-				return false;
-			}
-
-			if (usarIdMaestra == true && juego.IdMaestra == 0)
-			{
-				juego.IdMaestra = juego.Id;
-			}
-
-			if (drm == JuegoDRM.Steam || drm == JuegoDRM.NoEspecificado)
-			{
-				if (juego.IdSteam > 0 && deseados?.Steam?.Count > 0)
-				{
-					return deseados.Steam.Any(d => d == juego.IdSteam && (drm == JuegoDRM.Steam || drm == JuegoDRM.NoEspecificado));
-				}
-			}
-
-			if (drm == JuegoDRM.GOG || drm == JuegoDRM.NoEspecificado)
-			{
-				if (juego.IdGog > 0 && deseados?.Gog?.Count > 0)
-				{
-					return deseados.Gog.Any(d => d == juego.IdGog && (drm == JuegoDRM.GOG || drm == JuegoDRM.NoEspecificado));
-				}
-			}
-
-			return false;
-		}
-
 		public static bool ComprobarSiEstaWeb(UsuarioDeseadosWebIndex deseados, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado, bool usarIdMaestra = false)
 		{
 			if (deseados == null || juego == null)
@@ -494,7 +463,7 @@ namespace Herramientas
 
 		public static bool ComprobarSiEstaImportado(UsuarioDeseadosImportadosIndex index, Juego juego, JuegoDRM drm = JuegoDRM.NoEspecificado)
 		{
-			if (juego == null)
+			if (juego == null || index == null)
 			{
 				return false;
 			}

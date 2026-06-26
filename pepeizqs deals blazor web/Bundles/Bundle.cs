@@ -45,6 +45,8 @@ namespace Bundles2
 		public List<string> DLCs;
 		public bool DesplegableMostrar;
 		public string Color;
+		public bool Tiene;
 		public bool DeseadoImportado;
+		public bool DeseadoWeb;
 	}
 }

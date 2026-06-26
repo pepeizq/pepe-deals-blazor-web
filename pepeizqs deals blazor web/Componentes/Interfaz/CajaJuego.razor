@@ -145,90 +145,6 @@
 		enlaceNuevaPestaña = "_blank";
 	}
 
-	JuegoDRM drmUsar = JuegoDRM.NoEspecificado;
-
-	if (tipo == Tipo.Bundle)
-	{
-		drmUsar = drmBundle;
-	}
-	else if (tipo == Tipo.Noticia)
-	{
-		drmUsar = drmNoticia;
-	}
-	else if (tipo == Tipo.Gratis)
-	{
-		drmUsar = drmGratis;
-	}
-	else if (tipo == Tipo.Suscripciones)
-	{
-		drmUsar = drmSuscripcion;
-	}
-	else
-	{
-		if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
-		{
-			drmUsar = juego.PrecioMinimosHistoricos[0].DRM;
-		}
-		else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
-		{
-			drmUsar = juego.PrecioMinimosHistoricosUS[0].DRM;
-		}
-	}
-
-	bool usuarioTieneJuego = false;
-	bool usuarioTieneDeseado = false;
-
-	string fondoColor = "background-color: var(--fondoBotonPequeño);";
-	string fondoDescuento = "background-color: darkgreen;";
-
-	if (juegosUsuarioIndex?.EstaVacia == false && string.IsNullOrEmpty(color) == true)
-	{
-		usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
-
-		if (string.IsNullOrEmpty(color) == true)
-		{
-			if (usuarioTieneJuego == true)
-			{
-				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
-				fondoDescuento = "backdrop-filter: brightness(70%);";
-			}
-			else
-			{
-				if (usuarioTieneDeseado == false)
-				{
-					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, drmUsar);
-				}
-
-				if (usuarioTieneDeseado == false)
-				{
-					usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, drmUsar);
-				}
-
-				if (usuarioTieneDeseado == true)
-				{
-					fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
-					fondoDescuento = "backdrop-filter: brightness(70%);";
-				}
-			}
-		}
-		else
-		{
-			if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
-			{
-				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
-				fondoDescuento = "backdrop-filter: brightness(70%);";
-			}
-		}
-	}
-	else
-	{
-		if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
-		{
-			fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
-			fondoDescuento = "backdrop-filter: brightness(70%);";
-		}
-	}
-
 	bool usuarioConectado = false;
 
 	if (juegosUsuarioIndex?.Steam?.Count > 0 || juegosUsuarioIndex?.Gog?.Count > 0)
@@ -244,7 +160,7 @@
 		idTooltip = idTooltip + "-" + idCurator.ToString();
 	}
 
-	Herramientas.ToolTipDatos tooltip = Herramientas.Tooltip.Generar(idioma, tipo, juego, drmUsar, usuarioConectado, usuarioTieneJuego, usuarioTieneDeseado, idBundle, tipoGratis, tipoSuscripcion);
+	Herramientas.ToolTipDatos tooltip = Herramientas.Tooltip.Generar(idioma, tipo, juego, drmUsar, usuarioConectado, idBundle, tipoGratis, tipoSuscripcion);
 
 	<div class="tooltip-juego" id="trigger-@idTooltip" style="width: auto;"
 		 @onmouseenter="@(() => ActivarTooltip($"trigger-{idTooltip}", $"tooltip-{idTooltip}"))"
@@ -950,6 +866,135 @@
 
 	[Parameter]
 	public Suscripciones2.SuscripcionTipo tipoSuscripcion { get; set; } = Suscripciones2.SuscripcionTipo.Desconocido;
+
+	[Parameter]
+	public EventCallback<(bool tieneJuego, bool tieneDeseadoWeb, bool tieneDeseadoImportado)> OnEstadoUsuario { get; set; }
+
+	public JuegoDRM drmUsar = JuegoDRM.NoEspecificado;
+
+	private bool _estadoInicializado = false;
+
+	public bool usuarioTieneJuego = false;
+	public bool usuarioTieneDeseadoWeb = false;
+	public bool usuarioTieneDeseadoImportado = false;
+
+	public string fondoColor = "background-color: var(--fondoBotonPequeño);";
+	public string fondoDescuento = "background-color: darkgreen;";
+
+	protected override async Task OnParametersSetAsync()
+	{
+		bool tieneJuego = false;
+		bool tieneDeseadoWeb = false;
+		bool tieneDeseadoImportado = false;
+
+		drmUsar = JuegoDRM.NoEspecificado;
+
+		if (tipo == Tipo.Bundle)
+		{
+			drmUsar = drmBundle;
+		}
+		else if (tipo == Tipo.Noticia)
+		{
+			drmUsar = drmNoticia;
+		}
+		else if (tipo == Tipo.Gratis)
+		{
+			drmUsar = drmGratis;
+		}
+		else if (tipo == Tipo.Suscripciones)
+		{
+			drmUsar = drmSuscripcion;
+		}
+		else
+		{
+			if (region == TiendaRegion.Europa && juego.PrecioMinimosHistoricos?.Count > 0)
+			{
+				drmUsar = juego.PrecioMinimosHistoricos[0].DRM;
+			}
+			else if (region == TiendaRegion.EstadosUnidos && juego.PrecioMinimosHistoricosUS?.Count > 0)
+			{
+				drmUsar = juego.PrecioMinimosHistoricosUS[0].DRM;
+			}
+		}
+
+		if (tipo != Tipo.PortadaNuevos && tipo != Tipo.PortadaLanzamientos && tipo != Tipo.PortadaPopulares && tipo != Tipo.PortadaProximamente &&
+			tipo != Tipo.MinimosHistoricos && tipo != Tipo.SteamDeck && tipo != Tipo.SteamOS && tipo != Tipo.GeforceNOW && tipo != Tipo.Boosteroid)
+		{
+			if (juegosUsuarioIndex?.EstaVacia == false && string.IsNullOrEmpty(color) == true)
+			{
+				tieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar);
+
+				if (string.IsNullOrEmpty(color) == true)
+				{
+					if (tieneJuego == true)
+					{
+						fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
+						fondoDescuento = "backdrop-filter: brightness(70%);";
+					}
+					else
+					{
+						if (tieneDeseadoImportado == false)
+						{
+							tieneDeseadoImportado = Herramientas.Deseados.ComprobarSiEstaImportado(usuarioDeseadosImportados, juego, drmUsar);
+						}
+
+						if (tieneDeseadoWeb == false)
+						{
+							tieneDeseadoWeb = Herramientas.Deseados.ComprobarSiEstaWeb(usuarioDeseadosWeb, juego, drmUsar);
+						}
+
+						if (tieneDeseadoImportado == true || tieneDeseadoWeb == true)
+						{
+							fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
+							fondoDescuento = "backdrop-filter: brightness(70%);";
+						}
+					}
+				}
+				else
+				{
+					if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
+					{
+						fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
+						fondoDescuento = "backdrop-filter: brightness(70%);";
+					}
+				}
+			}
+			else
+			{
+				if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
+				{
+					fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
+					fondoDescuento = "backdrop-filter: brightness(70%);";
+				}
+				else
+				{
+					fondoColor = "background-color: var(--fondoBotonPequeño)";
+				}
+			}
+
+			if (_estadoInicializado == false || tieneJuego != usuarioTieneJuego || tieneDeseadoWeb != usuarioTieneDeseadoWeb || tieneDeseadoImportado != usuarioTieneDeseadoImportado)
+			{
+				usuarioTieneJuego = tieneJuego;
+				usuarioTieneDeseadoWeb = tieneDeseadoWeb;
+				usuarioTieneDeseadoImportado = tieneDeseadoImportado;
+				_estadoInicializado = true;
+
+				await OnEstadoUsuario.InvokeAsync((usuarioTieneJuego, usuarioTieneDeseadoWeb, usuarioTieneDeseadoImportado));
+			}
+		}	
+		else
+		{
+			if (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
+			{
+				fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");";
+				fondoDescuento = "backdrop-filter: brightness(70%);";
+			}			
+			else
+			{
+				fondoColor = "background-color: var(--fondoBotonPequeño)";
+			}
+		}
+	}
 
 	private IJSObjectReference moduloJs;
 

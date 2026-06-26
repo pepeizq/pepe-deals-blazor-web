@@ -105,11 +105,6 @@
 		{
 			foreach (var juego in bundle.Juegos)
 			{
-				if (juego.Juego == null)
-				{
-					juego.Juego = juegosBundlePrecargados.TryGetValue(int.Parse(juego.JuegoId), out var juegoPrecargado) ? juegoPrecargado : null;
-				}
-
 				if (juego.Juego != null && juego.Juego.Analisis != null &&
 					string.IsNullOrEmpty(juego.Juego.Analisis.Porcentaje) == false && 
 					string.IsNullOrEmpty(juego.Juego.Analisis.Cantidad) == false)
@@ -436,7 +431,7 @@
 						<div class="caja-bundle-contenido cuerpo-ancho" style="@espacioFondo @bordesRedondeado">
 							@if (bundle.Pick == false)
 							{
-								<div class="caja-bundle-mensaje" style="font-size: 18px; padding: 25px 40px;">
+								<div class="caja-bundle-mensaje" style="font-size: 18px; padding: 25px 30px;">
 									<div style="margin-bottom: 5px;">
 										Tier @tier.Posicion: @Herramientas.Precios.Euro(decimal.Parse(tier.Precio))
 									</div>
@@ -472,7 +467,7 @@
 
 							<div class="bundle-espacio">
 								<div class="bundle-tabla">
-									@foreach (var juego in juegosTier)
+									@foreach (Bundles2.BundleJuego juego in juegosTier)
 									{
 										bool mostrar = true;
 
@@ -498,10 +493,11 @@
 											<div style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 												<div style="width: 100%; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
 													<CajaJuego idioma="@idioma" juego="juego.Juego" drmBundle="juego.DRM" dlcsBundle="juego.DLCs" idBundle="@bundleId" color="@juego.Color"
-															   tipo="Interfaz.CajaJuego.Tipo.Bundle" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" userAgent="@userAgent" />
+															   tipo="Interfaz.CajaJuego.Tipo.Bundle" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" userAgent="@userAgent"
+															   OnEstadoUsuario="@(eu => { juego.Tiene = eu.tieneJuego; juego.DeseadoWeb = eu.tieneDeseadoWeb; juego.DeseadoImportado = eu.tieneDeseadoImportado; })" />
 												</div>
 
-												@if (string.IsNullOrEmpty(usuarioId) == false && juego.Juego != null && juego.Color != "var(--fondoBien)" && juego.DesplegableMostrar == true)
+												@if (string.IsNullOrEmpty(usuarioId) == false && juego.Juego != null && juego.Tiene == false && juego.DesplegableMostrar == true)
 												{
 													<div style="position: absolute; top: 0; left: 0;">
 														<button @onclick="@(e => DesplegarDropdown(juego.Juego.Id, juego.DRM))"
@@ -525,7 +521,7 @@
 																		onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
 																	<div style="display: flex; align-items: center; gap: 10px;">
 																		<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
-																			@if (juego.Color == "var(--fondoAlerta)")
+																			@if (juego.DeseadoWeb == true)
 																			{
 																				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 																					<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
@@ -540,7 +536,7 @@
 																		</div>
 
 																		<span style="color: var(--colorTexto); font-size: 16px;">
-																			@if (juego.Color == "var(--fondoAlerta)")
+																			@if (juego.DeseadoWeb == true)
 																			{
 																				@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
 																			}
@@ -678,38 +674,36 @@
 		}
 	}
 
-	private Dictionary<int, Juegos.Juego> juegosBundlePrecargados = new();
-
 	protected override async Task OnParametersSetAsync()
 	{
 		if (bundle?.Juegos?.Count > 0)
 		{
-			juegosBundlePrecargados.Clear();
 			int reseñas = 0;
 
-			foreach (var item in bundle.Juegos)
+			if (bundle?.Juegos?.Count > 0)
 			{
-				if (item != null)
+				foreach (var juego in bundle.Juegos)
 				{
-					if (juegosBundlePrecargados.ContainsKey(int.Parse(item.JuegoId)) == false)
+					if (string.IsNullOrEmpty(juego.JuegoId) == false && juego.Juego == null)
 					{
-						var juego = await BaseDatos.Juegos.Buscar.UnJuego(item.JuegoId);
+						juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
+						juego.Imagen = juego.Juego.Imagenes.Header_460x215;
 
-						if (juego != null)
+						if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, int.Parse(juego.JuegoId)) == true)
 						{
-							juegosBundlePrecargados[int.Parse(item.JuegoId)] = juego;
+							juego.Color = "var(--fondoPeligro)";
+						}
 
-							if (string.IsNullOrEmpty(juego.Analisis?.Cantidad) == false)
+						if (juego.Juego != null && string.IsNullOrEmpty(juego.Juego.Analisis?.Cantidad) == false)
+						{
+							string temp = juego.Juego.Analisis.Cantidad;
+							temp = temp.Replace(",", null);
+							int reseñasJuego = int.Parse(temp);
+
+							if (reseñasJuego > reseñas)
 							{
-								string temp = juego.Analisis.Cantidad;
-								temp = temp.Replace(",", null);
-								int reseñasJuego = int.Parse(temp);
-
-								if (reseñasJuego > reseñas)
-								{
-									reseñas = reseñasJuego;
-									fondo = juego.Imagenes.Library_1920x620;
-								}
+								reseñas = reseñasJuego;
+								fondo = juego.Juego.Imagenes?.Library_1920x620;
 							}
 						}
 					}
@@ -740,43 +734,6 @@
 					if (moduloJs != null && string.IsNullOrEmpty(bundleNombre) == false && bundleNombre.Length > 0)
 					{
 						await moduloJs.InvokeVoidAsync("cambiarEnlace", "/bundle/" + bundle.Id.ToString() + "/" + bundleNombre + "/");
-					}
-				}
-
-				if (bundle?.Juegos?.Count > 0)
-				{
-					foreach (var juego in bundle.Juegos)
-					{
-						if (string.IsNullOrEmpty(juego.JuegoId) == false)
-						{
-							juego.Juego = await BaseDatos.Juegos.Buscar.UnJuego(juego.JuegoId);
-							juego.Imagen = juego.Juego.Imagenes.Header_460x215;
-						}
-
-						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego.Juego, juego.DRM) == true)
-						{
-							juego.Color = "var(--fondoBien)";
-						}
-						else
-						{
-							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.Juego.Id) == true)
-							{
-								juego.Color = "var(--fondoPeligro)";
-							}
-							else
-							{
-								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego.Juego, juego.DRM, true) == true)
-								{
-									juego.Color = "var(--fondoAlerta)";
-									juego.DeseadoImportado = true;
-								}
-
-								if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego.Juego, juego.DRM, true) == true)
-								{
-									juego.Color = "var(--fondoAlerta)";
-								}
-							}
-						}
 					}
 				}
 			}	
@@ -862,14 +819,11 @@
 
 	private async Task CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, Bundles2.BundleJuego juego, JuegoDRM drm)
 	{
-		bool estado = true;
+		bool estado = !juego.DeseadoWeb;
 
-		if (juego.Color == "var(--fondoAlerta)")
-		{
-			estado = false;
-		}
+		juego.DeseadoWeb = !juego.DeseadoWeb;
 
-		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, true);
+		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, false);
 
 		foreach (var juego2 in bundle.Juegos)
 		{

@@ -9,7 +9,7 @@ namespace Herramientas
 {
     public static class Tooltip
     {
-        public static ToolTipDatos Generar(string idioma, CajaJuego.Tipo tipo, Juego juego, JuegoDRM drm, bool usuarioConectado, bool usuarioTieneJuego, bool usuarioDeseaJuego, int idBundleDescartar = 0, GratisTipo gratisTipoActual = GratisTipo.Desconocido, SuscripcionTipo suscripcionTipoActual = SuscripcionTipo.Desconocido)
+        public static ToolTipDatos Generar(string idioma, CajaJuego.Tipo tipo, Juego juego, JuegoDRM drm, bool usuarioConectado, int idBundleDescartar = 0, GratisTipo gratisTipoActual = GratisTipo.Desconocido, SuscripcionTipo suscripcionTipoActual = SuscripcionTipo.Desconocido)
         {
             ToolTipDatos datos = new ToolTipDatos
             {

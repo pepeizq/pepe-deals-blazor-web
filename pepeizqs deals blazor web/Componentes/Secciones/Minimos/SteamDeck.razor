@@ -110,10 +110,10 @@
 
 								<div @key="juego.Juego.Id-drmJuego" style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 									<div style="width: 100%; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-										<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.SteamDeck" userAgent="@userAgent" />
+										<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.SteamDeck" userAgent="@userAgent"/>
 									</div>
 			
-									@if (string.IsNullOrEmpty(usuarioId) == false && juego.Color != "var(--fondoBien)" && juego.DesplegableMostrar == true)
+									@if (string.IsNullOrEmpty(usuarioId) == false && juego.Tiene == false && juego.DesplegableMostrar == true)
 									{
 										<div style="position: absolute; top: 0; left: 0;">
 											<button @onclick="@(e => DesplegarDropdown(juego.Juego.Id, drmJuego))"
@@ -137,7 +137,7 @@
 															onmouseout="this.style.backgroundColor='var(--fondoBotonPequeño)'">
 														<div style="display: flex; align-items: center; gap: 10px;">
 															<div style="width: 20px; height: 20px; display: flex; fill: var(--colorTexto);">
-																@if (juego.Color == "var(--fondoAlerta)")
+																@if (juego.DeseadoWeb == true)
 																{
 																	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
 																		<path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
@@ -152,7 +152,7 @@
 															</div>
 
 															<span style="color: var(--colorTexto); font-size: 16px;">
-																@if (juego.Color == "var(--fondoAlerta)")
+																@if (juego.DeseadoWeb == true)
 																{
 																	@Herramientas.Idiomas.BuscarTexto(idioma, "String13", "Index")
 																}
@@ -450,7 +450,7 @@
 			{
 				deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
 			}
-			
+
 			if (opciones != null)
 			{
 				if (opciones.Currency.HasValue == true)
@@ -614,18 +614,30 @@
 						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar) == true)
 						{
 							juegoMinimoMostrar.Color = "var(--fondoBien)";
+							juegoMinimoMostrar.Tiene = true;
 						}
 						else
 						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar, true) == true)
+							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.IdMaestra) == true)
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								juegoMinimoMostrar.DeseadoImportado = true;
+								juegoMinimoMostrar.Color = "var(--fondoPeligro)";
+								juegoMinimoMostrar.Excluido = true;
 							}
-
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmUsar, true) == true)
+							else
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+									juegoMinimoMostrar.DeseadoImportado = true;
+								}
+								else
+								{
+									if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmUsar, true) == true)
+									{
+										juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+										juegoMinimoMostrar.DeseadoWeb = true;
+									}
+								}
 							}
 						}
 					}
@@ -723,7 +735,7 @@
 						}
 						else
 						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar, true) == true)
+							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar) == true)
 							{
 								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
 								juegoMinimoMostrar.DeseadoImportado = true;
@@ -837,28 +849,15 @@
 
 	private async Task CambiarEstadoDeseado(MouseEventArgs e, string usuarioId, JuegoMostrar juego, JuegoDRM drm)
 	{
-		bool estado = true;
+		juego.DeseadoWeb = !juego.DeseadoWeb;
 
-		if (juego.Color == "var(--fondoAlerta)")
+		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, juego.DeseadoWeb, drm, true);
+
+		var juegoEnLista = juegosMostrar.FirstOrDefault(j => j.Juego.Id == juego.Juego.Id);
+
+		if (juegoEnLista != null)
 		{
-			estado = false;
-		}
-
-		await Herramientas.Deseados.CambiarEstado(usuarioId, juego.Juego, estado, drm, true);
-
-		foreach (var juego2 in juegosMostrar)
-		{
-			if (juego2.Juego.Id == juego.Juego.Id && juego2.Juego.PrecioMinimosHistoricos[0].DRM == drm)
-			{
-				if (estado == true)
-				{
-					juego2.Color = "var(--fondoAlerta)";
-				}
-				else
-				{
-					juego2.Color = "var(--fondoBotonPequeño)";
-				}
-			}
+			juegoEnLista.Color = juego.DeseadoWeb ? "var(--fondoAlerta)" : "var(--fondoBotonPequeño)";
 		}
 
 		await InvokeAsync(StateHasChanged);
