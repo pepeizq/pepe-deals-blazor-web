@@ -28,7 +28,7 @@ namespace BaseDatos.Juegos
 
 			if (nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
             {
-                nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevaOferta.Precio, nuevaOferta.Moneda);
+				nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevaOferta.Precio, nuevaOferta.Moneda);
 
                 if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
                 {

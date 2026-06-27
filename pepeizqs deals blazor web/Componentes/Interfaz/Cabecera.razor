@@ -107,7 +107,7 @@
                             
                             @if (mostrarDropdown == true && deseadosJuegos?.Count > 0)
                             {
-                                <div class="menu-dropdown-contenido-centrado" style="min-width: 400px; background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); border-radius: 5px; border: 2px solid var(--fondoAlerta);">
+                                <div class="menu-dropdown-contenido-centrado" style="min-width: 400px; background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); border-radius: 5px; border: 2px solid var(--fondoAlerta); display: flex; flex-direction: column; gap: 5px;">
                                     @foreach (var juego in deseadosJuegos.OrderByDescending(j => j.Fecha).Take(5))
                                     {
                                         List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
@@ -955,7 +955,7 @@
             {
                 deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
             }
-            
+
             if (opcionesCabecera != null)
             {
                 usuarioRegion = (TiendaRegion)opcionesCabecera.Currency;
@@ -969,6 +969,8 @@
 
         InicializarPestañasBuscador();
         cts = new CancellationTokenSource();
+
+        await GenerarDeseadosDropdown();
 
         NavManager.LocationChanged += OnLocationChanged;
     }
@@ -1038,6 +1040,27 @@
             mostrarDropdown = false;
         }
 
+        await GenerarDeseadosDropdown();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        NavManager.LocationChanged -= OnLocationChanged;
+
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+
+    private async Task GenerarDeseadosDropdown()
+    {
         if (string.IsNullOrEmpty(usuarioId) == false)
         {
             Usuario deseadosCabecera = await BaseDatos.Usuarios.Buscar.OpcionesCabeceraDeseados(usuarioId);
@@ -1090,26 +1113,11 @@
                             }
                         }
 
+                        datos2.Juegos.RemoveAll(j => string.IsNullOrEmpty(j.Nombre2) == true && string.IsNullOrEmpty(j.Imagen2) == true);
                         deseadosJuegos = datos2.Juegos;
                     }
                 }
             }
-        }
-
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        NavManager.LocationChanged -= OnLocationChanged;
-
-        if (moduloJs != null)
-        {
-            try
-            {
-                await moduloJs.DisposeAsync();
-            }
-            catch { }
         }
     }
 
