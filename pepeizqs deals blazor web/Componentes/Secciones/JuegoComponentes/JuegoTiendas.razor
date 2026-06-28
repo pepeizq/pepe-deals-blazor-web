@@ -8,11 +8,11 @@
         {
             if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {
-                <Virtualize Context="precio" Items="preciosMostrar.OrderBy(p => p.Precio).ToList()">
+                <Virtualize Context="precio" Items="preciosMostrar">
                     <ItemContent>
                         <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                             usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
-                                            OnPrecioFinalCalculado="pf => precio.Precio = pf" />
+                                            OnPrecioFinalCalculado="pf => preciosFinalesCalculados[precio.Enlace + precio.Tienda] = pf" />
                     </ItemContent>
                 </Virtualize>
             }
@@ -22,7 +22,7 @@
                 {
                     <JuegoTiendasEnlace @key="(precio.Enlace + precio.Tienda)" region="@region" precio="@precio" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                         usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
-                                        OnPrecioFinalCalculado="pf => precio.Precio = pf" />
+                                        OnPrecioFinalCalculado="pf => preciosFinalesCalculados[precio.Enlace + precio.Tienda] = pf" />
                 }
             } 
         }
@@ -60,7 +60,7 @@
             {
                 if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                 {
-                    <Virtualize Context="precioBajo" Items="preciosBajos.OrderBy(p => p.Precio).ToList()">
+                    <Virtualize Context="precioBajo" Items="preciosBajos">
                         <ItemContent>
                             <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                                 usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
@@ -161,7 +161,11 @@ else
 
         decimal ObtenerPrecioReal(JuegoPrecio p)
         {
-            if (p.Moneda == Herramientas.JuegoMoneda.Euro)
+            if (region == TiendaRegion.Europa && p.Moneda == Herramientas.JuegoMoneda.Euro)
+            {
+                return p.Precio;
+            }
+            else if (region == TiendaRegion.EstadosUnidos && p.Moneda == Herramientas.JuegoMoneda.Dolar)
             {
                 return p.Precio;
             }
@@ -187,15 +191,39 @@ else
             preciosBajos.Remove(precio);
             preciosMostrar.Add(precio);
         }
+
+        if (preciosMostrar?.Count > 0)
+        {
+            preciosMostrar = preciosMostrar.OrderBy(ObtenerPrecioReal).ToList();
+        }
+
+        if (preciosBajos?.Count > 0)
+        {
+            preciosBajos = preciosBajos.OrderBy(ObtenerPrecioReal).ToList();
+        }
     }
+
+    private Dictionary<string, decimal> preciosFinalesCalculados = new();
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
-        if (primerRender == true)
+        if (primerRender == true && preciosFinalesCalculados.Count > 0)
         {
-            decimal ObtenerPrecioReal(JuegoPrecio p)
+            decimal ObtenerPrecioOrden(JuegoPrecio p)
             {
-                if (p.Moneda == Herramientas.JuegoMoneda.Euro)
+                string key = p.Enlace + p.Tienda;
+
+                if (preciosFinalesCalculados.TryGetValue(key, out decimal pf) && pf > 0)
+                {
+                    return pf;
+                }
+
+                if (region == TiendaRegion.Europa && p.Moneda == Herramientas.JuegoMoneda.Euro)
+                {
+                    return p.Precio;
+                }
+                     
+                if (region == TiendaRegion.EstadosUnidos && p.Moneda == Herramientas.JuegoMoneda.Dolar)
                 {
                     return p.Precio;
                 }
@@ -203,15 +231,36 @@ else
                 return p.PrecioCambiado;
             }
 
+            decimal precioMinimoMostrar = preciosMostrar
+                .Select(ObtenerPrecioOrden)
+                .Where(p => p > 0)
+                .DefaultIfEmpty(decimal.MaxValue)
+                .Max();
+
+            List<JuegoPrecio> mover = preciosBajos
+                .Where(p =>
+                {
+                    decimal precioReal = ObtenerPrecioOrden(p);
+                    return precioReal > 0 && precioReal < precioMinimoMostrar;
+                }).ToList();
+
+            foreach (JuegoPrecio precio in mover)
+            {
+                preciosBajos.Remove(precio);
+                preciosMostrar.Add(precio);
+            }
+
             if (preciosMostrar?.Count > 0)
             {
-                preciosMostrar = preciosMostrar.OrderBy(p => ObtenerPrecioReal(p)).ToList();
+                preciosMostrar = preciosMostrar.OrderBy(ObtenerPrecioOrden).ToList();
             }
 
             if (preciosBajos?.Count > 0)
             {
-                preciosBajos = preciosBajos.OrderBy(p => ObtenerPrecioReal(p)).ToList();
+                preciosBajos = preciosBajos.OrderBy(ObtenerPrecioOrden).ToList();
             }
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 

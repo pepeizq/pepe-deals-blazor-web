@@ -339,8 +339,8 @@ namespace BaseDatos.Juegos
                                 {
                                     minimo.FechaDetectado = nuevaOferta.FechaDetectado;
                                 }
-                            }
-                        }
+							}
+						}
                     }
                 }
 
@@ -478,6 +478,15 @@ namespace BaseDatos.Juegos
 						if (cambiarFechaDetectado == true)
 						{
 							precio.FechaDetectado = nuevaOferta.FechaDetectado;
+						}
+
+						if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
+						{
+							precio.PrecioCambiado = nuevaOferta.PrecioCambiado;
+						}
+						else
+						{
+							precio.PrecioCambiado = 0;
 						}
 
 						precio.Precio = nuevaOferta.Precio;

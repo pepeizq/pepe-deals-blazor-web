@@ -20,32 +20,43 @@
 
 @if (noticia != null)
 {
-	string texto2 = Herramientas.Idiomas.ElegirTexto(idioma, noticia.ContenidoEn, noticia.ContenidoEs);
+	string descripcion = string.Empty;
 
-	if (string.IsNullOrEmpty(texto2) == false)
+	if (string.IsNullOrEmpty(noticia.DescripcionSEO) == false)
 	{
-		if (texto2.Contains("</div>") == true)
-		{
-			int int1 = texto2.IndexOf("</div>");
-			texto2 = texto2.Remove(int1, texto2.Length - int1);
-
-			if (texto2.Contains("<div") == true)
-			{
-				int int2 = texto2.IndexOf(">");
-				texto2 = texto2.Remove(0, int2 + 1);
-			}
-		}
-		else
-		{
-			if (texto2.Contains("<") == true)
-			{
-				int int1 = texto2.IndexOf("<");
-				texto2 = texto2.Remove(int1, texto2.Length - int1);
-			}
-		}
+		descripcion = noticia.DescripcionSEO;
 	}
 
-	string descripcion = texto2;
+	if (string.IsNullOrEmpty(descripcion) == true)
+	{
+		string texto2 = Herramientas.Idiomas.ElegirTexto(idioma, noticia.ContenidoEn, noticia.ContenidoEs);
+
+		if (string.IsNullOrEmpty(texto2) == false)
+		{
+			if (texto2.Contains("</div>") == true)
+			{
+				int int1 = texto2.IndexOf("</div>");
+				texto2 = texto2.Remove(int1, texto2.Length - int1);
+
+				if (texto2.Contains("<div") == true)
+				{
+					int int2 = texto2.IndexOf(">");
+					texto2 = texto2.Remove(0, int2 + 1);
+				}
+			}
+			else
+			{
+				if (texto2.Contains("<") == true)
+				{
+					int int1 = texto2.IndexOf("<");
+					texto2 = texto2.Remove(int1, texto2.Length - int1);
+				}
+			}
+		}
+
+		descripcion = texto2;
+	}
+
 	string descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
 
 	if (descripcion.Length < 150)

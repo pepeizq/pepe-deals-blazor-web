@@ -29,7 +29,15 @@
     
     if (juego.Caracteristicas?.Descripcion?.Length >= 150)
     {
-        descripcion = juego.Caracteristicas.Descripcion;
+        string descripcionUsar = juego.Caracteristicas.Descripcion;
+
+		if (descripcionUsar.Length > 160)
+		{
+			int ultimoEspacio = descripcionUsar.LastIndexOf(' ', 156);
+			descripcionUsar = ultimoEspacio != -1 ? descripcionUsar[..ultimoEspacio] + " ..." : descripcionUsar[..156] + " ...";
+		}
+
+        descripcion = descripcionUsar;
     }
 
     if (string.IsNullOrEmpty(descripcion) == true && string.IsNullOrEmpty(juego.DescripcionSEO) == false)

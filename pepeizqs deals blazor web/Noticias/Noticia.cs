@@ -33,6 +33,7 @@ namespace Noticias
 		public string SuscripcionesIds { get; set; }
 		public NoticiaSteam SteamEn { get; set; }
 		public NoticiaSteam SteamEs { get; set; }
+		public string DescripcionSEO { get; set; }
 	}
 
 	public class NoticiaMostrar
