@@ -347,6 +347,9 @@
 	#region Parametros Filtro
 
 	[Parameter]
+	public string descripcionFiltro { get; set; }
+
+	[Parameter]
 	public string idsFiltro { get; set; }
 
 	#endregion
@@ -552,7 +555,7 @@
 			tituloKeywords ??= FiltroTituloKeywords(idsFiltro);
 
 			titulo ??= tituloKeywords.Titulo;
-			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Filter");
+			descripcion ??= descripcionFiltro;
 			enlace ??= "https://" + dominio + "/filter/" + idsFiltro + "/";
 			imagen ??= "https://" + dominio + "/logo/logoentrada.webp";
 			keywords2 ??= tituloKeywords.Keywords;
