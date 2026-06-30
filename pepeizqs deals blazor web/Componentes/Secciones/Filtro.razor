@@ -11,6 +11,7 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject NavigationManager Navegacion
 
 @if (cargado == false)
 {
@@ -644,7 +645,26 @@ else
 		{
 			if (idsLista[0].Contains("d") == true)
 			{
+				string idBuscar = idsLista[0];
+				idBuscar = idBuscar.Replace("d", null);
 
+				descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-Deck" + idBuscar, "Filter");
+			}
+
+			if (idsLista[0].Contains("s") == true)
+			{
+				string idBuscar = idsLista[0];
+				idBuscar = idBuscar.Replace("s", null);
+
+				descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-System" + idBuscar, "Filter");
+			}
+
+			if (idsLista[0].Contains("i") == true)
+			{
+				string idBuscar = idsLista[0];
+				idBuscar = idBuscar.Replace("i", null);
+
+				descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-Type" + idBuscar, "Filter");
 			}
 
 			if (idsLista[0].Contains("t") == true)
@@ -655,12 +675,18 @@ else
 				descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-" + idBuscar, "Tags");
 			}
 
-			if (idsLista[0].Contains("c") == true)
+			if (idsLista[0].Contains("c") == true || idsLista[0].Contains("a") == true)
 			{
 				string idBuscar = idsLista[0];
 				idBuscar = idBuscar.Replace("c", null);
+				idBuscar = idBuscar.Replace("a", null);
 
 				descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-" + idBuscar, "Categories");
+			}
+
+			if (string.IsNullOrEmpty(descripcion) == true)
+			{
+				Navegacion.NavigateTo("/", true);
 			}
 
 			foreach (var id in idsLista)
@@ -699,9 +725,10 @@ else
 				}
 			}
 		}
-		else
+
+		if (string.IsNullOrEmpty(descripcion) == true)
 		{
-			descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Filter");
+			descripcion = Herramientas.Idiomas.BuscarTexto("en", "seo-Filter", "Filter");
 		}
 
 		resultadosGestor ??= await BaseDatos.Juegos.Buscar.Filtro(idsLista, posicion);
@@ -797,7 +824,7 @@ else
 				await moduloJs.InvokeVoidAsync("cambiarEnlace", "/filter/");
 			}
 		}
-		
+
 		await InvokeAsync(StateHasChanged);
 	}
 
@@ -984,19 +1011,22 @@ else
 
 			foreach (var item2 in items2)
 			{
-				if (item2.Key.Contains("seo-") == false && int.Parse(item2.Key) < 64)
+				if (item2.Key.Contains("seo-") == false)
 				{
-					FiltroItem nuevaCategoria = new FiltroItem();
-					nuevaCategoria.Id = item2.Key;
-					nuevaCategoria.Contenido = item2.Value.ToString();
-					categorias.Add(nuevaCategoria);
-				}
-				else
-				{
-					FiltroItem nuevaAccesibilidad = new FiltroItem();
-					nuevaAccesibilidad.Id = item2.Key;
-					nuevaAccesibilidad.Contenido = item2.Value.ToString();
-					accesibilidad.Add(nuevaAccesibilidad);
+					if (int.Parse(item2.Key) < 64)
+					{
+						FiltroItem nuevaCategoria = new FiltroItem();
+						nuevaCategoria.Id = item2.Key;
+						nuevaCategoria.Contenido = item2.Value.ToString();
+						categorias.Add(nuevaCategoria);
+					}
+					else
+					{
+						FiltroItem nuevaAccesibilidad = new FiltroItem();
+						nuevaAccesibilidad.Id = item2.Key;
+						nuevaAccesibilidad.Contenido = item2.Value.ToString();
+						accesibilidad.Add(nuevaAccesibilidad);
+					}
 				}
 			}
 		}

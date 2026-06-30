@@ -1,6 +1,5 @@
 {
   "Title": "Filter",
-  "Subtitle": "Filtered search for games on the web.",
   "String1": "Genres",
   "String2": "Categories",
   "String3": "Tags",
@@ -21,5 +20,15 @@
   "Type0": "Games",
   "Type1": "DLCs",
   "Type3": "Soundtracks",
-  "Type4": "Software"
+  "Type4": "Software",
+  "seo-Filter": "Discover the best deals on PC games, DLCs, software and soundtracks. Compare prices across all top stores and save money on every gaming purchase today.",
+  "seo-Deck2": "Browse Steam Deck Playable games and find the best deals available. Compare prices across stores and save on titles compatible with Valve's handheld console.",
+  "seo-Deck3": "Find deals on Steam Deck Verified games with full handheld support. Compare prices across multiple stores and save on titles fully optimized for Valve's device.",
+  "seo-System1": "Find the best deals on Windows PC games. Compare prices across top stores and save money on your next favorite Windows game. New offers updated daily.",
+  "seo-System2": "Browse the best game deals available for Mac users. Compare prices on native macOS titles across multiple stores and save money on every single purchase.",
+  "seo-System3": "Explore the best game deals available for Linux. Compare prices across stores and find native Linux titles or Steam Play compatible games at the lowest prices.",
+  "seo-Type0": "Browse thousands of PC game deals across top stores. Compare prices and find the cheapest offers on the latest releases and all-time classic titles today.",
+  "seo-Type1": "Find the best prices on DLCs and expansion packs for your games. Compare deals across stores and expand your gaming experience for less on all platforms.",
+  "seo-Type3": "Discover deals on official video game soundtracks and OSTs. Compare prices and grab the music from your favorite games at the lowest price available online.",
+  "seo-Type4": "Find the cheapest deals on PC software across multiple stores. Compare prices and save on productivity tools, utilities, and creative applications for Windows."
 }

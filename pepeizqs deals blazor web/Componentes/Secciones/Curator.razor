@@ -12,25 +12,37 @@
 
 @inject IHttpContextAccessor Contexto
 @inject IJSRuntime JavaScript
+@inject NavigationManager Navegacion
 
 @if (curator != null)
 {
 	string titulo = curator.Nombre + " (Curator)";
-	string descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Curators");
 	string enlace = "https://" + dominio + "/curator/" + slug + "/";
 	string imagen = "https://" + dominio + "/logo/logoentrada2.webp";
 
-	if (string.IsNullOrEmpty(curator.Descripcion) == false && curator.Descripcion.Length > 150)
+	string descripcion = string.Empty;
+
+	if (string.IsNullOrEmpty(curator.DescripcionSEO) == false)
 	{
-		descripcion = curator.Descripcion;
+		descripcion = curator.DescripcionSEO;
 	}
 
-	if (curator.Imagen != null)
+	if (string.IsNullOrEmpty(descripcion) == true)
 	{
-		if (string.IsNullOrEmpty(curator.Imagen) == false)
+		if (string.IsNullOrEmpty(curator.Descripcion) == false && curator.Descripcion.Length > 150)
 		{
-			imagen = curator.Imagen;
+			descripcion = curator.Descripcion;
 		}
+	}
+	
+	if (string.IsNullOrEmpty(descripcion) == true || descripcion.Length < 150)
+	{
+		descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Curators");
+	}
+
+	if (string.IsNullOrEmpty(curator.Imagen) == false)
+	{
+		imagen = curator.Imagen;
 	}
 
 	string keywords = "curator";
@@ -826,6 +838,11 @@
 		if (string.IsNullOrEmpty(slug) == false)
 		{
 			curator ??= await BaseDatos.Curators.Buscar.Uno(slug);
+		}
+
+		if (curator == null)
+		{
+			Navegacion.NavigateTo("/", true);			
 		}
 
 		if (curator?.IdSteam > 0)

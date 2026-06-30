@@ -59,7 +59,7 @@
 
 	string descripcionJson = descripcion.Replace(Strings.ChrW(34).ToString(), null);
 
-	if (descripcion.Length < 150)
+	if (string.IsNullOrEmpty(descripcion) == true || descripcion.Length < 150)
 	{
 		descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "String13", "News");
 	}

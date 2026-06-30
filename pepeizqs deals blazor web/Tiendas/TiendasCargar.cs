@@ -154,14 +154,6 @@ namespace Tiendas2
 			{
 				await APIs.Stove.Tienda.BuscarOfertas(region);
 			}
-			else if (id == APIs.Gamesporium.Tienda.Generar().Id)
-			{
-				await APIs.Gamesporium.Tienda.BuscarOfertas(region);
-			}
-			else if (id == APIs.PlayerLand.Tienda.Generar().Id)
-			{
-				await APIs.PlayerLand.Tienda.BuscarOfertas(region);
-			}
 		}
 
 		public static Tienda DevolverTienda(string tiendaTexto)

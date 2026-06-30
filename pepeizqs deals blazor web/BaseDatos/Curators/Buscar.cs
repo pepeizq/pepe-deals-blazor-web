@@ -34,7 +34,8 @@ namespace BaseDatos.Curators
 					Descripcion = fila.descripcion,
 					Slug = fila.slug,
 					SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
-					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
+					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web),
+					DescripcionSEO = fila.descripcionSEO
 				};
 
 				curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
@@ -77,7 +78,8 @@ namespace BaseDatos.Curators
 					Descripcion = fila.descripcion,
 					Slug = fila.slug,
 					SteamIds = JsonSerializer.Deserialize<List<int>>(fila.steamIds),
-					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web)
+					Web = JsonSerializer.Deserialize<SteamCuratorAPIWeb>(fila.web),
+					DescripcionSEO = fila.descripcionSEO
 				};
 
 				curator.ImagenFondo = fila.imagenFondo != null ? (string)fila.imagenFondo : null;
@@ -112,6 +114,7 @@ namespace BaseDatos.Curators
 		public SteamCuratorAPIWeb Web { get; set; }
 		public string ImagenFondo { get; set; }
 		public DateTime? Fecha { get; set; }
+		public string DescripcionSEO { get; set; }
 	}
 
 	public class CuratorFicha
