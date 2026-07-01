@@ -24,7 +24,8 @@ namespace Bundles2
 		public List<BundleTier> Tiers { get; set; }
 		public bool Pick { get; set; }
         public string Twitter { get; set; }
-    }
+		public string DescripcionSEO { get; set; }
+	}
 
 	public class BundleTier
 	{

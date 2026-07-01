@@ -18,20 +18,19 @@
 	{
 		string titulo = bundle.Nombre + " • " + bundle.Tienda;
 		string descripcion = string.Empty;
+
+		if (string.IsNullOrEmpty(bundle.DescripcionSEO) == false)
+		{
+			descripcion = bundle.DescripcionSEO;
+		}
+
+		if (string.IsNullOrEmpty(descripcion) == true || descripcion.Length < 150)
+		{
+			descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Bundle");
+		}
+
 		string enlace = "https://" + dominio + "/bundle/" + bundle.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(bundle.Nombre) + "/";
 		string imagen = string.Empty;
-
-		if (bundle.Tiers?.Count > 0 && string.IsNullOrEmpty(bundle.Tiers[0].Precio) == false)
-		{
-			string precio = Herramientas.Precios.Euro(double.Parse(bundle.Tiers[0].Precio));
-
-			descripcion = string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String22", "Bundle"), precio, bundle.Tienda);
-
-			if (descripcion.Length < 150)
-			{
-				descripcion = Herramientas.Idiomas.BuscarTexto(idioma, "Subtitle", "Bundle");
-			}
-		}
 
 		if (string.IsNullOrEmpty(bundle.ImagenNoticia) == false)
 		{

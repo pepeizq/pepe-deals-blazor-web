@@ -1000,10 +1000,12 @@
 			string nuevoFondoColor = (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)")
 				? "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), " + color + ");"
 				: "background-color: var(--fondoBotonPequeño)";
+			string nuevoFondoDescuento = (string.IsNullOrEmpty(color) == false && color != "var(--fondoBotonPequeño)") ? "backdrop-filter: brightness(70%);" : "background-color: darkgreen;";
 
 			if (fondoColor != nuevoFondoColor)
 			{
 				fondoColor = nuevoFondoColor;
+				fondoDescuento = nuevoFondoDescuento;
 			}
 		}
 	}
