@@ -4,71 +4,82 @@ using Herramientas;
 
 namespace Tareas
 {
-    public class Pings : BackgroundService
-    {
-        private readonly ILogger<Pings> _logger;
-        private readonly IServiceScopeFactory _factoria;
-        private readonly IDecompiladores _decompilador;
+	public class Pings : BackgroundService
+	{
+		private readonly ILogger<Pings> _logger;
+		private readonly IServiceScopeFactory _factoria;
+		private readonly IDecompiladores _decompilador;
 		private readonly IConfiguration _configuracion;
+		private readonly HttpClient _cliente;
+
+		private static readonly string[] UrlsPing = new[]
+		{
+			"http://pepeizq-001-site4.ntempurl.com",
+			"http://pepeizq-001-site5.ntempurl.com"
+		};
 
 		public Pings(ILogger<Pings> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
-        {
-            _logger = logger;
-            _factoria = factory;
-            _decompilador = decompilador;
-            _configuracion = configuracion;
-        }
+		{
+			_logger = logger;
+			_factoria = factory;
+			_decompilador = decompilador;
+			_configuracion = configuracion;
 
-        protected override async Task ExecuteAsync(CancellationToken tokenParar)
-        {
-            using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
+			var manejador = new HttpClientHandler
+			{
+				ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
+			};
 
-            while (await timer.WaitForNextTickAsync(tokenParar))
-            {
-                string piscinaApp = _configuracion.GetValue<string>("PoolWeb:Contenido");
-                string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
+			_cliente = new HttpClient(manejador)
+			{
+				Timeout = TimeSpan.FromSeconds(180)
+			};
+		}
 
-                if (piscinaApp == piscinaUsada)
-                {
-                    try
-                    {
-						HttpClientHandler manejador = new HttpClientHandler();
-						manejador.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+		protected override async Task ExecuteAsync(CancellationToken tokenParar)
+		{
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(60));
 
-						HttpClient cliente = new HttpClient(manejador);
-						HttpRequestMessage mensaje = new HttpRequestMessage();
-						mensaje.RequestUri = new Uri("http://pepeizq-001-site4.ntempurl.com");
-						mensaje.Headers.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-						mensaje.Headers.AcceptEncoding.ParseAdd("gzip, deflate, br");
-						mensaje.Headers.AcceptLanguage.ParseAdd("es,en-US;q=0.7,en;q=0.3");
-						mensaje.Headers.Connection.ParseAdd("keep-alive");
-						mensaje.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10; Generic Android-x86_64 Build/QD1A.190821.014.C2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.36 Safari/537.36");
-						
-                        HttpResponseMessage respuesta2 = await cliente.SendAsync(mensaje);
-						respuesta2.EnsureSuccessStatusCode();
+			while (await timer.WaitForNextTickAsync(tokenParar))
+			{
+				string piscinaApp = _configuracion.GetValue<string>("PoolWeb:Contenido");
+				string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-						HttpRequestMessage mensaje2 = new HttpRequestMessage();
-						mensaje2.RequestUri = new Uri("http://pepeizq-001-site5.ntempurl.com");
-						mensaje2.Headers.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-						mensaje2.Headers.AcceptEncoding.ParseAdd("gzip, deflate, br");
-						mensaje2.Headers.AcceptLanguage.ParseAdd("es,en-US;q=0.7,en;q=0.3");
-						mensaje2.Headers.Connection.ParseAdd("keep-alive");
-						mensaje2.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10; Generic Android-x86_64 Build/QD1A.190821.014.C2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.36 Safari/537.36");
-
-						HttpResponseMessage respuesta3 = await cliente.SendAsync(mensaje2);
-						respuesta3.EnsureSuccessStatusCode();
-					}
-                    catch (Exception ex)
-                    {
-						BaseDatos.Errores.Insertar.Mensaje("Ping Tiendas", ex.Message);
-					}
+				if (piscinaApp == piscinaUsada)
+				{
+					var tareas = UrlsPing.Select(url => HacerPingAsync(url, tokenParar));
+					await Task.WhenAll(tareas);
 				}
 			}
-        }
+		}
 
-        public override async Task StopAsync(CancellationToken stoppingToken)
-        {
-            await base.StopAsync(stoppingToken);
-        }
-    }
+		private async Task HacerPingAsync(string url, CancellationToken token)
+		{
+			try
+			{
+				var mensaje = new HttpRequestMessage
+				{
+					RequestUri = new Uri(url)
+				};
+
+				mensaje.Headers.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
+				mensaje.Headers.AcceptEncoding.ParseAdd("gzip, deflate, br");
+				mensaje.Headers.AcceptLanguage.ParseAdd("es,en-US;q=0.7,en;q=0.3");
+				mensaje.Headers.Connection.ParseAdd("keep-alive");
+				mensaje.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10; Generic Android-x86_64 Build/QD1A.190821.014.C2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.36 Safari/537.36");
+
+				HttpResponseMessage respuesta = await _cliente.SendAsync(mensaje, token);
+				respuesta.EnsureSuccessStatusCode();
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje($"Ping - {url}", ex.Message);
+			}
+		}
+
+		public override async Task StopAsync(CancellationToken stoppingToken)
+		{
+			await base.StopAsync(stoppingToken);
+		}
+	}
 }
