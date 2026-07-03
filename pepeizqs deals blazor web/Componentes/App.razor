@@ -127,7 +127,7 @@
     [CascadingParameter]
     private HttpContext contexto { get; set; } = default!;
 
-    private IComponentRenderMode renderizacion => contexto.AcceptsInteractiveRouting() ? InteractiveServer : null;
+    private IComponentRenderMode renderizacion => (contexto.AcceptsInteractiveRouting() && Herramientas.Bots.UserAgentEsBot(userAgent) == false) ? InteractiveServer : null;
 
     private string enlace = null;
     private string idioma = "en";

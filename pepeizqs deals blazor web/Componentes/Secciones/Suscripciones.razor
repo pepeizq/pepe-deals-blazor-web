@@ -858,6 +858,12 @@ else
                 {
                     if (juego.Tipo == suscripcion.Id)
                     {
+                        if (juego.JuegoId.ToString() == juego.Nombre)
+                        {
+                            juego.Juego = await BaseDatos.Juegos.Buscar.UnJuegoReducido(juego.JuegoId);
+                            juego.Nombre = juego.Juego.Nombre;
+                        }
+
                         juegos2.Add(juego);
                     }
                 }

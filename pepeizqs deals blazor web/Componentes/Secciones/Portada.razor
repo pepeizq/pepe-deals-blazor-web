@@ -975,8 +975,9 @@ else
 			if (juegosUsuarioIndex == null)
 			{
 				juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-				excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
 			}
+
+			excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
 
 			if (deseadosImportadosIndex == null)
 			{

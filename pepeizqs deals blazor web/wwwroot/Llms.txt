@@ -1,0 +1,37 @@
+﻿# pepe's deals
+
+> Game deals and price-tracking platform covering Steam, GOG, Epic and other digital stores, with historical price data, all-time lows, and wishlist alerts.
+
+## Main pages
+
+- [Home](https://pepe.deals/): Latest deals and featured offers.
+- [Bundles](https://pepe.deals/bundles/): Game bundles currently on sale.
+- [Free games](https://pepe.deals/free/): Free-to-keep and temporarily free games.
+- [Historical lows](https://pepe.deals/historical-lows/): Lowest prices ever recorded for each game.
+- [Last added](https://pepe.deals/last-added/): Most recently tracked games and deals.
+- [Compare prices](https://pepe.deals/compare/): Side-by-side price comparison across stores.
+- [Regions](https://pepe.deals/regions/): Regional pricing information (Europe/US).
+
+## Subscriptions
+
+- [Subscriptions](https://pepe.deals/subscriptions/): Comparison of game subscription services (Game Pass, PS Plus, etc.).
+- [Recently added to subscriptions](https://pepe.deals/subscriptions/last-added/): Newest games added to subscription catalogs.
+- [Subscriptions archive](https://pepe.deals/subscriptions/archive/): Historical record of subscription catalog changes.
+
+## Cloud gaming
+
+- [Cloud gaming streaming](https://pepe.deals/streaming/): Overview of supported cloud gaming services.
+- [Steam Deck](https://pepe.deals/steamdeck/): Steam Deck compatible deals and info.
+- [SteamOS](https://pepe.deals/steamos/): SteamOS related content.
+- [GeForce NOW](https://pepe.deals/geforcenow/): GeForce NOW cloud gaming catalog.
+- [Boosteroid](https://pepe.deals/boosteroid/): Boosteroid cloud gaming catalog.
+
+## News
+
+- [Last news](https://pepe.deals/last-news/): Latest gaming industry news.
+- [Last updates](https://pepe.deals/last-updates/): Recent changes and updates to tracked games.
+
+## Other
+
+- [Patreon](https://pepe.deals/patreon/): Support the project and unlock perks.
+- [API](https://pepe.deals/api/): Public API access information.

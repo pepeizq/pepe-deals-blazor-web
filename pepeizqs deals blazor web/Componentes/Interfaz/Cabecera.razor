@@ -12,6 +12,7 @@
 @using System.Text.Json
 @using Tiendas2
 @using pepeizqs_deals_web.Data
+@using static pepeizqs_deals_blazor_web.Componentes.Secciones.Minimos.Minimos
 
 @inject NavigationManager NavManager
 @inject IHttpContextAccessor Contexto
@@ -697,7 +698,7 @@
                     </div>
                 }
 
-                <div class="resultados-busqueda @(resultadosMostrar?.Count > 0 || cargandoBusqueda ? "mostrar" : "")"
+                <div class="resultados-busqueda @(resultadosMostrar?.Count > 0 || cargandoBusqueda == true ? "mostrar" : "")"
                      style="height: calc(100% - var(--alturaCabecera)); width: 100%; top: 0; left: 0; overflow-x: auto; position: fixed; z-index: 1000; margin-top: var(--alturaCabecera); display: flex; align-items: start; flex-direction: column; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); background-color: var(--fondoCuerpo);">
     
                     <div style="margin-left: auto; margin-right: auto; max-width: var(--anchoCuerpo); width: 100%;">
@@ -722,7 +723,7 @@
                                         @onmouseleave="@(() => OcultarTooltipBuscador("tooltip-header-clipboard"))"
                                         style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
                                     <div style="width: 24px; height: 24px;">
-                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaBuscadorClipboard == true ? "180deg" : "0deg")); transition: transform 0.2s;">
                                             <path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" />
                                         </svg>
                                     </div>
@@ -734,7 +735,7 @@
                                         @onmouseleave="@(() => OcultarTooltipBuscador("tooltip-header-cleansearch"))"
                                         style="border: 0px; background: transparent; padding: 0px; display: flex; align-items: center; line-height: 1; cursor: pointer;">
                                     <div style="width: 24px; height: 24px;">
-                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaBuscadorCerrar == true ? "180deg" : "0deg")); transition: transform 0.2s;">
                                             <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
                                         </svg>
                                     </div>
@@ -770,55 +771,23 @@
                             <div style="margin-bottom: 30px;">
                                 <Virtualize Context="juego" Items="@resultadosMostrar" OverscanCount="3">
                                     <ItemContent>
-                                        @{
-                                            string fondoColor = string.Empty;
-                                        
-                                            if (string.IsNullOrEmpty(usuarioId) == false)
-                                            {
-                                                bool usuarioTieneJuego = Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego);
-                                                bool usuarioTieneDeseado = false;
-
-                                                if (usuarioTieneJuego == true)
-                                                {
-                                                    fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoBien));";
-                                                }
-                                                else
-                                                {
-                                                    if (usuarioTieneDeseado == false)
-                                                    {
-                                                        usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                                    }
-
-                                                    if (usuarioTieneDeseado == false)
-                                                    {
-                                                        usuarioTieneDeseado = Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, Juegos.JuegoDRM.NoEspecificado);
-                                                    }
-
-                                                    if (usuarioTieneDeseado == true)
-                                                    {
-                                                        fondoColor = "background: radial-gradient(ellipse at top left, var(--fondoBotonPequeño), var(--fondoAlerta));";
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        <div @key="juego.Id-2" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
+                                        <div @key="juego.Juego.Id-2" style="display: flex; flex-direction: row; align-items: center; margin-top: 30px;">
                                             @{
-                                                string imagen = juego.Imagenes.Header_460x215;
+                                                string imagen = juego.Juego.Imagenes.Header_460x215;
 
-                                                if (juego.Tipo == JuegoTipo.Bundle)
+                                                if (juego.Juego.Tipo == JuegoTipo.Bundle)
                                                 {
-                                                    imagen = Bundles2.BundlesCargar.DevolverBundle((Bundles2.BundleTipo)juego.IdSteam).ImagenIcono;
+                                                    imagen = Bundles2.BundlesCargar.DevolverBundle((Bundles2.BundleTipo)juego.Juego.IdSteam).ImagenIcono;
                                                 }
 
                                                 int ancho = 230;
                                                 int alto = 107;
 
-                                                if (juego.Tipo == JuegoTipo.Curator)
+                                                if (juego.Juego.Tipo == JuegoTipo.Curator)
                                                 {
                                                     ancho = 107;
                                                 }
-                                                else if (juego.Tipo == JuegoTipo.Bundle)
+                                                else if (juego.Juego.Tipo == JuegoTipo.Bundle)
                                                 {
                                                     ancho = 51;
                                                     alto = 51;
@@ -826,24 +795,24 @@
 
                                                 string imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px; display: block;";
 
-                                                if (juego.Tipo == JuegoTipo.Bundle)
+                                                if (juego.Juego.Tipo == JuegoTipo.Bundle)
                                                 {
                                                     imagenEstilo = "width: " + ancho.ToString() + "px; height: " + alto.ToString() + "px; display: block; margin: 23px;";
                                                 }
 
-                                                string enlace = "/game/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                                string enlace = "/game/" + juego.Juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Juego.Nombre) + "/";
 
-                                                if (juego.Tipo == JuegoTipo.Curator)
+                                                if (juego.Juego.Tipo == JuegoTipo.Curator)
                                                 {
-                                                    enlace = "/curator/" + juego.ExeEpic;
+                                                    enlace = "/curator/" + juego.Juego.ExeEpic;
                                                 }
-                                                else if (juego.Tipo == JuegoTipo.Bundle)
+                                                else if (juego.Juego.Tipo == JuegoTipo.Bundle)
                                                 {
-                                                    enlace = "/bundle/" + juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Nombre) + "/";
+                                                    enlace = "/bundle/" + juego.Juego.Id.ToString() + "/" + Herramientas.EnlaceAdaptador.Nombre(juego.Juego.Nombre) + "/";
                                                 }
                                             }
 
-                                            <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; @fondoColor">
+                                            <a href="@enlace" @onclick="(e => AbrirEnlace(e, enlace, false))" class="boton-pequeño" style="cursor: pointer; padding: 0px; background: linear-gradient(100deg, var(--fondoBotonPequeño) 0%, @juego.Color 100%);">
                                                 <div class="perfil-flexible-centrado">
                                                     <div>
                                                         <img src="@imagen" style="@imagenEstilo" loading="lazy" decoding="async" />
@@ -851,13 +820,13 @@
 
                                                     <div style="width: 100%; padding-left: 20px; padding-right: 20px; display: flex; flex-direction: column; gap: 5px;">
                                                         <div>
-                                                            @juego.Nombre
+                                                            @juego.Juego.Nombre
                                                         </div>
 
-                                                        @if (juego.Tipo != JuegoTipo.Curator && juego.Tipo != JuegoTipo.Bundle)
+                                                        @if (juego.Juego.Tipo != JuegoTipo.Curator && juego.Juego.Tipo != JuegoTipo.Bundle)
                                                         {
                                                             <div style="font-size: 15px;">
-                                                                @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego, true, true, true)
+                                                                @Herramientas.Buscador.GenerarMensaje(usuarioRegion, idioma, juego.Juego, true, true, true)
                                                             </div>
                                                         }
                                                     </div>
@@ -943,8 +912,9 @@
             if (juegosUsuarioIndex == null)
             {
                 juegosUsuarioIndex = Herramientas.UsuarioJuegos.CrearIndex(juegosUsuario);
-                excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
             }
+
+            excluirJuegosIds = juegosUsuarioIndex.Excluidos.ToList();
 
             if (deseadosImportadosIndex == null)
             {
@@ -1006,7 +976,48 @@
                         List<Juego> resultados2 = resultados.juegos;
                         cantidadExcluidos = resultados.excluidos;
 
-                        ActualizarResultadosPorTipo(resultados2);
+                        List<JuegoMostrar> resultadosMostrar2 = new List<JuegoMostrar>();
+
+                        if (resultados2?.Count > 0)
+                        {
+                            foreach (var resultado in resultados2)
+                            {
+                                JuegoMostrar resultadoMostrar = new JuegoMostrar
+                                {
+                                    Juego = resultado,
+                                    DeseadoImportado = false,
+                                    DeseadoWeb = false,
+                                    Tiene = false,
+                                    Color = "var(--fondoBotonPequeño)"
+                                };
+
+                                if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, resultado) == true)
+                                {
+                                    resultadoMostrar.Color = "var(--fondoBien)";
+                                    resultadoMostrar.Tiene = true;
+                                }
+                                else
+                                {
+                                    if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, resultado) == true)
+                                    {
+                                        resultadoMostrar.Color = "var(--fondoAlerta)";
+                                        resultadoMostrar.DeseadoImportado = true;
+                                    }
+                                    else
+                                    {
+                                        if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, resultado) == true)
+                                        {
+                                            resultadoMostrar.Color = "var(--fondoAlerta)";
+                                            resultadoMostrar.DeseadoWeb = true;
+                                        }
+                                    }
+                                }
+
+                                resultadosMostrar2.Add(resultadoMostrar);
+                            }
+                        }
+                        
+                        ActualizarResultadosPorTipo(resultadosMostrar2);
                         ActivarPrimeraPestañaDisponible();
 
                         await ActualizarScrollBody(resultados2.Any());
@@ -1147,7 +1158,7 @@
         public JuegoTipo tipo { get; set; }
         public bool activa { get; set; }
         public bool visible { get; set; }
-        public List<global::Juegos.Juego> resultados { get; set; } = new();
+        public List<JuegoMostrar> resultados { get; set; } = new();
 
         public string ObtenerEstilo()
         {
@@ -1189,7 +1200,7 @@
     private string estiloCurator => pestañasBuscador[JuegoTipo.Curator].ObtenerEstilo();
     private string estiloBundles => pestañasBuscador[JuegoTipo.Bundle].ObtenerEstilo();
 
-    private List<global::Juegos.Juego> resultadosMostrar
+    private List<JuegoMostrar> resultadosMostrar
     {
         get
         {
@@ -1271,6 +1282,7 @@
         try
         {
             cargandoBusqueda = true;
+            await InvokeAsync(StateHasChanged);
 
             await Task.Delay(retraso, token);
 
@@ -1281,7 +1293,48 @@
                 List<Juego> resultados2 = resultados.juegos;
                 cantidadExcluidos = resultados.excluidos;
 
-                ActualizarResultadosPorTipo(resultados2);
+                List<JuegoMostrar> resultadosMostrar2 = new List<JuegoMostrar>();
+
+                if (resultados2?.Count > 0)
+                {
+                    foreach (var resultado in resultados2)
+                    {
+                        JuegoMostrar resultadoMostrar = new JuegoMostrar
+                        {
+                            Juego = resultado,
+                            DeseadoImportado = false,
+                            DeseadoWeb = false,
+                            Tiene = false,
+                            Color = "var(--fondoBotonPequeño)"
+                        };
+
+                        if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, resultado) == true)
+                        {
+                            resultadoMostrar.Color = "var(--fondoBien)";
+                            resultadoMostrar.Tiene = true;
+                        }
+                        else
+                        {
+                            if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, resultado) == true)
+                            {
+                                resultadoMostrar.Color = "var(--fondoAlerta)";
+                                resultadoMostrar.DeseadoImportado = true;
+                            }
+                            else
+                            {
+                                if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, resultado) == true)
+                                {
+                                    resultadoMostrar.Color = "var(--fondoAlerta)";
+                                    resultadoMostrar.DeseadoWeb = true;
+                                }
+                            }
+                        }
+
+                        resultadosMostrar2.Add(resultadoMostrar);
+                    }
+                }
+
+                ActualizarResultadosPorTipo(resultadosMostrar2);
                 ActivarPrimeraPestañaDisponible();
 
                 await ActualizarScrollBody(resultados2.Any());
@@ -1304,7 +1357,7 @@
         }
     }
 
-    private void ActualizarResultadosPorTipo(List<global::Juegos.Juego> resultados)
+    private void ActualizarResultadosPorTipo(List<JuegoMostrar> resultados)
     {
         foreach (PestañaBuscador pestaña in pestañasBuscador.Values)
         {
@@ -1312,9 +1365,9 @@
             pestaña.visible = false;
         }
 
-        foreach (Juego juego in resultados)
+        foreach (JuegoMostrar juego in resultados)
         {
-            if (pestañasBuscador.TryGetValue(juego.Tipo, out var pestaña))
+            if (pestañasBuscador.TryGetValue(juego.Juego.Tipo, out var pestaña))
             {
                 pestaña.resultados.Add(juego);
             }
@@ -1406,11 +1459,14 @@
         pestañasBuscador[JuegoTipo.Game].visible = true;
     }
 
+    private bool scrollBodyDesactivado = false;
+
     private async Task ActualizarScrollBody(bool desactivar)
     {
-        if (moduloJs != null)
+        if (moduloJs != null && scrollBodyDesactivado != desactivar)
         {
             await moduloJs.InvokeVoidAsync("toggleBodyScroll", desactivar);
+            scrollBodyDesactivado = desactivar;
         }
     }
 
@@ -1650,8 +1706,20 @@
         }
     }
 
+    private bool usuarioEncimaBuscadorClipboard = false;
+    private bool usuarioEncimaBuscadorCerrar = false;
+
     private async Task MostrarTooltipBuscador(string id)
     {
+        if (id == "tooltip-header-clipboard")
+        {
+            usuarioEncimaBuscadorClipboard = true;
+        }
+        else if (id == "tooltip-header-cleansearch")
+        {
+            usuarioEncimaBuscadorCerrar = true;
+        }
+
         if (moduloJs != null)
         {
             await moduloJs.InvokeVoidAsync("mostrarTooltipBuscador", id);
@@ -1660,6 +1728,15 @@
 
     private async Task OcultarTooltipBuscador(string id)
     {
+        if (id == "tooltip-header-clipboard")
+        {
+            usuarioEncimaBuscadorClipboard = false;
+        }
+        else if (id == "tooltip-header-cleansearch")
+        {
+            usuarioEncimaBuscadorCerrar = false;
+        }
+
         if (moduloJs != null)
         {
             await moduloJs.InvokeVoidAsync("ocultarTooltipBuscador", id);
