@@ -1773,6 +1773,10 @@ else
 	async ValueTask IAsyncDisposable.DisposeAsync()
 	{
 		ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
+
+		cronometro?.Dispose();
+		cronometroMinimos?.Dispose();
+		cronometroNoticias?.Dispose();
 	}
 
 	private bool usuarioEncimaOpciones = false;

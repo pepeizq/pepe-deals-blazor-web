@@ -31,6 +31,8 @@ namespace Tareas
 
 				if (piscinaTiendas == piscinaUsada && await BaseDatos.Admin.Buscar.TareaPosibleUsar("mantenimiento", TimeSpan.FromMinutes(30)) == true)
 				{
+					bool seEjecutoAlgo = false;
+
 					#region Tiendas Europa
 
 					foreach (var tienda in Tiendas2.TiendasCargar.GenerarListado())
@@ -369,7 +371,7 @@ namespace Tareas
 								{
 									await TiendasCargar.TareasGestionador(TiendaRegion.Europa, tienda.Id);
 
-									Environment.Exit(1);
+									seEjecutoAlgo = true;
 								}
 								catch (Exception ex)
 								{
@@ -419,7 +421,7 @@ namespace Tareas
 						if (siguienteComprobacion > TimeSpan.Zero)
 						{
 							bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, suscripcion.Id.ToString());
-
+							
 							if (sePuedeUsar == true)
 							{
 								try
@@ -453,12 +455,7 @@ namespace Tareas
 										await APIs.Xbox.Suscripcion.Buscar();
 									}
 
-									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
-
-									if (tareasEnUso.Count == 0)
-									{
-										Environment.Exit(1);
-									}
+									seEjecutoAlgo = true;
 								}
 								catch (Exception ex)
 								{
@@ -475,7 +472,7 @@ namespace Tareas
 					foreach (var streaming in Streaming2.StreamingCargar.GenerarListado())
 					{
 						TimeSpan siguienteComprobacion = TimeSpan.Zero;
-						
+
 						if (streaming.Id == APIs.GOG.Streaming.Generar().Id)
 						{
 							siguienteComprobacion = TimeSpan.FromHours(5);
@@ -492,7 +489,7 @@ namespace Tareas
 						if (siguienteComprobacion > TimeSpan.Zero)
 						{
 							bool sePuedeUsar = await BaseDatos.Admin.Buscar.TiendasPosibleUsar(siguienteComprobacion, streaming.Id.ToString());
-							
+
 							if (sePuedeUsar == true)
 							{
 								try
@@ -510,12 +507,7 @@ namespace Tareas
 										await APIs.GeforceNOW.Streaming.Buscar();
 									}
 
-									var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
-
-									if (tareasEnUso.Count == 0)
-									{
-										Environment.Exit(1);
-									}
+									seEjecutoAlgo = true;
 								}
 								catch (Exception ex)
 								{
@@ -625,7 +617,7 @@ namespace Tareas
 								{
 									await Tiendas2.TiendasCargar.TareasGestionador(TiendaRegion.EstadosUnidos, tienda.Id);
 
-									Environment.Exit(1);
+									seEjecutoAlgo = true;
 								}
 								catch (Exception ex)
 								{
@@ -636,6 +628,16 @@ namespace Tareas
 					}
 
 					#endregion
+
+					if (seEjecutoAlgo)
+					{
+						var tareasEnUso = await BaseDatos.Admin.Buscar.TiendasEnUso(TimeSpan.FromSeconds(60));
+
+						if (tareasEnUso.Count == 0)
+						{
+							Environment.Exit(1);
+						}
+					}
 				}
 			}
 		}

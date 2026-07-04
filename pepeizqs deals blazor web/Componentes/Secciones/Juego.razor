@@ -3962,6 +3962,8 @@
 
     public async ValueTask DisposeAsync()
 	{
+        ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
+
 		if (moduloJs != null)
 		{
 			try
@@ -3971,7 +3973,6 @@
 			catch { }
 		}
 	}
-
 
     #region OnAfter
 
@@ -5053,11 +5054,6 @@
     private async Task MostrarOcultarOpciones()
     {
         ServicioOpciones.AlternarOpciones();
-    }
-
-    async ValueTask IAsyncDisposable.DisposeAsync()
-    {
-        ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
     }
 
     private bool usuarioEncimaOpciones = false;
