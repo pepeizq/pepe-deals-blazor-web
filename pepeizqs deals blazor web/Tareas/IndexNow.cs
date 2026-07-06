@@ -31,10 +31,10 @@ namespace Tareas
 
             while (await timer.WaitForNextTickAsync(tokenParar))
             {
-                string piscinaWeb = _configuracion.GetValue<string>("PoolWeb:Contenido");
+                string piscinaTiendas = _configuracion.GetValue<string>("PoolTiendas:Contenido");
                 string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-                if (piscinaWeb != piscinaUsada)
+                if (piscinaTiendas == piscinaUsada)
                 {
 					try
 					{
@@ -96,7 +96,7 @@ namespace Tareas
 									{
 										var indexNowConfig = _configuracion.GetSection("IndexNow");
 										string host = indexNowConfig["Host"];
-										string key = indexNowConfig["Key"];
+										string key = indexNowConfig["Clave"];
 										string keyLocation = indexNowConfig["KeyLocation"];
 
 										var payload = new
@@ -109,7 +109,13 @@ namespace Tareas
 
 										string json = JsonSerializer.Serialize(payload);
 										StringContent contenido = new StringContent(json, Encoding.UTF8, "application/json");
-										await cliente.PostAsync("https://www.bing.com/indexnow", contenido);
+										var respuesta = await cliente.PostAsync("https://www.bing.com/indexnow", contenido);
+
+										if (respuesta.IsSuccessStatusCode == false)
+										{
+											string cuerpo = await respuesta.Content.ReadAsStringAsync();
+											BaseDatos.Errores.Insertar.Mensaje("IndexNow", new Exception($"HTTP {(int)respuesta.StatusCode}: {cuerpo}"), false);
+										}
 									}
 								}
 							}

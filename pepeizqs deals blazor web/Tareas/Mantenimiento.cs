@@ -88,7 +88,7 @@ namespace Tareas
 							await BaseDatos.Portapapeles.Borrar.Limpieza();
 							await Divisas.ActualizarDatos2();
 
-							await BaseDatos.Mantenimiento.Encoger.Ejecutar(_configuracion);
+							await BaseDatos.Mantenimiento.Indices.Ejecutar(_configuracion);
 						}
 					}
 					catch (Exception ex)
