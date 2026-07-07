@@ -19,5 +19,6 @@
   "String17": "Código de recuperação",
   "String18": "Você solicitou o login com um código de recuperação. Este login não será lembrado até que você forneça um código do aplicativo autenticador no login ou desative o 2FA e faça login novamente.",
   "String19": "Faça login com Steam",
-  "String20": "O login do Steam não está funcionando no momento, mas você pode fazer login com seu nome de usuário e senha."
+  "String20": "O login do Steam não está funcionando no momento, mas você pode fazer login com seu nome de usuário e senha.",
+  "String21": "O site não conseguiu se conectar ao Steam para fazer login, mas você pode usar o login clássico."
 }

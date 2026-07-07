@@ -88,5 +88,20 @@ namespace BaseDatos.Admin
 				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Datos", ex);
 			}
 		}
+
+		public static async Task Fecha(string id, DateTime fecha)
+		{
+			try
+			{
+				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
+				{
+					return await conexion.ExecuteAsync("UPDATE adminFechas SET fecha=@fecha WHERE id=@id", new { id = id, fecha = fecha }, transaction: sentencia);
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Actualizar Admin Fechas", ex);
+			}
+		}
 	}
 }

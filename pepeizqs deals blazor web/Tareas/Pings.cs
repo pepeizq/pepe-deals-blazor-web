@@ -55,26 +55,40 @@ namespace Tareas
 
 		private async Task HacerPingAsync(string url, CancellationToken token)
 		{
-			try
+			const int intentosMaximos = 3;
+			Exception ultimoError = null;
+
+			for (int intento = 1; intento <= intentosMaximos; intento++)
 			{
-				var mensaje = new HttpRequestMessage
+				try
 				{
-					RequestUri = new Uri(url)
-				};
+					var mensaje = new HttpRequestMessage
+					{
+						RequestUri = new Uri(url)
+					};
 
-				mensaje.Headers.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
-				mensaje.Headers.AcceptEncoding.ParseAdd("gzip, deflate, br");
-				mensaje.Headers.AcceptLanguage.ParseAdd("es,en-US;q=0.7,en;q=0.3");
-				mensaje.Headers.Connection.ParseAdd("keep-alive");
-				mensaje.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10; Generic Android-x86_64 Build/QD1A.190821.014.C2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.36 Safari/537.36");
+					mensaje.Headers.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8");
+					mensaje.Headers.AcceptEncoding.ParseAdd("gzip, deflate, br");
+					mensaje.Headers.AcceptLanguage.ParseAdd("es,en-US;q=0.7,en;q=0.3");
+					mensaje.Headers.Connection.ParseAdd("keep-alive");
+					mensaje.Headers.UserAgent.ParseAdd("Mozilla/5.0 (Linux; Android 10; Generic Android-x86_64 Build/QD1A.190821.014.C2; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.36 Safari/537.36");
 
-				HttpResponseMessage respuesta = await _cliente.SendAsync(mensaje, token);
-				respuesta.EnsureSuccessStatusCode();
+					HttpResponseMessage respuesta = await _cliente.SendAsync(mensaje, token);
+					respuesta.EnsureSuccessStatusCode();
+					return; 
+				}
+				catch (Exception ex)
+				{
+					ultimoError = ex;
+
+					if (intento < intentosMaximos)
+					{
+						await Task.Delay(TimeSpan.FromSeconds(5 * intento), token);
+					}
+				}
 			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje($"Ping - {url}", ex.Message);
-			}
+
+			BaseDatos.Errores.Insertar.Mensaje($"Ping - {url}", ultimoError.Message);
 		}
 
 		public override async Task StopAsync(CancellationToken stoppingToken)

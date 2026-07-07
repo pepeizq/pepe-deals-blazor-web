@@ -798,6 +798,23 @@ namespace APIs.Steam
 
 			if (string.IsNullOrEmpty(id) == false)
 			{
+				bool sePuedeBuscar = true;
+
+				DateTime? fecha = await BaseDatos.Admin.Buscar.Fecha("steamapi");
+
+				if (fecha != null)
+				{
+					if (fecha.Value.AddDays(3) > DateTime.Now)
+					{
+						sePuedeBuscar = false;
+					}
+				}
+
+				if (sePuedeBuscar == false)
+				{
+					return null;
+				}
+
 				string html = await Decompiladores.Estandar("https://store.steampowered.com/ajaxappreviews/" + id + "?date_range_type=all&day_range=120&start_date=-1&end_date=-1&cursor=*&filter_offtopic_activity=true&playtime_filter_max=0&playtime_filter_min=0&playtime_type=all&purchase_type=all&review_type=all&use_review_quality=true&language=" + idioma + "&hardware_os=all&hardware_cpu=all&hardware_gpu=all&hardware_device_type=all");
 
 				if (string.IsNullOrEmpty(html) == false)

@@ -85,7 +85,7 @@ namespace Herramientas
 				bool es404 = respuesta?.StatusCode == HttpStatusCode.NotFound;
 				bool esGidSteam = enlace.StartsWith("https://steamcommunity.com/gid/", StringComparison.OrdinalIgnoreCase);
 
-				if (es404 == true && esGidSteam== true)
+				if (es404 == true && esGidSteam == true)
 				{
 					return null;
 				}
@@ -104,7 +104,12 @@ namespace Herramientas
 					"Cuerpo: " + cuerpo + Environment.NewLine + Environment.NewLine +
 					"Error: " + ex.Message,
 					enlace
-				); 
+				);
+
+				if (enlace.Contains("https://store.steampowered.com/") == true || enlace.Contains("https://steamcommunity.com/") == true)
+				{
+					await global::BaseDatos.Admin.Actualizar.Fecha("steamapi", DateTime.Now);
+				}
 				
 				return null;
 			}

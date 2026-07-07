@@ -382,6 +382,10 @@ namespace BaseDatos.Juegos
 
 			sql.Append($"WHERE id=@id{indice};");
 
+			ofertasActuales = ofertasActuales
+				.Where(p => p.FechaActualizacion >= DateTime.Now.AddMonths(-3))
+				.ToList();
+
 			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add($"@id{indice}", id);
 			parametros.Add($"@precioActualesTiendas{indice}", JsonSerializer.Serialize(ofertasActuales));
@@ -759,6 +763,10 @@ namespace BaseDatos.Juegos
 			if (ahora != null) sql.Append($", ultimaModificacion=@ultimaModificacion{indice} ");
 
 			sql.Append($"WHERE id=@id{indice};");
+
+			ofertasActualesUS = ofertasActualesUS
+				.Where(p => p.FechaActualizacion >= DateTime.Now.AddMonths(-3))
+				.ToList();
 
 			var parametros = new DynamicParameters();
 			parametros.Add($"@id{indice}", id);

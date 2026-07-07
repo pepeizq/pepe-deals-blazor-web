@@ -10,7 +10,24 @@ namespace APIs.Steam
     {
         public static async Task<SteamCuratorAPI> Extraer(string id)
         {
-            string html = await Decompiladores.Estandar("https://store.steampowered.com/curator/" + id + "/ajaxgetcreatorhomeinfo?get_appids=true");
+			bool sePuedeBuscar = true;
+
+			DateTime? fecha = await BaseDatos.Admin.Buscar.Fecha("steamapi");
+
+			if (fecha != null)
+			{
+				if (fecha.Value.AddDays(3) > DateTime.Now)
+				{
+					sePuedeBuscar = false;
+				}
+			}
+
+			if (sePuedeBuscar == false)
+			{
+				return null;
+			}
+
+			string html = await Decompiladores.Estandar("https://store.steampowered.com/curator/" + id + "/ajaxgetcreatorhomeinfo?get_appids=true");
         
             if (string.IsNullOrEmpty(html) == false)
             {
@@ -32,6 +49,23 @@ namespace APIs.Steam
 
 		public static async Task<SteamCuratorAPIVanidad> ExtraerVanidad(string id)
 		{
+			bool sePuedeBuscar = true;
+
+			DateTime? fecha = await BaseDatos.Admin.Buscar.Fecha("steamapi");
+
+			if (fecha != null)
+			{
+				if (fecha.Value.AddDays(3) > DateTime.Now)
+				{
+					sePuedeBuscar = false;
+				}
+			}
+
+			if (sePuedeBuscar == false)
+			{
+				return null;
+			}
+
 			string html = await Decompiladores.Estandar("https://steamcommunity.com/gid/" + id + "/ajaxgetvanityandclanid/");
 
 			if (string.IsNullOrEmpty(html) == false)

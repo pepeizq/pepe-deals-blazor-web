@@ -27,6 +27,23 @@ namespace BaseDatos.Admin
 			return 0;
 		}
 
+		public static async Task<DateTime?> Fecha(string id)
+		{
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<DateTime?>("SELECT fecha FROM adminFechas WHERE id=@id", new { id });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Admin Buscar Fecha", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<DateTime> Tarea(string id)
 		{
 			try

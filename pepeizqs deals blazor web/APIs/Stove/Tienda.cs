@@ -58,80 +58,83 @@ namespace APIs.Stove
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
-					StoveRespuesta respuesta2 = JsonSerializer.Deserialize<StoveRespuesta>(html, opciones);
-
-					if (respuesta2 != null)
+					if (html.Contains("{\"code\":97999,\"message\":\"INTERNAL SERVER ERROR\"}") == false)
 					{
-						totalPaginas = respuesta2.Datos?.Paginas ?? 10;
+						StoveRespuesta respuesta2 = JsonSerializer.Deserialize<StoveRespuesta>(html, opciones);
 
-						if (respuesta2.Datos?.Juegos?.Count > 0)
+						if (respuesta2 != null)
 						{
-							List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
+							totalPaginas = respuesta2.Datos?.Paginas ?? 10;
 
-							foreach (var juego in respuesta2.Datos.Juegos)
+							if (respuesta2.Datos?.Juegos?.Count > 0)
 							{
-								int descuento = 0;
+								List<JuegoPrecio> ofertas = new List<JuegoPrecio>();
 
-								if (juego.Precio.Descuento.HasValue == true)
+								foreach (var juego in respuesta2.Datos.Juegos)
 								{
-									descuento = juego.Precio.Descuento.Value;
+									int descuento = 0;
+
+									if (juego.Precio.Descuento.HasValue == true)
+									{
+										descuento = juego.Precio.Descuento.Value;
+									}
+
+									if (descuento > 0 && descuento < 100)
+									{
+										string nombre = WebUtility.HtmlDecode(juego.Nombre);
+
+										string enlace = "https://store.onstove.com/games/" + juego.Id.ToString();
+
+										string imagen = juego.Imagen;
+
+										JuegoPrecio oferta = new JuegoPrecio
+										{
+											Nombre = nombre,
+											Enlace = enlace,
+											Imagen = imagen,
+											Moneda = JuegoMoneda.Euro,
+											Precio = juego.Precio.PrecioRebajado,
+											Descuento = descuento,
+											Tienda = Generar().Id,
+											DRM = JuegoDRM.Stove,
+											FechaDetectado = DateTime.Now,
+											FechaActualizacion = DateTime.Now
+										};
+
+										ofertas.Add(oferta);
+									}
 								}
 
-								if (descuento > 0 && descuento < 100)
+								if (ofertas?.Count > 0)
 								{
-									string nombre = WebUtility.HtmlDecode(juego.Nombre);
+									int tamaño = 500;
+									var lotes = ofertas
+										.Select((oferta, indice) => new { oferta, indice })
+										.GroupBy(x => x.indice / tamaño)
+										.Select(g => g.Select(x => x.oferta).ToList())
+										.ToList();
 
-									string enlace = "https://store.onstove.com/games/" + juego.Id.ToString();
-
-									string imagen = juego.Imagen;
-
-									JuegoPrecio oferta = new JuegoPrecio
+									foreach (var lote in lotes)
 									{
-										Nombre = nombre,
-										Enlace = enlace,
-										Imagen = imagen,
-										Moneda = JuegoMoneda.Euro,
-										Precio = juego.Precio.PrecioRebajado,
-										Descuento = descuento,
-										Tienda = Generar().Id,
-										DRM = JuegoDRM.Stove,
-										FechaDetectado = DateTime.Now,
-										FechaActualizacion = DateTime.Now
-									};
+										try
+										{
+											await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
 
-									ofertas.Add(oferta);
-								}
-							}
+										juegos2 += lote.Count;
 
-							if (ofertas?.Count > 0)
-							{
-								int tamaño = 500;
-								var lotes = ofertas
-									.Select((oferta, indice) => new { oferta, indice })
-									.GroupBy(x => x.indice / tamaño)
-									.Select(g => g.Select(x => x.oferta).ToList())
-									.ToList();
-
-								foreach (var lote in lotes)
-								{
-									try
-									{
-										await BaseDatos.Tiendas.Comprobar.Resto(region, lote);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
-									}
-
-									juegos2 += lote.Count;
-
-									try
-									{
-										await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
-									}
-									catch (Exception ex)
-									{
-										BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										try
+										{
+											await BaseDatos.Admin.Actualizar.Tiendas(region, Generar().Id, DateTime.Now, juegos2);
+										}
+										catch (Exception ex)
+										{
+											BaseDatos.Errores.Insertar.Mensaje(Generar().Id, ex);
+										}
 									}
 								}
 							}

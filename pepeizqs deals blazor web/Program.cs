@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using pepeizqs_deals_blazor_web.Componentes;
 using pepeizqs_deals_web.Data;
 using System.IO.Compression;
@@ -116,6 +117,15 @@ builder.Services.AddAuthentication(opciones =>
 	opciones.CorrelationCookie.SameSite = SameSiteMode.Lax;
 	opciones.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 	opciones.CorrelationCookie.HttpOnly = true;
+	opciones.Events = new AspNet.Security.OpenId.OpenIdAuthenticationEvents
+	{
+		OnRemoteFailure = context =>
+		{
+			context.Response.Redirect("/account/login?error=steam");
+			context.HandleResponse(); 
+			return Task.CompletedTask;
+		}
+	};
 }).AddIdentityCookies();
 
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -178,7 +188,7 @@ builder.Services.Configure<HostOptions>(opciones =>
 builder.Services.AddSingleton<Tareas.VigiladorRAM>();
 builder.Services.AddSingleton<Tareas.Comprobador>();
 builder.Services.AddSingleton<Tareas.Minimos.Europa>();
-//builder.Services.AddSingleton<Tareas.LimpiezaLog>();
+builder.Services.AddSingleton<Tareas.LimpiezaLog>();
 //builder.Services.AddSingleton<Tareas.LimpiezaCircuits>();
 builder.Services.AddSingleton<Tareas.Mantenimiento>();
 builder.Services.AddSingleton<Tareas.Pings>();
@@ -196,7 +206,7 @@ builder.Services.AddSingleton<Tareas.Minimos.EstadosUnidos>();
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.VigiladorRAM>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Comprobador>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Minimos.Europa>());
-//builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
+builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaLog>());
 //builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.LimpiezaCircuits>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Mantenimiento>());
 builder.Services.AddHostedService(provider => provider.GetRequiredService<Tareas.Pings>());
