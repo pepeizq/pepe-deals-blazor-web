@@ -66,6 +66,8 @@ namespace APIs.DLGamer
 
 				if (string.IsNullOrEmpty(html) == false)
 				{
+					BaseDatos.Errores.Insertar.Mensaje("Arreglar DLGamer", html);
+
 					DLGamerJuegos basedatos = null;
 
 					try

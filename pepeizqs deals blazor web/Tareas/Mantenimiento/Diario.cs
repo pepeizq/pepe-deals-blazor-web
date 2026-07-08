@@ -3,16 +3,16 @@
 using Dapper;
 using Herramientas;
 
-namespace Tareas
+namespace Tareas.Mantenimiento
 {
-	public class Mantenimiento : BackgroundService
+	public class Diario : BackgroundService
 	{
-		private readonly ILogger<Mantenimiento> _logger;
+		private readonly ILogger<Diario> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
 		private readonly IConfiguration _configuracion;
 
-		public Mantenimiento(ILogger<Mantenimiento> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
+		public Diario(ILogger<Diario> logger, IServiceScopeFactory factory, IDecompiladores decompilador, IConfiguration configuracion)
 		{
 			_logger = logger;
 			_factoria = factory;

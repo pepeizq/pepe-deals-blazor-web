@@ -123,6 +123,11 @@ namespace APIs.GamersGate
 								{
 									nombre = WebUtility.HtmlDecode(nombre);
 
+									if (string.IsNullOrEmpty(enlaceJuego) == false)
+									{
+										enlaceJuego = enlaceJuego.Replace("/en-us/", "/");
+									}
+
 									JuegoDRM juegoDRM = JuegoDRM2.Traducir(drm, Generar().Id);
 
 									JuegoPrecio oferta = new JuegoPrecio
