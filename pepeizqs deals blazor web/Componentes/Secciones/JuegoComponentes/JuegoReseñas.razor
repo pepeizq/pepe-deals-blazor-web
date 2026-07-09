@@ -9,309 +9,312 @@
 
 @if (juego.IdSteam > 0 && DateTime.Today > juego?.Caracteristicas?.FechaLanzamientoSteam && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 {
-    <div id="reviews">
-        @if (cargado == false)
-        {
-	        <div style="min-height: 60px; display: flex; align-items: center; gap: 30px; justify-content: center; width: 100%;">
-		        <div class="cargando" />
+    if (cargado == false && reseñasAmpliadas == null || cargado == true && reseñasAmpliadas != null)
+    {
+        <div id="reviews">
+            @if (cargado == false)
+            {
+                <div style="min-height: 60px; display: flex; align-items: center; gap: 30px; justify-content: center; width: 100%;">
+                    <div class="cargando" />
 
-                <div>
-                    @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Reviews")
+                    <div>
+                        @Herramientas.Idiomas.BuscarTexto(idioma, "String9", "Reviews")
+                    </div>
                 </div>
-	        </div>
-        }
-        else
-        {
-            <div class="caja-juego-contenido" style="display: flex; flex-direction: column;">
-                <div class="caja-juego-titulo" style="display: flex; align-items: center; gap: 30px;">
-                    <div style="display: flex; flex-direction: column;">
-                        @if (string.IsNullOrEmpty(idiomaReseñas) == false && idiomaReseñas == "global")
-                        {
-                            <div style="font-size: 18px;">
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Reviews")
-                            </div>
-                        }
-                        else if (string.IsNullOrEmpty(idiomaReseñas) == false && idiomaReseñas != "global")
-                        {
-                            <div style="font-size: 18px; margin-bottom: 10px;">
-                                @{
-                                    string idiomaTraduccion = idiomaReseñas;
+            }
+            else
+            {
+                if (reseñasAmpliadas != null)
+                {
+                    <div class="caja-juego-contenido" style="display: flex; flex-direction: column;">
+                        <div class="caja-juego-titulo" style="display: flex; align-items: center; gap: 30px;">
+                            <div style="display: flex; flex-direction: column;">
+                                @if (string.IsNullOrEmpty(idiomaReseñas) == false && idiomaReseñas == "global")
+                                {
+                                    <div style="font-size: 18px;">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String1", "Reviews")
+                                    </div>
+                                }
+                                else if (string.IsNullOrEmpty(idiomaReseñas) == false && idiomaReseñas != "global")
+                                {
+                                    <div style="font-size: 18px; margin-bottom: 10px;">
+                                        @{
+                                            string idiomaTraduccion = idiomaReseñas;
 
-                                    foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
-                                    {
-                                        if (idioma2.SteamAPI == idiomaReseñas)
-                                        {
-                                            idiomaTraduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
-                                            break;
+                                            foreach (var idioma2 in Herramientas.Idiomas.ListadoIdiomasGenerar())
+                                            {
+                                                if (idioma2.SteamAPI == idiomaReseñas)
+                                                {
+                                                    idiomaTraduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
+                                                    break;
+                                                }
+                                            }
+
+                                            if (string.IsNullOrEmpty(idiomaTraduccion) == false)
+                                            {
+                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Reviews"), idiomaTraduccion?.ToLower())
+                                            }
                                         }
-                                    }
+                                    </div>
 
-                                    if (string.IsNullOrEmpty(idiomaTraduccion) == false)
-                                    {
-                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "Reviews"), idiomaTraduccion?.ToLower())
-                                    }
+                                    <div style="display: flex; align-items: center; gap: 20px;">
+                                        @{
+                                            int total = reseñasAmpliadas.CantidadPositivos + reseñasAmpliadas.CantidadNegativos;
+                                            int porcentaje = Herramientas.Calculadora.SacarDescuento(reseñasAmpliadas.CantidadPositivos + reseñasAmpliadas.CantidadNegativos, reseñasAmpliadas.CantidadNegativos);
+
+                                            if (reseñasAmpliadas.CantidadPositivos > 0 && reseñasAmpliadas.CantidadNegativos == 0)
+                                            {
+                                                porcentaje = 99;
+                                            }
+                                        }
+
+                                        <div style="display: flex; align-items: center; gap: 10px;">
+                                            <div>
+                                                @if (porcentaje > 74)
+                                                {
+                                                    <img src="/imagenes/analisis/positivo3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
+                                                }
+
+                                                @if (porcentaje > 49 && porcentaje < 75)
+                                                {
+                                                    <img src="/imagenes/analisis/meh3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
+                                                }
+
+                                                @if (porcentaje < 50)
+                                                {
+                                                    <img src="/imagenes/analisis/negativo3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
+                                                }
+                                            </div>
+
+                                            <div>
+                                                @porcentaje%
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Reviews"), total.ToString("N0"))
+                                        </div>
+
+                                        <div style="color: var(--deckVerificado); display: flex; align-items: center; gap: 10px;">
+                                            <div style="max-width: 16px;">
+                                                <svg class="svg-boton" style="fill: var(--deckVerificado);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                                    <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2l144 0c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48l-97.5 0c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3l0-38.3 0-48 0-24.9c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32L0 224c0-17.7 14.3-32 32-32z" />
+                                                </svg>
+                                            </div>
+
+                                            @reseñasAmpliadas.CantidadPositivos.ToString("N0")
+                                        </div>
+
+                                        <div style="color: var(--colorTextoPeligro); display: flex; align-items: center; gap: 10px;">
+                                            <div style="max-width: 16px;">
+                                                <svg class="svg-boton" style="fill: var(--colorTextoPeligro);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                                    <path d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2l144 0c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48l-97.5 0c-19 0-37.5 5.6-53.3 16.1L202.7 73.8C176 91.6 160 121.6 160 153.7l0 38.3 0 48 0 24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384l64 0c17.7 0 32-14.3 32-32l0-224c0-17.7-14.3-32-32-32L32 96C14.3 96 0 110.3 0 128L0 352c0 17.7 14.3 32 32 32z" />
+                                                </svg>
+                                            </div>
+
+                                            @reseñasAmpliadas.CantidadNegativos.ToString("N0")
+                                        </div>
+                                    </div>
                                 }
                             </div>
 
-                            if (reseñasAmpliadas != null)
+                            <div style="margin-left: auto;">
+                                <div class="tooltip-juego" id="trigger-reviews2"
+                                     @onmouseenter="@(() => ActivarTooltip("trigger-reviews2", "tooltip-reviews2"))"
+                                     @onmouseleave="@(() => DesactivarTooltip("trigger-reviews2"))">
+                                    <div style="width: 24px; height: 24px;">
+                                        <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                                            <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z" />
+                                        </svg>
+                                    </div>
+
+                                    <div id="tooltip-reviews2" class="tooltip-relleno">
+                                        <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                            @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Reviews")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="padding: 30px; display: flex; align-items: flex-start; gap: 40px;">
+                            @if ((usuarioPatreon == true || usuarioAdmin == true) && juego.IdSteam > 0)
                             {
-                                <div style="display: flex; align-items: center; gap: 20px;">
+                                <div style="width: 25%; display: flex; flex-direction: column; gap: 5px;">
                                     @{
-                                        int total = reseñasAmpliadas.CantidadPositivos + reseñasAmpliadas.CantidadNegativos;
-                                        int porcentaje = Herramientas.Calculadora.SacarDescuento(reseñasAmpliadas.CantidadPositivos + reseñasAmpliadas.CantidadNegativos, reseñasAmpliadas.CantidadNegativos);
+                                        string idiomaGlobal = "global";
+                                        string estiloGlobal = "background-color: transparent; color: var(--colorEnlace); box-shadow: none;";
 
-                                        if (reseñasAmpliadas.CantidadPositivos > 0 && reseñasAmpliadas.CantidadNegativos == 0)
+                                        if (idiomaReseñas == idiomaGlobal)
                                         {
-                                            porcentaje = 99;
+                                            estiloGlobal = "background-color: var(--fondoBotonPequeño); color: var(--colorTexto);";
                                         }
                                     }
 
-                                    <div style="display: flex; align-items: center; gap: 10px;">
-                                        <div>
-                                            @if (porcentaje > 74)
-                                            {
-                                                <img src="/imagenes/analisis/positivo3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
-                                            }
+                                    <button @onclick="(e => ReseñasIdioma(e, idiomaGlobal))" class="boton-pequeño" style="text-align: center; @estiloGlobal">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Reviews")
+                                    </button>
 
-                                            @if (porcentaje > 49 && porcentaje < 75)
-                                            {
-                                                <img src="/imagenes/analisis/meh3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
-                                            }
+                                    @{
+                                        List<Herramientas.IdiomaClase> listadoIdiomas = new List<Herramientas.IdiomaClase>();
 
-                                            @if (porcentaje < 50)
-                                            {
-                                                <img src="/imagenes/analisis/negativo3.svg" style="width: 26px; height: 26px; display: block;" alt="Reviews" />
-                                            }
-                                        </div>
-
-                                        <div>
-                                            @porcentaje%
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "Reviews"), total.ToString("N0"))
-                                    </div>
-
-                                    <div style="color: var(--deckVerificado); display: flex; align-items: center; gap: 10px;">
-                                        <div style="max-width: 16px;">
-                                            <svg class="svg-boton" style="fill: var(--deckVerificado);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                                <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2l144 0c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48l-97.5 0c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3l0-38.3 0-48 0-24.9c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32L0 224c0-17.7 14.3-32 32-32z" />
-                                            </svg>
-                                        </div>
-
-                                        @reseñasAmpliadas.CantidadPositivos.ToString("N0")
-                                    </div>
-
-                                    <div style="color: var(--colorTextoPeligro); display: flex; align-items: center; gap: 10px;">
-                                        <div style="max-width: 16px;">
-                                            <svg class="svg-boton" style="fill: var(--colorTextoPeligro);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                                <path d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2l144 0c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48l-97.5 0c-19 0-37.5 5.6-53.3 16.1L202.7 73.8C176 91.6 160 121.6 160 153.7l0 38.3 0 48 0 24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384l64 0c17.7 0 32-14.3 32-32l0-224c0-17.7-14.3-32-32-32L32 96C14.3 96 0 110.3 0 128L0 352c0 17.7 14.3 32 32 32z" />
-                                            </svg>
-                                        </div>
-
-                                        @reseñasAmpliadas.CantidadNegativos.ToString("N0")
-                                    </div>
-                                </div>
-                            }                    
-                        }
-                    </div>
-
-                    <div style="margin-left: auto;">
-                        <div class="tooltip-juego" id="trigger-reviews2"
-                             @onmouseenter="@(() => ActivarTooltip("trigger-reviews2", "tooltip-reviews2"))"
-                             @onmouseleave="@(() => DesactivarTooltip("trigger-reviews2"))">
-                            <div style="width: 24px; height: 24px;">
-                                <svg class="svg-boton" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
-                                    <path d="M528 320C528 205.1 434.9 112 320 112C205.1 112 112 205.1 112 320C112 434.9 205.1 528 320 528C434.9 528 528 434.9 528 320zM64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM320 240C302.3 240 288 254.3 288 272C288 285.3 277.3 296 264 296C250.7 296 240 285.3 240 272C240 227.8 275.8 192 320 192C364.2 192 400 227.8 400 272C400 319.2 364 339.2 344 346.5L344 350.3C344 363.6 333.3 374.3 320 374.3C306.7 374.3 296 363.6 296 350.3L296 342.2C296 321.7 310.8 307 326.1 302C332.5 299.9 339.3 296.5 344.3 291.7C348.6 287.5 352 281.7 352 272.1C352 254.4 337.7 240.1 320 240.1zM288 432C288 414.3 302.3 400 320 400C337.7 400 352 414.3 352 432C352 449.7 337.7 464 320 464C302.3 464 288 449.7 288 432z"/>
-                                </svg>
-                            </div>
-
-                            <div id="tooltip-reviews2" class="tooltip-relleno">
-                                <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String2", "Reviews")
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="padding: 30px; display: flex; align-items: flex-start; gap: 40px;">
-                    @if ((usuarioPatreon == true || usuarioAdmin == true) && juego.IdSteam > 0)
-                    {
-                        <div style="width: 25%; display: flex; flex-direction: column; gap: 5px;">
-                            @{
-                                string idiomaGlobal = "global";
-                                string estiloGlobal = "background-color: transparent; color: var(--colorEnlace); box-shadow: none;";
-
-                                if (idiomaReseñas == idiomaGlobal)
-                                {
-                                    estiloGlobal = "background-color: var(--fondoBotonPequeño); color: var(--colorTexto);";
-                                }
-                            }
-
-                            <button @onclick="(e => ReseñasIdioma(e, idiomaGlobal))" class="boton-pequeño" style="text-align: center; @estiloGlobal">
-                                @Herramientas.Idiomas.BuscarTexto(idioma, "String8", "Reviews")
-                            </button>
-
-                            @{
-                                List<Herramientas.IdiomaClase> listadoIdiomas = new List<Herramientas.IdiomaClase>();
-
-                                Herramientas.Idiomas.ListadoIdiomasGenerar().ForEach(idioma2 =>
-                                {
-                                    if (idioma2.SteamReseñas == true)
-                                    {
-                                        idioma2.Traduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
-                                        listadoIdiomas.Add(idioma2);
-                                    }
-                                });
-
-                                if (listadoIdiomas.Count > 0)
-                                {
-                                    listadoIdiomas = listadoIdiomas.OrderBy(x => x.Traduccion).ToList();
-                                }
-
-                                foreach (var idioma2 in listadoIdiomas)
-                                {
-                                    if (idioma2.SteamReseñas == true)
-                                    {
-                                        string estiloPais = "background-color: transparent; color: var(--colorEnlace); box-shadow: none;";
-
-                                        if (idiomaReseñas == idioma2.SteamAPI)
+                                        Herramientas.Idiomas.ListadoIdiomasGenerar().ForEach(idioma2 =>
                                         {
-                                            estiloPais = "background-color: var(--fondoBotonPequeño); color: var(--colorTexto);";
+                                            if (idioma2.SteamReseñas == true)
+                                            {
+                                                idioma2.Traduccion = Herramientas.Idiomas.BuscarTexto(idioma, idioma2.Id, "Languages");
+                                                listadoIdiomas.Add(idioma2);
+                                            }
+                                        });
+
+                                        if (listadoIdiomas.Count > 0)
+                                        {
+                                            listadoIdiomas = listadoIdiomas.OrderBy(x => x.Traduccion).ToList();
                                         }
 
-                                        <button @onclick="(e => ReseñasIdioma(e, idioma2.SteamAPI))" class="boton-pequeño" style="text-align: center; @estiloPais">
-                                            @idioma2.Traduccion
-                                        </button>
-                                    }
-                                }
-                            }
-                        </div>
-                    }
+                                        foreach (var idioma2 in listadoIdiomas)
+                                        {
+                                            if (idioma2.SteamReseñas == true)
+                                            {
+                                                string estiloPais = "background-color: transparent; color: var(--colorEnlace); box-shadow: none;";
 
-                    @if (idiomaReseñas == "global")
-                    {
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 5px; width: 100%;">
-                            @if (reseñasRegiones?.Count > 0)
+                                                if (idiomaReseñas == idioma2.SteamAPI)
+                                                {
+                                                    estiloPais = "background-color: var(--fondoBotonPequeño); color: var(--colorTexto);";
+                                                }
+
+                                                <button @onclick="(e => ReseñasIdioma(e, idioma2.SteamAPI))" class="boton-pequeño" style="text-align: center; @estiloPais">
+                                                    @idioma2.Traduccion
+                                                </button>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+
+                            @if (idiomaReseñas == "global")
                             {
-                                foreach (var reseñasRegion in reseñasRegiones)
-                                {
-                                    if (reseñasRegion != null)
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 5px; width: 100%;">
+                                    @if (reseñasRegiones?.Count > 0)
                                     {
-                                        int totalRegion = reseñasRegion.CantidadPositivos + reseñasRegion.CantidadNegativos;
-                                        int porcentajeRegion = Herramientas.Calculadora.SacarDescuento(reseñasRegion.CantidadPositivos + reseñasRegion.CantidadNegativos, reseñasRegion.CantidadNegativos);
-
-                                        if (reseñasRegion.CantidadPositivos > 0 && reseñasRegion.CantidadNegativos == 0)
+                                        foreach (var reseñasRegion in reseñasRegiones)
                                         {
-                                            porcentajeRegion = 99;
-                                        }
+                                            if (reseñasRegion != null)
+                                            {
+                                                int totalRegion = reseñasRegion.CantidadPositivos + reseñasRegion.CantidadNegativos;
+                                                int porcentajeRegion = Herramientas.Calculadora.SacarDescuento(reseñasRegion.CantidadPositivos + reseñasRegion.CantidadNegativos, reseñasRegion.CantidadNegativos);
 
-                                        string imagenRegion = "/imagenes/banderas/" + reseñasRegion.Idioma + ".svg";
-
-                                        <div style="padding: 10px; display: flex; align-items: center; gap: 10px; justify-content: center;">
-                                            <img src="@imagenRegion" style="height: 26px;" />
-
-                                            <div>
-                                                @if (porcentajeRegion > 74)
+                                                if (reseñasRegion.CantidadPositivos > 0 && reseñasRegion.CantidadNegativos == 0)
                                                 {
-                                                    <img src="/imagenes/analisis/positivo3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
+                                                    porcentajeRegion = 99;
                                                 }
 
-                                                @if (porcentajeRegion > 49 && porcentajeRegion < 75)
-                                                {
-                                                    <img src="/imagenes/analisis/meh3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
-                                                }
+                                                string imagenRegion = "/imagenes/banderas/" + reseñasRegion.Idioma + ".svg";
 
-                                                @if (porcentajeRegion < 50)
-                                                {
-                                                    <img src="/imagenes/analisis/negativo3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
-                                                }
-                                            </div>
+                                                <div style="padding: 10px; display: flex; align-items: center; gap: 10px; justify-content: center;">
+                                                    <img src="@imagenRegion" style="height: 26px;" />
 
-                                            <div>
-                                                @porcentajeRegion%
-                                            </div>
-                                        </div>
-                                    }
-                                }
-                            }
-                        </div>
-                    }
-                    else
-                    {
-                        if (reseñasAmpliadas?.CantidadPositivos > 0)
-                        {
-                            <div style="width: 100%; display: flex; flex-direction: column; gap: 20px; margin: -20px 0px;">
-                                @if (reseñasAmpliadas?.Contenido?.Count > 0)
-                                {
-                                    <Virtualize Context="reseñas" Items="@reseñasAmpliadas.Contenido">
-                                        <ItemContent>
-                                            <a href="https://steamcommunity.com/profiles/@reseñas.Author.SteamId/recommended/@juego.IdSteam/" target="_blank" style="color: var(--colorTexto); text-decoration: none;">
-                                                <div class="boton-expandir2" style="background-color: var(--fondoBotonPequeño); border: 1px solid var(--fondoBotonPequeño); padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                    <div style="display: flex; align-items: center; gap: 20px;">
-                                                        @if (reseñas.VotedUp == true)
+                                                    <div>
+                                                        @if (porcentajeRegion > 74)
                                                         {
-                                                            <div style="max-width: 16px;">
-                                                                <svg class="svg-boton" style="fill: var(--deckVerificado);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                                                    <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2l144 0c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48l-97.5 0c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3l0-38.3 0-48 0-24.9c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32L0 224c0-17.7 14.3-32 32-32z" />
-                                                                </svg>
-                                                            </div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <div style="max-width: 16px;">
-                                                                <svg class="svg-boton" style="fill: var(--colorTextoPeligro);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                                                    <path d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2l144 0c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48l-97.5 0c-19 0-37.5 5.6-53.3 16.1L202.7 73.8C176 91.6 160 121.6 160 153.7l0 38.3 0 48 0 24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384l64 0c17.7 0 32-14.3 32-32l0-224c0-17.7-14.3-32-32-32L32 96C14.3 96 0 110.3 0 128L0 352c0 17.7 14.3 32 32 32z" />
-                                                                </svg>
-                                                            </div>
+                                                            <img src="/imagenes/analisis/positivo3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
                                                         }
 
-                                                        @if (juego.Tipo == JuegoTipo.Game)
+                                                        @if (porcentajeRegion > 49 && porcentajeRegion < 75)
                                                         {
-                                                            <div>
-                                                                @{
-                                                                    TimeSpan tiempoSpan = TimeSpan.FromMinutes(reseñas.Author.TiempoJugadoTotal);
-
-                                                                    decimal tiempoD = Convert.ToDecimal(reseñas.Author.TiempoJugadoTotal) / 60;
-                                                                }
-
-                                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Reviews"), tiempoD.ToString("N1"))
-                                                            </div>                                                                
+                                                            <img src="/imagenes/analisis/meh3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
                                                         }
 
-                                                        <div>
-                                                            @{
-                                                                DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(reseñas.TimestampCreated);
-                                                                DateTime fechaCreado = fecha.UtcDateTime;
-                                                            }
-
-                                                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Reviews"), Herramientas.Calculadora.DiferenciaTiempo(fechaCreado, idioma))
-                                                        </div>
+                                                        @if (porcentajeRegion < 50)
+                                                        {
+                                                            <img src="/imagenes/analisis/negativo3.svg" style="width: 26px; height: 26px;" alt="Reviews" />
+                                                        }
                                                     </div>
 
-                                                    <hr />
-
-                                                    <div style="white-space: pre-line; max-width: 100%; overflow-wrap: anywhere;">
-                                                        @reseñas.ReviewText
+                                                    <div>
+                                                        @porcentajeRegion%
                                                     </div>
                                                 </div>
-                                            </a>
-                                        </ItemContent>
-                                    </Virtualize>
+                                            }
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                if (reseñasAmpliadas?.CantidadPositivos > 0)
+                                {
+                                    <div style="width: 100%; display: flex; flex-direction: column; gap: 20px; margin: -20px 0px;">
+                                        @if (reseñasAmpliadas?.Contenido?.Count > 0)
+                                        {
+                                            <Virtualize Context="reseñas" Items="@reseñasAmpliadas.Contenido">
+                                                <ItemContent>
+                                                    <a href="https://steamcommunity.com/profiles/@reseñas.Author.SteamId/recommended/@juego.IdSteam/" target="_blank" style="color: var(--colorTexto); text-decoration: none;">
+                                                        <div class="boton-expandir2" style="background-color: var(--fondoBotonPequeño); border: 1px solid var(--fondoBotonPequeño); padding: 20px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                                            <div style="display: flex; align-items: center; gap: 20px;">
+                                                                @if (reseñas.VotedUp == true)
+                                                                {
+                                                                    <div style="max-width: 16px;">
+                                                                        <svg class="svg-boton" style="fill: var(--deckVerificado);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                                                            <path d="M313.4 32.9c26 5.2 42.9 30.5 37.7 56.5l-2.3 11.4c-5.3 26.7-15.1 52.1-28.8 75.2l144 0c26.5 0 48 21.5 48 48c0 18.5-10.5 34.6-25.9 42.6C497 275.4 504 288.9 504 304c0 23.4-16.8 42.9-38.9 47.1c4.4 7.3 6.9 15.8 6.9 24.9c0 21.3-13.9 39.4-33.1 45.6c.7 3.3 1.1 6.8 1.1 10.4c0 26.5-21.5 48-48 48l-97.5 0c-19 0-37.5-5.6-53.3-16.1l-38.5-25.7C176 420.4 160 390.4 160 358.3l0-38.3 0-48 0-24.9c0-29.2 13.3-56.7 36-75l7.4-5.9c26.5-21.2 44.6-51 51.2-84.2l2.3-11.4c5.2-26 30.5-42.9 56.5-37.7zM32 192l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0c-17.7 0-32-14.3-32-32L0 224c0-17.7 14.3-32 32-32z" />
+                                                                        </svg>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div style="max-width: 16px;">
+                                                                        <svg class="svg-boton" style="fill: var(--colorTextoPeligro);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                                                            <path d="M313.4 479.1c26-5.2 42.9-30.5 37.7-56.5l-2.3-11.4c-5.3-26.7-15.1-52.1-28.8-75.2l144 0c26.5 0 48-21.5 48-48c0-18.5-10.5-34.6-25.9-42.6C497 236.6 504 223.1 504 208c0-23.4-16.8-42.9-38.9-47.1c4.4-7.3 6.9-15.8 6.9-24.9c0-21.3-13.9-39.4-33.1-45.6c.7-3.3 1.1-6.8 1.1-10.4c0-26.5-21.5-48-48-48l-97.5 0c-19 0-37.5 5.6-53.3 16.1L202.7 73.8C176 91.6 160 121.6 160 153.7l0 38.3 0 48 0 24.9c0 29.2 13.3 56.7 36 75l7.4 5.9c26.5 21.2 44.6 51 51.2 84.2l2.3 11.4c5.2 26 30.5 42.9 56.5 37.7zM32 384l64 0c17.7 0 32-14.3 32-32l0-224c0-17.7-14.3-32-32-32L32 96C14.3 96 0 110.3 0 128L0 352c0 17.7 14.3 32 32 32z" />
+                                                                        </svg>
+                                                                    </div>
+                                                                }
+
+                                                                @if (juego.Tipo == JuegoTipo.Game)
+                                                                {
+                                                                    <div>
+                                                                        @{
+                                                                            TimeSpan tiempoSpan = TimeSpan.FromMinutes(reseñas.Author.TiempoJugadoTotal);
+
+                                                                            decimal tiempoD = Convert.ToDecimal(reseñas.Author.TiempoJugadoTotal) / 60;
+                                                                        }
+
+                                                                        @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String7", "Reviews"), tiempoD.ToString("N1"))
+                                                                    </div>
+                                                                }
+
+                                                                <div>
+                                                                    @{
+                                                                        DateTimeOffset fecha = DateTimeOffset.FromUnixTimeSeconds(reseñas.TimestampCreated);
+                                                                        DateTime fechaCreado = fecha.UtcDateTime;
+                                                                    }
+
+                                                                    @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String6", "Reviews"), Herramientas.Calculadora.DiferenciaTiempo(fechaCreado, idioma))
+                                                                </div>
+                                                            </div>
+
+                                                            <hr />
+
+                                                            <div style="white-space: pre-line; max-width: 100%; overflow-wrap: anywhere;">
+                                                                @reseñas.ReviewText
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </ItemContent>
+                                            </Virtualize>
+                                        }
+                                    </div>
                                 }
-                            </div>
-                        }
-                        else
-                        {
-                            @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Reviews")
-                        }
-                    }
-                </div>
-            </div>
-        }
-    </div>  
+                                else
+                                {
+                                    @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "Reviews")
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
 }
 
 @code {
@@ -348,6 +351,8 @@
     {
         if (primerRender == true && juego.IdSteam > 0 && DateTime.Today > juego?.Caracteristicas?.FechaLanzamientoSteam && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
         {
+            reseñasAmpliadas = null;
+
             cargado = false;
 
             moduloJs = await JavaScript.InvokeAsync<IJSObjectReference>("import", "/componentes/secciones/juegocomponentes/JuegoReseñas.razor.js");

@@ -469,12 +469,18 @@
                         </Authorized>
                         <NotAuthorized>
                             <div style="display: flex; align-items: center; gap: 20px; margin-left: auto;">
-                                @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
+@*                                 @if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
                                 {
                                     <a href="/login-steam" style="text-decoration: none; display: flex; justify-content: right;">
                                         <img src="/imagenes/otros/loginsteam_1.webp" style="display: block; width: 85%;" />
                                     </a>
-                                }
+                                } *@
+
+                                <a class="boton-superior" href="/account/login" style="font-size: 15px;">
+                                    <div style="@GenerarEstilo("/account/login")">
+                                        @Herramientas.Idiomas.BuscarTexto(idioma, "Login", "Header")
+                                    </div>
+                                </a>
                                 
                                 <div class="menu-dropdown2">
                                     <div style="display: flex; align-items: center; font-size: 14px; cursor: pointer; gap: 15px;">

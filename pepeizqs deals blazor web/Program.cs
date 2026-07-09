@@ -125,6 +125,14 @@ builder.Services.AddAuthentication(opciones =>
 			return Task.CompletedTask;
 		}
 	};
+
+	var handler = new HttpClientHandler();
+	opciones.Backchannel = new HttpClient(handler)
+	{
+		Timeout = TimeSpan.FromSeconds(30)
+	};
+	opciones.Backchannel.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+
 }).AddIdentityCookies();
 
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

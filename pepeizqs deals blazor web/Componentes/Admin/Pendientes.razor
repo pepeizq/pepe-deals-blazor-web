@@ -647,13 +647,23 @@
 
         if (string.IsNullOrEmpty(idSuscripcionPendiente) == false)
         {
-            await BaseDatos.Pendientes.Actualizar.DescartarSuscripcion(idSuscripcionPendiente, enlace);
-
             foreach (var pendiente in pendientesSuscripcion)
             {
                 if (pendiente.Suscripcion.Id.ToString() == idSuscripcionPendiente)
                 {
+                    string tablaInsertar = "suscripcion" + pendiente.Suscripcion.Id.ToString();
+
+                    if (string.IsNullOrEmpty(pendiente.Suscripcion.TablaPendientes) == false)
+                    {
+                        tablaInsertar = pendiente.Suscripcion.TablaPendientes;
+                    }
+
+                    string tablaTemporal = pendiente.Suscripcion.Id.ToString();
+
+                    await BaseDatos.Pendientes.Actualizar.DescartarSuscripcion(tablaInsertar, tablaTemporal, enlace);
+
                     pendiente.Pendientes = await BaseDatos.Pendientes.Buscar.Suscripcion(pendiente.Suscripcion.Id);
+                    break;
                 }
             }
 

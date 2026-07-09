@@ -337,10 +337,10 @@ namespace BaseDatos.Pendientes
 			}
 		}
 
-		public static async Task DescartarSuscripcion(string idSuscripcion, string enlace)
+		public static async Task DescartarSuscripcion(string tablaInsertar, string tablaTemporal, string enlace)
 		{
 			string sqlInsertar = @$"
-				INSERT INTO suscripcion{idSuscripcion}
+				INSERT INTO {tablaInsertar}
 				(enlace, idJuegos, descartado) 
 				VALUES 
 				(@Enlace, @IdJuegos, @Descartado)
@@ -360,12 +360,12 @@ namespace BaseDatos.Pendientes
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 1 " + idSuscripcion, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 1 " + tablaInsertar, ex);
 			}
 
 			try
 			{
-				string sqlBorrar = $"DELETE FROM temporal{idSuscripcion} WHERE enlace = @enlace";
+				string sqlBorrar = $"DELETE FROM temporal{tablaTemporal} WHERE enlace = @enlace";
 
 				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
 				{
@@ -377,7 +377,7 @@ namespace BaseDatos.Pendientes
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 2 " + idSuscripcion, ex);
+				BaseDatos.Errores.Insertar.Mensaje("Pendientes Descartar Suscripcion 2 " + tablaInsertar, ex);
 			}
 		}
 

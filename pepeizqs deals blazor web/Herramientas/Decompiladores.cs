@@ -215,6 +215,7 @@ namespace Herramientas
 				{
 					return true;
 				};
+			handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli;
 
 			using (handler)
 			{
