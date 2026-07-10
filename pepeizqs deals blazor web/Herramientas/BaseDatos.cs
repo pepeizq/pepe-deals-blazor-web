@@ -138,31 +138,5 @@ namespace Herramientas
 				}
 			}
 		}
-
-		public static async Task<T> Shrink<T>(Func<SqlConnection, Task<T>> accion, SqlConnection conexion = null)
-		{
-			if (conexion == null)
-			{
-				conexion = Conectar();
-			}
-
-			if (conexion.State != ConnectionState.Open)
-			{
-				await conexion.OpenAsync();
-			}
-
-			try
-			{
-				return await accion(conexion);
-			}
-			catch
-			{
-				throw;
-			}
-			finally
-			{
-				await conexion.CloseAsync();
-			}
-		}
 	}
 }

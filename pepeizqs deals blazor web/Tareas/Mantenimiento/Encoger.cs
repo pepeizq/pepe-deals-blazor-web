@@ -25,16 +25,23 @@ namespace Tareas.Mantenimiento
 			string piscinaWeb = _configuracion.GetValue<string>("PoolWeb:Contenido");
 			string piscinaUsada = Environment.GetEnvironmentVariable("APP_POOL_ID", EnvironmentVariableTarget.Process);
 
-			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromMinutes(10));
+			using PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(20));
 
 			while (await timer.WaitForNextTickAsync(tokenParar))
 			{
 				if (piscinaWeb == piscinaUsada)
 				{
-					await Herramientas.BaseDatos.Select(async (conexion) =>
+					TimeSpan tiempoSiguiente = TimeSpan.FromMinutes(5);
+
+					if (await BaseDatos.Admin.Buscar.TareaPosibleUsar("encoger", tiempoSiguiente) == true)
 					{
-						return await conexion.ExecuteAsync("EXEC dbo.EmergenciaShrinkYRebuild");
-					});
+						await BaseDatos.Admin.Actualizar.TareaUso("encoger", DateTime.Now);
+
+						await Herramientas.BaseDatos.Select(async (conexion) =>
+						{
+							return await conexion.ExecuteAsync("EXEC dbo.EmergenciaShrinkYRebuild");
+						});
+					}
 				}
 			}
 		}
