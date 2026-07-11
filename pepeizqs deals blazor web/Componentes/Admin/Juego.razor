@@ -1316,28 +1316,71 @@
 
 			juego.SteamOS = (JuegoSteamOS)int.Parse(deckAPI.Datos.SteamOSResultado.ToString());
 
-			if (deckAPI.Datos.SteamOSTokens != null)
+			if (deckAPI.Datos.SteamOSTokens?.Count > 0)
 			{
-				if (deckAPI.Datos.SteamOSTokens.Count > 0)
+				List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+				foreach (var token in deckAPI.Datos.SteamOSTokens)
+				{
+					if (string.IsNullOrEmpty(token.Token) == false)
+					{
+						JuegoDeckToken nuevoToken = new JuegoDeckToken();
+						nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+						nuevoToken.Mensaje = token.Token;
+
+						tokens.Add(nuevoToken);
+					}
+				}
+
+				juego.SteamOSTokens = tokens;
+			}
+
+			if (deckAPI.Datos.SteamFrameResultado != null)
+			{
+				juego.SteamFrame = (JuegoSteamFrame)int.Parse(deckAPI.Datos.SteamFrameResultado?.ToString());
+
+				if (deckAPI.Datos.SteamFrameTokens?.Count > 0)
 				{
 					List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
 
-					foreach (var token in deckAPI.Datos.SteamOSTokens)
+					foreach (var token in deckAPI.Datos.SteamFrameTokens)
 					{
 						if (string.IsNullOrEmpty(token.Token) == false)
 						{
 							JuegoDeckToken nuevoToken = new JuegoDeckToken();
 							nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
 							nuevoToken.Mensaje = token.Token;
-
 							tokens.Add(nuevoToken);
 						}
 					}
 
-					juego.SteamOSTokens = tokens;
+					juego.SteamFrameTokens = tokens;
 				}
 			}
 
+			if (deckAPI.Datos.SteamMachineResultado != null)
+			{
+				juego.SteamMachine = (JuegoSteamMachine)int.Parse(deckAPI.Datos.SteamMachineResultado?.ToString());
+
+				if (deckAPI.Datos.SteamMachineTokens?.Count > 0)
+				{
+					List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+					foreach (var token in deckAPI.Datos.SteamMachineTokens)
+					{
+						if (string.IsNullOrEmpty(token.Token) == false)
+						{
+							JuegoDeckToken nuevoToken = new JuegoDeckToken();
+							nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+							nuevoToken.Mensaje = token.Token;
+							tokens.Add(nuevoToken);
+						}
+					}
+
+					juego.SteamMachineTokens = tokens;
+				}
+			}
+			
 			vacio = false;
 			await global::BaseDatos.Juegos.Actualizar.Deck(juego);
 		}

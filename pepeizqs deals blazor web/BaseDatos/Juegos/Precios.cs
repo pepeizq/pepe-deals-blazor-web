@@ -101,8 +101,13 @@ namespace BaseDatos.Juegos
                         precio.Precio = nuevaOferta.Precio;
                         precio.Descuento = nuevaOferta.Descuento;
                         precio.FechaActualizacion = nuevaOferta.FechaActualizacion;
-                        precio.FechaTermina = nuevaOferta.FechaTermina;
-                        precio.CodigoDescuento = nuevaOferta.CodigoDescuento;
+
+						if (nuevaOferta.FechaTermina != default(DateTime))
+						{
+							precio.FechaTermina = nuevaOferta.FechaTermina;
+						}
+
+						precio.CodigoDescuento = nuevaOferta.CodigoDescuento;
                         precio.CodigoTexto = nuevaOferta.CodigoTexto;
                         precio.Nombre = nuevaOferta.Nombre;
                         precio.Imagen = nuevaOferta.Imagen;
@@ -496,7 +501,12 @@ namespace BaseDatos.Juegos
 						precio.Precio = nuevaOferta.Precio;
 						precio.Descuento = nuevaOferta.Descuento;
 						precio.FechaActualizacion = nuevaOferta.FechaActualizacion;
-						precio.FechaTermina = nuevaOferta.FechaTermina;
+
+						if (nuevaOferta.FechaTermina != default(DateTime))
+						{
+							precio.FechaTermina = nuevaOferta.FechaTermina;
+						}
+
 						precio.CodigoDescuento = nuevaOferta.CodigoDescuento;
 						precio.CodigoTexto = nuevaOferta.CodigoTexto;
 						precio.Nombre = nuevaOferta.Nombre;

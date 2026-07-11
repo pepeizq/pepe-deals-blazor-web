@@ -74,6 +74,10 @@ namespace Juegos
 		public List<JuegoHistorico> HistoricosUS { get; set; }
 		public bool Delistado { get; set; }
 		public string DescripcionSEO { get; set; }
+		public JuegoSteamFrame SteamFrame { get; set; }
+		public List<JuegoDeckToken> SteamFrameTokens { get; set; }
+		public JuegoSteamMachine SteamMachine { get; set; }
+		public List<JuegoDeckToken> SteamMachineTokens { get; set; }
 	}
 
 	public static class JuegoCrear
@@ -447,6 +451,21 @@ namespace Juegos
 	{
 		Desconocido,
 		NoSoportado,
+		Verificado
+	}
+
+	public enum JuegoSteamFrame
+	{
+		Desconocido,
+		NoSoportado,
+		Verificado
+	}
+
+	public enum JuegoSteamMachine
+	{
+		Desconocido,
+		NoSoportado,
+		Jugable,
 		Verificado
 	}
 

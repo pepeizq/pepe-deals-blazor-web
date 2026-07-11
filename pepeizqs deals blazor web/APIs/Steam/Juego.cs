@@ -62,6 +62,8 @@ namespace APIs.Steam
 							List<string> etiquetas = new List<string>();
 							Juegos.JuegoDeck deck = Juegos.JuegoDeck.Desconocido;
 							Juegos.JuegoSteamOS steamOS = Juegos.JuegoSteamOS.Desconocido;
+							Juegos.JuegoSteamFrame steamFrame = Juegos.JuegoSteamFrame.Desconocido;
+							Juegos.JuegoSteamMachine steamMachine = Juegos.JuegoSteamMachine.Desconocido;
 							bool freeToPlay = false;
 							List<Juegos.JuegoIdioma> idiomas = new List<Juegos.JuegoIdioma>();
 							Juegos.JuegoPrecio precio = null;
@@ -324,6 +326,16 @@ namespace APIs.Steam
 								if (juegoApi.Plataformas.SteamOS > 0)
 								{
 									steamOS = (Juegos.JuegoSteamOS)juegoApi.Plataformas.SteamOS;
+								}
+
+								if (juegoApi.Plataformas.SteamFrame > 0)
+								{
+									steamFrame = (Juegos.JuegoSteamFrame)juegoApi.Plataformas.SteamFrame;
+								}
+
+								if (juegoApi.Plataformas.SteamMachine > 0)
+								{
+									steamMachine = (Juegos.JuegoSteamMachine)juegoApi.Plataformas.SteamMachine;
 								}
 
 								if (juegoApi.Plataformas.RV != null)
@@ -673,6 +685,8 @@ namespace APIs.Steam
 							{
 								juego.Deck = deck;
 								juego.SteamOS = steamOS;
+								juego.SteamFrame = steamFrame;
+								juego.SteamMachine = steamMachine;
 							}
 
 							if (categorias.Count > 0)
@@ -1252,6 +1266,12 @@ namespace APIs.Steam
 		[JsonPropertyName("steam_os_compat_category")]
 		public int SteamOS { get; set; }
 
+		[JsonPropertyName("steam_frame_compat_category")]
+		public int SteamFrame { get; set; }
+
+		[JsonPropertyName("steam_machine_compat_category")]
+		public int SteamMachine { get; set; }
+
 		[JsonPropertyName("vr_support")]
 		public SteamJuegoAPI2JuegoPlataformasRV RV { get; set; }
 	}
@@ -1432,6 +1452,18 @@ namespace APIs.Steam
 
 		[JsonPropertyName("steamos_resolved_items")]
 		public List<SteamDeckAPIToken> SteamOSTokens { get; set; }
+
+		[JsonPropertyName("machine_resolved_category")]
+		public object SteamMachineResultado { get; set; }
+
+		[JsonPropertyName("machine_resolved_items")]
+		public List<SteamDeckAPIToken> SteamMachineTokens { get; set; }
+
+		[JsonPropertyName("frame_resolved_category")]
+		public object SteamFrameResultado { get; set; }
+
+		[JsonPropertyName("frame_resolved_items")]
+		public List<SteamDeckAPIToken> SteamFrameTokens { get; set; }
 	}
 
 	public class SteamDeckAPIToken

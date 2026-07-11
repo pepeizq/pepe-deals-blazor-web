@@ -695,7 +695,7 @@ namespace BaseDatos.Juegos
 		public static async Task Deck(Juego juego)
 		{
 			string sqlActualizar = "UPDATE juegos " +
-					"SET deck=@deck, deckTokens=@deckTokens, deckComprobacion=@deckComprobacion, steamOS=@steamOS, steamOSTokens=@steamOSTokens WHERE id=@id";
+					"SET deck=@deck, deckTokens=@deckTokens, deckComprobacion=@deckComprobacion, steamOS=@steamOS, steamOSTokens=@steamOSTokens, steamMachine=@steamMachine, steamMachineTokens=@steamMachineTokens, steamFrame=@steamFrame, steamFrameTokens=@steamFrameTokens WHERE id=@id";
 
 			try
 			{
@@ -708,7 +708,11 @@ namespace BaseDatos.Juegos
 						deckTokens = JsonSerializer.Serialize(juego.DeckTokens),
 						deckComprobacion = juego.DeckComprobacion,
 						steamOS = juego.SteamOS,
-						steamOSTokens = JsonSerializer.Serialize(juego.SteamOSTokens)
+						steamOSTokens = JsonSerializer.Serialize(juego.SteamOSTokens),
+						steamMachine = juego.SteamMachine,
+						steamMachineTokens = JsonSerializer.Serialize(juego.SteamMachineTokens),
+						steamFrame = juego.SteamFrame,
+						steamFrameTokens = JsonSerializer.Serialize(juego.SteamFrameTokens)
 					}, transaction: sentencia);
 				});
 			}
