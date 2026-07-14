@@ -24,7 +24,7 @@
                                         usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre"
                                         OnPrecioFinalCalculado="pf => preciosFinalesCalculados[precio.Enlace + precio.Tienda] = pf" />
                 }
-            } 
+            }
         }
 
         @if (preciosBajos?.Count > 0)
@@ -74,7 +74,7 @@
                         <JuegoTiendasEnlace @key="(precioBajo.Enlace + precioBajo.Tienda)" region="@region" precio="@precioBajo" usuarioId="@usuarioId" idioma="@idioma" userAgent="@userAgent"
                                             usuarioPatreon="@usuarioPatreon" juegosUsuario="@juegosUsuario" juegoNombre="@juegoNombre" />
                     }
-                } 
+                }
             }
         }
     </div>
@@ -90,7 +90,7 @@ else
 
 @code {
 
-    #nullable disable
+#nullable disable
 
     [Parameter]
     public TiendaRegion region { get; set; }
@@ -148,7 +148,7 @@ else
                 continue;
             }
 
-            if (precio.Descuento >= umbralDescuento || 
+            if (precio.Descuento >= umbralDescuento ||
                 precio.Tienda == APIs.Steam.Tienda.GenerarBundles().Id)
             {
                 preciosMostrar.Add(precio);
@@ -204,11 +204,14 @@ else
     }
 
     private Dictionary<string, decimal> preciosFinalesCalculados = new();
+    private int preciosFinalesCalculadosContadorAnterior = 0;
 
     protected override async Task OnAfterRenderAsync(bool primerRender)
     {
-        if (primerRender == true && preciosFinalesCalculados.Count > 0)
+        if (preciosFinalesCalculados.Count > preciosFinalesCalculadosContadorAnterior)
         {
+            preciosFinalesCalculadosContadorAnterior = preciosFinalesCalculados.Count;
+
             decimal ObtenerPrecioOrden(JuegoPrecio p)
             {
                 string key = p.Enlace + p.Tienda;
@@ -222,7 +225,7 @@ else
                 {
                     return p.Precio;
                 }
-                     
+
                 if (region == TiendaRegion.EstadosUnidos && p.Moneda == Herramientas.JuegoMoneda.Dolar)
                 {
                     return p.Precio;

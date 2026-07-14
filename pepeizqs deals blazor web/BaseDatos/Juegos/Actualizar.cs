@@ -404,6 +404,8 @@ namespace BaseDatos.Juegos
 			juego.Caracteristicas = nuevoJuego.Caracteristicas ?? new JuegoCaracteristicas();
 			juego.Deck = nuevoJuego.Deck;
 			juego.SteamOS = nuevoJuego.SteamOS;
+			juego.SteamMachine = nuevoJuego.SteamMachine;
+			juego.SteamFrame = nuevoJuego.SteamFrame;
 			juego.Media = nuevoJuego.Media;
 			juego.Categorias = nuevoJuego.Categorias;
 			juego.Etiquetas = nuevoJuego.Etiquetas;
@@ -455,6 +457,8 @@ namespace BaseDatos.Juegos
 					idiomas=@idiomas,
 					deck=@deck,
 					steamOS=@steamOS,
+					steamMachine=@steamMachine,
+					steamFrame=@steamFrame,
 					delistado=@delistado
 					{columnasAnalisis}
 				WHERE id=@id;";
@@ -477,6 +481,8 @@ namespace BaseDatos.Juegos
 						idiomas = JsonSerializer.Serialize(juego.Idiomas),
 						deck = juego.Deck,
 						steamOS = juego.SteamOS,
+						steamMachine = juego.SteamMachine,
+						steamFrame = juego.SteamFrame,
 						delistado = juego.Delistado,
 						analisis = paramReseñas
 					}, transaction: sentencia);

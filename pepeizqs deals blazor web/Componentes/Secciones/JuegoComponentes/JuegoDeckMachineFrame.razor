@@ -1,0 +1,734 @@
+﻿@using Juegos
+
+@if (juego != null)
+{
+    <div class="opciones-panel">
+        <div style="max-width: 900px; overflow-y: scroll; width: 100%; background-color: var(--fondoSubcabecera); border: 2px solid var(--fondoSubcabecera); margin: 20px auto; overflow-y: scroll; scrollbar-color: var(--fondoCodigo) var(--fondoOscuro); border-radius: 20px; box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.28),0px 0px 2px 0px rgba(0, 0, 0, 0.24);">
+            <div style="display: flex; align-items: center; gap: 30px; padding: 20px 30px; background: color-mix(in srgb, var(--fondoSubcabecera) 55%, var(--fondoBotonPequeño));">
+                <button @onclick="OnCerrar" @onmouseenter="_ => usuarioEncimaCerrar = true" @onmouseleave="_ => usuarioEncimaCerrar = false" style="@(usuarioEncimaCerrar == true ? "background: var(--fondoBotonPequeñoHover);" : "background: var(--fondoBotonPequeño);") padding: 8px 10px; border: 0px;">
+                    <div style="width: 24px; height: 24px;">
+                        <svg class="svg-icono" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" style="fill: var(--colorTexto); transform: rotate(@(usuarioEncimaCerrar == true ? "180deg" : "0deg")); transition: transform 0.2s;">
+                            <path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z" />
+                        </svg>
+                    </div>
+                </button>
+
+                <div style="display: flex; flex-direction: column;">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "GameSteamDeck")</label>
+
+                        <div class="caja-deckmachineframe">
+                            @if (juego.Deck != JuegoDeck.Desconocido && enseñarSteamDeck == true)
+                            {
+                                <button @onclick="MostrarSteamDeck" class="boton-deckmachineframe" style="@fondoSteamDeck border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+                                               
+                                        <div style="height: 24px;">
+                                            @if (juego.Deck == JuegoDeck.Verificado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+
+                                            @if (juego.Deck == JuegoDeck.Jugable)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (juego.Deck == JuegoDeck.NoSoportado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+                                        </div>
+                                    </div>
+                                </button>
+                            }
+
+                            @if (juego.SteamMachine != JuegoSteamMachine.Desconocido && enseñarSteamMachine == true)
+                            {
+                                <button @onclick="MostrarSteamMachine" class="boton-deckmachineframe" style="@fondoSteamMachine border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <img src="/imagenes/otros/steammachine_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+                                               
+                                        <div style="height: 24px;">
+                                            @if (juego.SteamMachine == JuegoSteamMachine.Verificado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+
+                                            @if (juego.SteamMachine == JuegoSteamMachine.Jugable)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (juego.SteamMachine == JuegoSteamMachine.NoSoportado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+                                        </div>
+                                    </div>
+                                </button>
+                            }
+
+                            @if (juego.SteamFrame != JuegoSteamFrame.Desconocido && enseñarSteamFrame == true)
+                            {
+                                <button @onclick="MostrarSteamFrame" class="boton-deckmachineframe" style="@fondoSteamFrame border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <img src="/imagenes/otros/steamframe_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+
+                                        <div style="height: 24px;">
+                                            @if (juego.SteamFrame == JuegoSteamFrame.Verificado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+
+                                            @if (juego.SteamFrame == JuegoSteamFrame.Jugable)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (juego.SteamFrame == JuegoSteamFrame.NoSoportado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+                                        </div>
+                                    </div>
+                                </button>
+                            }
+
+                            @if (juego.SteamOS != JuegoSteamOS.Desconocido && enseñarSteamOS == true)
+                            {
+                                <button @onclick="MostrarSteamOS" class="boton-deckmachineframe" style="@fondoSteamOS border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="font-size: 14px;">
+                                            SteamOS
+                                        </div>
+
+                                        <div style="height: 24px;">
+                                            @if (juego.SteamOS == JuegoSteamOS.Verificado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--steamOSVerificado)"></path></svg>
+                                            }
+
+                                            @if (juego.SteamOS == JuegoSteamOS.NoSoportado)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+                                        </div>
+                                    </div>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 30px;">
+                @if (pestañaElegida == PestañaElegida.SteamDeck)
+                {
+                    @if (juego.Deck == JuegoDeck.Verificado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameSteamDeck"), juego.Nombre, "Steam Deck")</label>
+                    }
+
+                    @if (juego.Deck == JuegoDeck.Jugable)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameSteamDeck"), juego.Nombre, "Steam Deck")</label>
+                    }
+
+                    @if (juego.Deck == JuegoDeck.NoSoportado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameSteamDeck"), juego.Nombre, "Steam Deck")</label>
+                    }
+
+                    @if (juego.DeckTokens?.Count > 0)
+                    {
+                        <hr />
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            @foreach (var token in juego.DeckTokens)
+                            {
+                                if (token.Tipo == 1)
+                                {
+                                    <div style="background-color: var(--fondoAlerta); padding: 8px 16px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Deck no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            @foreach (var token in juego.DeckTokens)
+                            {
+                                if (token.Tipo != 1)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="max-height: 20px; max-width: 20px;">
+                                            @if (token.Tipo == 2)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 3)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 4)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+                                        </div>
+
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Deck no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+                else if (pestañaElegida == PestañaElegida.SteamMachine)
+                {
+                    @if (juego.SteamMachine == JuegoSteamMachine.Verificado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameSteamDeck"), juego.Nombre, "Steam Machine")</label>
+                    }
+
+                    @if (juego.SteamMachine == JuegoSteamMachine.Jugable)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameSteamDeck"), juego.Nombre, "Steam Machine")</label>
+                    }
+
+                    @if (juego.SteamMachine == JuegoSteamMachine.NoSoportado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameSteamDeck"), juego.Nombre, "Steam Machine")</label>
+                    }
+
+                    @if (juego.SteamMachineTokens?.Count > 0)
+                    {
+                        <hr />
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            @foreach (var token in juego.SteamMachineTokens)
+                            {
+                                if (token.Tipo == 1)
+                                {
+                                    <div style="background-color: var(--fondoAlerta); padding: 8px 16px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Steam Machine no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            @foreach (var token in juego.SteamMachineTokens)
+                            {
+                                if (token.Tipo != 1)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="max-height: 20px; max-width: 20px;">
+                                            @if (token.Tipo == 2)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 3)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 4)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+                                        </div>
+
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Steam Machine no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }                    
+                }
+                else if (pestañaElegida == PestañaElegida.SteamFrame)
+                {
+                    @if (juego.SteamFrame == JuegoSteamFrame.Verificado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameSteamDeck"), juego.Nombre, "Steam Frame")</label>
+                    }
+
+                    @if (juego.SteamFrame == JuegoSteamFrame.Jugable)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameSteamDeck"), juego.Nombre, "Steam Frame")</label>
+                    }
+
+                    @if (juego.SteamFrame == JuegoSteamFrame.NoSoportado)
+                    {
+                        <label>@string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameSteamDeck"), juego.Nombre, "Steam Frame")</label>
+                    }
+
+                    @if (juego.SteamFrameTokens?.Count > 0)
+                    {
+                        <hr />
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            @foreach (var token in juego.SteamFrameTokens)
+                            {
+                                if (token.Tipo == 1)
+                                {
+                                    <div style="background-color: var(--fondoAlerta); padding: 8px 16px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Steam Frame no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            @foreach (var token in juego.SteamFrameTokens)
+                            {
+                                if (token.Tipo != 1)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="max-height: 20px; max-width: 20px;">
+                                            @if (token.Tipo == 2)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 3)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 4)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                            }
+                                        </div>
+
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("Steam Frame no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }                    
+                }
+                else if (pestañaElegida == PestañaElegida.SteamOS)
+                {
+                    @if (juego.SteamOS == JuegoSteamOS.Verificado)
+                    {
+                        <label>@Herramientas.Idiomas.BuscarTexto(idioma, "String5", "GameSteamDeck")</label>
+                    }
+
+                    @if (juego.SteamFrame == JuegoSteamFrame.NoSoportado)
+                    {
+                        <label>@Herramientas.Idiomas.BuscarTexto(idioma, "String6", "GameSteamDeck")</label>
+                    }
+
+                    @if (juego.SteamOSTokens?.Count > 0)
+                    {
+                        <hr />
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            @foreach (var token in juego.SteamOSTokens)
+                            {
+                                if (token.Tipo == 1)
+                                {
+                                    <div style="background-color: var(--fondoAlerta); padding: 8px 16px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("SteamOS no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+
+                            @foreach (var token in juego.SteamOSTokens)
+                            {
+                                if (token.Tipo != 1)
+                                {
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="max-height: 20px; max-width: 20px;">
+                                            @if (token.Tipo == 2)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 3)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                            }
+
+                                            @if (token.Tipo == 4)
+                                            {
+                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--steamOSVerificado)"></path></svg>
+                                            }
+                                        </div>
+
+                                        @{
+                                            string cadenaMensaje = Herramientas.Idiomas.BuscarTexto(idioma, token.Mensaje.Replace("#", null), "GameSteamDeck");
+
+                                            if (string.IsNullOrEmpty(cadenaMensaje) == false)
+                                            {
+                                                <label style="font-size: 15px;">@cadenaMensaje</label>
+                                            }
+                                            else
+                                            {
+                                                global::BaseDatos.Errores.Insertar.Mensaje("SteamOS no encontrado", token.Mensaje.Replace("#", null), "https://store.steampowered.com/app/" + juego.IdSteam);
+
+                                                <label>@token.Mensaje (No Check)</label>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    #nullable disable
+
+    [Parameter]
+    public Juegos.Juego juego { get; set; }
+
+    [Parameter] 
+    public string idioma { get; set; }
+
+    [Parameter] 
+    public bool enseñarSteamDeck { get; set; }
+
+    [Parameter] 
+    public bool enseñarSteamMachine { get; set; }
+
+    [Parameter] 
+    public bool enseñarSteamFrame { get; set; }
+
+    [Parameter] 
+    public bool enseñarSteamOS { get; set; }
+
+    [Parameter] 
+    public EventCallback OnCerrar { get; set; } 
+
+    private bool usuarioEncimaCerrar = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool actualizarDeckAPI = false;
+
+        if (juego.DeckComprobacion == null)
+        {
+            actualizarDeckAPI = true;
+        }
+        else
+        {
+            if (juego.DeckComprobacion + TimeSpan.FromDays(180) > DateTime.Now)
+            {
+                actualizarDeckAPI = true;
+            }
+
+            if (juego.Deck > 0 && juego.DeckTokens == null)
+            {
+                actualizarDeckAPI = true;
+            }
+
+            if (juego.SteamMachine > 0 && juego.SteamMachineTokens == null)
+            {
+                actualizarDeckAPI = true;
+            }
+
+            if (juego.SteamFrame > 0 && juego.SteamFrameTokens == null)
+            {
+                actualizarDeckAPI = true;
+            }
+
+            if (juego.SteamOS > 0 && juego.SteamOSTokens == null)
+            {
+                actualizarDeckAPI = true;
+            }
+        }
+
+        if (actualizarDeckAPI == true)
+        {
+            APIs.Steam.SteamDeckAPI deckAPI = await APIs.Steam.Juego.CargarDatosDeck(juego.Id, juego.IdSteam);
+            bool vacio = true;
+
+            if (deckAPI?.Datos?.Resultado != null)
+            {
+                juego.Deck = (JuegoDeck)int.Parse(deckAPI.Datos.Resultado.ToString());
+                juego.DeckComprobacion = DateTime.Now;
+
+                if (deckAPI.Datos.Tokens?.Count > 0)
+                {
+                    List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                    foreach (var token in deckAPI.Datos.Tokens)
+                    {
+                        if (string.IsNullOrEmpty(token.Token) == false)
+                        {
+                            JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                            nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                            nuevoToken.Mensaje = token.Token;
+
+                            tokens.Add(nuevoToken);
+                        }
+                    }
+
+                    juego.DeckTokens = tokens;
+                }
+
+                juego.SteamOS = (JuegoSteamOS)int.Parse(deckAPI.Datos.SteamOSResultado.ToString());
+
+                if (deckAPI.Datos.SteamOSTokens?.Count > 0)
+                {
+                    List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                    foreach (var token in deckAPI.Datos.SteamOSTokens)
+                    {
+                        if (string.IsNullOrEmpty(token.Token) == false)
+                        {
+                            JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                            nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                            nuevoToken.Mensaje = token.Token;
+
+                            tokens.Add(nuevoToken);
+                        }
+                    }
+
+                    juego.SteamOSTokens = tokens;
+                }
+
+                if (deckAPI.Datos.SteamFrameResultado != null)
+                {
+                    juego.SteamFrame = (JuegoSteamFrame)int.Parse(deckAPI.Datos.SteamFrameResultado?.ToString());
+
+                    if (deckAPI.Datos.SteamFrameTokens?.Count > 0)
+                    {
+                        List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                        foreach (var token in deckAPI.Datos.SteamFrameTokens)
+                        {
+                            if (string.IsNullOrEmpty(token.Token) == false)
+                            {
+                                JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                                nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                                nuevoToken.Mensaje = token.Token;
+                                tokens.Add(nuevoToken);
+                            }
+                        }
+
+                        juego.SteamFrameTokens = tokens;
+                    }
+                }
+
+                if (deckAPI.Datos.SteamMachineResultado != null)
+                {
+                    juego.SteamMachine = (JuegoSteamMachine)int.Parse(deckAPI.Datos.SteamMachineResultado?.ToString());
+
+                    if (deckAPI.Datos.SteamMachineTokens?.Count > 0)
+                    {
+                        List<JuegoDeckToken> tokens = new List<JuegoDeckToken>();
+
+                        foreach (var token in deckAPI.Datos.SteamMachineTokens)
+                        {
+                            if (string.IsNullOrEmpty(token.Token) == false)
+                            {
+                                JuegoDeckToken nuevoToken = new JuegoDeckToken();
+                                nuevoToken.Tipo = int.Parse(token.Tipo.ToString());
+                                nuevoToken.Mensaje = token.Token;
+                                tokens.Add(nuevoToken);
+                            }
+                        }
+
+                        juego.SteamMachineTokens = tokens;
+                    }
+                }
+
+                vacio = false;
+                await global::BaseDatos.Juegos.Actualizar.Deck(juego);
+            }
+
+            if (vacio == true)
+            {
+                juego.DeckComprobacion = DateTime.Now;
+                await global::BaseDatos.Juegos.Actualizar.DeckVacio(juego);
+            }
+        }
+
+        if (enseñarSteamDeck == true)
+        {
+            await MostrarSteamDeck();
+        }
+        else
+        {
+            if (enseñarSteamMachine == true)
+            {
+                await MostrarSteamMachine();
+            }
+            else
+            {
+                if (enseñarSteamFrame == true)
+                {
+                    await MostrarSteamFrame();
+                }
+                else
+                {
+                    if (enseñarSteamOS == true)
+                    {
+                        await MostrarSteamOS();
+                    }
+                }
+            }
+        }
+    }
+
+    #region Pestañas
+
+    private enum PestañaElegida
+    {
+        SinElegir,
+        SteamDeck,
+        SteamMachine,
+        SteamFrame,
+        SteamOS
+    }
+
+    private PestañaElegida pestañaElegida = PestañaElegida.SinElegir;
+
+    private void TransparentarFondos()
+    {
+        fondoSteamDeck = "background: transparent;";
+        fondoSteamMachine = "background: transparent;";
+        fondoSteamFrame = "background: transparent;";
+        fondoSteamOS = "background: transparent;";
+    }
+
+    private string fondoSteamDeck = "background: transparent;";
+
+    private async Task MostrarSteamDeck()
+    {
+        TransparentarFondos();
+
+        fondoSteamDeck = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.SteamDeck;
+    }
+
+    private string fondoSteamMachine = "background: transparent;";
+
+    private async Task MostrarSteamMachine()
+    {
+        TransparentarFondos();
+
+        fondoSteamMachine = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.SteamMachine;
+    }
+
+    private string fondoSteamFrame = "background: transparent;";
+
+    private async Task MostrarSteamFrame()
+    {
+        TransparentarFondos();
+
+        fondoSteamFrame = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.SteamFrame;
+    }
+
+    private string fondoSteamOS = "background: transparent;";
+
+    private async Task MostrarSteamOS()
+    {
+        TransparentarFondos();
+
+        fondoSteamOS = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.SteamOS;
+    }
+
+    #endregion
+}

@@ -106,16 +106,17 @@
                                 }
                             </a>
                             
-                            @if (mostrarDropdown == true && deseadosJuegos?.Count > 0)
+                            @if (mostrarDropdown == true && datosDeseados?.Juegos?.Count > 0)
                             {
                                 <div class="menu-dropdown-contenido-centrado" style="min-width: 400px; background-color: color-mix(in srgb, var(--fondoBotonPequeño) 50%, var(--fondoAlerta)); border-radius: 5px; border: 2px solid var(--fondoAlerta); display: flex; flex-direction: column; gap: 5px;">
-                                    @foreach (var juego in deseadosJuegos.OrderByDescending(j => j.Fecha).Take(5))
+                                    @foreach (var juego in datosDeseados.Juegos.OrderByDescending(j => j.Fecha).Take(5))
                                     {
                                         List<Tiendas2.Tienda> tiendas = Tiendas2.TiendasCargar.GenerarListado();
                                         var tienda = tiendas.FirstOrDefault(t => t.Id == juego.Tienda);
                                         string iconoTienda = tienda?.ImagenIcono ?? string.Empty;
+                                        string enlaceFinal = Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tienda, usuarioPatreon, false);
 
-                                        <a @key="juego.Enlace" @onclick="(e => AbrirDeseado(e, juego.Enlace))" class="boton-superior" href="@Herramientas.EnlaceAcortador.Generar(juego.Enlace, juego.Tienda, usuarioPatreon, false)" target="_blank" style="font-size: 15px; padding: 0px; border-radius: 5px;">
+                                        <a @key="juego.Enlace" @onclick="(e => AbrirDeseado(e, juego.Enlace))" class="boton-superior" href="@enlaceFinal" target="_blank" style="font-size: 15px; padding: 0px; border-radius: 5px;">
                                              <div style="text-align: center; display: flex; align-items: center; gap: 15px;">
                                                  <img src="@juego.Imagen2" style="width: 173px; height: 65px; display: block;"/>
 
@@ -883,7 +884,6 @@
     [PersistentState] public Usuario opcionesCabecera { get; set; }
 
     private int deseadosCantidad = 0;
-    private List<DeseadosDatosJuego> deseadosJuegos = null;
     private string enlaceChrome = null;
     private string enlaceFirefox = null;
     private string enlaceEdge = null;
@@ -1025,7 +1025,7 @@
                                 resultadosMostrar2.Add(resultadoMostrar);
                             }
                         }
-                        
+
                         ActualizarResultadosPorTipo(resultadosMostrar2);
                         ActivarPrimeraPestañaDisponible();
 
@@ -1079,6 +1079,8 @@
         }
     }
 
+    DeseadosDatos datosDeseados = null;
+
     private async Task GenerarDeseadosDropdown()
     {
         if (string.IsNullOrEmpty(usuarioId) == false)
@@ -1087,32 +1089,32 @@
 
             if (string.IsNullOrEmpty(deseadosCabecera?.WishlistData) == false)
             {
-                DeseadosDatos datos2 = JsonSerializer.Deserialize<DeseadosDatos>(deseadosCabecera?.WishlistData);
+                datosDeseados = JsonSerializer.Deserialize<DeseadosDatos>(deseadosCabecera?.WishlistData);
 
-                if (datos2 != null)
+                if (datosDeseados != null)
                 {
-                    deseadosCantidad = datos2.Cantidad;
+                    deseadosCantidad = datosDeseados.Cantidad;
 
-                    if (datos2.UltimaVisita != null && datos2.UltimoJuego != null)
+                    if (datosDeseados.UltimaVisita != null && datosDeseados.UltimoJuego != null)
                     {
-                        if (datos2.UltimaVisita?.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
+                        if (datosDeseados.UltimaVisita?.Subtract((DateTime)datosDeseados.UltimoJuego).TotalDays > 7)
                         {
                             deseadosCantidad = 0;
-                            datos2.Juegos = null;
+                            datosDeseados.Juegos = null;
                         }
                     }
-                    else if (datos2.UltimaVisita == null && datos2.UltimoJuego != null)
+                    else if (datosDeseados.UltimaVisita == null && datosDeseados.UltimoJuego != null)
                     {
-                        if (DateTime.Now.Subtract((DateTime)datos2.UltimoJuego).TotalDays > 7)
+                        if (DateTime.Now.Subtract((DateTime)datosDeseados.UltimoJuego).TotalDays > 7)
                         {
                             deseadosCantidad = 0;
-                            datos2.Juegos = null;
+                            datosDeseados.Juegos = null;
                         }
                     }
 
-                    if (deseadosCantidad > 0 && datos2.Juegos?.Count > 0)
+                    if (deseadosCantidad > 0 && datosDeseados.Juegos?.Count > 0)
                     {
-                        List<string> juegosBuscar = datos2.Juegos.Select(j => j.Id.ToString()).ToList();
+                        List<string> juegosBuscar = datosDeseados.Juegos.Select(j => j.Id.ToString()).ToList();
 
                         if (juegosBuscar?.Count > 0)
                         {
@@ -1122,7 +1124,7 @@
                             {
                                 foreach (var juego in juegosBuscados)
                                 {
-                                    var juegoDeseado = datos2.Juegos.FirstOrDefault(j => j.Id == juego.Id);
+                                    var juegoDeseado = datosDeseados.Juegos.FirstOrDefault(j => j.Id == juego.Id);
 
                                     if (juegoDeseado != null)
                                     {
@@ -1133,8 +1135,7 @@
                             }
                         }
 
-                        datos2.Juegos.RemoveAll(j => string.IsNullOrEmpty(j.Nombre2) == true && string.IsNullOrEmpty(j.Imagen2) == true);
-                        deseadosJuegos = datos2.Juegos;
+                        datosDeseados.Juegos.RemoveAll(j => string.IsNullOrEmpty(j.Nombre2) == true && string.IsNullOrEmpty(j.Imagen2) == true);
                     }
                 }
             }
@@ -1689,12 +1690,14 @@
 
     #region Deseados
 
-    private async void AbrirDeseado(MouseEventArgs e, string enlace)
+    private async Task AbrirDeseado(MouseEventArgs e, string enlace)
     {
-        if (deseadosJuegos?.Count > 0)
+        if (datosDeseados.Juegos?.Count > 0)
         {
-            deseadosJuegos.RemoveAll(j => j.Enlace == enlace);
+            datosDeseados.Juegos.RemoveAll(j => j.Enlace == enlace);
         }
+
+        await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioId);
     }
 
     #endregion
