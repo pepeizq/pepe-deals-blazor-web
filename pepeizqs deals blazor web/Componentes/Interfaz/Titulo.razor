@@ -460,6 +460,8 @@
 		Regiones,
 		RSS,
 		SteamDeck,
+		SteamMachine,
+		SteamFrame,
 		SteamOS,
 		Streaming,
 		Suscripciones,
@@ -655,6 +657,22 @@
 			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamDeck");
 			enlace ??= "https://" + dominio + "/steamdeck/";
 			imagen ??= "https://" + dominio + "/otros/steamdeck_logo.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.SteamMachine)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "SteamMachine");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamMachine");
+			enlace ??= "https://" + dominio + "/steammachine/";
+			imagen ??= "https://" + dominio + "/otros/steammachine_logo.webp";
+			keywords2 ??= keywordsVacias;
+		}
+		else if (tipo == Tipo.SteamFrame)
+		{
+			titulo ??= Herramientas.Idiomas.BuscarTexto(idioma, "String7", "SteamFrame");
+			descripcion ??= Herramientas.Idiomas.BuscarTexto(idioma, "String8", "SteamFrame");
+			enlace ??= "https://" + dominio + "/steamframe/";
+			imagen ??= "https://" + dominio + "/otros/steamframe_logo.webp";
 			keywords2 ??= keywordsVacias;
 		}
 		else if (tipo == Tipo.SteamOS)

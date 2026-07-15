@@ -45,7 +45,7 @@
 	string codigoTexto = string.Empty;
 	DateTime fechaDetectado = DateTime.Now;
 
-	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
+	if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamMachine || tipo == Tipo.SteamFrame || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 	{
 		JuegoPrecio oferta = null;
 
@@ -120,7 +120,7 @@
 
 			//--------------------------------------------------------
 
-			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
+			if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamMachine || tipo == Tipo.SteamFrame || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 			{
 				if (Herramientas.Bots.UserAgentEsBot(userAgent) == false)
 				{
@@ -195,7 +195,7 @@
 						</div>
 					}
 
-					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
+					@if (tipo == Tipo.PortadaNuevos || tipo == Tipo.PortadaPopulares || tipo == Tipo.PortadaLanzamientos || tipo == Tipo.PortadaProximamente || tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamMachine || tipo == Tipo.SteamFrame || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 					{
 						<div style="display: flex; align-items: center; padding: 5px; text-align: left; justify-content: left;">
 							@if (drmUsar != JuegoDRM.NoEspecificado)
@@ -451,7 +451,7 @@
 			</a>
 		}
 
-		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
+		@if (tipo == Tipo.MinimosHistoricos || tipo == Tipo.SteamDeck || tipo == Tipo.SteamMachine || tipo == Tipo.SteamFrame || tipo == Tipo.SteamOS || tipo == Tipo.GeforceNOW || tipo == Tipo.Boosteroid || tipo == Tipo.AmazonLuna)
 		{
 			string claveJuego = juego.Id.ToString() + "-" + drmUsar;
 
@@ -918,7 +918,7 @@
 		}
 
 		if (tipo != Tipo.PortadaNuevos && tipo != Tipo.PortadaLanzamientos && tipo != Tipo.PortadaPopulares && tipo != Tipo.PortadaProximamente &&
-			tipo != Tipo.MinimosHistoricos && tipo != Tipo.SteamDeck && tipo != Tipo.SteamOS && tipo != Tipo.GeforceNOW && tipo != Tipo.Boosteroid)
+			tipo != Tipo.MinimosHistoricos && tipo != Tipo.SteamDeck && tipo != Tipo.SteamMachine && tipo != Tipo.SteamFrame && tipo != Tipo.SteamOS && tipo != Tipo.GeforceNOW && tipo != Tipo.Boosteroid)
 		{
 			string nuevoFondoColor = "background-color: var(--fondoBotonPequeño)";
 			string nuevoFondoDescuento = string.Empty;
@@ -1051,6 +1051,8 @@
 		JuegoBandaSonora,
 		NuevosAñadidos,
 		SteamDeck,
+		SteamMachine,
+		SteamFrame,
 		SteamOS,
 		GeforceNOW,
 		Boosteroid,

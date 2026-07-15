@@ -706,6 +706,54 @@ namespace BaseDatos.Usuarios
 			return null;
 		}
 
+		public static async Task<Usuario> OpcionesSteamMachine(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT Currency, SteamMachineOption1, SteamMachineOption2, SteamMachineOption3, SteamMachineOption4 FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Steam Machine", ex);
+			}
+
+			return null;
+		}
+
+		public static async Task<Usuario> OpcionesSteamFrame(string usuarioId)
+		{
+			if (string.IsNullOrEmpty(usuarioId) == true)
+			{
+				return null;
+			}
+
+			string busqueda = "SELECT Currency, SteamFrameOption1, SteamFrameOption2, SteamFrameOption3, SteamFrameOption4 FROM AspNetUsers WHERE Id=@Id";
+
+			try
+			{
+				return await Herramientas.BaseDatos.Select(async conexion =>
+				{
+					return await conexion.QueryFirstOrDefaultAsync<Usuario>(busqueda, new { Id = usuarioId });
+				});
+			}
+			catch (Exception ex)
+			{
+				BaseDatos.Errores.Insertar.Mensaje("Usuario Opciones Steam Frame", ex);
+			}
+
+			return null;
+		}
+
 		public static async Task<Usuario> OpcionesSteamOS(string usuarioId)
 		{
 			if (string.IsNullOrEmpty(usuarioId) == true)

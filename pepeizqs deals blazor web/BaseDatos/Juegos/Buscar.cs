@@ -1381,7 +1381,7 @@ END DESC";
 			return tabla;
 		}
 
-		public static async Task<List<Juego>> Minimos(TiendaRegion region, int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
+		public static async Task<List<Juego>> Minimos(TiendaRegion region, int posicion = 0, int ordenar = 0, List<MostrarJuegoTienda> tiendas = null, List<MostrarJuegoDRM> drms = null, List<MostrarJuegoTipo> tipos = null, List<string> categorias = null, List<string> etiquetas = null, int? minimoDescuento = null, int? maximoPrecio = null, List<MostrarJuegoSteamDeck> deck = null, List<MostrarJuegoSteamOS> steamos = null, List<MostrarJuegoSteamMachine> machine = null, List<MostrarJuegoSteamFrame> frame = null, int lanzamiento = 0, int? minimoReseñas = 0, string nombreBusqueda = null, List<int> excluirJuegosIds = null, List<int> excluirSteamIds = null, List<int> excluirGogIds = null)
 		{
 			string tabla = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
@@ -1643,7 +1643,53 @@ END DESC";
 				dondeSteamOS = " (" + dondeSteamOS + ")";
 			}
 
-			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeTipos, dondeCategorias, dondeEtiquetas, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS, exclusionJuegos, exclusionSteam, exclusionGog }.Where(x => string.IsNullOrEmpty(x) == false));
+			string dondeSteamMachine = string.Empty;
+
+			if (machine?.Count > 0)
+			{
+				foreach (var m in machine)
+				{
+					if (m.Estado == true)
+					{
+						if (string.IsNullOrEmpty(dondeSteamMachine) == false)
+						{
+							dondeSteamMachine = dondeSteamMachine + " OR ";
+						}
+
+						dondeSteamMachine = dondeSteamMachine + "steammachine = '" + ((int)m.Tipo).ToString() + "'";
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(dondeSteamMachine) == false)
+			{
+				dondeSteamMachine = " (" + dondeSteamMachine + ")";
+			}
+
+			string dondeSteamFrame = string.Empty;
+
+			if (frame?.Count > 0)
+			{
+				foreach (var f in frame)
+				{
+					if (f.Estado == true)
+					{
+						if (string.IsNullOrEmpty(dondeSteamFrame) == false)
+						{
+							dondeSteamFrame = dondeSteamFrame + " OR ";
+						}
+
+						dondeSteamFrame = dondeSteamFrame + "steamframe = '" + ((int)f.Tipo).ToString() + "'";
+					}
+				}
+			}
+
+			if (string.IsNullOrEmpty(dondeSteamFrame) == false)
+			{
+				dondeSteamFrame = " (" + dondeSteamFrame + ")";
+			}
+
+			busqueda = busqueda + " WHERE " + string.Join(" AND ", new[] { dondeTiendas, dondeDRMs, dondeTipos, dondeCategorias, dondeEtiquetas, dondeMinimoDescuento, dondeMaximoPrecio, dondeDeck, dondeSteamOS, exclusionJuegos, exclusionSteam, exclusionGog, dondeSteamMachine, dondeSteamFrame }.Where(x => string.IsNullOrEmpty(x) == false));
 
 			if (lanzamiento == 1)
 			{

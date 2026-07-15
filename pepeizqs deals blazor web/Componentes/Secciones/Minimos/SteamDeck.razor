@@ -561,7 +561,7 @@
 
 		await ExcluirDRMs();
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, 0, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, null, null, 0, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
@@ -679,7 +679,7 @@
 
 		await ExcluirDRMs();
 
-		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, 0, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds);
+		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, null, null, 0, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds);
 
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
@@ -733,18 +733,30 @@
 						if (Herramientas.UsuarioJuegos.ComprobarSiTiene(juegosUsuarioIndex, juego, drmUsar) == true)
 						{
 							juegoMinimoMostrar.Color = "var(--fondoBien)";
+							juegoMinimoMostrar.Tiene = true;
 						}
 						else
 						{
-							if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar) == true)
+							if (Herramientas.UsuarioJuegos.ComprobarSiEstaExcluido(juegosUsuarioIndex?.Excluidos, juego.IdMaestra) == true)
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
-								juegoMinimoMostrar.DeseadoImportado = true;
+								juegoMinimoMostrar.Color = "var(--fondoPeligro)";
+								juegoMinimoMostrar.Excluido = true;
 							}
-
-							if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmUsar, true) == true)
+							else
 							{
-								juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+								if (Herramientas.Deseados.ComprobarSiEstaImportado(deseadosImportadosIndex, juego, drmUsar) == true)
+								{
+									juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+									juegoMinimoMostrar.DeseadoImportado = true;
+								}
+								else
+								{
+									if (Herramientas.Deseados.ComprobarSiEstaWeb(deseadosWebIndex, juego, drmUsar, true) == true)
+									{
+										juegoMinimoMostrar.Color = "var(--fondoAlerta)";
+										juegoMinimoMostrar.DeseadoWeb = true;
+									}
+								}
 							}
 						}
 					}

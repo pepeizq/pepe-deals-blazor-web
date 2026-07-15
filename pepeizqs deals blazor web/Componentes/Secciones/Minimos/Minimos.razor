@@ -205,6 +205,24 @@ else
 						</div>
 					</div>
 				</a>
+				<a class="texto-cabecera boton-superior" href="/steammachine" style="font-size: 15px;">
+					<div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+						<img src="/imagenes/otros/steammachine_cabecera.webp" style="max-width: 20px; max-height: 20px; display: block;" alt="Steam Deck" />
+
+						<div>
+							Steam Machine
+						</div>
+					</div>
+				</a>
+				<a class="texto-cabecera boton-superior" href="/steamframe" style="font-size: 15px;">
+					<div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+						<img src="/imagenes/otros/steamframe_cabecera.webp" style="max-width: 20px; max-height: 20px; display: block;" alt="Steam Deck" />
+
+						<div>
+							Steam Frame
+						</div>
+					</div>
+				</a>
 				<a class="texto-cabecera boton-superior" href="/steamos" style="font-size: 15px;">
 					<div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
 						<img src="@Juegos.JuegoDRM2.SacarImagen(Juegos.JuegoDRM.Steam)" style="max-width: 20px; max-height: 20px; display: block;" alt="SteamOS" />
@@ -1505,7 +1523,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 1, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1560,7 +1578,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 0, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1616,7 +1634,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 2, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1672,7 +1690,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 3, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1728,7 +1746,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 4, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1784,7 +1802,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 5, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1840,7 +1858,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 6, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -1896,7 +1914,7 @@ else
 		{
 			await ExcluirDRMs();
 
-			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
+			juegosGestor = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicion, 7, tiendas, drmsListado, tipos, GenerarListaCategoriasSeleccionadas(categorias), GenerarListaEtiquetasSeleccionadas(etiquetas), descuentoMinimo, precioMaximo, deckListado, steamosListado, null, null, lanzamientoElegido, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds, excluirGogIds);
 
 			if (juegosGestor?.Count > 0)
 			{
@@ -2583,6 +2601,20 @@ else
 		public bool Estado { get; set; }
 		public string Checkbox { get; set; }
 		public JuegoDeck Tipo { get; set; }
+	}
+
+	public class MostrarJuegoSteamMachine
+	{
+		public bool Estado { get; set; }
+		public string Checkbox { get; set; }
+		public JuegoSteamMachine Tipo { get; set; }
+	}
+
+	public class MostrarJuegoSteamFrame
+	{
+		public bool Estado { get; set; }
+		public string Checkbox { get; set; }
+		public JuegoSteamFrame Tipo { get; set; }
 	}
 
 	private static List<MostrarJuegoSteamDeck> CrearListaSteamDeck()

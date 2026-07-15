@@ -95,6 +95,16 @@ namespace BaseDatos.Juegos
 					AñadirSi("deck", "@deck", juego.Deck);
 				}
 
+				if (juego.SteamMachine != JuegoSteamMachine.Desconocido)
+				{
+					AñadirSi("steamMachine", "@steamMachine", juego.SteamMachine);
+				}
+
+				if (juego.SteamFrame != JuegoSteamFrame.Desconocido)
+				{
+					AñadirSi("steamFrame", "@steamFrame", juego.SteamFrame);
+				}
+
 				if (juego.SteamOS != JuegoSteamOS.Desconocido)
 				{
 					AñadirSi("steamOS", "@steamOS", juego.SteamOS);

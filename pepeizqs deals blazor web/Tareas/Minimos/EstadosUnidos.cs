@@ -108,6 +108,8 @@ namespace Tareas.Minimos
 								tabla.Columns.Add("idiomas", typeof(string));
 								tabla.Columns.Add("deck", typeof(int));
 								tabla.Columns.Add("steamOS", typeof(int));
+								tabla.Columns.Add("steamMachine", typeof(int));
+								tabla.Columns.Add("steamFrame", typeof(int));
 								tabla.Columns.Add("inteligenciaArtificial", typeof(bool));
 								tabla.Columns.Add("idMaestra", typeof(long));
 								tabla.Columns.Add("ocultarPortada", typeof(bool));
@@ -138,6 +140,8 @@ namespace Tareas.Minimos
 										juego.Idiomas != null ? JsonSerializer.Serialize(juego.Idiomas) : null,
 										(int)juego.Deck,
 										(int)juego.SteamOS,
+										(int)juego.SteamMachine,
+										(int)juego.SteamFrame,
 										juego.InteligenciaArtificial,
 										juego.IdMaestra,
 										juego.OcultarPortada

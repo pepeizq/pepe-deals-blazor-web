@@ -184,6 +184,42 @@
                                         </div>
                                     </div>
                                 </a>
+                                <a href="/steammachine" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        @{
+                                            string iconoSteamMachine = "/imagenes/otros/steammachine_cabecera.webp";
+                                            string iconoSteamMachine1 = iconoSteamMachine.Replace(".webp", "-sm.webp");
+                                            string iconoSteamMachine2 = iconoSteamMachine.Replace(".webp", "-md.webp");
+                                        }
+
+                                        <picture>
+                                            <source srcset="@iconoSteamMachine1 1x, @iconoSteamMachine2 2x" type="image/webp">
+                                            <img src="@iconoSteamMachine" alt="Steam Machine" loading="eager" decoding="async" style="display: block;" width="20" height="20" />
+                                        </picture>
+
+                                        <div>
+                                            Steam Machine
+                                        </div>
+                                    </div>
+                                </a>
+                                <a href="/steamframe" style="font-size: 15px;">
+                                    <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
+                                        @{
+                                            string iconoSteamFrame = "/imagenes/otros/steamframe_cabecera.webp";
+                                            string iconoSteamFrame1 = iconoSteamFrame.Replace(".webp", "-sm.webp");
+                                            string iconoSteamFrame2 = iconoSteamFrame.Replace(".webp", "-md.webp");
+                                        }
+
+                                        <picture>
+                                            <source srcset="@iconoSteamFrame1 1x, @iconoSteamFrame2 2x" type="image/webp">
+                                            <img src="@iconoSteamFrame" alt="Steam Frame" loading="eager" decoding="async" style="display: block;" width="20" height="20" />
+                                        </picture>
+
+                                        <div>
+                                            Steam Frame
+                                        </div>
+                                    </div>
+                                </a>
                                 <a href="/steamos" style="font-size: 15px;">
                                     <div style="text-align: center; display: flex; align-items: center; gap: 15px; justify-content: center;">
                                         @{
@@ -629,6 +665,14 @@
 
                                     <a class="boton-superior" href="/steamdeck" style="font-size: 15px;">
                                         Steam Deck
+                                    </a>
+
+                                    <a class="boton-superior" href="/steammachine" style="font-size: 15px;">
+                                        Steam Machine
+                                    </a>
+
+                                    <a class="boton-superior" href="/steamframe" style="font-size: 15px;">
+                                        Steam Frame
                                     </a>
 
                                     <a class="boton-superior" href="/steamos" style="font-size: 15px;">
@@ -1620,6 +1664,14 @@
         {
             return true;
         }
+        else if (enlaceTexto == "/steammachine")
+        {
+            return true;
+        }
+        else if (enlaceTexto == "/steamframe")
+        {
+            return true;
+        }
         else if (enlaceTexto == "/steamos")
         {
             return true;
@@ -1661,6 +1713,14 @@
         {
             return Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamDeck");
         }
+        else if (enlaceTexto == "/steammachine")
+        {
+            return Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamMachine");
+        }
+        else if (enlaceTexto == "/steamframe")
+        {
+            return Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamFrame");
+        }
         else if (enlaceTexto == "/steamos")
         {
             return Herramientas.Idiomas.BuscarTexto(idioma, "String10", "SteamOS");
@@ -1698,6 +1758,7 @@
         }
 
         await BaseDatos.Usuarios.Actualizar.Opcion("WishlistData", JsonSerializer.Serialize(datosDeseados), usuarioId);
+        await InvokeAsync(StateHasChanged);
     }
 
     #endregion

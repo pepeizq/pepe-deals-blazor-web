@@ -549,4 +549,36 @@ public class Usuario : IdentityUser
 	[PersonalData]
 	[Column(TypeName = "bit(1)")]
 	public bool? GameOption16 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamMachineOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamMachineOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamMachineOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamMachineOption4 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "bit(1)")]
+	public bool? SteamFrameOption1 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamFrameOption2 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamFrameOption3 { get; set; }
+
+	[PersonalData]
+	[Column(TypeName = "int(4)")]
+	public int? SteamFrameOption4 { get; set; }
 }
