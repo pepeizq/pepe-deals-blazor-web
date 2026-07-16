@@ -544,24 +544,9 @@ namespace APIs.Steam
 												oferta.Moneda = JuegoMoneda.Dolar;
 											}
 
-											if (juego.AppId == 10316)
-											{
-												BaseDatos.Errores.Insertar.Mensaje("test Steam", JsonSerializer.Serialize(opcionCompra));
-											}
-
 											if (juego.OpcionCompraMejor?.ActiveDiscounts?.Count > 0)
 											{
-												if (juego.AppId == 10316)
-												{
-													BaseDatos.Errores.Insertar.Mensaje("test Steam", "Error en Steam: " + juego.Nombre + " - " + juego.AppId.ToString() + " - " + juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate.ToString());
-												}
-
 												oferta.FechaTermina = DateTime.UnixEpoch.AddSeconds(juego.OpcionCompraMejor?.ActiveDiscounts[0]?.DiscountEndDate ?? 0).ToLocalTime();
-
-												if (juego.AppId == 10316)
-												{
-													BaseDatos.Errores.Insertar.Mensaje("test Steam", "Error en Steam: " + juego.Nombre + " - " + juego.AppId.ToString() + " - " + oferta.FechaTermina.ToString());
-												}
 											}
 
 											ofertas.Add(oferta);

@@ -250,6 +250,20 @@ namespace Herramientas
 
 			sb.Append(textoSteamDeck);
 
+			string textoSteamMachine = "<url>" + Environment.NewLine +
+				"<loc>https://" + dominio + "/steammachine/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
+
+			sb.Append(textoSteamMachine);
+
+			string textoSteamFrame = "<url>" + Environment.NewLine +
+				"<loc>https://" + dominio + "/steamframe/</loc>" + Environment.NewLine +
+				"<changefreq>hourly</changefreq>" + Environment.NewLine +
+				"</url>";
+
+			sb.Append(textoSteamFrame);
+
 			string textoSteamOS = "<url>" + Environment.NewLine +
 				"<loc>https://" + dominio + "/steamos/</loc>" + Environment.NewLine +
 				"<changefreq>hourly</changefreq>" + Environment.NewLine +
