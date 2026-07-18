@@ -64,6 +64,8 @@ namespace Herramientas
 			_cliente.DefaultRequestHeaders.UserAgent.ParseAdd(
 				"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0");
 			_cliente.Timeout = TimeSpan.FromSeconds(60);
+			_cliente.DefaultRequestHeaders.Accept.ParseAdd("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+			_cliente.DefaultRequestHeaders.AcceptLanguage.ParseAdd("en-US,en;q=0.5");
 		}
 
 		public static async Task<string> Estandar(string enlace)

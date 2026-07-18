@@ -721,6 +721,23 @@ namespace APIs.Steam
 
         public static async Task<SteamDeckAPI> CargarDatosDeck(int juegoId, int steamId)
 		{
+			bool sePuedeBuscar = true;
+
+			DateTime? fecha = await BaseDatos.Admin.Buscar.Fecha("steamapi");
+
+			if (fecha != null)
+			{
+				if (fecha.Value.AddDays(3) > DateTime.Now)
+				{
+					sePuedeBuscar = false;
+				}
+			}
+
+			if (sePuedeBuscar == false)
+			{
+				return null;
+			}
+
 			string id = steamId.ToString();
 
 			if (string.IsNullOrEmpty(id) == false)
