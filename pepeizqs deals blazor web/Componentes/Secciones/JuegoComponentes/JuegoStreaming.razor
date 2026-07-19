@@ -11,7 +11,126 @@
                     </div>
                 </button>
 
-                
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "GameStreaming")</label>
+
+                    <div class="caja-juegostreaming">
+                        @if (drmsGeforceNOW?.Count > 0 && enseñarGeforceNOW == true)
+                        {
+                            foreach (var drmG in drmsGeforceNOW)
+                            {
+                                if (drmG == drmSeleccionado)
+                                {
+                                    <button @onclick="MostrarGeforceNOW" class="boton-juegostreaming" style="@fondoGeforceNOW border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                            <img src="@APIs.GeforceNOW.Streaming.Generar().ImagenIcono" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+                                        </div>
+                                    </button>
+
+                                    break;
+                                }
+                            }
+                            
+                        }
+
+                        @if (drmsBoosteroid?.Count > 0 && enseñarBoosteroid == true)
+                        {
+                            foreach (var drmB in drmsBoosteroid)
+                            {
+                                if (drmB == drmSeleccionado)
+                                {
+                                    <button @onclick="MostrarBoosteroid" class="boton-juegostreaming" style="@fondoBoosteroid border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                            <img src="@APIs.Boosteroid.Streaming.Generar().ImagenIcono" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+                                        </div>
+                                    </button>
+
+                                    break;
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 30px;">
+                @if (pestañaElegida == PestañaElegida.GeforceNOW)
+                {
+                    <div style="display: flex; align-items: center; gap: 40px;">
+                        <div style="font-size: 15px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameStreaming"), juego.Nombre, "Geforce NOW", Juegos.JuegoDRM2.DevolverDRM(drmSeleccionado))
+                        </div>
+
+                        <div>
+                            <img src="@APIs.GeforceNOW.Streaming.Generar().ImagenLogo" style="width: 150px; max-height: 90px; contain: layout; display: block;" />
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="font-size: 15px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameStreaming"), "Geforce NOW")
+                        </div>
+
+                        <div style="width: 150px; flex-shrink: 0; display: flex; justify-content: center;">
+                            <div style="background: color-mix(in srgb, var(--fondoSubsubcabecera) 25%, var(--fondoBotonPequeño)); padding: 5px 10px;">
+                                @Herramientas.Precios.Euro(APIs.GeforceNOW.Streaming.Generar().PrecioMinimo)
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div style="display: flex; align-items: center; gap: 40px; justify-content: center; padding-top: 10px;">
+                        <a href="@APIs.GeforceNOW.Streaming.Generar().EnlaceCuota" target="_blank" class="enlace-juegostreaming" style="background: var(--fondoBotonPequeño); padding: 8px 15px; border: 0px; text-decoration: none;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameStreaming"), "Geforce NOW")
+                        </a>
+
+                        <a href="/streaming/geforcenow/" target="_blank" class="enlace-juegostreaming" style="background: var(--fondoBotonPequeño); padding: 8px 15px; border: 0px; text-decoration: none;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "GameStreaming")
+                        </a>
+                    </div>
+                }
+
+                @if (pestañaElegida == PestañaElegida.Boosteroid)
+                {
+                    <div style="display: flex; align-items: center; gap: 40px;">
+                        <div style="font-size: 15px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String2", "GameStreaming"), juego.Nombre, "Boosteroid", Juegos.JuegoDRM2.DevolverDRM(drmSeleccionado))
+                        </div>
+
+                        <div>
+                            <img src="@APIs.Boosteroid.Streaming.Generar().ImagenLogo" style="width: 150px; max-height: 90px; contain: layout; display: block;" />
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="font-size: 15px;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String3", "GameStreaming"), "Boosteroid")
+                        </div>
+
+                        <div style="width: 150px; flex-shrink: 0; display: flex; justify-content: center;">
+                            <div style="background: color-mix(in srgb, var(--fondoSubsubcabecera) 25%, var(--fondoBotonPequeño)); padding: 5px 10px;">
+                                @Herramientas.Precios.Euro(APIs.Boosteroid.Streaming.Generar().PrecioMinimo)
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div style="display: flex; align-items: center; gap: 40px; justify-content: center; padding-top: 10px;">
+                        <a href="@APIs.Boosteroid.Streaming.Generar().EnlaceCuota" target="_blank" class="enlace-juegostreaming" style="background: var(--fondoBotonPequeño); padding: 8px 15px; border: 0px; text-decoration: none;">
+                            @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String4", "GameStreaming"), "Boosteroid")
+                        </a>
+
+                        <a href="/streaming/boosteroid/" target="_blank" class="enlace-juegostreaming" style="background: var(--fondoBotonPequeño); padding: 8px 15px; border: 0px; text-decoration: none;">
+                            @Herramientas.Idiomas.BuscarTexto(idioma, "String5", "GameStreaming")
+                        </a>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -28,8 +147,76 @@
     public string idioma { get; set; }
 
     [Parameter]
+    public Juegos.JuegoDRM drmSeleccionado { get; set; }
+
+    [Parameter]
+    public List<Juegos.JuegoDRM> drmsGeforceNOW { get; set; }
+    
+    [Parameter]
+    public List<Juegos.JuegoDRM> drmsBoosteroid { get; set; }
+
+    [Parameter]
+    public bool enseñarGeforceNOW { get; set; }
+
+    [Parameter]
+    public bool enseñarBoosteroid { get; set; }
+
+    [Parameter]
     public EventCallback OnCerrar { get; set; }
 
     private bool usuarioEncimaCerrar = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (enseñarGeforceNOW == true)
+        {
+            await MostrarGeforceNOW();
+        }
+        else
+        {
+            if (enseñarBoosteroid == true)
+            {
+                await MostrarBoosteroid();
+            }
+        }
+    }
+
+    #region Pestañas
+
+    private enum PestañaElegida
+    {
+        SinElegir,
+        GeforceNOW,
+        Boosteroid
+    }
+
+    private PestañaElegida pestañaElegida = PestañaElegida.SinElegir;
+
+    private void TransparentarFondos()
+    {
+        fondoGeforceNOW = "background: transparent;";
+        fondoBoosteroid = "background: transparent;";
+    }
+
+    private string fondoGeforceNOW = "background: transparent;";
+
+    private async Task MostrarGeforceNOW()
+    {
+        TransparentarFondos();
+
+        fondoGeforceNOW = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.GeforceNOW;
+    }
+
+    private string fondoBoosteroid = "background: transparent;";
+
+    private async Task MostrarBoosteroid()
+    {
+        TransparentarFondos();
+
+        fondoBoosteroid = "background: var(--botonSeleccionado);";
+        pestañaElegida = PestañaElegida.Boosteroid;
+    }
+
+    #endregion
 }

@@ -17,7 +17,9 @@ namespace APIs.Boosteroid
 				Id = Streaming2.StreamingTipo.Boosteroid,
 				Nombre = "Boosteroid",
 				ImagenLogo = "/imagenes/streaming/boosteroid_logo.webp",
-				ImagenIcono = "/imagenes/streaming/boosteroid_icono.webp"
+				ImagenIcono = "/imagenes/streaming/boosteroid_icono.webp",
+				PrecioMinimo = 7.49,
+				EnlaceCuota = "https://cloud.boosteroid.com/profile/account/billing-plans"
 			};
 
 			return boosteroid;

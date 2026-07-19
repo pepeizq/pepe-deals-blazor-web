@@ -19,8 +19,10 @@ namespace APIs.GeforceNOW
                 Id = Streaming2.StreamingTipo.GeforceNOW,
                 Nombre = "Geforce NOW",
                 ImagenLogo = "/imagenes/streaming/geforcenow_logo.webp",
-                ImagenIcono = "/imagenes/streaming/geforcenow_icono.webp"
-            };
+                ImagenIcono = "/imagenes/streaming/geforcenow_icono.webp",
+				PrecioMinimo = 10.99,
+				EnlaceCuota = "https://www.nvidia.com/geforce-now/premium-memberships/"
+			};
 
             return geforcenow;
         }

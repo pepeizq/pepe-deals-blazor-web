@@ -8,5 +8,7 @@ namespace Streaming2
         public string Nombre;
         public string ImagenLogo;
         public string ImagenIcono;
+        public double PrecioMinimo;
+        public string EnlaceCuota;
     }
 }

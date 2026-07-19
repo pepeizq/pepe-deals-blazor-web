@@ -1378,72 +1378,61 @@
                                                             </div> 
                                                         }
 
-                                                        @if (drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true)
+                                                        @if ((drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true) || (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true))
                                                         {
-                                                            foreach (var drmG in drmsGeforceNOW)
-                                                            {
-                                                                if (drmG == drm.Id)
-                                                                {
-                                                                    string rutaOriginal = APIs.GeforceNOW.Streaming.Generar().ImagenIcono;
-                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
-                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
+                                                            <div class="tooltip-juego" id="trigger-gamestreaming"
+                                                                @onmouseenter="@(() => ActivarTooltip("trigger-gamestreaming", "tooltip-gamestreaming"))"
+                                                                @onmouseleave="@(() => DesactivarTooltip("trigger-gamestreaming"))">
+                                                                <button @onclick="@(() => StreamingAbrirCerrar(drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); height: 34px; padding: 0px 10px;">
+                                                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                                                        @if (drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true)
+                                                                        {
+                                                                            foreach (var drmG in drmsGeforceNOW)
+                                                                            {
+                                                                                if (drmG == drm.Id)
+                                                                                {
+                                                                                    string rutaOriginal = APIs.GeforceNOW.Streaming.Generar().ImagenIcono;
+                                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
+                                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
+                                                         
+                                                                                    <picture>
+                                                                                        <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
+                                                                                        <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Geforce NOW">
+                                                                                    </picture>
 
-                                                                    <div class="tooltip-juego" id="trigger-geforcenow-@drm.Id.ToString()"
-                                                                         @onmouseenter="@(() => ActivarTooltip($"trigger-geforcenow-{drm.Id.ToString()}", $"tooltip-geforcenow-{drm.Id.ToString()}"))"
-                                                                         @onmouseleave="@(() => DesactivarTooltip($"trigger-geforcenow-{drm.Id.ToString()}"))">
-                                                                        <a href="/streaming/geforcenow/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                                                                <picture>
-                                                                                    <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px; display: block;" loading="lazy" alt="Geforce NOW">
-                                                                                </picture>
-                                                                            </div>
-                                                                        </a>
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
 
-                                                                        <div id="tooltip-geforcenow-@drm.Id.ToString()" class="tooltip-relleno">
-                                                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                                                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Geforce NOW")
-                                                                            </div>
-                                                                        </div>
-                                                                    </div> 
+                                                                        @if (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true)
+                                                                        {
+                                                                            foreach (var drmB in drmsBoosteroid)
+                                                                            {
+                                                                                if (drmB == drm.Id)
+                                                                                {
+                                                                                    string rutaOriginal = APIs.Boosteroid.Streaming.Generar().ImagenIcono;
+                                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
+                                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                    break;
-                                                                }
-                                                            }
-                                                        }
+                                                                                    <picture>
+                                                                                        <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
+                                                                                        <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Boosteroid">
+                                                                                    </picture>
 
-                                                        @if (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true)
-                                                        {
-                                                            foreach (var drmB in drmsBoosteroid)
-                                                            {
-                                                                if (drmB == drm.Id)
-                                                                {
-                                                                    string rutaOriginal = APIs.Boosteroid.Streaming.Generar().ImagenIcono;
-                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
-                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
+                                                                                    break;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    </div>
+                                                                </button>
 
-                                                                    <div class="tooltip-juego" id="trigger-boosteroid-@drm.Id.ToString()"
-                                                                         @onmouseenter="@(() => ActivarTooltip($"trigger-boosteroid-{drm.Id.ToString()}", $"tooltip-boosteroid-{drm.Id.ToString()}"))"
-                                                                         @onmouseleave="@(() => DesactivarTooltip($"trigger-boosteroid-{drm.Id.ToString()}"))">
-                                                                        <a href="/streaming/boosteroid/" target="_blank" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; height: 34px; padding: 0px 10px; display: flex; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
-                                                                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                                                                                 <picture>
-                                                                                    <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                    <img src="@rutaOriginal" style="width: 22px; height: 22px; display: block;" loading="lazy" alt="Boosteroid">
-                                                                                </picture>
-                                                                            </div>
-                                                                        </a>
-
-                                                                        <div id="tooltip-boosteroid-@drm.Id.ToString()" class="tooltip-relleno">
-                                                                            <div style="margin: 8px; max-width: 300px; font-size: 14px;">
-                                                                                @string.Format(Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game"), "Boosteroid")
-                                                                            </div>
-                                                                        </div>
-                                                                    </div> 
-
-                                                                    break;
-                                                                }
-                                                            }
+                                                                <div id="tooltip-gamestreaming" class="tooltip-relleno">
+                                                                    <div style="margin: 8px; max-width: 300px; font-size: 14px;">
+                                                                        @Herramientas.Idiomas.BuscarTexto(idioma, "String71", "Game")
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         }
 
                                                         @if (juego.Idiomas?.Count > 0 && Herramientas.Bots.UserAgentEsBot(userAgent) == false && enseñarOpcionesIdiomas == true)
@@ -2863,6 +2852,12 @@
                            OnCerrar="@(() => DeckAbrirCerrar())" />
 }
 
+@if (juego != null && enseñarStreaming == true)
+{
+    <JuegoStreaming juego="@juego" idioma="@idioma" drmSeleccionado="@drmStreaming" drmsGeforceNOW="@drmsGeforceNOW" drmsBoosteroid="@drmsBoosteroid" enseñarGeforceNOW="@enseñarOpcionesGeforceNow" enseñarBoosteroid="@enseñarOpcionesBoosteroid"
+                    OnCerrar="@(() => StreamingAbrirCerrar())"/>    
+}
+
 @if (juego != null && enseñarHistorico == true)
 {
     <JuegoHistoricos juego="@juego" drmGrafico="@drmGrafico" usuarioRegion="@usuarioRegion" idioma="@idioma" dominio="@dominio"
@@ -3465,12 +3460,12 @@
             {
                 deseadosImportadosIndex = Herramientas.Deseados.CrearImportadosIndex(deseadosUsuario);
             }
-            
+
             if (deseadosWebIndex == null)
             {
                 deseadosWebIndex = Herramientas.Deseados.CrearWebIndex(deseadosUsuario);
             }
-            
+
             opciones = tareaOpciones.Result;
 
             if (opciones != null)
@@ -3813,7 +3808,7 @@
                 }    
             }
         }
-             
+
         #endregion
 
         #region Bundles Antiguos
@@ -3835,7 +3830,7 @@
                 }
             }
         }
-        
+
         #endregion
 
         #region Bundles Cargar, DRMs Cuantos Tienen Desean
@@ -3868,7 +3863,7 @@
             if (juego != null && Herramientas.Bots.UserAgentEsBot(userAgent) == false)
             {	
                 string nombreParaEnlace = Herramientas.EnlaceAdaptador.Nombre(juego.Nombre);
- 
+
                 if (moduloJs != null && string.IsNullOrEmpty(nombreParaEnlace) == false && nombreParaEnlace.Length > 0)
                 {
                     if (string.IsNullOrEmpty(juegoNombre) == true || juegoNombre.Equals(nombreParaEnlace, StringComparison.OrdinalIgnoreCase) == false)
@@ -3877,24 +3872,24 @@
                     }
                 }
             }
- 
+
             if (juego != null)
             {
                 Task<List<Juegos.Juego>> dlcsTarea = global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.DLC);
                 Task<List<Juegos.Juego>> bandasSonorasTarea = global::BaseDatos.Juegos.Buscar.DLCs(juego.Id.ToString(), JuegoTipo.Music);
- 
+
                 await Task.WhenAll(dlcsTarea, bandasSonorasTarea);
- 
+
                 dlcs ??= dlcsTarea.Result;
                 bandasSonoras ??= bandasSonorasTarea.Result;
- 
+
                 if (juego.IdSteam > 0)
                 {
                     #region API
- 
+
                     bool actualizarDatosAPI = false;
                     TimeSpan tiempoComprobar = TimeSpan.FromDays(30);
- 
+
                     if (juego.Caracteristicas?.FechaLanzamientoSteam != null)
                     {
                         if (DateTime.Now.Subtract(juego.Caracteristicas.FechaLanzamientoSteam).TotalDays < 1)
@@ -3918,65 +3913,65 @@
                             tiempoComprobar = TimeSpan.FromDays(5);
                         }
                     }
- 
+
                     if (juego.FechaSteamAPIComprobacion.Add(tiempoComprobar) < DateTime.Now)
                     {
                         actualizarDatosAPI = true;
                     }
- 
+
                     if (juego.Categorias == null)
                     {
                         actualizarDatosAPI = true;
- 
+
                         if (juego.Tipo == JuegoTipo.Music)
                         {
                             actualizarDatosAPI = false;
                         }
                     }
- 
+
                     if (juego.Media?.Capturas2 == null)
                     {
                         actualizarDatosAPI = true;
                     }
- 
+
                     if (actualizarDatosAPI == true)
                     {
                         await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdSteam, "SteamAPI");
                     }
- 
+
                     #endregion
                 }
- 
+
                 Task steamComprobarTarea = ComprobareYActualizarSteam();
                 Task gogComprobarTarea = ComprobareYActualizarGOG();
                 Task epicComprobarTarea = ComprobareYActualizarEpic();
                 Task xboxComprobarTarea = ComprobareYActualizarXbox();
                 Task steamCmdComprobarTarea = ComprobareYActualizarSteamCMD();
- 
+
                 await Task.WhenAll(steamComprobarTarea, gogComprobarTarea, epicComprobarTarea, xboxComprobarTarea, steamCmdComprobarTarea);
             }
- 
+
             await base.OnAfterRenderAsync(primerRender);
- 
+
             cargarComponentes = true;
- 
+
             await InvokeAsync(StateHasChanged);
         }
     }
 
     public async ValueTask DisposeAsync()
-	{
+    {
         ServicioOpciones.OnMostrarOpcionesChanged -= StateHasChanged;
 
-		if (moduloJs != null)
-		{
-			try
-			{
-				await moduloJs.DisposeAsync();
-			}
-			catch { }
-		}
-	}
+        if (moduloJs != null)
+        {
+            try
+            {
+                await moduloJs.DisposeAsync();
+            }
+            catch { }
+        }
+    }
 
     #region OnAfter
 
@@ -3986,7 +3981,7 @@
         {
             return;
         }
- 
+
         if (juego.GalaxyGOG == null)
         {
             await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, juego.IdGog, "GOGAPI");
@@ -3999,14 +3994,14 @@
             }
         }
     }
- 
+
     private async Task ComprobareYActualizarGOG()
     {
         if (string.IsNullOrEmpty(juego.SlugEpic) == true)
         {
             return;
         }
- 
+
         if (juego.EpicGames == null)
         {
             await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "EpicAPI");
@@ -4019,14 +4014,14 @@
             }
         }
     }
- 
+
     private async Task ComprobareYActualizarEpic()
     {
         if (string.IsNullOrEmpty(juego.IdXbox) == true)
         {
             return;
         }
- 
+
         if (juego.Xbox == null)
         {
             await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
@@ -4039,14 +4034,14 @@
             }
         }
     }
- 
+
     private async Task ComprobareYActualizarXbox()
     {
         if (string.IsNullOrEmpty(juego.IdXbox) == true)
         {
             return;
         }
- 
+
         if (juego.Xbox == null)
         {
             await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "XboxAPI");
@@ -4059,16 +4054,16 @@
             }
         }
     }
- 
+
     private async Task ComprobareYActualizarSteamCMD()
     {
         if (juego.Tipo != JuegoTipo.Game)
         {
             return;
         }
- 
+
         bool actualizarUltimaActualizacion = false;
- 
+
         if (juego.UltimaActualizacion == null)
         {
             actualizarUltimaActualizacion = true;
@@ -4080,7 +4075,7 @@
                 actualizarUltimaActualizacion = true;
             }
         }
- 
+
         if (actualizarUltimaActualizacion == true)
         {
             await BaseDatos.JuegosActualizar.Insertar.Ejecutar(juego.Id, 0, "SteamCMD");
@@ -4843,6 +4838,19 @@
     private async Task DeckAbrirCerrar()
     {
         enseñarDeck = !enseñarDeck;
+    }
+
+    #endregion
+
+    #region Streaming 
+
+    private bool enseñarStreaming = false;
+    private JuegoDRM drmStreaming = JuegoDRM.NoEspecificado;
+
+    private async Task StreamingAbrirCerrar(JuegoDRM drm = JuegoDRM.NoEspecificado)
+    {
+        enseñarStreaming = !enseñarStreaming;
+        drmStreaming = drm;
     }
 
     #endregion

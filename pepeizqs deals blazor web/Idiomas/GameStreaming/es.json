@@ -1,3 +1,7 @@
 {
-  "String1": "Juega vía streaming"
+  "String1": "Juega vía streaming",
+  "String2": "Puedes jugar a {0} en {2} a través de la plataforma de streaming {1}, eso significa que no necesitas un ordenador que cumpla los requisitos mínimos del juego, pero si una buena conexión a Internet.",
+  "String3": "Pero tener en cuenta que es necesario pagar una cuota mensual para jugar a tus juegos que sean compatibles con {0}, el precio que os indico a continuación es la cuota mensual sin ningún tipo de oferta en su rango más inferior para Europa (en otras regiones el precio será distinto).",
+  "String4": "Abrir {0}",
+  "String5": "Abrir lista de juegos compatibles"
 }

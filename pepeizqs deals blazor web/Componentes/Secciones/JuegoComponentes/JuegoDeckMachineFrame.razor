@@ -13,112 +13,110 @@
                     </div>
                 </button>
 
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "GameSteamDeck")</label>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <label style="font-size: 18px;">@Herramientas.Idiomas.BuscarTexto(idioma, "String1", "GameSteamDeck")</label>
 
-                        <div class="caja-deckmachineframe">
-                            @if (juego.Deck != JuegoDeck.Desconocido && enseñarSteamDeck == true)
-                            {
-                                <button @onclick="MostrarSteamDeck" class="boton-deckmachineframe" style="@fondoSteamDeck border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
-                                               
-                                        <div style="height: 24px;">
-                                            @if (juego.Deck == JuegoDeck.Verificado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
-                                            }
+                    <div class="caja-deckmachineframe">
+                        @if (juego.Deck != JuegoDeck.Desconocido && enseñarSteamDeck == true)
+                        {
+                            <button @onclick="MostrarSteamDeck" class="boton-deckmachineframe" style="@fondoSteamDeck border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="/imagenes/otros/steamdeck_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
 
-                                            @if (juego.Deck == JuegoDeck.Jugable)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
-                                            }
+                                    <div style="height: 24px;">
+                                        @if (juego.Deck == JuegoDeck.Verificado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                        }
 
-                                            @if (juego.Deck == JuegoDeck.NoSoportado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
-                                            }
-                                        </div>
+                                        @if (juego.Deck == JuegoDeck.Jugable)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                        }
+
+                                        @if (juego.Deck == JuegoDeck.NoSoportado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                        }
                                     </div>
-                                </button>
-                            }
+                                </div>
+                            </button>
+                        }
 
-                            @if (juego.SteamMachine != JuegoSteamMachine.Desconocido && enseñarSteamMachine == true)
-                            {
-                                <button @onclick="MostrarSteamMachine" class="boton-deckmachineframe" style="@fondoSteamMachine border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <img src="/imagenes/otros/steammachine_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
-                                               
-                                        <div style="height: 24px;">
-                                            @if (juego.SteamMachine == JuegoSteamMachine.Verificado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
-                                            }
+                        @if (juego.SteamMachine != JuegoSteamMachine.Desconocido && enseñarSteamMachine == true)
+                        {
+                            <button @onclick="MostrarSteamMachine" class="boton-deckmachineframe" style="@fondoSteamMachine border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="/imagenes/otros/steammachine_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
 
-                                            @if (juego.SteamMachine == JuegoSteamMachine.Jugable)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
-                                            }
+                                    <div style="height: 24px;">
+                                        @if (juego.SteamMachine == JuegoSteamMachine.Verificado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                        }
 
-                                            @if (juego.SteamMachine == JuegoSteamMachine.NoSoportado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
-                                            }
-                                        </div>
+                                        @if (juego.SteamMachine == JuegoSteamMachine.Jugable)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                        }
+
+                                        @if (juego.SteamMachine == JuegoSteamMachine.NoSoportado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                        }
                                     </div>
-                                </button>
-                            }
+                                </div>
+                            </button>
+                        }
 
-                            @if (juego.SteamFrame != JuegoSteamFrame.Desconocido && enseñarSteamFrame == true)
-                            {
-                                <button @onclick="MostrarSteamFrame" class="boton-deckmachineframe" style="@fondoSteamFrame border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <img src="/imagenes/otros/steamframe_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
+                        @if (juego.SteamFrame != JuegoSteamFrame.Desconocido && enseñarSteamFrame == true)
+                        {
+                            <button @onclick="MostrarSteamFrame" class="boton-deckmachineframe" style="@fondoSteamFrame border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="/imagenes/otros/steamframe_cabecera.webp" style="max-width: 24px; max-height: 24px; contain: layout; display: block;" />
 
-                                        <div style="height: 24px;">
-                                            @if (juego.SteamFrame == JuegoSteamFrame.Verificado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
-                                            }
+                                    <div style="height: 24px;">
+                                        @if (juego.SteamFrame == JuegoSteamFrame.Verificado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--deckVerificado)"></path></svg>
+                                        }
 
-                                            @if (juego.SteamFrame == JuegoSteamFrame.Jugable)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
-                                            }
+                                        @if (juego.SteamFrame == JuegoSteamFrame.Jugable)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.61079 9.44444V15H11.3886V9.44444H8.61079ZM9.07372 8.05245C9.34781 8.23558 9.67004 8.33333 9.99967 8.33333C10.4417 8.33333 10.8656 8.15774 11.1782 7.84518C11.4907 7.53262 11.6663 7.10869 11.6663 6.66667C11.6663 6.33703 11.5686 6.0148 11.3855 5.74072C11.2023 5.46663 10.942 5.25301 10.6375 5.12687C10.3329 5.00072 9.99783 4.96771 9.67452 5.03202C9.35122 5.09633 9.05425 5.25507 8.82116 5.48815C8.58808 5.72124 8.42934 6.01821 8.36503 6.34152C8.30072 6.66482 8.33373 6.99993 8.45988 7.30447C8.58602 7.60902 8.79964 7.86931 9.07372 8.05245Z" fill="var(--deckJugable)"></path></svg>
+                                        }
 
-                                            @if (juego.SteamFrame == JuegoSteamFrame.NoSoportado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
-                                            }
-                                        </div>
+                                        @if (juego.SteamFrame == JuegoSteamFrame.NoSoportado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                        }
                                     </div>
-                                </button>
-                            }
+                                </div>
+                            </button>
+                        }
 
-                            @if (juego.SteamOS != JuegoSteamOS.Desconocido && enseñarSteamOS == true)
-                            {
-                                <button @onclick="MostrarSteamOS" class="boton-deckmachineframe" style="@fondoSteamOS border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div style="font-size: 14px;">
-                                            SteamOS
-                                        </div>
-
-                                        <div style="height: 24px;">
-                                            @if (juego.SteamOS == JuegoSteamOS.Verificado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--steamOSVerificado)"></path></svg>
-                                            }
-
-                                            @if (juego.SteamOS == JuegoSteamOS.NoSoportado)
-                                            {
-                                                <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
-                                            }
-                                        </div>
+                        @if (juego.SteamOS != JuegoSteamOS.Desconocido && enseñarSteamOS == true)
+                        {
+                            <button @onclick="MostrarSteamOS" class="boton-deckmachineframe" style="@fondoSteamOS border: 0px; padding: 10px 20px; display: flex; align-items: center; color: var(--colorTexto); border-radius: inherit;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="font-size: 14px;">
+                                        SteamOS
                                     </div>
-                                </button>
-                            }
-                        </div>
+
+                                    <div style="height: 24px;">
+                                        @if (juego.SteamOS == JuegoSteamOS.Verificado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10 19C14.9706 19 19 14.9706 19 10C19 5.02944 14.9706 1 10 1C5.02944 1 1 5.02944 1 10C1 14.9706 5.02944 19 10 19ZM8.33342 11.9222L14.4945 5.76667L16.4556 7.72779L8.33342 15.8556L3.26675 10.7833L5.22786 8.82223L8.33342 11.9222Z" fill="var(--steamOSVerificado)"></path></svg>
+                                        }
+
+                                        @if (juego.SteamOS == JuegoSteamOS.NoSoportado)
+                                        {
+                                            <svg style="display: block; width: 100%; height: 100%;" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M14.193 15.606a7 7 0 0 1-9.799-9.799l9.8 9.8Zm1.414-1.414a7 7 0 0 0-9.799-9.799l9.8 9.8ZM19.001 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" fill="var(--colorTexto)"></path></svg>
+                                        }
+                                    </div>
+                                </div>
+                            </button>
+                        }
                     </div>
                 </div>
             </div>

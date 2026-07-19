@@ -1,3 +1,7 @@
 {
-  "String1": "Play via streaming"
+  "String1": "Play via streaming",
+  "String2": "You can play {0} on {2} via the streaming platform {1}, which means you don't need a computer that meets the game's minimum requirements, but you do need a good internet connection.",
+  "String3": "But keep in mind that you need to pay a monthly fee to play your games that are compatible with {0}, the price I indicate below is the monthly fee without any kind of offer in its lowest range for Europe (in other regions the price will be different).",
+  "String4": "Open {0}",
+  "String5": "Open list of compatible games"
 }
