@@ -1378,51 +1378,40 @@
                                                             </div> 
                                                         }
 
-                                                        @if ((drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true) || (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true))
+                                                        @{
+                                                            bool mostrarGeforceNOW = enseñarOpcionesGeforceNow == true && drmsGeforceNOW != null && drmsGeforceNOW.Contains(drm.Id);
+                                                            bool mostrarBoosteroid = enseñarOpcionesBoosteroid == true && drmsBoosteroid != null && drmsBoosteroid.Contains(drm.Id);
+                                                        }
+
+                                                        @if (mostrarGeforceNOW == true || mostrarBoosteroid == true)
                                                         {
                                                             <div class="tooltip-juego" id="trigger-gamestreaming"
                                                                 @onmouseenter="@(() => ActivarTooltip("trigger-gamestreaming", "tooltip-gamestreaming"))"
                                                                 @onmouseleave="@(() => DesactivarTooltip("trigger-gamestreaming"))">
                                                                 <button @onclick="@(() => StreamingAbrirCerrar(drm.Id))" class="boton-expandir" style="color: var(--colorTexto); text-decoration: none; border: 0px; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24); height: 34px; padding: 0px 10px;">
                                                                     <div style="display: flex; align-items: center; gap: 10px;">
-                                                                        @if (drmsGeforceNOW?.Count > 0 && enseñarOpcionesGeforceNow == true)
+                                                                        @if (mostrarGeforceNOW == true)
                                                                         {
-                                                                            foreach (var drmG in drmsGeforceNOW)
-                                                                            {
-                                                                                if (drmG == drm.Id)
-                                                                                {
-                                                                                    string rutaOriginal = APIs.GeforceNOW.Streaming.Generar().ImagenIcono;
-                                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
-                                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
+                                                                            string rutaOriginal = APIs.GeforceNOW.Streaming.Generar().ImagenIcono;
+                                                                            string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
+                                                                            string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
                                                          
-                                                                                    <picture>
-                                                                                        <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                        <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Geforce NOW">
-                                                                                    </picture>
-
-                                                                                    break;
-                                                                                }
-                                                                            }
+                                                                            <picture>
+                                                                                <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
+                                                                                <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Geforce NOW">
+                                                                            </picture>
                                                                         }
 
-                                                                        @if (drmsBoosteroid?.Count > 0 && enseñarOpcionesBoosteroid == true)
+                                                                        @if (mostrarBoosteroid == true)
                                                                         {
-                                                                            foreach (var drmB in drmsBoosteroid)
-                                                                            {
-                                                                                if (drmB == drm.Id)
-                                                                                {
-                                                                                    string rutaOriginal = APIs.Boosteroid.Streaming.Generar().ImagenIcono;
-                                                                                    string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
-                                                                                    string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
+                                                                            string rutaOriginal = APIs.Boosteroid.Streaming.Generar().ImagenIcono;
+                                                                            string ruta1 = rutaOriginal.Replace(".webp", "-sm.webp");
+                                                                            string ruta2 = rutaOriginal.Replace(".webp", "-md.webp");
 
-                                                                                    <picture>
-                                                                                        <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
-                                                                                        <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Boosteroid">
-                                                                                    </picture>
-
-                                                                                    break;
-                                                                                }
-                                                                            }
+                                                                            <picture>
+                                                                                <source srcset="@ruta1 1x, @ruta2 2x" type="image/webp">
+                                                                                <img src="@rutaOriginal" style="max-width: 20px; max-height: 20px; display: block;" loading="lazy" alt="Boosteroid">
+                                                                            </picture>
                                                                         }
                                                                     </div>
                                                                 </button>

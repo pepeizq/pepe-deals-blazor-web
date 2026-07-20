@@ -168,16 +168,17 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (enseñarGeforceNOW == true)
+        bool mostrarGeforceNOW = enseñarGeforceNOW == true && drmsGeforceNOW != null && drmsGeforceNOW.Contains(drmSeleccionado);
+        bool mostrarBoosteroid = enseñarBoosteroid == true && drmsBoosteroid != null && drmsBoosteroid.Contains(drmSeleccionado);
+
+        if (pestañaElegida == PestañaElegida.SinElegir && mostrarGeforceNOW == true)
         {
             await MostrarGeforceNOW();
         }
-        else
+
+        if (pestañaElegida == PestañaElegida.SinElegir && mostrarBoosteroid == true)
         {
-            if (enseñarBoosteroid == true)
-            {
-                await MostrarBoosteroid();
-            }
+            await MostrarBoosteroid();
         }
     }
 
