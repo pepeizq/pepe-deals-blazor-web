@@ -528,7 +528,7 @@
 					@{
 						bool añadirNuevo = false;
 
-						if (juego.Bundles?.Count == 1)
+						if ((juego.Bundles?.Count + juego.BundlesActuales?.Count + juego.BundlesPasados?.Count) == 1)
 						{
 							añadirNuevo = true;
 						}
