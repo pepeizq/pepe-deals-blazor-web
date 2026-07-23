@@ -110,7 +110,10 @@ AND (
 				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
-			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, j.nombre, JSON_VALUE(j.imagenes, '$.Logo') as logo, JSON_VALUE(j.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(j.imagenes, '$.Header_460x215') as header, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.idSteam FROM {tabla} j 
+			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, j.nombre,     
+				JSON_VALUE(jg.imagenes, '$.Logo') as logo, JSON_VALUE(jg.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(jg.imagenes, '$.Header_460x215') as header, JSON_VALUE(jg.media, '$.Videos[0].Micro') as video,
+				j.{precioMinimosHistoricos}, j.idSteam FROM {tabla} j 
+				LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra
 				WHERE j.tipo = 0 {exclusionJuegos} {exclusionSteam} AND 
 				year(getdate()) < year(JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
 				CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) >= 1.99 AND 
@@ -230,11 +233,11 @@ AND (
 				{
 					if (i == 0)
 					{
-						categoria = categoria + " AND (tipo = " + valor;
+						categoria = categoria + " AND (j.tipo = " + valor;
 					}
 					else if (i > 0)
 					{
-						categoria = categoria + " OR tipo = " + valor;
+						categoria = categoria + " OR j.tipo = " + valor;
 					}
 
 					i += 1;
@@ -255,11 +258,11 @@ AND (
 				{
 					if (i == 0)
 					{
-						drm = drm + $" AND (JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = " + valor;
+						drm = drm + $" AND (JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = " + valor;
 					}
 					else if (i > 0)
 					{
-						drm = drm + $" OR JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = " + valor;
+						drm = drm + $" OR JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = " + valor;
 					}
 
 					i += 1;
@@ -296,7 +299,7 @@ AND (
 				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
-			string busqueda = @$"SELECT j.idMaestra, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(j.media, '$.Videos[0].Micro') as video, j.etiquetas,
+			string busqueda = @$"SELECT j.idMaestra, j.nombre, jg.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(jg.media, '$.Videos[0].Micro') as video, j.etiquetas,
 			(
 				SELECT b.id, b.bundleTipo
 				FROM bundles b
@@ -344,6 +347,7 @@ AND (
 				  AND s.FechaTermina < GETDATE()
 				FOR JSON PATH
 			) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
+				LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra
 				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm} {exclusionJuegos} {exclusionSteam} {exclusionGog}";
 
 			if (tipo == 0)

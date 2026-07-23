@@ -17,6 +17,7 @@ using Herramientas;
 using Juegos;
 using System.Data;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Tiendas2;
 using static Dapper.SqlMapper;
 
@@ -24,6 +25,11 @@ namespace Tareas.Minimos
 {
 	public class EstadosUnidos : BackgroundService
 	{
+		private static readonly JsonSerializerOptions _opcionesJsonSinNulls = new JsonSerializerOptions
+		{
+			DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+		};
+
 		private readonly ILogger<EstadosUnidos> _logger;
 		private readonly IServiceScopeFactory _factoria;
 		private readonly IDecompiladores _decompilador;
@@ -74,16 +80,35 @@ namespace Tareas.Minimos
 								juego.IdMaestra = juego.Id;
 								juego.PrecioMinimosHistoricosUS = juego.PrecioMinimosHistoricosUS.Where(x => x.DRM == juego.DRMElegido).ToList();
 
+								if (juego.Imagenes != null)
+								{
+									juego.Imagenes.Capsule_231x87 = null;
+									juego.Imagenes.Library_600x900 = null;
+									juego.Imagenes.Library_1920x620 = null;
+									juego.Imagenes.Logo = null;
+								}
+
+								if (juego.Caracteristicas != null)
+								{
+									juego.Caracteristicas.Descripcion = null;
+									juego.Caracteristicas.Enlaces = null;
+								}
+
+								if (juego.Media != null)
+								{
+									juego.Media.Capturas2 = null;
+								}
+
 								if (juego.PrecioMinimosHistoricosUS?.Count > 0 && juego.PrecioMinimosHistoricosUS[0].Precio > 0)
 								{
 									juegosParaInsertar.Add(juego);
 								}
 							}
 
-							int batchSize = 500;
-							for (int i = 0; i < juegosParaInsertar.Count; i += batchSize)
+							int remesaTamaño = 500;
+							for (int i = 0; i < juegosParaInsertar.Count; i += remesaTamaño)
 							{
-								var chunk = juegosParaInsertar.Skip(i).Take(batchSize).ToList();
+								var chunk = juegosParaInsertar.Skip(i).Take(remesaTamaño).ToList();
 								DataTable tabla = new DataTable();
 								tabla.Columns.Add("idSteam", typeof(long));
 								tabla.Columns.Add("idGog", typeof(long));
@@ -102,7 +127,6 @@ namespace Tareas.Minimos
 								tabla.Columns.Add("maestro", typeof(string));
 								tabla.Columns.Add("freeToPlay", typeof(string));
 								tabla.Columns.Add("mayorEdad", typeof(string));
-								tabla.Columns.Add("precioActualesTiendasUS", typeof(string));
 								tabla.Columns.Add("categorias", typeof(string));
 								tabla.Columns.Add("etiquetas", typeof(string));
 								tabla.Columns.Add("idiomas", typeof(string));
@@ -122,11 +146,11 @@ namespace Tareas.Minimos
 										juego.Nombre,
 										(int)juego.Tipo,
 										juego.FechaSteamAPIComprobacion,
-										JsonSerializer.Serialize(juego.Imagenes),
+										JsonSerializer.Serialize(juego.Imagenes, _opcionesJsonSinNulls),
 										JsonSerializer.Serialize(juego.PrecioMinimosHistoricosUS),
 										JsonSerializer.Serialize(juego.Analisis),
-										JsonSerializer.Serialize(juego.Caracteristicas),
-										JsonSerializer.Serialize(juego.Media),
+										JsonSerializer.Serialize(juego.Caracteristicas, _opcionesJsonSinNulls),
+										JsonSerializer.Serialize(juego.Media, _opcionesJsonSinNulls),
 										Herramientas.Buscador.LimpiarNombre(juego.Nombre),
 										juego.Bundles != null ? JsonSerializer.Serialize(juego.Bundles) : null,
 										juego.Gratis != null ? JsonSerializer.Serialize(juego.Gratis) : null,
@@ -134,7 +158,6 @@ namespace Tareas.Minimos
 										juego.Maestro,
 										juego.FreeToPlay,
 										juego.MayorEdad,
-										juego.PrecioActualesTiendasUS != null ? JsonSerializer.Serialize(juego.PrecioActualesTiendasUS) : null,
 										juego.Categorias != null ? JsonSerializer.Serialize(juego.Categorias) : null,
 										juego.Etiquetas != null ? JsonSerializer.Serialize(juego.Etiquetas) : null,
 										juego.Idiomas != null ? JsonSerializer.Serialize(juego.Idiomas) : null,

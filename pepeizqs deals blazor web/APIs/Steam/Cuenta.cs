@@ -8,13 +8,15 @@ namespace APIs.Steam
 {
     public static class Cuenta
     {
+        public static string ApiKey { get; set; }
+
         public static async Task<SteamCuentaID64> CargarID64(string enlace)
         {
 			string id64 = string.Empty;
             int cuentaTipo = 0;
             string usuario = string.Empty;
-
-            if (enlace.Contains("https://steamcommunity.com/id/") == true)
+	
+			if (enlace.Contains("https://steamcommunity.com/id/") == true)
             {
                 cuentaTipo = 1;
                 usuario = enlace;
@@ -34,9 +36,9 @@ namespace APIs.Steam
                     usuario = usuario.Remove(int1, usuario.Length - int1);
                 }
 
-                string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&vanityurl=" + usuario);
+                string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=" + ApiKey + "&vanityurl=" + usuario);
 
-                if (string.IsNullOrEmpty(html) == false)
+				if (string.IsNullOrEmpty(html) == false)
                 {
 					SteamSacarID id = JsonSerializer.Deserialize<SteamSacarID>(html);
 
@@ -79,13 +81,27 @@ namespace APIs.Steam
 
                 return nuevaCuenta;
             }
+            else
+            {
+                if (string.IsNullOrEmpty(enlace) == false)
+				{
+					SteamCuentaID64 nuevaCuenta = new SteamCuentaID64
+					{
+						ID64 = enlace,
+						CuentaTipo = 0,
+						Usuario = string.Empty
+					};
+
+					return nuevaCuenta;
+				}
+			}
 
             return null;
         }
 
         public static async Task<SteamCuentaAPI> CargarCuenta(string id64)
         {
-			string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamids=" + id64);
+			string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + ApiKey + "&steamids=" + id64);
 
             if (string.IsNullOrEmpty(html) == false)
             {
@@ -104,18 +120,18 @@ namespace APIs.Steam
         {
             SteamCuentaID64 nuevaCuenta = await CargarID64(enlace);
 
-            if (nuevaCuenta != null)
+			if (nuevaCuenta != null)
             {
-                string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamids=" + nuevaCuenta.ID64);
+                string html = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=" + ApiKey + "&steamids=" + nuevaCuenta.ID64);
 
                 if (string.IsNullOrEmpty(html) == false)
                 {
-                    SteamCuentaAPI cuenta = JsonSerializer.Deserialize<SteamCuentaAPI>(html);
+					SteamCuentaAPI cuenta = JsonSerializer.Deserialize<SteamCuentaAPI>(html);
 
                     if (cuenta?.Datos?.Jugador?.Count > 0)
                     {
 						List<SteamUsuarioJuego> juegos = null;
-                        string htmlJuegos = await Decompiladores.Estandar("https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamid=" + cuenta.Datos.Jugador[0].ID64 + "&include_appinfo=1&include_played_free_games=1&include_extended_appinfo=1");
+                        string htmlJuegos = await Decompiladores.Estandar("https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=" + ApiKey + "&steamid=" + cuenta.Datos.Jugador[0].ID64 + "&include_appinfo=1&include_played_free_games=1&include_extended_appinfo=1");
 
                         if (htmlJuegos != null)
                         {
@@ -193,7 +209,7 @@ namespace APIs.Steam
 
 						//bool grupoPremium = false;
       //                  bool grupoNormal = false;
-      //                  string htmlGrupos = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetUserGroupList/v0001/?key=41F2D73A0B5024E9101F8D4E8D8AC21E&steamid=" + cuenta.Datos.Jugador[0].ID64);
+      //                  string htmlGrupos = await Decompiladores.Estandar("https://api.steampowered.com/ISteamUser/GetUserGroupList/v0001/?key=" + ApiKey + "&steamid=" + cuenta.Datos.Jugador[0].ID64);
 
       //                  if (string.IsNullOrEmpty(htmlGrupos) == false)
       //                  {

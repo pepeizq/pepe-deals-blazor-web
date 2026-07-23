@@ -941,8 +941,6 @@
     private string enlaceEdge = null;
     private string enlacePatreon = null;
 
-    private bool mostrarDropdown = true;
-
     protected override async Task OnInitializedAsync()
     {
         Herramientas.ContextoUsuarioDatos datos = Herramientas.ContextoUsuario.Leer(Contexto);
@@ -1108,11 +1106,6 @@
     private async void OnLocationChanged(object sender, LocationChangedEventArgs e)
     {
         enlace = NavManager.Uri;
-
-        if (usuarioAdmin == true && enlace?.Contains("/admin") == true)
-        {
-            mostrarDropdown = false;
-        }
 
         await InvokeAsync(StateHasChanged);
     }

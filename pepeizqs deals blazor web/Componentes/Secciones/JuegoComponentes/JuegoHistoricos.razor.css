@@ -17,15 +17,15 @@
 }
 
     .boton-historicos:hover {
-        background: color-mix(in srgb, var(--fondoCodigo) 60%, transparent);
+        background: rgba(0,0,0,.3);
     }
 
     .boton-historicos.seleccionado {
-        background: var(--fondoCodigo);
+        background: rgba(0,0,0,.6);
     }
 
         .boton-historicos.seleccionado:hover {
-            background: var(--fondoCodigo);
+            background: rgba(0,0,0,.8);
             filter: brightness(1.2);
         }
 

@@ -109,34 +109,35 @@ builder.Services.AddAuthentication(opciones =>
 {
 	opciones.DefaultScheme = IdentityConstants.ApplicationScheme;
 	opciones.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-//}).AddSteam(opciones =>
-//{
-//	opciones.ApplicationKey = builder.Configuration["SteamAPI:Key"];
-//	opciones.CallbackPath = "/signin-steam";
-//	opciones.CorrelationCookie.SameSite = SameSiteMode.Lax;
-//	opciones.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-//	opciones.CorrelationCookie.HttpOnly = true;
-//	opciones.Events = new AspNet.Security.OpenId.OpenIdAuthenticationEvents
-//	{
-//		OnRemoteFailure = context =>
-//		{
-//			context.Response.Redirect("/account/login?error=steam");
-//			context.HandleResponse(); 
-//			return Task.CompletedTask;
-//		}
-//	};
+}).AddSteam(opciones =>
+{
+	opciones.ApplicationKey = builder.Configuration["SteamAPI:Key"];
+	opciones.CallbackPath = "/signin-steam";
+	opciones.CorrelationCookie.SameSite = SameSiteMode.Lax;
+	opciones.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+	opciones.CorrelationCookie.HttpOnly = true;
+	opciones.Events = new AspNet.Security.OpenId.OpenIdAuthenticationEvents
+	{
+		OnRemoteFailure = context =>
+		{
+			context.Response.Redirect("/account/login?error=steam");
+			context.HandleResponse();
+			return Task.CompletedTask;
+		}
+	};
 
-//	var handler = new HttpClientHandler();
-//	opciones.Backchannel = new HttpClient(handler)
-//	{
-//		Timeout = TimeSpan.FromSeconds(30)
-//	};
-//	opciones.Backchannel.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+	var handler = new HttpClientHandler();
+	opciones.Backchannel = new HttpClient(handler)
+	{
+		Timeout = TimeSpan.FromSeconds(30)
+	};
+	opciones.Backchannel.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
 }).AddIdentityCookies();
 
 var conexionTexto = builder.Configuration.GetConnectionString("pepeizqs_deals_webContextConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 Herramientas.BaseDatos.cadenaConexion = conexionTexto;
 
+APIs.Steam.Cuenta.ApiKey = builder.Configuration.GetValue<string>("SteamAPI:Key");
 APIs.Fanatical.Tienda.ApiKey = builder.Configuration.GetValue<string>("FanaticalAPI:Key");
 
 builder.Services.AddDbContextPool<pepeizqs_deals_webContext>(opciones => {
@@ -845,61 +846,61 @@ app.MapGet("/manifest.json", async (IConfiguration configuracion) =>
 
 #region Login Steam
 
-//app.MapGet("/login-steam", async (HttpContext contexto, string returnUrl) =>
-//{
-//	await contexto.ChallengeAsync(SteamAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties
-//	{
-//		RedirectUri = $"/login-steam/callback?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}"
-//	});
-//});
+app.MapGet("/login-steam", async (HttpContext contexto, string returnUrl) =>
+{
+	await contexto.ChallengeAsync(SteamAuthenticationDefaults.AuthenticationScheme, new AuthenticationProperties
+	{
+		RedirectUri = $"/login-steam/callback?returnUrl={Uri.EscapeDataString(returnUrl ?? "/")}"
+	});
+});
 
-//app.MapGet("/login-steam/callback", async (HttpContext contexto, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, string returnUrl) =>
-//{
-//	var resultado = await contexto.AuthenticateAsync(IdentityConstants.ExternalScheme);
+app.MapGet("/login-steam/callback", async (HttpContext contexto, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, string returnUrl) =>
+{
+	var resultado = await contexto.AuthenticateAsync(IdentityConstants.ExternalScheme);
 
-//	if (resultado.Succeeded == false)
-//	{
-//		return Results.Redirect("/account/login?steam1=true");
-//	}
+	if (resultado.Succeeded == false)
+	{
+		return Results.Redirect("/account/login?steam1=true");
+	}
 
-//	var steamId64 = resultado.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value.Split('/').Last();
+	var steamId64 = resultado.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value.Split('/').Last();
 
-//	if (steamId64 == null)
-//	{
-//		return Results.Redirect("/account/login?steam2=true");
-//	}
-		
-//	if (contexto.User.Identity?.IsAuthenticated == true)
-//	{
-//		Usuario usuarioActual = await usuarioManager.GetUserAsync(contexto.User);
+	if (steamId64 == null)
+	{
+		return Results.Redirect("/account/login?steam2=true");
+	}
 
-//		if (usuarioActual != null)
-//		{
-//			usuarioActual.SteamId = steamId64;
-//			var resultado2 = await usuarioManager.UpdateAsync(usuarioActual);
+	if (contexto.User.Identity?.IsAuthenticated == true)
+	{
+		Usuario usuarioActual = await usuarioManager.GetUserAsync(contexto.User);
 
-//			if (resultado2.Succeeded == true)
-//			{
-//				return Results.Redirect("/account/sync/steam/?success=true");
-//			}
-//			else
-//			{
-//				return Results.Redirect("/account/sync/steam/?success=false");
-//			}
-//		}
-//	}
+		if (usuarioActual != null)
+		{
+			usuarioActual.SteamId = steamId64;
+			var resultado2 = await usuarioManager.UpdateAsync(usuarioActual);
 
-//	Usuario usuario = await usuarioManager.Users.FirstOrDefaultAsync(u => u.SteamId == steamId64);
+			if (resultado2.Succeeded == true)
+			{
+				return Results.Redirect("/account/sync/steam/?success=true");
+			}
+			else
+			{
+				return Results.Redirect("/account/sync/steam/?success=false");
+			}
+		}
+	}
 
-//	if (usuario != null)
-//	{
-//		await signInManager.SignInAsync(usuario, isPersistent: true);
-//		return Results.Redirect(returnUrl ?? "/");
-//	}
+	Usuario usuario = await usuarioManager.Users.FirstOrDefaultAsync(u => u.SteamId == steamId64);
 
-//	contexto.Session.SetString("PendingSteamId", steamId64);
-//	return Results.Redirect($"/account/register");
-//});
+	if (usuario != null)
+	{
+		await signInManager.SignInAsync(usuario, isPersistent: true);
+		return Results.Redirect(returnUrl ?? "/");
+	}
+
+	contexto.Session.SetString("PendingSteamId", steamId64);
+	return Results.Redirect($"/account/register");
+});
 
 #endregion
 

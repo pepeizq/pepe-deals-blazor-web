@@ -33,19 +33,22 @@ namespace Tareas
 				{
 					try
 					{
-						//await Herramientas.BaseDatos.Select(async (conexion) =>
-						//{
-						//	return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimos");
-						//});
-
-						//await Herramientas.BaseDatos.Select(async (conexion) =>
-						//{
-						//	return await conexion.ExecuteAsync("TRUNCATE TABLE seccionMinimosUS");
-						//});
-
 						await Herramientas.BaseDatos.Select(async (conexion) =>
 						{
-							return await conexion.ExecuteAsync("DBCC SHRINKFILE('pepeizq2_simply__winspace_es_1_log', 200);");
+							return await conexion.ExecuteAsync(@"DECLARE @tamañoMB DECIMAL(10,2), @usadoMB DECIMAL(10,2), @libreMB DECIMAL(10,2);
+
+SELECT 
+    @tamañoMB = CAST(size * 8.0 / 1024 AS DECIMAL(10,2)),
+    @usadoMB = CAST(FILEPROPERTY(name, 'SpaceUsed') * 8.0 / 1024 AS DECIMAL(10,2))
+FROM sys.database_files
+WHERE type_desc = 'LOG';
+
+SET @libreMB = @tamañoMB - @usadoMB;
+
+IF @libreMB > 300 AND @tamañoMB > 400
+BEGIN
+    DBCC SHRINKFILE (pepeizq2_simply__winspace_es_1_log, 100);
+END;");
 						});
 					}
 					catch (Exception ex)
