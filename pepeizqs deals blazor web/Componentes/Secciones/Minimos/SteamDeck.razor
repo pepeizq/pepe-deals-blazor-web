@@ -108,7 +108,7 @@
 									drmJuego = juego.Juego.PrecioMinimosHistoricosUS[0].DRM;
 								}
 
-								<div @key="juego.Juego.Id-drmJuego" style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
+								<div @key="juego.Juego.IdMaestra-drmJuego" style="display: flex; align-items: center; gap: 20px; position: relative;" @onmouseenter="(e => MostrarBotonDeseados(e, juego))" @onmouseleave="(e => OcultarBotonDeseados(e, juego))">
 									<div style="width: 100%; overflow: hidden; box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.28),0px 0px 1px 0px rgba(0, 0, 0, 0.24);">
 										<CajaJuego region="@usuarioRegion" idioma="@idioma" juego="@juego.Juego" color="@juego.Color" juegosUsuarioIndex="@juegosUsuarioIndex" usuarioDeseadosImportados="@deseadosImportadosIndex" usuarioDeseadosWeb="@deseadosWebIndex" tipo="CajaJuego.Tipo.SteamDeck" userAgent="@userAgent"/>
 									</div>
@@ -680,7 +680,7 @@
 		await ExcluirDRMs();
 
 		var juegos = await BaseDatos.Juegos.Buscar.Minimos(usuarioRegion, posicionJuegos, 0, null, drmsListado, null, null, null, descuentoMinimo, precioMaximo, deckListado, null, null, null, 0, minimoReseñas, textoBuscador, excluirJuegosIds, excluirSteamIds);
-
+	
 		if (juegos?.Count == 0 && juegosMostrar?.Count == 0)
 		{
 			mostrarNoResultados = true;

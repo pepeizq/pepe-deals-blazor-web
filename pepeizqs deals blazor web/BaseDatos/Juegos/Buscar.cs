@@ -1385,7 +1385,6 @@ END DESC";
 		{
 			string tabla = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
-			string precioActualesTiendas = region == TiendaRegion.Europa ? "precioActualesTiendas" : "precioActualesTiendasUS";
 
 			DynamicParameters parametros = new DynamicParameters();
 			parametros.Add("etiquetas2", etiquetas?.Count > 0 ? string.Join(",", etiquetas) : "");
@@ -1405,18 +1404,18 @@ END DESC";
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $" NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
+				exclusionSteam = $" NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = jg.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $" NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
+				exclusionGog = $" NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = jg.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
-			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
-				j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+			string busqueda = $@"SELECT j.idMaestra, jg.nombre, jg.imagenes, j.{precioMinimosHistoricos}, jg.Media,
+				jg.tipo, jg.analisis, jg.idSteam, jg.idGog, jg.freeToPlay, jg.etiquetas,
 				(
 					SELECT b.id, b.bundleTipo
 					FROM bundles b
@@ -1464,7 +1463,8 @@ END DESC";
 					  AND s.FechaTermina < GETDATE()
 					FOR JSON PATH
 				) AS SuscripcionesPasados
-			FROM {tabla} j";
+			FROM {tabla} j
+			LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra";
 
 			string dondeTiendas = string.Empty;
 
@@ -1481,7 +1481,7 @@ END DESC";
 							dondeTiendas = dondeTiendas + " OR ";
 						}
 
-						dondeTiendas = dondeTiendas + $"JSON_VALUE({precioMinimosHistoricos}, '$[0].Tienda') = '" + tienda.TiendaId + "'";
+						dondeTiendas = dondeTiendas + $"JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Tienda') = '" + tienda.TiendaId + "'";
 					}
 				}
 			}
@@ -1504,7 +1504,7 @@ END DESC";
 							dondeDRMs = dondeDRMs + " OR ";
 						}
 
-						dondeDRMs = dondeDRMs + $"JSON_VALUE({precioMinimosHistoricos}, '$[0].DRM') = '" + ((int)drm.DRMId).ToString() + "'";
+						dondeDRMs = dondeDRMs + $"JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '" + ((int)drm.DRMId).ToString() + "'";
 					}
 				}
 			}
@@ -1527,7 +1527,7 @@ END DESC";
 							dondeTipos = dondeTipos + " OR ";
 						}
 
-						dondeTipos = dondeTipos + "tipo = '" + ((int)tipo.Tipo).ToString() + "'";
+						dondeTipos = dondeTipos + "jg.tipo = '" + ((int)tipo.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1544,7 +1544,7 @@ END DESC";
 				string categoriasFormateadas = "\"" + string.Join("\",\"", categorias) + "\"";
 				dondeCategorias = $@" (
 					SELECT COUNT(*) 
-					FROM STRING_SPLIT(j.categorias, ',') AS e1
+					FROM STRING_SPLIT(jg.categorias, ',') AS e1
 					INNER JOIN STRING_SPLIT('{categoriasFormateadas}', ',') AS e2
 					ON TRIM(e1.value) = TRIM(e2.value)
 				) > 0";
@@ -1557,7 +1557,7 @@ END DESC";
 				string etiquetasFormateadas = "\"" + string.Join("\",\"", etiquetas) + "\"";
 				dondeEtiquetas = $@" (
 					SELECT COUNT(*) 
-					FROM STRING_SPLIT(j.etiquetas, ',') AS e1
+					FROM STRING_SPLIT(jg.etiquetas, ',') AS e1
 					INNER JOIN STRING_SPLIT('{etiquetasFormateadas}', ',') AS e2
 					ON TRIM(e1.value) = TRIM(e2.value)
 				) > 0";
@@ -1572,7 +1572,7 @@ END DESC";
 
 			if (minimoDescuento > 0)
 			{
-				dondeMinimoDescuento = $"JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') >= " + minimoDescuento.ToString();
+				dondeMinimoDescuento = $"JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') >= " + minimoDescuento.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMinimoDescuento) == false)
@@ -1589,7 +1589,7 @@ END DESC";
 
 			if (maximoPrecio > 0)
 			{
-				dondeMaximoPrecio = $"CONVERT(decimal, JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio')) <= " + maximoPrecio.ToString();
+				dondeMaximoPrecio = $"CONVERT(decimal, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) <= " + maximoPrecio.ToString();
 			}
 
 			if (string.IsNullOrEmpty(dondeMaximoPrecio) == false)
@@ -1610,7 +1610,7 @@ END DESC";
 							dondeDeck = dondeDeck + " OR ";
 						}
 
-						dondeDeck = dondeDeck + "deck = '" + ((int)d.Tipo).ToString() + "'";
+						dondeDeck = dondeDeck + "jg.deck = '" + ((int)d.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1633,7 +1633,7 @@ END DESC";
 							dondeSteamOS = dondeSteamOS + " OR ";
 						}
 
-						dondeSteamOS = dondeSteamOS + "steamos = '" + ((int)s.Tipo).ToString() + "'";
+						dondeSteamOS = dondeSteamOS + "jg.steamos = '" + ((int)s.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1656,7 +1656,7 @@ END DESC";
 							dondeSteamMachine = dondeSteamMachine + " OR ";
 						}
 
-						dondeSteamMachine = dondeSteamMachine + "steammachine = '" + ((int)m.Tipo).ToString() + "'";
+						dondeSteamMachine = dondeSteamMachine + "jg.steammachine = '" + ((int)m.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1679,7 +1679,7 @@ END DESC";
 							dondeSteamFrame = dondeSteamFrame + " OR ";
 						}
 
-						dondeSteamFrame = dondeSteamFrame + "steamframe = '" + ((int)f.Tipo).ToString() + "'";
+						dondeSteamFrame = dondeSteamFrame + "jg.steamframe = '" + ((int)f.Tipo).ToString() + "'";
 					}
 				}
 			}
@@ -1693,30 +1693,30 @@ END DESC";
 
 			if (lanzamiento == 1)
 			{
-				busqueda = busqueda + " AND (JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -6, CAST(GETDATE() as date)) OR JSON_VALUE(caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -6, CAST(GETDATE() as date))) ";
+				busqueda = busqueda + " AND (JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -6, CAST(GETDATE() as date)) OR JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -6, CAST(GETDATE() as date))) ";
 			}
 
 			if (lanzamiento == 2)
 			{
-				busqueda = busqueda + " AND (JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -12, CAST(GETDATE() as date)) OR JSON_VALUE(caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -12, CAST(GETDATE() as date))) ";
+				busqueda = busqueda + " AND (JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -12, CAST(GETDATE() as date)) OR JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -12, CAST(GETDATE() as date))) ";
 			}
 
 			if (lanzamiento == 3)
 			{
-				busqueda = busqueda + " AND (JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -24, CAST(GETDATE() as date)) OR JSON_VALUE(caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -24, CAST(GETDATE() as date))) ";
+				busqueda = busqueda + " AND (JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam') > DATEADD(MONTH, -24, CAST(GETDATE() as date)) OR JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoOriginal') > DATEADD(MONTH, -24, CAST(GETDATE() as date))) ";
 			}
 
 			if (minimoReseñas != null)
 			{
 				if (minimoReseñas > 0)
 				{
-					busqueda = busqueda + " AND analisis IS NOT NULL and CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) > " + minimoReseñas.ToString();
+					busqueda = busqueda + " AND jg.analisis IS NOT NULL and CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) > " + minimoReseñas.ToString();
 				}
 			}
 
 			if (string.IsNullOrEmpty(nombreBusqueda) == false)
 			{
-				busqueda += $@"AND nombre COLLATE Latin1_General_CI_AI LIKE '%{nombreBusqueda}%'";
+				busqueda += $@"AND jg.nombre COLLATE Latin1_General_CI_AI LIKE '%{nombreBusqueda}%'";
 			}
 
 			#endregion
@@ -1726,45 +1726,45 @@ END DESC";
 			if (ordenar == 0)
 			{
 				busqueda = busqueda + @" ORDER BY CASE
-											WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+											WHEN jg.analisis = 'null' OR jg.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',',''))
 										 END DESC";
 			}
 
 			if (ordenar == 1)
 			{
 				busqueda = busqueda + @" ORDER BY CASE
-											WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, JSON_VALUE(analisis, '$.Porcentaje'))
+											WHEN jg.analisis = 'null' OR jg.analisis IS NULL THEN 0 ELSE CONVERT(int, JSON_VALUE(jg.analisis, '$.Porcentaje'))
 										 END DESC";
 			}
 
 			if (ordenar == 2)
 			{
-				busqueda = busqueda + " ORDER BY nombre";
+				busqueda = busqueda + " ORDER BY jg.nombre";
 			}
 
 			if (ordenar == 3)
 			{
-				busqueda = busqueda + " ORDER BY nombre DESC";
+				busqueda = busqueda + " ORDER BY jg.nombre DESC";
 			}
 
 			if (ordenar == 4)
 			{
-				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN 1000000 ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].Precio') AS decimal(18,2)) END";
+				busqueda = busqueda + $" ORDER BY CASE WHEN j.{precioMinimosHistoricos} = 'null' OR j.{precioMinimosHistoricos} IS NULL THEN 1000000 ELSE CAST(JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio') AS decimal(18,2)) END";
 			}
 
 			if (ordenar == 5)
 			{
-				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN 0 ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].Descuento') AS bigint) END DESC";
+				busqueda = busqueda + $" ORDER BY CASE WHEN j.{precioMinimosHistoricos} = 'null' OR j.{precioMinimosHistoricos} IS NULL THEN 0 ELSE CAST(JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') AS bigint) END DESC";
 			}
 
 			if (ordenar == 6)
 			{
-				busqueda = busqueda + $" ORDER BY CASE WHEN {precioMinimosHistoricos} = 'null' OR {precioMinimosHistoricos} IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE({precioMinimosHistoricos}, '$[0].FechaDetectado') AS date) END DESC";
+				busqueda = busqueda + $" ORDER BY CASE WHEN j.{precioMinimosHistoricos} = 'null' OR j.{precioMinimosHistoricos} IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado') AS date) END DESC";
 			}
 
 			if (ordenar == 7)
 			{
-				busqueda = busqueda + " ORDER BY CASE WHEN caracteristicas = 'null' OR caracteristicas IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam') AS date) END DESC";
+				busqueda = busqueda + " ORDER BY CASE WHEN jg.caracteristicas = 'null' OR jg.caracteristicas IS NULL THEN DATEADD(YEAR, -20, CAST(GETDATE() as date)) ELSE CAST(JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam') AS date) END DESC";
 			}
 
 			#endregion
@@ -1794,7 +1794,6 @@ END DESC";
 		{
 			string tablaMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
-			string precioActualesTiendas = region == TiendaRegion.Europa ? "precioActualesTiendas" : "precioActualesTiendasUS";
 
 			DynamicParameters parametros = new DynamicParameters();
 
@@ -1823,8 +1822,8 @@ END DESC";
 				exclusionGog = $" AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
 			}
 
-			string busqueda = $@"SELECT j.id, j.nombre, j.imagenes, j.{precioMinimosHistoricos}, j.{precioActualesTiendas}, j.Media,
-				j.tipo, j.analisis, j.idSteam, j.idGog, j.freeToPlay, j.idMaestra, j.etiquetas,
+			string busqueda = $@"SELECT j.idMaestra, jg.nombre, jg.imagenes, j.{precioMinimosHistoricos}, jg.Media,
+				jg.tipo, jg.analisis, jg.idSteam, jg.idGog, jg.freeToPlay, jg.etiquetas,
 				(
 					SELECT b.id, b.bundleTipo
 					FROM bundles b
@@ -1873,6 +1872,7 @@ END DESC";
 					FOR JSON PATH
 				) AS SuscripcionesPasados
 			FROM {tablaMinimos} j
+			LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra
 			WHERE j.Tipo = 0 {exclusionJuegos} {exclusionSteam} {exclusionGog}
 			AND EXISTS (
 				SELECT 1
@@ -1931,17 +1931,17 @@ END DESC";
 				{
 					if (minimoReseñas > 0)
 					{
-						busqueda = busqueda + " AND j.analisis IS NOT NULL and CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > " + minimoReseñas.ToString();
+						busqueda = busqueda + " AND jg.analisis IS NOT NULL and CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) > " + minimoReseñas.ToString();
 					}
 				}
 
 				if (string.IsNullOrEmpty(nombreBusqueda) == false)
 				{
-					busqueda += $@"AND j.nombre COLLATE Latin1_General_CI_AI LIKE '%{nombreBusqueda}%'";
+					busqueda += $@"AND jg.nombre COLLATE Latin1_General_CI_AI LIKE '%{nombreBusqueda}%'";
 				}
 
 				busqueda = busqueda + @" ORDER BY CASE
-											WHEN j.analisis = 'null' OR j.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',',''))
+											WHEN jg.analisis = 'null' OR jg.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',',''))
 										 END DESC";
 
 				busqueda = busqueda + @$" OFFSET {posicion} ROWS FETCH NEXT 100 ROWS ONLY";

@@ -12,12 +12,13 @@ namespace BaseDatos.Juegos
 {
 	public static class Precios
 	{
-		public static async Task<(string sql, DynamicParameters parametros)> Comprobacion(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta,  
+		public static async Task<(string sql, DynamicParameters parametros)> Comprobacion(int id, int idSteam, List<JuegoPrecio> ofertasActuales, List<JuegoPrecio> ofertasHistoricas, List<JuegoHistorico> historicos, JuegoPrecio nuevaOferta,
 			string slugGOG = null, string idGOG = null, string slugEpic = null, JuegoAnalisis reseñas = null, int indice = 0)
 		{
 			bool cambioPrecio = true;
 			bool ultimaModificacion = false;
 			bool añadir = true;
+			bool huboCambioReal = false;
 
 			#region Aplicar Codigo Descuento
 
@@ -27,80 +28,97 @@ namespace BaseDatos.Juegos
 			}
 
 			if (nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado == 0)
-            {
+			{
 				nuevaOferta.PrecioCambiado = Herramientas.Divisas.CambioEuro(nuevaOferta.Precio, nuevaOferta.Moneda);
 
-                if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
-                {
-                    decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
-                    nuevaOferta.PrecioCambiado = nuevaOferta.PrecioCambiado - (nuevaOferta.PrecioCambiado * descuento);
-                    nuevaOferta.PrecioCambiado = RedondearHaciaAbajo(nuevaOferta.PrecioCambiado);
-                }
-            }
-            else
-            {
-                if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
-                {
-                    decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
-                    nuevaOferta.Precio = nuevaOferta.Precio - (nuevaOferta.Precio * descuento);
+				if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
+				{
+					decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
+					nuevaOferta.PrecioCambiado = nuevaOferta.PrecioCambiado - (nuevaOferta.PrecioCambiado * descuento);
+					nuevaOferta.PrecioCambiado = RedondearHaciaAbajo(nuevaOferta.PrecioCambiado);
+				}
+			}
+			else
+			{
+				if (string.IsNullOrEmpty(nuevaOferta.CodigoTexto) == false && nuevaOferta.CodigoDescuento > 0)
+				{
+					decimal descuento = (decimal)nuevaOferta.CodigoDescuento / 100;
+					nuevaOferta.Precio = nuevaOferta.Precio - (nuevaOferta.Precio * descuento);
 					nuevaOferta.Precio = RedondearHaciaAbajo(nuevaOferta.Precio);
 				}
-            }
+			}
 
-            #endregion
+			#endregion
 
-            if (ofertasActuales?.Count > 0)
-            {
-                foreach (JuegoPrecio precio in ofertasActuales)
-                {
-                    if (nuevaOferta.Enlace == precio.Enlace &&
-                        nuevaOferta.DRM == precio.DRM &&
-                        nuevaOferta.Tienda == precio.Tienda)
-                    {
-                        bool cambiarFechaDetectado = false;
+			if (ofertasActuales?.Count > 0)
+			{
+				foreach (JuegoPrecio precio in ofertasActuales)
+				{
+					if (nuevaOferta.Enlace == precio.Enlace &&
+						nuevaOferta.DRM == precio.DRM &&
+						nuevaOferta.Tienda == precio.Tienda)
+					{
+						bool cambiarFechaDetectado = false;
 
-                        if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.Precio < precio.Precio || nuevaOferta.Precio > precio.Precio))
-                        {
-                            cambiarFechaDetectado = true;
-                        }
-                        else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.Precio || nuevaOferta.PrecioCambiado > precio.Precio))
-                        {
-                            cambiarFechaDetectado = true;
-                        }
-                        else if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.Precio < precio.PrecioCambiado || nuevaOferta.Precio > precio.PrecioCambiado))
-                        {
-                            cambiarFechaDetectado = true;
-                        }
-                        else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.PrecioCambiado || nuevaOferta.PrecioCambiado > precio.PrecioCambiado))
-                        {
-                            cambiarFechaDetectado = true;
-                        }
+						if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.Precio < precio.Precio || nuevaOferta.Precio > precio.Precio))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.Precio || nuevaOferta.PrecioCambiado > precio.Precio))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.Precio < precio.PrecioCambiado || nuevaOferta.Precio > precio.PrecioCambiado))
+						{
+							cambiarFechaDetectado = true;
+						}
+						else if (nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && (nuevaOferta.PrecioCambiado < precio.PrecioCambiado || nuevaOferta.PrecioCambiado > precio.PrecioCambiado))
+						{
+							cambiarFechaDetectado = true;
+						}
 
-                        DateTime tempFecha = precio.FechaDetectado;
-                        tempFecha = tempFecha.AddDays(21);
+						DateTime tempFecha = precio.FechaDetectado;
+						tempFecha = tempFecha.AddDays(21);
 
-                        if (tempFecha < nuevaOferta.FechaDetectado)
-                        {
-                            cambiarFechaDetectado = true;
-                        }
+						if (tempFecha < nuevaOferta.FechaDetectado)
+						{
+							cambiarFechaDetectado = true;
+						}
 
-                        if (cambiarFechaDetectado == true)
-                        {
-                            precio.FechaDetectado = nuevaOferta.FechaDetectado;
-                        }
+						if (cambiarFechaDetectado == true)
+						{
+							precio.FechaDetectado = nuevaOferta.FechaDetectado;
+						}
 
-                        if (nuevaOferta.Moneda != JuegoMoneda.Euro)
-                        {
-                            precio.PrecioCambiado = nuevaOferta.PrecioCambiado;
-                        }
-                        else
-                        {
-                            precio.PrecioCambiado = 0;
-                        }
+						if (nuevaOferta.FechaTermina == default(DateTime))
+						{
+							huboCambioReal = true;
+						}
+						else if (precio.FechaTermina != nuevaOferta.FechaTermina ||
+							precio.Descuento != nuevaOferta.Descuento ||
+							precio.CodigoDescuento != nuevaOferta.CodigoDescuento ||
+							precio.CodigoTexto != nuevaOferta.CodigoTexto ||
+							precio.Moneda != nuevaOferta.Moneda ||
+							(nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && precio.Precio != nuevaOferta.Precio) ||
+							(nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && precio.PrecioCambiado != nuevaOferta.PrecioCambiado) ||
+							(nuevaOferta.Moneda == JuegoMoneda.Euro && precio.Moneda != JuegoMoneda.Euro && precio.PrecioCambiado != nuevaOferta.Precio) ||
+							(nuevaOferta.Moneda != JuegoMoneda.Euro && precio.Moneda == JuegoMoneda.Euro && precio.Precio != nuevaOferta.PrecioCambiado))
+						{
+							huboCambioReal = true;
+						}
 
-                        precio.Precio = nuevaOferta.Precio;
-                        precio.Descuento = nuevaOferta.Descuento;
-                        precio.FechaActualizacion = nuevaOferta.FechaActualizacion;
+						if (nuevaOferta.Moneda != JuegoMoneda.Euro)
+						{
+							precio.PrecioCambiado = nuevaOferta.PrecioCambiado;
+						}
+						else
+						{
+							precio.PrecioCambiado = 0;
+						}
+
+						precio.Precio = nuevaOferta.Precio;
+						precio.Descuento = nuevaOferta.Descuento;
+						precio.FechaActualizacion = nuevaOferta.FechaActualizacion;
 
 						if (nuevaOferta.FechaTermina != default(DateTime))
 						{
@@ -108,88 +126,90 @@ namespace BaseDatos.Juegos
 						}
 
 						precio.CodigoDescuento = nuevaOferta.CodigoDescuento;
-                        precio.CodigoTexto = nuevaOferta.CodigoTexto;
-                        precio.Nombre = nuevaOferta.Nombre;
-                        precio.Imagen = nuevaOferta.Imagen;
-                        precio.Moneda = nuevaOferta.Moneda;
-                        precio.BundleSteam = nuevaOferta.BundleSteam;
+						precio.CodigoTexto = nuevaOferta.CodigoTexto;
+						precio.Nombre = nuevaOferta.Nombre;
+						precio.Imagen = nuevaOferta.Imagen;
+						precio.Moneda = nuevaOferta.Moneda;
+						precio.BundleSteam = nuevaOferta.BundleSteam;
 
-                        añadir = false;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                ofertasActuales = new List<JuegoPrecio>();
-            }
+						añadir = false;
+						break;
+					}
+				}
+			}
+			else
+			{
+				ofertasActuales = new List<JuegoPrecio>();
+			}
 
-            if (añadir == true)
+			if (añadir == true)
 			{
 				ofertasActuales.Add(nuevaOferta);
+
+				huboCambioReal = true;
 			}
 
 			if (ofertasHistoricas?.Count > 0)
-            {
-                bool drmEncontrado = false;
+			{
+				bool drmEncontrado = false;
 
-                foreach (JuegoPrecio minimo in ofertasHistoricas)
-                {
-                    if (nuevaOferta.DRM == minimo.DRM)
-                    {
-                        drmEncontrado = true;
+				foreach (JuegoPrecio minimo in ofertasHistoricas)
+				{
+					if (nuevaOferta.DRM == minimo.DRM)
+					{
+						drmEncontrado = true;
 
-                        if (minimo.Moneda != JuegoMoneda.Euro && minimo.Precio > 0 && minimo.PrecioCambiado == 0)
-                        {
-                            minimo.PrecioCambiado = minimo.Precio;
-                        }
+						if (minimo.Moneda != JuegoMoneda.Euro && minimo.Precio > 0 && minimo.PrecioCambiado == 0)
+						{
+							minimo.PrecioCambiado = minimo.Precio;
+						}
 
 						if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio < minimo.Precio) ||
-                            (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
-                            (minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
-                            (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio < minimo.PrecioCambiado))
-                        {
+							(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado < minimo.PrecioCambiado) ||
+							(minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado < minimo.Precio) ||
+							(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio < minimo.PrecioCambiado))
+						{
 							historicos = ComprobarHistoricos(TiendaRegion.Europa, historicos, nuevaOferta);
 
-                            bool notificar = false;
+							bool notificar = false;
 
-                            if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio + 0.1m < minimo.Precio) ||
-                                (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.PrecioCambiado) ||
-                                (minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.Precio) ||
-                                (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio + 0.1m < minimo.PrecioCambiado))
-                            {
-                                notificar = true;
-                            }
+							if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && nuevaOferta.Precio + 0.1m < minimo.Precio) ||
+								(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.PrecioCambiado) ||
+								(minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && nuevaOferta.PrecioCambiado + 0.1m < minimo.Precio) ||
+								(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && nuevaOferta.Precio + 0.1m < minimo.PrecioCambiado))
+							{
+								notificar = true;
+							}
 
-                            ultimaModificacion = true;
+							ultimaModificacion = true;
 
-                            if (nuevaOferta.Moneda != JuegoMoneda.Euro)
-                            {
-                                minimo.PrecioCambiado = nuevaOferta.PrecioCambiado;
-                            }
-                            else
-                            {
-                                minimo.PrecioCambiado = 0;
-                            }
+							if (nuevaOferta.Moneda != JuegoMoneda.Euro)
+							{
+								minimo.PrecioCambiado = nuevaOferta.PrecioCambiado;
+							}
+							else
+							{
+								minimo.PrecioCambiado = 0;
+							}
 
-                            minimo.Precio = nuevaOferta.Precio;
-                            minimo.Moneda = nuevaOferta.Moneda;
-                            minimo.Descuento = nuevaOferta.Descuento;
-                            minimo.FechaDetectado = nuevaOferta.FechaDetectado;
-                            minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
-                            minimo.FechaTermina = nuevaOferta.FechaTermina;
-                            minimo.CodigoDescuento = nuevaOferta.CodigoDescuento;
-                            minimo.CodigoTexto = nuevaOferta.CodigoTexto;
-                            minimo.Nombre = nuevaOferta.Nombre;
-                            minimo.Imagen = nuevaOferta.Imagen;
-                            minimo.Enlace = nuevaOferta.Enlace;
-                            minimo.Tienda = nuevaOferta.Tienda;
-                            minimo.BundleSteam = nuevaOferta.BundleSteam;
+							minimo.Precio = nuevaOferta.Precio;
+							minimo.Moneda = nuevaOferta.Moneda;
+							minimo.Descuento = nuevaOferta.Descuento;
+							minimo.FechaDetectado = nuevaOferta.FechaDetectado;
+							minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
+							minimo.FechaTermina = nuevaOferta.FechaTermina;
+							minimo.CodigoDescuento = nuevaOferta.CodigoDescuento;
+							minimo.CodigoTexto = nuevaOferta.CodigoTexto;
+							minimo.Nombre = nuevaOferta.Nombre;
+							minimo.Imagen = nuevaOferta.Imagen;
+							minimo.Enlace = nuevaOferta.Enlace;
+							minimo.Tienda = nuevaOferta.Tienda;
+							minimo.BundleSteam = nuevaOferta.BundleSteam;
 
-                            //------------------------------------------
+							//------------------------------------------
 
-                            if (notificar == true)
-                            {
+							if (notificar == true)
+							{
 								List<string> usuariosInteresados = await BaseDatos.Usuarios.Buscar.ListaUsuariosTienenDeseado(id, nuevaOferta.DRM);
 
 								if (usuariosInteresados?.Count > 0)
@@ -266,7 +286,7 @@ namespace BaseDatos.Juegos
 											{
 												BaseDatos.Errores.Insertar.Mensaje("Enviar Correo Minimo 1", ex);
 											}
-											
+
 											try
 											{
 												bool enviarPush = await BaseDatos.Usuarios.Buscar.OpcionBoolRegion(TiendaRegion.Europa, usuarioInteresado, "NotificationPushLows");
@@ -299,72 +319,81 @@ namespace BaseDatos.Juegos
 									}
 								}
 							}
-                        }
-                        else
-                        {
-                            if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.Precio, 2)) ||
-                                (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.PrecioCambiado, 2)) ||
-                                (minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.Precio, 2)) ||
-                                (minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.PrecioCambiado, 2)))
-                            {
-                                int cantidadHistoricos = historicos?.Count ?? 0;
-                                historicos = ComprobarHistoricos(TiendaRegion.Europa, historicos, nuevaOferta);
+						}
+						else
+						{
+							if ((minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.Precio, 2)) ||
+								(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.PrecioCambiado, 2)) ||
+								(minimo.Moneda == JuegoMoneda.Euro && nuevaOferta.Moneda != JuegoMoneda.Euro && nuevaOferta.PrecioCambiado > 0 && minimo.Precio > 0 && decimal.Round(nuevaOferta.PrecioCambiado, 2) == decimal.Round(minimo.Precio, 2)) ||
+								(minimo.Moneda != JuegoMoneda.Euro && nuevaOferta.Moneda == JuegoMoneda.Euro && nuevaOferta.Precio > 0 && minimo.PrecioCambiado > 0 && decimal.Round(nuevaOferta.Precio, 2) == decimal.Round(minimo.PrecioCambiado, 2)))
+							{
+								int cantidadHistoricos = historicos?.Count ?? 0;
+								historicos = ComprobarHistoricos(TiendaRegion.Europa, historicos, nuevaOferta);
 
-                                if (historicos.Count > cantidadHistoricos)
-                                {
-                                    cambioPrecio = true;
-                                }
-                                else
-                                {
-                                    cambioPrecio = false;
-                                }
+								if (historicos.Count > cantidadHistoricos)
+								{
+									cambioPrecio = true;
+								}
+								else
+								{
+									cambioPrecio = false;
+								}
 
-                                ultimaModificacion = true;
+								ultimaModificacion = true;
 
-                                minimo.Imagen = nuevaOferta.Imagen;
-                                minimo.Enlace = nuevaOferta.Enlace;
-                                minimo.Tienda = nuevaOferta.Tienda;
-                                minimo.Moneda = nuevaOferta.Moneda;
-                                minimo.Descuento = nuevaOferta.Descuento;
+								minimo.Imagen = nuevaOferta.Imagen;
+								minimo.Enlace = nuevaOferta.Enlace;
+								minimo.Tienda = nuevaOferta.Tienda;
+								minimo.Moneda = nuevaOferta.Moneda;
+								minimo.Descuento = nuevaOferta.Descuento;
 
-                                minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
+								minimo.FechaActualizacion = nuevaOferta.FechaActualizacion;
 								minimo.FechaTermina = nuevaOferta.FechaTermina;
 
 								DateTime tempFecha = nuevaOferta.FechaDetectado;
-                                tempFecha = tempFecha.AddDays(30);
+								tempFecha = tempFecha.AddDays(30);
 
-                                bool cambiarFechaDetectado = false;
+								bool cambiarFechaDetectado = false;
 
-                                if (tempFecha < minimo.FechaDetectado)
-                                {
-                                    cambiarFechaDetectado = true;
-                                }
+								if (tempFecha < minimo.FechaDetectado)
+								{
+									cambiarFechaDetectado = true;
+								}
 
-                                if (cambiarFechaDetectado == true)
-                                {
-                                    minimo.FechaDetectado = nuevaOferta.FechaDetectado;
-                                }
+								if (cambiarFechaDetectado == true)
+								{
+									minimo.FechaDetectado = nuevaOferta.FechaDetectado;
+								}
 							}
 						}
-                    }
-                }
+					}
+				}
 
-                if (drmEncontrado == false)
-                {
-                    ofertasHistoricas.Add(nuevaOferta);
-                }
-            }
-            else
-            {
-                ofertasHistoricas = new List<JuegoPrecio>();
-                ofertasHistoricas.Add(nuevaOferta);
-            }
+				if (drmEncontrado == false)
+				{
+					ofertasHistoricas.Add(nuevaOferta);
+
+					huboCambioReal = true;
+				}
+			}
+			else
+			{
+				ofertasHistoricas = new List<JuegoPrecio>();
+				ofertasHistoricas.Add(nuevaOferta);
+			}
 
 			DateTime? ahora = null;
 
 			if (ultimaModificacion == true)
 			{
 				ahora = DateTime.Now;
+			}
+
+			huboCambioReal = huboCambioReal || ultimaModificacion || (string.IsNullOrEmpty(slugGOG) == false) || (string.IsNullOrEmpty(slugEpic) == false);
+
+			if (huboCambioReal == false)
+			{
+				return (null, null);
 			}
 
 			StringBuilder sql = new StringBuilder();
@@ -379,7 +408,7 @@ namespace BaseDatos.Juegos
 
 			if (!string.IsNullOrEmpty(slugGOG)) sql.Append($", idGog=@idGog{indice}, slugGOG=@slugGOG{indice} ");
 			if (!string.IsNullOrEmpty(slugEpic)) sql.Append($", slugEpic=@slugEpic{indice} ");
-			
+
 			if (ahora != null)
 			{
 				sql.Append($", ultimaModificacion=@ultimaModificacion{indice} ");
@@ -395,7 +424,7 @@ namespace BaseDatos.Juegos
 			parametros.Add($"@id{indice}", id);
 			parametros.Add($"@precioActualesTiendas{indice}", JsonSerializer.Serialize(ofertasActuales));
 			parametros.Add($"@precioMinimosHistoricos{indice}", JsonSerializer.Serialize(ofertasHistoricas));
-			
+
 			if (cambioPrecio == true)
 			{
 				parametros.Add($"@historicos{indice}", JsonSerializer.Serialize(historicos));
@@ -418,6 +447,7 @@ namespace BaseDatos.Juegos
 			bool cambioPrecio = true;
 			bool ultimaModificacion = false;
 			bool añadir = true;
+			bool huboCambioReal = false;
 
 			#region Aplicar Codigo Descuento
 
@@ -489,6 +519,20 @@ namespace BaseDatos.Juegos
 							precio.FechaDetectado = nuevaOferta.FechaDetectado;
 						}
 
+						if (nuevaOferta.FechaTermina == default(DateTime))
+						{
+							huboCambioReal = true;
+						}
+						else if (precio.FechaTermina != nuevaOferta.FechaTermina || precio.Descuento != nuevaOferta.Descuento ||
+							precio.CodigoDescuento != nuevaOferta.CodigoDescuento || precio.CodigoTexto != nuevaOferta.CodigoTexto || precio.Moneda != nuevaOferta.Moneda ||
+							(nuevaOferta.Moneda == JuegoMoneda.Dolar && precio.Moneda == JuegoMoneda.Dolar && precio.Precio != nuevaOferta.Precio) ||
+							(nuevaOferta.Moneda != JuegoMoneda.Dolar && precio.Moneda != JuegoMoneda.Dolar && precio.PrecioCambiado != nuevaOferta.PrecioCambiado) ||
+							(nuevaOferta.Moneda == JuegoMoneda.Dolar && precio.Moneda != JuegoMoneda.Dolar && precio.PrecioCambiado != nuevaOferta.Precio) ||
+							(nuevaOferta.Moneda != JuegoMoneda.Dolar && precio.Moneda == JuegoMoneda.Dolar && precio.Precio != nuevaOferta.PrecioCambiado))
+						{
+							huboCambioReal = true;
+						}
+
 						if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
 						{
 							precio.PrecioCambiado = nuevaOferta.PrecioCambiado;
@@ -527,6 +571,8 @@ namespace BaseDatos.Juegos
 			if (añadir == true)
 			{
 				ofertasActualesUS.Add(nuevaOferta);
+
+				huboCambioReal = true;
 			}
 
 			if (ofertasHistoricasUS?.Count > 0)
@@ -747,6 +793,8 @@ namespace BaseDatos.Juegos
 				if (drmEncontrado == false)
 				{
 					ofertasHistoricasUS.Add(nuevaOferta);
+
+					huboCambioReal = true;
 				}
 			}
 			else
@@ -762,14 +810,21 @@ namespace BaseDatos.Juegos
 				ahora = DateTime.Now;
 			}
 
+			huboCambioReal = huboCambioReal || ultimaModificacion || (string.IsNullOrEmpty(slugGOG) == false) || (string.IsNullOrEmpty(slugEpic) == false);
+
+			if (huboCambioReal == false)
+			{
+				return (null, null);
+			}
+
 			var sql = new StringBuilder();
 			sql.Append("UPDATE juegos SET ");
 			sql.Append($"precioActualesTiendasUS=@precioActualesTiendasUS{indice}, ");
 			sql.Append($"precioMinimosHistoricosUS=@precioMinimosHistoricosUS{indice} ");
 
 			if (cambioPrecio) sql.Append($", historicosUS=@historicosUS{indice} ");
-			if (!string.IsNullOrEmpty(slugGOG)) sql.Append($", idGog=@idGog{indice}, slugGOG=@slugGOG{indice} ");
-			if (!string.IsNullOrEmpty(slugEpic)) sql.Append($", slugEpic=@slugEpic{indice} ");
+			if (string.IsNullOrEmpty(slugGOG) == false) sql.Append($", idGog=@idGog{indice}, slugGOG=@slugGOG{indice} ");
+			if (string.IsNullOrEmpty(slugEpic) == false) sql.Append($", slugEpic=@slugEpic{indice} ");
 			if (ahora != null) sql.Append($", ultimaModificacion=@ultimaModificacion{indice} ");
 
 			sql.Append($"WHERE id=@id{indice};");
@@ -783,8 +838,8 @@ namespace BaseDatos.Juegos
 			parametros.Add($"@precioActualesTiendasUS{indice}", JsonSerializer.Serialize(ofertasActualesUS));
 			parametros.Add($"@precioMinimosHistoricosUS{indice}", JsonSerializer.Serialize(ofertasHistoricasUS));
 			if (cambioPrecio) parametros.Add($"@historicosUS{indice}", JsonSerializer.Serialize(historicosUS));
-			if (!string.IsNullOrEmpty(slugGOG)) { parametros.Add($"@idGog{indice}", idGOG); parametros.Add($"@slugGOG{indice}", slugGOG); }
-			if (!string.IsNullOrEmpty(slugEpic)) parametros.Add($"@slugEpic{indice}", slugEpic);
+			if (string.IsNullOrEmpty(slugGOG) == false) { parametros.Add($"@idGog{indice}", idGOG); parametros.Add($"@slugGOG{indice}", slugGOG); }
+			if (string.IsNullOrEmpty(slugEpic) == false) parametros.Add($"@slugEpic{indice}", slugEpic);
 			if (ahora != null) parametros.Add($"@ultimaModificacion{indice}", ahora);
 
 			return (sql.ToString(), parametros);
@@ -804,8 +859,8 @@ namespace BaseDatos.Juegos
 				nuevoHistorico.Tienda = nuevaOferta.Tienda;
 				nuevoHistorico.Fecha = nuevaOferta.FechaDetectado;
 
-                if (region == TiendaRegion.Europa)
-                {
+				if (region == TiendaRegion.Europa)
+				{
 					if (nuevaOferta.Moneda != JuegoMoneda.Euro)
 					{
 						nuevoHistorico.Precio = nuevaOferta.PrecioCambiado;
@@ -815,8 +870,8 @@ namespace BaseDatos.Juegos
 						nuevoHistorico.Precio = nuevaOferta.Precio;
 					}
 				}
-                else if (region == TiendaRegion.EstadosUnidos)		
-                {
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
 					if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
 					{
 						nuevoHistorico.Precio = nuevaOferta.PrecioCambiado;
@@ -837,7 +892,7 @@ namespace BaseDatos.Juegos
 				nuevoHistorico.Fecha = nuevaOferta.FechaDetectado;
 
 				if (region == TiendaRegion.Europa)
-                {
+				{
 					if (nuevaOferta.Moneda != JuegoMoneda.Euro)
 					{
 						if (nuevaOferta.PrecioCambiado > 0)
@@ -854,8 +909,8 @@ namespace BaseDatos.Juegos
 						nuevoHistorico.Precio = nuevaOferta.Precio;
 					}
 				}
-                else if (region == TiendaRegion.EstadosUnidos)
-                {
+				else if (region == TiendaRegion.EstadosUnidos)
+				{
 					if (nuevaOferta.Moneda != JuegoMoneda.Dolar)
 					{
 						if (nuevaOferta.PrecioCambiado > 0)
@@ -873,7 +928,7 @@ namespace BaseDatos.Juegos
 					}
 				}
 
-                bool mismoDRM = false;
+				bool mismoDRM = false;
 				decimal precioMasBajo2 = 1000000;
 				DateTime fechaMasBajo2 = new DateTime();
 
@@ -887,9 +942,9 @@ namespace BaseDatos.Juegos
 						{
 							precioMasBajo2 = historico.Precio;
 							fechaMasBajo2 = historico.Fecha;
-                        }
-                    }
-                }
+						}
+					}
+				}
 
 				if (mismoDRM == true)
 				{
@@ -897,25 +952,25 @@ namespace BaseDatos.Juegos
 					{
 						historicos.Add(nuevoHistorico);
 					}
-					
+
 					if (decimal.Round(precioMasBajo2, 2) == decimal.Round(nuevoHistorico.Precio, 2))
 					{
 						DateTime historico2 = fechaMasBajo2;
 						historico2 = historico2.AddDays(22);
 
-                        if (historico2 < nuevoHistorico.Fecha)
+						if (historico2 < nuevoHistorico.Fecha)
 						{
 							historicos.Add(nuevoHistorico);
 						}
 					}
 				}
-                else
+				else
 				{
 					historicos.Add(nuevoHistorico);
 				}
 			}
 
-            return historicos;
+			return historicos;
 		}
 	}
 }

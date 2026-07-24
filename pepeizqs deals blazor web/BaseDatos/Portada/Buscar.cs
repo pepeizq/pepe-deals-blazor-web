@@ -20,8 +20,7 @@ namespace BaseDatos.Portada
 				precioMinimosHistoricos = "precioMinimosHistoricosUS";
 			}
 
-			string busqueda = @$"SELECT j.*,
-       pmh.DRM as DRMElegido
+			string busqueda = @$"SELECT j.id, j.{precioMinimosHistoricos}, pmh.DRM as DRMElegido
 FROM juegos j
 CROSS APPLY OPENJSON(j.{precioMinimosHistoricos})
 WITH (
@@ -107,33 +106,38 @@ AND (
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = jg.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
 			}
 
-			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, j.nombre,     
+			string busqueda = @$"SELECT TOP {cantidadJuegos} j.idMaestra, jg.nombre,     
 				JSON_VALUE(jg.imagenes, '$.Logo') as logo, JSON_VALUE(jg.imagenes, '$.Library_1920x620') as fondo, JSON_VALUE(jg.imagenes, '$.Header_460x215') as header, JSON_VALUE(jg.media, '$.Videos[0].Micro') as video,
-				j.{precioMinimosHistoricos}, j.idSteam FROM {tabla} j 
-				LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra
-				WHERE j.tipo = 0 {exclusionJuegos} {exclusionSteam} AND 
-				year(getdate()) < year(JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
-				CONVERT(float, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Precio')) >= 1.99 AND 
-				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND 
-				JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = 0 AND 
+				j.{precioMinimosHistoricos}, jg.idSteam FROM {tabla} j 
+				INNER JOIN dbo.juegos jg ON jg.id = j.idMaestra
+				CROSS APPLY OPENJSON(j.{precioMinimosHistoricos}, '$[0]') WITH (
+					Precio float '$.Precio',
+					Descuento int '$.Descuento',
+					DRM int '$.DRM',
+					FechaTermina datetime2 '$.FechaTermina',
+					FechaActualizacion datetime2 '$.FechaActualizacion'
+				) precioMin
+				WHERE jg.tipo = 0 {exclusionJuegos} {exclusionSteam} AND 
+				year(getdate()) < year(JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam')) + 11 AND
+				precioMin.Precio >= 1.99 AND 
+				precioMin.Descuento > 0 AND 
+				precioMin.DRM = 0 AND 
 				(
-					(YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) > 2020 AND 
-					 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE())
+					(YEAR(precioMin.FechaTermina) > 2020 AND precioMin.FechaTermina > GETDATE())
 					OR
 					(
-						NOT (YEAR(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina'))) > 2020 AND 
-							 CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaTermina')) > GETDATE())
-						AND CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaActualizacion')) > DATEADD(HOUR,-24,GetDate())
+						NOT (YEAR(precioMin.FechaTermina) > 2020 AND precioMin.FechaTermina > GETDATE())
+						AND precioMin.FechaActualizacion > DATEADD(HOUR,-24,GetDate())
 					)
 				) AND 
-				(CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= {minimoReseñas}) AND 
+				(CONVERT(bigint, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) >= {minimoReseñas}) AND 
 				{(ocultarBundles == true ? $"NOT EXISTS (SELECT 1 FROM bundles b INNER JOIN bundlesJuegos bj ON bj.bundleId = b.id WHERE bj.JuegoId = j.idMaestra AND b.fechaTermina > DATEADD(MONTH, -{ocultarBundlesCantidad}, GETDATE())) AND " : "")} 
 				{(ocultarGratis == true ? "NOT EXISTS (SELECT 1 FROM gratis WHERE gratis.juegoId = j.idMaestra AND gratis.DRM = 0) AND " : "")}
 				{(ocultarSuscripciones == true ? @$"NOT EXISTS (SELECT 1 FROM suscripciones WHERE suscripciones.juegoId = j.idMaestra AND suscripciones.DRM = 0 AND suscripciones.fechaTermina > DATEADD(MONTH, -{ocultarSuscripcionesCantidad}, GETDATE())) AND " : "")}
-				(j.ocultarPortada IS NULL OR j.ocultarPortada = 'false') 
+				(jg.ocultarPortada IS NULL OR jg.ocultarPortada = 'false') 
 				ORDER BY NEWID()";
 
 			try
@@ -233,11 +237,11 @@ AND (
 				{
 					if (i == 0)
 					{
-						categoria = categoria + " AND (j.tipo = " + valor;
+						categoria = categoria + " AND (jg.tipo = " + valor;
 					}
 					else if (i > 0)
 					{
-						categoria = categoria + " OR j.tipo = " + valor;
+						categoria = categoria + " OR jg.tipo = " + valor;
 					}
 
 					i += 1;
@@ -258,11 +262,11 @@ AND (
 				{
 					if (i == 0)
 					{
-						drm = drm + $" AND (JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = " + valor;
+						drm = drm + $" AND (precioMin.DRM = " + valor;
 					}
 					else if (i > 0)
 					{
-						drm = drm + $" OR JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = " + valor;
+						drm = drm + $" OR precioMin.DRM = " + valor;
 					}
 
 					i += 1;
@@ -289,17 +293,17 @@ AND (
 			{
 				DataTable tablaSteam = CrearDataTable(excluirSteamIds);
 				parametros.Add("excluirSteam", tablaSteam.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = j.idSteam AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '0')";
+				exclusionSteam = $"AND NOT EXISTS (SELECT 1 FROM @excluirSteam WHERE Id = jg.idSteam AND precioMin.DRM = 0)";
 			}
 
 			if (excluirGogIds?.Count > 0)
 			{
 				DataTable tablaGog = CrearDataTable(excluirGogIds);
 				parametros.Add("excluirGog", tablaGog.AsTableValuedParameter("dbo.ListaIdsNumericos"));
-				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = j.idGog AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = '8')";
+				exclusionGog = $"AND NOT EXISTS (SELECT 1 FROM @excluirGog WHERE Id = jg.idGog AND precioMin.DRM = 8)";
 			}
 
-			string busqueda = @$"SELECT j.idMaestra, j.nombre, jg.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(jg.media, '$.Videos[0].Micro') as video, j.etiquetas,
+			string busqueda = @$"SELECT j.idMaestra, jg.nombre, jg.imagenes, j.{precioMinimosHistoricos}, JSON_VALUE(jg.media, '$.Videos[0].Micro') as video, jg.etiquetas,
 			(
 				SELECT b.id, b.bundleTipo
 				FROM bundles b
@@ -346,9 +350,14 @@ AND (
 				WHERE s.juegoId = j.idMaestra
 				  AND s.FechaTermina < GETDATE()
 				FOR JSON PATH
-			) AS SuscripcionesPasados, j.idSteam, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, j.idGog, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
-				LEFT JOIN dbo.juegos jg ON jg.id = j.idMaestra
-				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) >= @cantidadAnalisis AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0 AND (j.MayorEdad <> 'true' OR j.MayorEdad IS NULL) {categoria} {drm} {exclusionJuegos} {exclusionSteam} {exclusionGog}";
+			) AS SuscripcionesPasados, jg.idSteam, precioMin.FechaDetectado AS Fecha, jg.idGog, jg.analisis, CONVERT(datetime2, JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {tabla} j
+				INNER JOIN dbo.juegos jg ON jg.id = j.idMaestra
+				CROSS APPLY OPENJSON(j.{precioMinimosHistoricos}, '$[0]') WITH (
+					Descuento int '$.Descuento',
+					DRM int '$.DRM',
+					FechaDetectado datetime2 '$.FechaDetectado'
+				) precioMin
+				WHERE CONVERT(bigint, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) >= @cantidadAnalisis AND precioMin.Descuento > 0 AND (jg.MayorEdad <> 'true' OR jg.MayorEdad IS NULL) {categoria} {drm} {exclusionJuegos} {exclusionSteam} {exclusionGog}";
 
 			if (tipo == 0)
 			{
@@ -357,16 +366,16 @@ AND (
 			else if (tipo == 1)
 			{
 				busqueda = busqueda + @" ORDER BY CASE
-											WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',',''))
+											WHEN jg.analisis = 'null' OR jg.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',',''))
 										 END DESC";
 			}
 			else if (tipo == 2)
 			{
-				busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(caracteristicas, '$.FechaLanzamientoSteam')) DESC";
+				busqueda = busqueda + " AND CONVERT(datetime2, JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam')) > DATEADD(DAY,-30,GetDate()) ORDER BY CONVERT(datetime2, JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam')) DESC";
 			}
 			else if (tipo == 3)
 			{
-				busqueda = busqueda + $" ORDER BY CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) DESC";
+				busqueda = busqueda + $" ORDER BY precioMin.FechaDetectado DESC";
 			}
 
 			busqueda = busqueda + @$" OFFSET {posicion} ROWS

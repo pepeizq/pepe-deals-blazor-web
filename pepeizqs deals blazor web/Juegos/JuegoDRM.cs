@@ -41,7 +41,7 @@ namespace Juegos
 				Id = JuegoDRM.Steam,
 				Nombre = "Steam",
 				Imagen = "/imagenes/drm/steam.webp",
-				Acepciones = new List<string> { "steam", "steamworks", "steam works" }
+				Acepciones = new List<string> { "steam", "steamworks", "steam works", "steam works (linux)" }
 			};
 
 			drms.Add(steam);

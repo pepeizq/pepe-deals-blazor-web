@@ -29,26 +29,7 @@ namespace BaseDatos.Juegos
 			}
 			catch (Exception ex)
 			{
-				BaseDatos.Errores.Insertar.Mensaje("Imagenes 1 " + juego.Id.ToString(), ex);
-			}
-
-			string sqlActualizar2 = "UPDATE seccionMinimos " +
-					"SET imagenes=@imagenes WHERE idMaestra=@id";
-
-			try
-			{
-				await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-				{
-					return await conexion.ExecuteAsync(sqlActualizar2, new
-					{
-						id = juego.Id,
-						imagenes = JsonSerializer.Serialize(juego.Imagenes)
-					}, transaction: sentencia);
-				});
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Imagenes 2 " + juego.Id.ToString(), ex);
+				BaseDatos.Errores.Insertar.Mensaje("Imagenes Actualizar " + juego.Id.ToString(), ex);
 			}
 		}
 
@@ -330,43 +311,6 @@ namespace BaseDatos.Juegos
 			catch (Exception ex)
 			{
 				BaseDatos.Errores.Insertar.Mensaje("Ocultar Portada 1 " + juego.Id.ToString(), ex);
-			}
-
-			string buscarMinimos = @"
-				SELECT COUNT(1)
-				FROM seccionMinimos
-				WHERE idMaestra = @IdMaestra";
-
-			try
-			{
-				bool actualizar = await Herramientas.BaseDatos.Select(async conexion =>
-				{
-				    int resultado = await conexion.ExecuteScalarAsync<int>(buscarMinimos, new
-					{
-						IdMaestra = juego.Id
-					});
-
-					return resultado > 0;
-				});
-
-				if (actualizar == true)
-				{
-					string actualizarMinimos = "UPDATE seccionMinimos " +
-						"SET ocultarPortada=@ocultarPortada WHERE idMaestra=@idMaestra";
-
-					await Herramientas.BaseDatos.RestoOperaciones(async (conexion, sentencia) =>
-					{
-						return await conexion.ExecuteAsync(actualizarMinimos, new
-						{
-							id = juego.Id,
-							ocultarPortada = juego.OcultarPortada
-						}, transaction: sentencia);
-					});
-				}
-			}
-			catch (Exception ex)
-			{
-				BaseDatos.Errores.Insertar.Mensaje("Ocultar Portada 2 " + juego.Id.ToString(), ex);
 			}
 		}
 

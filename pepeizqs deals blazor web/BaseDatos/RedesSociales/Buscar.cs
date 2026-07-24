@@ -14,18 +14,27 @@ namespace BaseDatos.RedesSociales
 			string seccionMinimos = region == TiendaRegion.Europa ? "seccionMinimos" : "seccionMinimosUS";
 			string precioMinimosHistoricos = region == TiendaRegion.Europa ? "precioMinimosHistoricos" : "precioMinimosHistoricosUS";
 
-			string busqueda = $@"SELECT TOP 100 j.idMaestra, j.nombre, j.{precioMinimosHistoricos}, CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS Fecha, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') AS DRM, j.analisis, CONVERT(datetime2, JSON_VALUE(j.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
-                WHERE JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].DRM') = @drm
-				AND JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].Descuento') > 0
-                AND CAST(CONVERT(datetime2, JSON_VALUE(j.{precioMinimosHistoricos}, '$[0].FechaDetectado')) AS date) = CAST(GETDATE() AS date)
-                ";
+			string busqueda = $@"SELECT TOP 100 j.idMaestra, jg.nombre, j.{precioMinimosHistoricos}, precioMin.FechaDetectado AS Fecha, precioMin.DRM AS DRM, jg.analisis, CONVERT(datetime2, JSON_VALUE(jg.caracteristicas, '$.FechaLanzamientoSteam')) as FechaLanzamiento FROM {seccionMinimos} j
+				INNER JOIN dbo.juegos jg ON jg.id = j.idMaestra
+				CROSS APPLY OPENJSON(j.{precioMinimosHistoricos}, '$[0]') WITH (
+					Precio float '$.Precio',
+					Descuento int '$.Descuento',
+					DRM int '$.DRM',
+					FechaTermina datetime2 '$.FechaTermina',
+					FechaActualizacion datetime2 '$.FechaActualizacion',
+					FechaDetectado datetime2 '$.FechaDetectado'
+				) precioMin
+				WHERE precioMin.DRM = @drm
+				AND precioMin.Descuento > 0
+				AND CAST(precioMin.FechaDetectado AS date) = CAST(GETDATE() AS date)
+				";
 
 			if (drm == 0)
 			{
-				busqueda = busqueda + @" AND CONVERT(bigint, REPLACE(JSON_VALUE(j.analisis, '$.Cantidad'),',','')) > 100";
+				busqueda = busqueda + @" AND CONVERT(bigint, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) > 100";
 			}
 
-			busqueda = busqueda + @" ORDER BY CASE WHEN analisis = 'null' OR analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(analisis, '$.Cantidad'),',','')) END DESC"
+			busqueda = busqueda + @" ORDER BY CASE WHEN jg.analisis = 'null' OR jg.analisis IS NULL THEN 0 ELSE CONVERT(int, REPLACE(JSON_VALUE(jg.analisis, '$.Cantidad'),',','')) END DESC"
 ;
 			if (string.IsNullOrEmpty(busqueda) == false)
 			{
